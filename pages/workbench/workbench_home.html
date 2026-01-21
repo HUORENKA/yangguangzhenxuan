@@ -485,14 +485,17 @@
       <!-- 折线图模块（占2/3宽度） -->
       <div class="lg:col-span-2 module-card rounded-xl shadow-sm p-5">
         <div class="flex items-center justify-between mb-4">
-          <!-- 左上角：总量/增量切换 -->
-          <div class="flex items-center gap-2">
-            <button id="lineChartTypeTotal" class="chart-toggle-btn active" onclick="switchLineChartType('total')">
-              总量
-            </button>
-            <button id="lineChartTypeIncrement" class="chart-toggle-btn inactive" onclick="switchLineChartType('increment')">
-              增量
-            </button>
+          <!-- 左侧：标题 + 总量/增量切换 -->
+          <div class="flex items-center gap-4">
+            <h3 class="text-lg font-bold text-gray-800">订单数量趋势</h3>
+            <div class="flex items-center gap-2">
+              <button id="lineChartTypeTotal" class="chart-toggle-btn active" onclick="switchLineChartType('total')">
+                总量
+              </button>
+              <button id="lineChartTypeIncrement" class="chart-toggle-btn inactive" onclick="switchLineChartType('increment')">
+                增量
+              </button>
+            </div>
           </div>
           
           <!-- 右上角：时间维度切换 -->
