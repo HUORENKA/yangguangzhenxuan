@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>店铺列表 | 阳光优采</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="../../assets/custom.css">
+  
+  <!-- Mock 数据 -->
+  <script src="../../assets/mock.js"></script>
+  
+  <style>
+    /* Tailwind 配置扩展 - 京东红 */
+    @layer utilities {
+      .text-primary { color: #E2231A; }
+      .bg-primary { background-color: #E2231A; }
+      .border-primary { border-color: #E2231A; }
+    }
+    
+    /* 顶部导航栏 */
+    .top-navbar {
+      background: linear-gradient(135deg, #E2231A 0%, #c01e16 100%);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* 店铺卡片样式 */
+    .store-card {
+      transition: all 0.3s ease;
+      border: 1px solid #e5e7eb;
+      background: #fefefe; /* 奶白色 */
+    }
+    
+    .store-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-color: #E2231A;
+    }
+    
+    /* 页面背景色 */
+    body {
+      background-color: #f5f5f5; /* 浅灰色 */
+    }
+    
+    /* 推荐商品卡片样式 */
+    .product-mini-card {
+      transition: all 0.2s ease;
+      border: 1px solid #e5e7eb;
+      background: white;
+    }
+    
+    .product-mini-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-color: #E2231A;
+    }
+    
+    /* 关注按钮动画 */
+    @keyframes followAnimation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    .follow-animation {
+      animation: followAnimation 0.3s ease;
+    }
+    
+    /* 商品图片容器 */
+    .product-img-container {
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    
+    .product-img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .product-mini-card:hover .product-img-container img {
+      transform: scale(1.05);
+    }
+    
+    /* 搜索框样式 */
+    .search-input {
+      border: 2px solid #E2231A;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: #E2231A;
+      box-shadow: 0 0 0 3px rgba(226, 35, 26, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  
+  <!-- 顶部导航栏 -->
+  <div class="top-navbar text-white">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between">
+        <!-- 左端：平台名称 -->
+        <div class="flex items-center gap-3">
+          <div class="text-2xl font-bold">阳光优采</div>
+        </div>
+        
+        <!-- 中部：搜索框 -->
+        <div class="flex-1 max-w-2xl mx-8">
+          <div class="flex items-center">
+            <input 
+              type="text" 
+              id="topSearchInput"
+              placeholder="搜索店铺名称..." 
+              class="flex-1 px-4 py-2 rounded-l-lg text-gray-900 search-input"
+              onkeypress="handleTopSearchKeyPress(event)"
+            >
+            <button onclick="handleTopSearch()" class="px-6 py-2 bg-white rounded-r-lg hover:bg-gray-100 transition-all font-semibold border-l-0" style="color: #E2231A;">
+              <i class="fas fa-search mr-1" style="color: #E2231A;"></i>
+              <span style="color: #E2231A;">搜索</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 右端：用户名 -->
+        <div class="flex items-center gap-3">
+          <div class="text-sm" id="userName">访客</div>
+          <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+            <i class="fas fa-user text-sm"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 主内容区 -->
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    
+    <!-- 搜索结果信息 -->
+    <div class="mb-4">
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <i class="fas fa-search text-gray-400"></i>
+        <span>搜索关键词：</span>
+        <span class="text-primary font-semibold" id="searchKeyword">全部店铺</span>
+        <span class="text-gray-400">|</span>
+        <span>共找到 <span class="text-primary font-semibold" id="storeCount">0</span> 个店铺</span>
+      </div>
+    </div>
+    
+    <!-- 店铺列表 -->
+    <div class="space-y-4" id="storeList">
+      <!-- 店铺卡片将通过 JavaScript 动态生成 -->
+    </div>
+    
+    <!-- 分页控件 -->
+    <div class="mt-6 flex items-center justify-center gap-2" id="pagination">
+      <!-- 分页将通过 JavaScript 动态生成 -->
+    </div>
+    
+  </div>
+  
+  <script>
+    // ========== 角色相关 ==========
+    const roleNameMap = {
+      'guest': '访客',
+      'buyer-user': '普通采购用户',
+      'buyer': '采购专员',
+      'supplier': '供应商',
+      'supplier-admin': '供应商管理员',
+      'admin': '平台管理员',
+      'super-admin': '超级管理员'
+    };
+    
+    const roleHintMap = {
+      'guest': '访客仅可浏览商品和公告',
+      'buyer-user': '普通采购用户可下单、查看订单和售后',
+      'buyer': '采购专员可审批采购单、跟进订单和售后',
+      'supplier': '供应商可管理订单、售后和合同',
+      'supplier-admin': '供应商管理员可管理分站推荐内容',
+      'admin': '平台管理员可管理运营数据和审核',
+      'super-admin': '超级管理员拥有所有权限'
+    };
+    
+    function getCurrentRole() {
+      return localStorage.getItem('role') || 'guest';
+    }
+    
+    function switchRole(newRole) {
+      localStorage.setItem('role', newRole);
+      updateRoleHint(newRole);
+      renderStoreList(); // 重新渲染列表以更新关注按钮状态
+    }
+    
+    function updateRoleHint(role) {
+      const hintElement = document.getElementById('roleHint');
+      if (hintElement) {
+        hintElement.textContent = roleHintMap[role] || '';
+      }
+    }
+    
+    // ========== 更新用户名显示 ==========
+    function updateUserName() {
+      const role = getCurrentRole();
+      const userNameElement = document.getElementById('userName');
+      if (userNameElement) {
+        const roleName = roleNameMap[role] || '访客';
+        userNameElement.textContent = role === 'guest' ? '访客' : `用户 (${roleName})`;
+      }
+    }
+    
+    // ========== 顶部搜索功能 ==========
+    function handleTopSearch() {
+      const keyword = document.getElementById('topSearchInput').value.trim();
+      if (keyword) {
+        window.location.href = `store_list.html?keyword=${encodeURIComponent(keyword)}`;
+      } else {
+        window.location.href = 'store_list.html';
+      }
+    }
+    
+    function handleTopSearchKeyPress(event) {
+      if (event.key === 'Enter') {
+        handleTopSearch();
+      }
+    }
+    
+    // ========== 数据加载 ==========
+    let storeData = null;
+    let currentPage = 1;
+    const pageSize = 10; // 每页10个店铺
+    
+    function loadStoreList() {
+      // 从URL获取搜索关键词和页码
+      const urlParams = new URLSearchParams(window.location.search);
+      const keyword = urlParams.get('keyword') || '';
+      const page = parseInt(urlParams.get('page')) || 1;
+      currentPage = page;
+      
+      // 初始化数据
+      storeData = initStoreListData(keyword);
+      
+      // 更新搜索信息
+      document.getElementById('searchKeyword').textContent = keyword || '全部店铺';
+      document.getElementById('storeCount').textContent = storeData.total;
+      
+      // 更新顶部搜索框
+      const topSearchInput = document.getElementById('topSearchInput');
+      if (topSearchInput) {
+        topSearchInput.value = keyword;
+      }
+      
+      // 渲染列表
+      renderStoreList();
+      
+      // 渲染分页
+      renderPagination();
+    }
+    
+    // ========== 渲染店铺列表 ==========
+    function renderStoreList() {
+      const container = document.getElementById('storeList');
+      const role = getCurrentRole();
+      const isLoggedIn = role !== 'guest';
+      
+      if (!storeData || !storeData.stores) {
+        container.innerHTML = '<div class="text-center py-12 text-gray-500">暂无店铺数据</div>';
+        return;
+      }
+      
+      // 分页处理
+      const total = storeData.stores.length;
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const pageStores = storeData.stores.slice(start, end);
+      
+      container.innerHTML = pageStores.map(store => {
+        // 关注按钮：关注状态用主题色，取消关注用灰色
+        const followButton = isLoggedIn 
+          ? (store.isFollowed 
+            ? `<button onclick="toggleFollow('${store.id}')" class="follow-btn px-3 py-1.5 rounded text-xs font-medium transition-all" style="background-color: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db;" data-store-id="${store.id}" onmouseover="this.style.backgroundColor='#e5e7eb'" onmouseout="this.style.backgroundColor='#f3f4f6'">
+                取消关注
+              </button>`
+            : `<button onclick="toggleFollow('${store.id}')" class="follow-btn px-3 py-1.5 rounded text-xs font-medium transition-all" style="background-color: #E2231A; color: white; border: 1px solid #E2231A;" data-store-id="${store.id}" onmouseover="this.style.backgroundColor='#c01e16'" onmouseout="this.style.backgroundColor='#E2231A'">
+                关注
+              </button>`)
+          : `<button onclick="showLoginTip()" class="px-3 py-1.5 rounded text-xs font-medium bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 transition-all">
+              登录后关注
+            </button>`;
+        
+        const recommendedProducts = store.recommendedProducts.map(product => `
+          <div class="product-mini-card rounded-lg overflow-hidden cursor-pointer" onclick="goToProduct('${product.id}')">
+            <div class="product-img-container">
+              <img src="${product.image}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x200?text=商品图片'">
+            </div>
+            <div class="p-2 bg-white">
+              <p class="text-xs text-gray-900 line-clamp-2 mb-1 min-h-[32px]">${product.name}</p>
+              <p class="text-sm font-bold text-primary">¥${product.price.toLocaleString()}</p>
+            </div>
+          </div>
+        `).join('');
+        
+        return `
+          <div class="store-card rounded-lg p-4">
+            <div class="flex items-center gap-4">
+              <!-- 左侧：店铺信息 -->
+              <div class="flex items-center gap-4 flex-shrink-0" style="width: 320px;">
+                <!-- 店铺Logo -->
+                <div class="flex-shrink-0">
+                  <img src="${store.logo}" alt="${store.name}" 
+                       class="w-28 h-28 rounded-lg object-cover border border-gray-200"
+                       onerror="this.src='https://via.placeholder.com/200x200?text=店铺Logo'">
+                </div>
+                
+                <!-- 店铺信息（垂直排列） -->
+                <div class="flex-1 min-w-0 flex flex-col gap-2">
+                  <h3 class="text-lg font-bold text-gray-900 cursor-pointer hover:text-primary transition-colors" onclick="goToStore('${store.id}')">
+                    ${store.name}
+                  </h3>
+                  <div class="flex items-center gap-2">
+                    ${followButton}
+                    <button onclick="goToStore('${store.id}')" class="px-3 py-1.5 rounded text-xs font-medium transition-all" style="background-color: white; color: #E2231A; border: 1px solid #E2231A;" onmouseover="this.style.backgroundColor='#fef2f2'" onmouseout="this.style.backgroundColor='white'">
+                      进店
+                    </button>
+                  </div>
+                  <div class="flex flex-col gap-1 text-xs text-gray-500">
+                    <span><i class="fas fa-box mr-1"></i>商品数：${store.productCount}</span>
+                    <span><i class="fas fa-heart mr-1"></i>关注数：${formatNumber(store.followerCount)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 右侧：推荐商品 -->
+              <div class="flex-1">
+                <div class="grid grid-cols-5 gap-3">
+                  ${recommendedProducts}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // ========== 渲染分页 ==========
+    function renderPagination() {
+      const container = document.getElementById('pagination');
+      if (!storeData || !storeData.stores) {
+        if (container) container.innerHTML = '';
+        return;
+      }
+      
+      const total = storeData.stores.length;
+      const totalPages = Math.ceil(total / pageSize);
+      
+      if (!container) return;
+      
+      if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      let html = '';
+      
+      // 上一页
+      html += `
+        <button onclick="changePage(${currentPage - 1})" 
+                class="px-3 py-2 border border-gray-300 rounded-l ${currentPage === 1 ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400' : 'hover:bg-gray-100 bg-white text-gray-700'}"
+                ${currentPage === 1 ? 'disabled' : ''}>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      `;
+      
+      // 页码
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+          html += `
+            <button onclick="changePage(${i})" 
+                    class="px-4 py-2 border-y border-gray-300 ${i === currentPage ? 'bg-primary text-white border-primary' : 'border-gray-300 hover:bg-gray-100 bg-white text-gray-700'} ${i === 1 ? 'border-l' : ''} ${i === totalPages ? 'border-r rounded-r' : ''}">
+              ${i}
+            </button>
+          `;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+          html += `<span class="px-2 py-2 text-gray-500">...</span>`;
+        }
+      }
+      
+      // 下一页
+      html += `
+        <button onclick="changePage(${currentPage + 1})" 
+                class="px-3 py-2 border border-gray-300 rounded-r ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-400' : 'hover:bg-gray-100 bg-white text-gray-700'}"
+                ${currentPage === totalPages ? 'disabled' : ''}>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      `;
+      
+      container.innerHTML = html;
+    }
+    
+    // ========== 切换页码 ==========
+    function changePage(page) {
+      const total = storeData ? storeData.stores.length : 0;
+      const totalPages = Math.ceil(total / pageSize);
+      
+      if (page < 1 || page > totalPages) return;
+      
+      // 更新URL参数
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('page', page);
+      window.location.href = `store_list.html?${urlParams.toString()}`;
+    }
+    
+    // ========== 关注功能 ==========
+    function toggleFollow(storeId) {
+      const role = getCurrentRole();
+      if (role === 'guest') {
+        showLoginTip();
+        return;
+      }
+      
+      const store = storeData.stores.find(s => s.id === storeId);
+      if (!store) return;
+      
+      // 切换关注状态
+      store.isFollowed = !store.isFollowed;
+      
+      // 更新关注数
+      if (store.isFollowed) {
+        store.followerCount++;
+      } else {
+        store.followerCount = Math.max(0, store.followerCount - 1);
+      }
+      
+      // 添加动画效果
+      const buttons = document.querySelectorAll(`[data-store-id="${storeId}"]`);
+      buttons.forEach(btn => {
+        btn.classList.add('follow-animation');
+        setTimeout(() => btn.classList.remove('follow-animation'), 300);
+      });
+      
+      // 重新渲染列表
+      renderStoreList();
+      
+      // 提示
+      const message = store.isFollowed ? '已关注该店铺' : '已取消关注';
+      showToast(message);
+    }
+    
+    function showLoginTip() {
+      alert('请先登录后再关注店铺');
+    }
+    
+    function showToast(message) {
+      // 简单的提示，可以后续优化为更好的Toast组件
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 2000);
+    }
+    
+    // ========== 页面跳转 ==========
+    function goToStore(storeId) {
+      window.location.href = `store_detail.html?id=${storeId}`;
+    }
+    
+    function goToProduct(productId) {
+      // 跳转到商品详情页（如果存在）
+      window.location.href = `../product.html?id=${productId}`;
+    }
+    
+    // ========== 页面初始化 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedRole = getCurrentRole();
+      
+      // 更新用户名显示
+      updateUserName();
+      
+      // 监听角色变化（如果页面有角色切换功能）
+      const roleSelector = document.getElementById('roleSelector');
+      if (roleSelector) {
+        roleSelector.value = savedRole;
+        updateRoleHint(savedRole);
+      }
+      
+      loadStoreList();
+    });
+  </script>
+  
+</body>
+</html>

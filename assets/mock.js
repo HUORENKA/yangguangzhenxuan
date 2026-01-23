@@ -162,7 +162,246 @@ function formatNumber(num) {
   return num.toLocaleString('zh-CN');
 }
 
+// ========== 店铺列表数据 ==========
+const storeListData = {
+  keyword: '', // 当前搜索关键词
+  total: 10, // 店铺总数
+  stores: []
+};
+
+// ========== 店铺详情数据 ==========
+const storeDetailData = {
+  id: '',
+  name: '',
+  logo: '',
+  description: '',
+  productCount: 0,
+  followerCount: 0,
+  openTime: '',
+  isFollowed: false,
+  categories: [],
+  products: []
+};
+
+// 初始化店铺列表数据（10个店铺，每个5个推荐商品）
+function initStoreListData(keyword = '') {
+  const storeNames = [
+    '迎瑞手机专营店',
+    '京浩手机专营店',
+    '华为礼象专卖店',
+    '艾派客手机配件旗舰店',
+    '荣耀官方旗舰店',
+    '小米生态链专营店',
+    '苹果授权经销商',
+    'OPPO官方旗舰店',
+    'vivo品牌专营店',
+    '一加手机官方店'
+  ];
+  
+  const descriptions = [
+    '专业销售华为、荣耀等品牌手机，正品保证，全国联保，顺丰发货',
+    '京东自营品质，正品保障，7天无理由退货，24小时发货',
+    '华为官方授权店铺，原装正品，全国联保，售后无忧',
+    '专业手机配件供应商，保护壳、贴膜、充电器等配件齐全',
+    '荣耀官方旗舰店，新品首发，官方正品，全国联保',
+    '小米生态链产品专营，智能家居、手机配件一站式采购',
+    '苹果授权经销商，正品保证，全国联保，支持分期',
+    'OPPO官方旗舰店，新品首发，官方正品，全国联保',
+    'vivo品牌专营店，正品保证，全国联保，快速发货',
+    '一加手机官方店，极速性能，官方正品，全国联保'
+  ];
+  
+  const productImages = [
+    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=200&fit=crop',
+    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=200&fit=crop',
+    'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300&h=200&fit=crop',
+    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=200&fit=crop',
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=200&fit=crop'
+  ];
+  
+  const productNames = [
+    '华为Mate80 Pro Max 5G手机',
+    '荣耀WIN RT 游戏手机',
+    'iPhone 17 Pro Max',
+    '小米15 Ultra 旗舰手机',
+    'OPPO Find X8 Pro',
+    'vivo X200 Pro',
+    '一加13 Pro',
+    '华为Pura 80 Pro',
+    '荣耀Magic 8 Pro',
+    '小米14 Pro'
+  ];
+  
+  storeListData.keyword = keyword;
+  storeListData.stores = storeNames.map((name, index) => {
+    const productCount = Math.floor(Math.random() * 200) + 200;
+    const followerCount = Math.floor(Math.random() * 2000) + 500;
+    const openTime = `202${Math.floor(Math.random() * 4)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`;
+    
+    // 生成5个推荐商品
+    const recommendedProducts = Array.from({ length: 5 }).map((_, i) => ({
+      id: `prod_${index}_${i}`,
+      name: productNames[(index * 5 + i) % productNames.length] + ` ${12 + i * 4}GB+${256 + i * 128}GB`,
+      image: productImages[i % productImages.length],
+      price: Math.floor(Math.random() * 5000) + 3000
+    }));
+    
+    return {
+      id: `store_${String(index + 1).padStart(3, '0')}`,
+      name: name,
+      logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop',
+      description: descriptions[index],
+      productCount: productCount,
+      followerCount: followerCount,
+      openTime: openTime,
+      isFollowed: Math.random() > 0.7, // 30%概率已关注
+      recommendedProducts: recommendedProducts
+    };
+  });
+  
+  return storeListData;
+}
+
+// 初始化店铺详情数据（50个商品）
+function initStoreDetailData(storeId) {
+  // 如果 storeListData 还没有初始化，先初始化它
+  if (!storeListData.stores || storeListData.stores.length === 0) {
+    initStoreListData('');
+  }
+  
+  // 查找店铺，如果找不到则使用第一个店铺
+  let store = storeListData.stores.find(s => s.id === storeId);
+  if (!store && storeListData.stores.length > 0) {
+    store = storeListData.stores[0];
+  }
+  
+  // 如果还是找不到店铺，创建一个默认店铺
+  if (!store) {
+    store = {
+      id: storeId || 'store_001',
+      name: '迎瑞手机专营店',
+      logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop',
+      description: '专业销售华为、荣耀等品牌手机，正品保证，全国联保，顺丰发货',
+      productCount: 324,
+      followerCount: 1250,
+      openTime: '2024-01-15',
+      isFollowed: false
+    };
+  }
+  
+  // 分类数据（两级）
+  const categories = [
+    {
+      id: 'cat_all',
+      name: '全部',
+      level: 1,
+      children: []
+    },
+    {
+      id: 'cat_001',
+      name: '智能手机',
+      level: 1,
+      children: [
+        { id: 'cat_001_001', name: '华为手机', level: 2 },
+        { id: 'cat_001_002', name: '荣耀手机', level: 2 },
+        { id: 'cat_001_003', name: '苹果手机', level: 2 }
+      ]
+    },
+    {
+      id: 'cat_002',
+      name: '手机配件',
+      level: 1,
+      children: [
+        { id: 'cat_002_001', name: '保护壳', level: 2 },
+        { id: 'cat_002_002', name: '贴膜', level: 2 },
+        { id: 'cat_002_003', name: '充电器', level: 2 }
+      ]
+    },
+    {
+      id: 'cat_003',
+      name: '智能设备',
+      level: 1,
+      children: [
+        { id: 'cat_003_001', name: '智能手表', level: 2 },
+        { id: 'cat_003_002', name: '无线耳机', level: 2 }
+      ]
+    }
+  ];
+  
+  // 生成50个商品
+  const productImages = [
+    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop',
+    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop'
+  ];
+  
+  const productNames = [
+    '华为Mate80 Pro Max 5G手机 12GB+256GB',
+    '荣耀WIN RT 游戏手机 16GB+512GB',
+    'iPhone 17 Pro Max 256GB',
+    '小米15 Ultra 旗舰手机 12GB+256GB',
+    'OPPO Find X8 Pro 16GB+512GB',
+    'vivo X200 Pro 12GB+256GB',
+    '一加13 Pro 16GB+512GB',
+    '华为Pura 80 Pro 12GB+256GB',
+    '荣耀Magic 8 Pro 16GB+512GB',
+    '小米14 Pro 12GB+256GB'
+  ];
+  
+  const shippingOptions = [
+    '顺丰当天发 快至次日达',
+    '24小时发货 快至次日达',
+    '现货速发 快至次日达',
+    '顺丰当日发 快至次日达'
+  ];
+  
+  const products = Array.from({ length: 50 }).map((_, i) => {
+    const categoryIndex = Math.floor(i / 12);
+    const category = categories[categoryIndex + 1] || categories[1];
+    const subCategory = category.children[Math.floor(Math.random() * category.children.length)];
+    
+    return {
+      id: `prod_${store.id}_${i}`,
+      name: productNames[i % productNames.length],
+      image: productImages[i % productImages.length],
+      price: Math.floor(Math.random() * 5000) + 3000,
+      shipping: shippingOptions[i % shippingOptions.length],
+      categoryId: subCategory ? subCategory.id : 'cat_all'
+    };
+  });
+  
+  storeDetailData.id = store.id;
+  storeDetailData.name = store.name;
+  storeDetailData.logo = store.logo;
+  storeDetailData.description = store.description + '。我们致力于为消费者提供最优质的产品和服务，正品保证，全国联保。';
+  storeDetailData.productCount = store.productCount;
+  storeDetailData.followerCount = store.followerCount;
+  storeDetailData.openTime = store.openTime;
+  storeDetailData.isFollowed = store.isFollowed;
+  storeDetailData.categories = categories;
+  storeDetailData.products = products;
+  
+  return storeDetailData;
+}
+
+// 检查用户是否登录
+function isLoggedIn() {
+  const role = localStorage.getItem('role');
+  return role && role !== 'guest';
+}
+
 // 导出数据（供页面使用）
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { dashboardData, formatCurrency, formatNumber };
+  module.exports = { 
+    dashboardData, 
+    formatCurrency, 
+    formatNumber,
+    storeListData,
+    storeDetailData,
+    initStoreListData,
+    initStoreDetailData,
+    isLoggedIn
+  };
 }

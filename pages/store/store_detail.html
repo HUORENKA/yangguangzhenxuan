@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>店铺详情 | 阳光优采</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="../../assets/custom.css">
+  
+  <!-- Mock 数据 -->
+  <script src="../../assets/mock.js"></script>
+  
+  <style>
+    /* Tailwind 配置扩展 */
+    @layer utilities {
+      .text-primary { color: #E2231A; }
+      .bg-primary { background-color: #E2231A; }
+      .border-primary { border-color: #E2231A; }
+    }
+    
+    /* 顶部导航栏 */
+    .top-navbar {
+      background: linear-gradient(135deg, #E2231A 0%, #c01e16 100%);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* 搜索框样式 */
+    .search-input {
+      border: 2px solid #E2231A;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: #E2231A;
+      box-shadow: 0 0 0 3px rgba(226, 35, 26, 0.1);
+    }
+    
+    /* 商品卡片样式 */
+    .product-card {
+      transition: all 0.3s ease;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      border-color: #E2231A;
+    }
+    
+    .product-card:hover .product-img {
+      transform: scale(1.05);
+    }
+    
+    /* 商品图片容器 */
+    .product-img-wrapper {
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 4px 4px 0 0;
+    }
+    
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    /* 分类导航样式 */
+    .category-nav {
+      max-height: calc(100vh - 300px);
+      overflow-y: auto;
+    }
+    
+    .category-item {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .category-item:hover {
+      background-color: #f8fafc;
+    }
+    
+    .category-item.active {
+      background-color: rgba(226, 35, 26, 0.1);
+      border-left: 3px solid #E2231A;
+      color: #E2231A;
+      font-weight: 600;
+    }
+    
+    .category-item.level-1 {
+      padding: 12px 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .category-item.level-2 {
+      padding: 8px 16px 8px 40px;
+      font-size: 14px;
+    }
+    
+    .category-children {
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+      overflow: hidden;
+      max-height: 1000px; /* 设置一个足够大的值，确保能容纳所有子分类 */
+      opacity: 1;
+    }
+    
+    .category-children.collapsed {
+      max-height: 0;
+      opacity: 0;
+    }
+    
+    .category-toggle {
+      font-size: 12px;
+      color: #6b7280;
+      transition: transform 0.3s ease;
+    }
+    
+    .category-toggle.expanded {
+      transform: rotate(90deg);
+    }
+    
+    /* 关注按钮动画 */
+    @keyframes followAnimation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    .follow-animation {
+      animation: followAnimation 0.3s ease;
+    }
+    
+    /* 滚动条美化 */
+    .category-nav::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .category-nav::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    
+    .category-nav::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    
+    .category-nav::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  
+  <!-- 顶部导航栏 -->
+  <div class="top-navbar text-white">
+    <div class="max-w-7xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between">
+        <!-- 左端：平台名称 -->
+        <div class="flex items-center gap-3">
+          <div class="text-2xl font-bold">阳光优采</div>
+        </div>
+        
+        <!-- 中部：搜索框 -->
+        <div class="flex-1 max-w-2xl mx-8">
+          <div class="flex items-center">
+            <input 
+              type="text" 
+              id="topSearchInput"
+              placeholder="搜索店铺内商品..." 
+              class="flex-1 px-4 py-2 rounded-l-lg text-gray-900 search-input"
+              onkeypress="handleTopSearchKeyPress(event)"
+            >
+            <button id="btnSearchStore" onclick="switchSearchScope('store')" class="px-4 py-2 bg-pink-100 hover:bg-pink-200 transition-all font-semibold border-l-0 border-r border-t border-b" style="color: #E2231A; border-color: #E2231A;">
+              搜本店
+            </button>
+            <button id="btnSearchAll" onclick="switchSearchScope('all')" class="px-4 py-2 bg-primary hover:bg-opacity-90 transition-all font-semibold rounded-r-lg text-white border-l-0 border-t border-b border-r" style="border-color: #E2231A;">
+              搜全站
+            </button>
+          </div>
+        </div>
+        
+        <!-- 右端：用户名和角色切换 -->
+        <div class="flex items-center gap-3">
+          <div class="text-sm" id="userName">访客</div>
+          <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+            <i class="fas fa-user text-sm"></i>
+          </div>
+          <!-- 角色切换 -->
+          <select 
+            id="roleSelector" 
+            class="px-3 py-1.5 border border-white border-opacity-30 rounded text-sm bg-white bg-opacity-20 text-white hover:bg-opacity-30 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-all"
+            onchange="switchRole(this.value)"
+            style="color: white;"
+          >
+            <option value="guest" style="color: #000;">访客</option>
+            <option value="buyer-user" style="color: #000;">普通采购用户</option>
+            <option value="buyer" style="color: #000;">采购专员</option>
+            <option value="supplier" style="color: #000;">供应商</option>
+            <option value="supplier-admin" style="color: #000;">供应商管理员</option>
+            <option value="admin" style="color: #000;">平台管理员</option>
+            <option value="super-admin" style="color: #000;">超级管理员</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    
+    <!-- 店铺头部信息 -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <div class="flex items-start gap-6">
+        <!-- 店铺Logo -->
+        <div class="flex-shrink-0">
+          <img id="storeLogo" src="" alt="" 
+               class="w-32 h-32 rounded-lg object-cover border border-gray-200"
+               onerror="this.src='https://via.placeholder.com/300x300?text=店铺Logo'">
+        </div>
+        
+        <!-- 店铺信息 -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h2 id="storeName" class="text-2xl font-bold text-gray-900 mb-2"></h2>
+              <p id="storeDescription" class="text-base text-gray-600 mb-4 line-clamp-3"></p>
+            </div>
+            <!-- 关注按钮 -->
+            <div class="flex-shrink-0">
+              <button id="followBtn" onclick="toggleFollow()" class="follow-btn px-6 py-2 rounded-lg text-sm font-medium transition-all">
+                <i class="fas fa-plus mr-1"></i>
+                关注
+              </button>
+            </div>
+          </div>
+          
+          <!-- 数据指标 -->
+          <div class="flex items-center gap-6 text-base text-gray-600">
+            <span><i class="fas fa-box mr-1" style="color: #3b82f6;"></i>商品数：<span id="productCount" class="font-semibold text-gray-900">0</span></span>
+            <span><i class="fas fa-heart mr-1" style="color: #E2231A;"></i>关注数：<span id="followerCount" class="font-semibold text-gray-900">0</span></span>
+            <span><i class="fas fa-calendar mr-1" style="color: #10b981;"></i>开店时间：<span id="openTime" class="font-semibold text-gray-900">-</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 主要内容区 -->
+    <div class="flex gap-6">
+      <!-- 左侧分类导航 -->
+      <div class="w-64 flex-shrink-0">
+        <div class="bg-white rounded-lg shadow-sm p-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">商品分类</h3>
+          <div class="category-nav" id="categoryNav">
+            <!-- 分类将通过 JavaScript 动态生成 -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- 右侧商品列表 -->
+      <div class="flex-1">
+        <div class="bg-white rounded-lg shadow-sm p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">商品列表</h3>
+            <span class="text-sm text-gray-500" id="productListInfo">共 <span id="productCountDisplay">0</span> 个商品</span>
+          </div>
+          
+          <!-- 商品网格 -->
+          <div class="grid grid-cols-4 gap-4" id="productGrid">
+            <!-- 商品卡片将通过 JavaScript 动态生成 -->
+          </div>
+          
+          <!-- 分页控件 -->
+          <div class="mt-6 flex items-center justify-center gap-2" id="pagination">
+            <!-- 分页将通过 JavaScript 动态生成 -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <script>
+    // ========== 全局变量 ==========
+    let storeData = null;
+    let currentCategoryId = 'cat_all';
+    let currentSearchKeyword = '';
+    let currentPage = 1;
+    const pageSize = 20;
+    let searchScope = 'store'; // 'store' | 'all'
+    let categoryCollapsedState = {}; // 记录分类的收起/展开状态
+    
+    // ========== 角色相关 ==========
+    const roleNameMap = {
+      'guest': '访客',
+      'buyer-user': '普通采购用户',
+      'buyer': '采购专员',
+      'supplier': '供应商',
+      'supplier-admin': '供应商管理员',
+      'admin': '平台管理员',
+      'super-admin': '超级管理员'
+    };
+    
+    const roleHintMap = {
+      'guest': '访客仅可浏览商品和公告',
+      'buyer-user': '普通采购用户可下单、查看订单和售后',
+      'buyer': '采购专员可审批采购单、跟进订单和售后',
+      'supplier': '供应商可管理订单、售后和合同',
+      'supplier-admin': '供应商管理员可管理分站推荐内容',
+      'admin': '平台管理员可管理运营数据和审核',
+      'super-admin': '超级管理员拥有所有权限'
+    };
+    
+    function getCurrentRole() {
+      return localStorage.getItem('role') || 'guest';
+    }
+    
+    function switchRole(newRole) {
+      localStorage.setItem('role', newRole);
+      updateRoleHint(newRole);
+      updateFollowButton();
+    }
+    
+    function updateRoleHint(role) {
+      const hintElement = document.getElementById('roleHint');
+      if (hintElement) {
+        hintElement.textContent = roleHintMap[role] || '';
+      }
+    }
+    
+    // ========== 更新用户名显示 ==========
+    function updateUserName() {
+      const role = getCurrentRole();
+      const userNameElement = document.getElementById('userName');
+      if (userNameElement) {
+        const roleName = roleNameMap[role] || '访客';
+        userNameElement.textContent = role === 'guest' ? '访客' : `用户 (${roleName})`;
+      }
+    }
+    
+    // ========== 顶部搜索功能 ==========
+    function handleTopSearch() {
+      const keyword = document.getElementById('topSearchInput').value.trim();
+      currentSearchKeyword = keyword;
+      currentPage = 1;
+      renderProductList();
+    }
+    
+    function handleTopSearchKeyPress(event) {
+      if (event.key === 'Enter') {
+        handleTopSearch();
+      }
+    }
+    
+    // ========== 数据加载 ==========
+    function loadStoreDetail() {
+      // 从URL获取店铺ID
+      const urlParams = new URLSearchParams(window.location.search);
+      const storeId = urlParams.get('id') || 'store_001';
+      
+      // 初始化数据
+      storeData = initStoreDetailData(storeId);
+      
+      // 初始化分类收起状态（默认全部展开）
+      if (storeData && storeData.categories) {
+        storeData.categories.forEach(category => {
+          if (categoryCollapsedState[category.id] === undefined) {
+            categoryCollapsedState[category.id] = false; // false 表示展开
+          }
+        });
+      }
+      
+      // 渲染店铺信息
+      renderStoreInfo();
+      
+      // 渲染分类导航
+      renderCategoryNav();
+      
+      // 渲染商品列表
+      renderProductList();
+      
+      // 初始化搜索按钮状态
+      switchSearchScope('store');
+    }
+    
+    // ========== 渲染店铺信息 ==========
+    function renderStoreInfo() {
+      if (!storeData) return;
+      
+      document.getElementById('storeLogo').src = storeData.logo;
+      document.getElementById('storeName').textContent = storeData.name;
+      document.getElementById('storeDescription').textContent = storeData.description;
+      document.getElementById('productCount').textContent = storeData.productCount;
+      document.getElementById('followerCount').textContent = formatNumber(storeData.followerCount);
+      document.getElementById('openTime').textContent = storeData.openTime;
+      
+      updateFollowButton();
+    }
+    
+    // ========== 更新关注按钮 ==========
+    function updateFollowButton() {
+      const role = getCurrentRole();
+      const isLoggedIn = role !== 'guest';
+      const btn = document.getElementById('followBtn');
+      
+      if (!storeData || !btn) return;
+      
+      if (!isLoggedIn) {
+        btn.innerHTML = '<i class="fas fa-lock mr-1"></i>登录后关注';
+        btn.className = 'follow-btn px-6 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all';
+        btn.onclick = showLoginTip;
+      } else {
+        btn.innerHTML = storeData.isFollowed 
+          ? '<i class="fas fa-check mr-1"></i>已关注'
+          : '<i class="fas fa-plus mr-1"></i>关注';
+        btn.className = storeData.isFollowed
+          ? 'follow-btn px-6 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all'
+          : 'follow-btn px-6 py-2 rounded-lg text-sm font-medium bg-primary text-white hover:bg-opacity-90 transition-all';
+        btn.onclick = toggleFollow;
+      }
+    }
+    
+    // ========== 关注功能 ==========
+    function toggleFollow() {
+      const role = getCurrentRole();
+      if (role === 'guest') {
+        showLoginTip();
+        return;
+      }
+      
+      if (!storeData) return;
+      
+      // 切换关注状态
+      storeData.isFollowed = !storeData.isFollowed;
+      
+      // 更新关注数
+      if (storeData.isFollowed) {
+        storeData.followerCount++;
+      } else {
+        storeData.followerCount = Math.max(0, storeData.followerCount - 1);
+      }
+      
+      // 添加动画效果
+      const btn = document.getElementById('followBtn');
+      btn.classList.add('follow-animation');
+      setTimeout(() => btn.classList.remove('follow-animation'), 300);
+      
+      // 更新按钮
+      updateFollowButton();
+      
+      // 更新显示
+      document.getElementById('followerCount').textContent = formatNumber(storeData.followerCount);
+      
+      // 提示
+      const message = storeData.isFollowed ? '已关注该店铺' : '已取消关注';
+      showToast(message);
+    }
+    
+    function showLoginTip() {
+      alert('请先登录后再关注店铺');
+    }
+    
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 2000);
+    }
+    
+    // ========== 渲染分类导航 ==========
+    function renderCategoryNav() {
+      if (!storeData || !storeData.categories) return;
+      
+      const container = document.getElementById('categoryNav');
+      let html = '';
+      
+      // 全部商品
+      const isAllActive = currentCategoryId === 'cat_all';
+      html += `
+        <div class="category-item level-1 ${isAllActive ? 'active' : ''}" onclick="selectCategory('cat_all')">
+          <span>全部商品</span>
+        </div>
+      `;
+      
+      // 过滤掉"全部"或"全部商品"分类，避免重复
+      const filteredCategories = storeData.categories.filter(category => {
+        const name = category.name || '';
+        return name !== '全部' && name !== '全部商品';
+      });
+      
+      filteredCategories.forEach(category => {
+        const hasChildren = category.children && category.children.length > 0;
+        // 获取收起状态，默认为 false（展开）
+        const isCollapsed = categoryCollapsedState[category.id] === true;
+        const isActive = currentCategoryId === category.id;
+        
+        // 一级分类
+        html += `
+          <div class="category-item level-1 ${isActive ? 'active' : ''}">
+            <span onclick="selectCategory('${category.id}')" style="flex: 1; cursor: pointer;">${category.name}</span>
+            ${hasChildren ? `<i class="fas fa-chevron-right category-toggle ${!isCollapsed ? 'expanded' : ''}" onclick="toggleCategory('${category.id}', event)" style="cursor: pointer; margin-left: 8px;"></i>` : ''}
+          </div>
+        `;
+        
+        // 二级分类
+        if (hasChildren) {
+          html += `<div class="category-children ${isCollapsed ? 'collapsed' : ''}">`;
+          category.children.forEach(subCategory => {
+            const isSubActive = currentCategoryId === subCategory.id;
+            html += `
+              <div class="category-item level-2 ${isSubActive ? 'active' : ''}" onclick="selectCategory('${subCategory.id}')">
+                ${subCategory.name}
+              </div>
+            `;
+          });
+          html += `</div>`;
+        }
+      });
+      
+      container.innerHTML = html;
+    }
+    
+    // ========== 切换分类收起/展开 ==========
+    function toggleCategory(categoryId, event) {
+      if (event) {
+        event.stopPropagation(); // 阻止事件冒泡
+      }
+      // 切换状态：false=展开，true=收起
+      categoryCollapsedState[categoryId] = !categoryCollapsedState[categoryId];
+      renderCategoryNav();
+    }
+    
+    // ========== 选择分类 ==========
+    function selectCategory(categoryId) {
+      currentCategoryId = categoryId;
+      currentPage = 1;
+      renderCategoryNav();
+      renderProductList();
+    }
+    
+    // ========== 渲染商品列表 ==========
+    function renderProductList() {
+      if (!storeData || !storeData.products) return;
+      
+      // 筛选商品
+      let filteredProducts = storeData.products;
+      
+      // 按分类筛选
+      if (currentCategoryId !== 'cat_all') {
+        filteredProducts = filteredProducts.filter(p => p.categoryId === currentCategoryId);
+      }
+      
+      // 按关键词搜索
+      if (currentSearchKeyword) {
+        const keyword = currentSearchKeyword.toLowerCase();
+        filteredProducts = filteredProducts.filter(p => 
+          p.name.toLowerCase().includes(keyword)
+        );
+      }
+      
+      // 分页
+      const total = filteredProducts.length;
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const pageProducts = filteredProducts.slice(start, end);
+      const totalPages = Math.ceil(total / pageSize);
+      
+      // 更新商品数量显示
+      document.getElementById('productCountDisplay').textContent = total;
+      
+      // 渲染商品卡片
+      const container = document.getElementById('productGrid');
+      container.innerHTML = pageProducts.map(product => `
+        <div class="product-card bg-white rounded-lg overflow-hidden cursor-pointer" onclick="goToProduct('${product.id}')">
+          <div class="product-img-wrapper">
+            <img src="${product.image}" alt="${product.name}" class="product-img" onerror="this.src='https://via.placeholder.com/400x300?text=商品图片'">
+          </div>
+          <div class="p-3">
+            <p class="text-sm text-gray-900 line-clamp-2 mb-2 min-h-[40px]">${product.name}</p>
+            <p class="text-lg font-bold text-primary mb-1">¥${product.price.toLocaleString()}</p>
+            <p class="text-xs text-gray-500">${product.shipping}</p>
+          </div>
+        </div>
+      `).join('');
+      
+      // 渲染分页
+      renderPagination(totalPages);
+    }
+    
+    // ========== 渲染分页 ==========
+    function renderPagination(totalPages) {
+      const container = document.getElementById('pagination');
+      
+      if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      let html = '';
+      
+      // 上一页
+      html += `
+        <button onclick="changePage(${currentPage - 1})" 
+                class="px-3 py-1 border border-gray-300 rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}"
+                ${currentPage === 1 ? 'disabled' : ''}>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      `;
+      
+      // 页码
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+          html += `
+            <button onclick="changePage(${i})" 
+                    class="px-3 py-1 border rounded ${i === currentPage ? 'bg-red-100 text-primary border-primary' : 'border-gray-300 hover:bg-gray-100'}">
+              ${i}
+            </button>
+          `;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+          html += `<span class="px-2 text-gray-500">...</span>`;
+        }
+      }
+      
+      // 下一页
+      html += `
+        <button onclick="changePage(${currentPage + 1})" 
+                class="px-3 py-1 border border-gray-300 rounded ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}"
+                ${currentPage === totalPages ? 'disabled' : ''}>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      `;
+      
+      container.innerHTML = html;
+    }
+    
+    // ========== 切换页码 ==========
+    function changePage(page) {
+      const total = getFilteredProductCount();
+      const totalPages = Math.ceil(total / pageSize);
+      
+      if (page < 1 || page > totalPages) return;
+      
+      currentPage = page;
+      renderProductList();
+      
+      // 滚动到顶部
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // ========== 获取筛选后的商品数量 ==========
+    function getFilteredProductCount() {
+      if (!storeData || !storeData.products) return 0;
+      
+      let filtered = storeData.products;
+      
+      if (currentCategoryId !== 'cat_all') {
+        filtered = filtered.filter(p => p.categoryId === currentCategoryId);
+      }
+      
+      if (currentSearchKeyword) {
+        const keyword = currentSearchKeyword.toLowerCase();
+        filtered = filtered.filter(p => p.name.toLowerCase().includes(keyword));
+      }
+      
+      return filtered.length;
+    }
+    
+    // ========== 搜索功能 ==========
+    function handleSearch() {
+      const keyword = document.getElementById('topSearchInput').value.trim();
+      currentSearchKeyword = keyword;
+      currentPage = 1;
+      renderProductList();
+    }
+    
+    function handleSearchKeyPress(event) {
+      if (event.key === 'Enter') {
+        handleSearch();
+      }
+    }
+    
+    function handleTopSearchKeyPress(event) {
+      if (event.key === 'Enter') {
+        handleTopSearch();
+      }
+    }
+    
+    // ========== 切换搜索范围 ==========
+    function switchSearchScope(scope) {
+      searchScope = scope;
+      
+      const btnStore = document.getElementById('btnSearchStore');
+      const btnAll = document.getElementById('btnSearchAll');
+      
+      if (scope === 'store') {
+        // 搜本店：在当前店铺内搜索
+        btnStore.className = 'px-4 py-2 bg-pink-100 hover:bg-pink-200 transition-all font-semibold border-l-0 border-r border-t border-b';
+        btnStore.style.color = '#E2231A';
+        btnStore.style.borderColor = '#E2231A';
+        
+        btnAll.className = 'px-4 py-2 bg-white hover:bg-gray-100 transition-all font-semibold rounded-r-lg border-l-0 border-t border-b border-r';
+        btnAll.style.color = '#E2231A';
+        btnAll.style.borderColor = '#E2231A';
+        
+        // 执行搜索
+        handleTopSearch();
+      } else {
+        // 搜全站：跳转到分类页
+        btnStore.className = 'px-4 py-2 bg-white hover:bg-gray-100 transition-all font-semibold border-l-0 border-r border-t border-b';
+        btnStore.style.color = '#E2231A';
+        btnStore.style.borderColor = '#E2231A';
+        
+        btnAll.className = 'px-4 py-2 bg-primary hover:bg-opacity-90 transition-all font-semibold rounded-r-lg text-white border-l-0 border-t border-b border-r';
+        btnAll.style.borderColor = '#E2231A';
+        
+        const keyword = document.getElementById('topSearchInput').value.trim();
+        window.location.href = `../category.html?keyword=${encodeURIComponent(keyword)}`;
+      }
+    }
+    
+    // ========== 页面跳转 ==========
+    function goToProduct(productId) {
+      window.location.href = `../product.html?id=${productId}`;
+    }
+    
+    // ========== 页面初始化 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedRole = getCurrentRole();
+      const roleSelector = document.getElementById('roleSelector');
+      if (roleSelector) {
+        roleSelector.value = savedRole;
+      }
+      
+      // 更新用户名显示
+      updateUserName();
+      
+      loadStoreDetail();
+    });
+  </script>
+  
+</body>
+</html>

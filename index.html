@@ -375,8 +375,8 @@
           <span class="badge badge-count">待开发</span>
         </div>
         
-        <!-- 前台页面 -->
-        <div class="menu-group-title">前台页面</div>
+        <!-- 阳光优采商城 -->
+        <div class="menu-group-title">阳光优采商城</div>
         <div class="menu-item" onclick="loadPage('home', this)" style="opacity: 0.5; cursor: not-allowed;">
           <i class="fas fa-home"></i>
           <span>首页</span>
@@ -396,6 +396,16 @@
           <i class="fas fa-shopping-cart"></i>
           <span>购物车</span>
           <span class="badge badge-count">待开发</span>
+        </div>
+        <div class="menu-item" onclick="loadPage('store_list', this)">
+          <i class="fas fa-store"></i>
+          <span>店铺列表</span>
+          <span class="badge badge-new">NEW</span>
+        </div>
+        <div class="menu-item" onclick="loadPage('store_detail', this)">
+          <i class="fas fa-store-alt"></i>
+          <span>店铺详情</span>
+          <span class="badge badge-new">NEW</span>
         </div>
         
         <!-- 采购工作台 -->
@@ -548,6 +558,28 @@
             </div>
             <iframe src="./pages/after_sales/after_sales_supplier.html"></iframe>
           </div>
+
+          <!-- 卡片6：店铺列表 -->
+          <div class="iframe-card">
+            <div class="iframe-card-header">
+              <span><i class="fas fa-store"></i> 店铺列表</span>
+              <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" onclick="focusPage('store_list')">
+                <i class="fas fa-expand"></i> 聚焦查看
+              </button>
+            </div>
+            <iframe src="./pages/store/store_list.html"></iframe>
+          </div>
+
+          <!-- 卡片7：店铺详情 -->
+          <div class="iframe-card">
+            <div class="iframe-card-header">
+              <span><i class="fas fa-store-alt"></i> 店铺详情</span>
+              <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" onclick="focusPage('store_detail')">
+                <i class="fas fa-expand"></i> 聚焦查看
+              </button>
+            </div>
+            <iframe src="./pages/store/store_detail.html"></iframe>
+          </div>
           
           <!-- 占位卡片：待开发页面 -->
           <div class="iframe-card" style="opacity: 0.6;">
@@ -600,6 +632,18 @@
         path: './pages/home.html',
         roles: ['admin', 'buyer', 'buyer-user', 'supplier', 'guest'],
         status: 'pending'
+      },
+      store_list: {
+        title: '店铺列表',
+        path: './pages/store/store_list.html',
+        roles: ['admin', 'buyer', 'buyer-user', 'supplier', 'guest'],
+        status: 'ready'
+      },
+      store_detail: {
+        title: '店铺详情',
+        path: './pages/store/store_detail.html',
+        roles: ['admin', 'buyer', 'buyer-user', 'supplier', 'guest'],
+        status: 'ready'
       },
       workbench_home: {
         title: '工作台首页',
