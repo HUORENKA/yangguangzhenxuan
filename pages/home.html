@@ -8,6 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../assets/custom.css">
+  <script src="../assets/mock.js"></script>
   
   <style>
     :root { --color-primary: #E2231A; --color-primary-hover: #c01e16; }
@@ -27,6 +28,7 @@
     
     .reco-panel { background: #4a5568; color: #fff; }
     .reco-panel.sec2 { background: #6b5b4f; }
+    .reco-panel.sec3 { background: #4a6b5c; }
     .tab-2nd { transition: all 0.2s; }
     .tab-2nd.active { background: #E2231A; color: #fff; }
     .tab-2nd:not(.active) { background: #f3f4f6; color: #374151; }
@@ -38,6 +40,63 @@
     .float-item i { font-size: 18px; }
     .float-item span { font-size: 11px; line-height: 1.2; }
     
+    .tab-btn { height: 44px; padding: 0 16px; font-size: 14px; color: #4b5563; border-bottom: 2px solid transparent; display: inline-flex; align-items: center; }
+    .tab-btn.active { color: #E2231A; border-color: #E2231A; font-weight: 600; }
+    .tab-btn:hover { color: #E2231A; }
+
+    .core-display { position: relative; align-items: stretch; }
+    .category-panel { width: 220px; height: 450px; display: flex; flex-direction: column; flex-shrink: 0; }
+    .category-list { flex: 1; overflow-y: auto; overflow-x: hidden; min-height: 0; }
+    .category-list .cat-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .mega-panel { position: absolute; top: 0; left: 220px; right: 0; height: 450px; background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 400; display: flex; gap: 24px; padding: 16px; overflow: hidden; }
+    .mega-left { flex: 1; min-width: 0; overflow-y: auto; }
+    .mega-right { width: 280px; border-left: 1px solid #f3f4f6; padding-left: 16px; flex-shrink: 0; display: flex; flex-direction: column; }
+    .mega-hot-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .mega-hot-more { font-size: 12px; color: #E2231A; font-weight: 500; }
+    .mega-hot-more:hover { text-decoration: underline; }
+    .mega-col { margin-bottom: 12px; }
+    .mega-col-title { font-weight: 600; color: #111827; margin-bottom: 6px; }
+    .mega-item { font-size: 13px; color: #4b5563; margin-right: 12px; display: inline-block; }
+    .mega-item:hover { color: #E2231A; }
+    .mega-hot-products { display: flex; flex-direction: column; gap: 10px; }
+    .mega-product-card { display: flex; gap: 10px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; text-decoration: none; color: inherit; }
+    .mega-product-card:hover { border-color: #E2231A; }
+    .mega-product-card img { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; }
+    .mega-product-card .info { flex: 1; min-width: 0; }
+    .mega-product-card .name { font-size: 12px; color: #111827; line-clamp: 2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .mega-product-card .price { font-size: 13px; color: #E2231A; font-weight: 600; margin-top: 4px; }
+
+    .carousel { position: relative; overflow: hidden; border-radius: 10px; background: #f3f4f6; width: 100%; height: 100%; }
+    .carousel-slides { display: flex; transition: transform 0.5s ease; height: 100%; }
+    .carousel-slide { min-width: 100%; height: 100%; position: relative; background-size: cover; background-position: center; }
+    .carousel-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.05) 100%); }
+    .carousel-text { position: absolute; left: 24px; top: 50%; transform: translateY(-50%); color: #fff; max-width: 60%; }
+    .carousel-tag { display: inline-block; padding: 4px 10px; background: rgba(255,255,255,0.2); border-radius: 999px; font-size: 12px; margin-bottom: 8px; }
+    .carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.45); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+    .carousel-arrow.left { left: 44px; }
+    .carousel-arrow.right { right: 44px; }
+    .carousel-dots { position: absolute; bottom: 12px; right: 16px; display: flex; gap: 6px; }
+    .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.6); cursor: pointer; }
+    .carousel-dot.active { background: #E2231A; }
+
+    .supplier-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+    .supplier-card { border: 1px solid #e5e7eb; background: #fff; border-radius: 8px; padding: 0; overflow: hidden; }
+    .supplier-card:hover { border-color: #E2231A; box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+    .supplier-card-img-wrap { position: relative; width: 100%; aspect-ratio: 16/10; overflow: hidden; }
+    .supplier-card-img { width: 100%; height: 100%; object-fit: cover; background: #f3f4f6; display: block; }
+    .supplier-card-overlay { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 12px; background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.45) 70%, transparent 100%); color: #fff; text-align: left; }
+    .supplier-card-name { font-weight: 600; color: #fff; font-size: 13px; margin-bottom: 4px; line-height: 1.3; }
+    .supplier-card-business { font-size: 12px; color: rgba(255,255,255,0.92); line-height: 1.4; }
+
+    .footer-services { background: #3f3f46; color: #fff; }
+    .footer-service-item { display: flex; align-items: center; gap: 12px; }
+    .footer-service-icon { width: 44px; height: 44px; border: 1px solid #E2231A; color: #E2231A; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .footer-service-text { font-size: 16px; }
+    .footer-info { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.15); text-align: center; font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.8; }
+
+    .right-float-panel { position: fixed; right: 90px; top: 50%; transform: translateY(-50%); width: 220px; z-index: 600; }
+
     .search-input:focus { outline: none; border-color: #E2231A; box-shadow: 0 0 0 2px rgba(226,35,26,0.15); }
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   </style>
@@ -94,72 +153,49 @@
     </div>
   </div>
   
-  <!-- ==================== 二级导航 ==================== -->
+  <!-- ==================== Tab 页切换区 ==================== -->
   <div class="bg-white border-b border-gray-200">
     <div class="max-w-[1400px] mx-auto px-4">
-      <div class="flex items-center gap-8 h-11">
-        <a href="home.html" class="text-primary font-semibold border-b-2 border-primary -mb-[1px] pb-3 pt-1">首页</a>
-        <a href="#" class="text-gray-600 hover:text-primary" onclick="return false;">智能匹配</a>
+      <div class="flex items-center gap-4" id="tabNav">
+        <button class="tab-btn active" data-tab="home">首页</button>
+        <button class="tab-btn" data-tab="announce">平台公告</button>
+        <button class="tab-btn" data-tab="witness">阳光见证链</button>
       </div>
     </div>
   </div>
   
-  <!-- ==================== 主内容区（上方：分类+横幅+登录） ==================== -->
+  <!-- ==================== 主内容区 ==================== -->
   <div class="max-w-[1400px] mx-auto px-4 py-4">
-    <div class="flex gap-4">
-      <!-- 左侧：商品分类 -->
-      <aside class="w-52 shrink-0 cat-left rounded-lg overflow-hidden">
-        <a href="#" class="block py-3 px-4 bg-primary text-white text-center font-medium hover:bg-primary/90" onclick="return false;"><i class="fas fa-shopping-bag mr-2"></i>全部商品</a>
-        <nav class="py-2">
-          <a href="#" class="cat-item active block py-2.5 px-4 text-sm border-l-2 border-transparent" data-cat="office" onclick="return false;"><i class="fas fa-print w-5 text-center mr-1 text-gray-500"></i>办公用品、电脑数码</a>
-          <a href="#" class="cat-item block py-2.5 px-4 text-sm" data-cat="safety" onclick="return false;"><i class="fas fa-hard-hat w-5 text-center mr-1 text-gray-500"></i>个人防护、安全防护</a>
-          <a href="#" class="cat-item block py-2.5 px-4 text-sm" onclick="return false;"><i class="fas fa-toolbox w-5 text-center mr-1 text-gray-500"></i>工具耗材、机床数控</a>
-          <a href="#" class="cat-item block py-2.5 px-4 text-sm" onclick="return false;"><i class="fas fa-spray-can w-5 text-center mr-1 text-gray-500"></i>清洁用品、清洁设备</a>
-          <a href="#" class="cat-item block py-2.5 px-4 text-sm" onclick="return false;"><i class="fas fa-bolt w-5 text-center mr-1 text-gray-500"></i>电气工控、工业自动</a>
-          <a href="#" class="cat-item block py-2.5 px-4 text-sm" onclick="return false;"><i class="fas fa-cog w-5 text-center mr-1 text-gray-500"></i>机械流体、紧固密封</a>
-          <a href="#" class="cat-item block py-2.5 px-4 text-sm" onclick="return false;"><i class="fas fa-industry w-5 text-center mr-1 text-gray-500"></i>工业设备、仓储照明</a>
-          <a href="#" class="cat-item block py-2.5 px-4 text-sm" onclick="return false;"><i class="fas fa-ruler-combined w-5 text-center mr-1 text-gray-500"></i>测量检测、仪器仪表</a>
-          <a href="#" class="cat-item block py-2.5 px-4 text-sm" onclick="return false;"><i class="fas fa-wrench w-5 text-center mr-1 text-gray-500"></i>焊接切割、五金农林</a>
-          <a href="#" class="block py-2 px-4 text-xs text-gray-400 hover:text-primary" onclick="return false;"><i class="fas fa-chevron-down mr-1"></i>更多分类</a>
-        </nav>
-      </aside>
-      
-      <!-- 中间：促销横幅 -->
-      <main class="flex-1 min-w-0">
-        <div class="bg-gradient-to-r from-orange-500 via-red-500 to-red-600 rounded-lg p-6 text-white overflow-hidden relative">
-          <div class="relative z-10">
-            <h2 class="text-xl font-bold mb-1">阳光优采平台上线啦！</h2>
-            <p class="text-white/95 text-sm mb-2">依托一物一码体系 · 开启比质比价新模式</p>
-            <div class="flex gap-2 mb-3">
-              <span class="px-3 py-1 bg-white/20 rounded text-xs">精细化</span>
-              <span class="px-3 py-1 bg-white/20 rounded text-xs">一键化</span>
-              <span class="px-3 py-1 bg-white/20 rounded text-xs">智能化</span>
-            </div>
-          </div>
-          <div class="absolute right-4 top-1/2 -translate-y-1/2 opacity-20 text-6xl"><i class="fas fa-boxes"></i></div>
-        </div>
-      </main>
-      
-      <!-- 右侧：登录/注册 -->
-      <aside class="w-56 shrink-0">
-        <div class="bg-white rounded-lg border border-gray-200 p-4">
-          <p class="text-gray-700 mb-3">Hi~欢迎登录平台</p>
-          <div class="flex gap-2">
-            <button type="button" class="flex-1 py-2 bg-primary text-white text-sm rounded hover:bg-primary/90" onclick="showLogin()">登录</button>
-            <button type="button" class="flex-1 py-2 border border-primary text-primary text-sm rounded hover:bg-red-50" onclick="return false;">注册</button>
-          </div>
-          <div class="mt-4 pt-4 border-t border-gray-100 grid grid-cols-3 gap-2 text-center text-xs text-gray-500">
-            <a href="workbench/workbench_home.html" class="hover:text-primary"><i class="fas fa-tachometer-alt block mb-1 text-base"></i>工作台</a>
-            <a href="#" class="hover:text-primary" onclick="return false;"><i class="fas fa-file-alt block mb-1 text-base"></i>平台规则</a>
-            <a href="#" class="hover:text-primary" onclick="return false;"><i class="fas fa-book block mb-1 text-base"></i>采购指南</a>
+    <!-- 首页 Tab 内容 -->
+    <div id="tabContentHome">
+      <!-- 核心展示区：左侧分类 + 右侧轮播 + 悬停浮层 -->
+      <div class="core-display flex gap-4 mb-4" id="coreDisplay">
+        <!-- 左侧商品分类 -->
+        <aside class="category-panel cat-left rounded-lg overflow-hidden">
+          <a href="#" class="block py-3 px-4 bg-primary text-white text-center font-medium hover:bg-primary/90" onclick="return false;"><i class="fas fa-shopping-bag mr-2"></i>全部商品</a>
+          <nav class="category-list py-2" id="categoryList">
+            <!-- 分类列表由 JS 渲染 -->
+          </nav>
+        </aside>
+
+        <!-- 推广轮播页 -->
+        <div class="flex-1 min-w-0">
+          <div class="carousel" id="carousel">
+            <div class="carousel-slides" id="carouselSlides"></div>
+            <div class="carousel-arrow left" id="carouselPrev"><i class="fas fa-chevron-left"></i></div>
+            <div class="carousel-arrow right" id="carouselNext"><i class="fas fa-chevron-right"></i></div>
+            <div class="carousel-dots" id="carouselDots"></div>
           </div>
         </div>
-      </aside>
-    </div>
-  </div>
-  
-  <!-- ==================== 分类推荐区（下方独立区域，全宽） ==================== -->
-  <div class="max-w-[1400px] mx-auto px-4 pb-4">
+
+        <!-- 悬停展开浮层（二级/三级分类 + 热门商品） -->
+        <div class="mega-panel hidden" id="megaPanel">
+          <div class="mega-left" id="megaCategories"></div>
+          <div class="mega-right" id="megaHotProducts"></div>
+        </div>
+      </div>
+
+      <!-- ==================== 分类推荐区 ==================== -->
     <!-- 分类推荐 1：办公用品 电脑数码 -->
     <section class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
       <div class="font-semibold text-gray-900 px-4 py-3 border-b border-gray-100">分类推荐</div>
@@ -188,7 +224,7 @@
     </section>
     
     <!-- 分类推荐 2：个人防护 安全防护 -->
-    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
       <div class="flex">
         <div class="reco-panel sec2 w-56 shrink-0 flex flex-col justify-between p-4">
           <div>
@@ -212,6 +248,88 @@
         </div>
       </div>
     </section>
+
+    <!-- 分类推荐 3：工具耗材 机床数控 -->
+    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div class="flex">
+        <div class="reco-panel sec3 w-56 shrink-0 flex flex-col justify-between p-4">
+          <div>
+            <h3 class="text-lg font-bold text-white mb-2">工具耗材 机床数控</h3>
+            <div class="w-24 h-24 mx-auto my-4 bg-white/10 rounded flex items-center justify-center"><i class="fas fa-wrench text-4xl text-white/90"></i></div>
+          </div>
+          <a href="#" class="block w-full py-2 text-center bg-primary text-white text-sm rounded hover:bg-primary/90" onclick="return false;">查看更多 <i class="fas fa-chevron-right text-xs"></i></a>
+        </div>
+        <div class="flex-1 p-4">
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            <button type="button" class="tab-2nd active px-4 py-2 rounded text-sm" data-block="2" data-tab="all">全部</button>
+            <button type="button" class="tab-2nd px-4 py-2 rounded text-sm" data-block="2" data-tab="manual">手动工具</button>
+            <button type="button" class="tab-2nd px-4 py-2 rounded text-sm" data-block="2" data-tab="electric">电动工具</button>
+            <button type="button" class="tab-2nd px-4 py-2 rounded text-sm" data-block="2" data-tab="machine">机床配件</button>
+            <button type="button" class="tab-2nd px-4 py-2 rounded text-sm" data-block="2" data-tab="measure">测量工具</button>
+            <a href="#" class="ml-auto px-4 py-2 text-primary text-sm font-medium hover:underline" onclick="return false;">查看更多</a>
+          </div>
+          <div class="grid grid-cols-5 gap-3" id="recoProducts2">
+            <!-- 5 个商品卡片由 JS 渲染 -->
+          </div>
+        </div>
+      </div>
+    </section>
+      
+      <!-- ==================== 入驻供应商 ==================== -->
+      <section class="bg-white rounded-lg border border-gray-200 mt-4">
+        <div class="px-4 py-3 text-center font-semibold text-primary text-lg">
+          ———————— 入驻供应商 ————————
+        </div>
+        <div class="p-4">
+          <div class="supplier-grid" id="supplierGrid"></div>
+        </div>
+      </section>
+
+      <!-- ==================== 底部商城信息 ==================== -->
+      <section class="footer-services rounded-lg mt-4 px-6 py-5">
+        <div class="grid grid-cols-5 gap-6" id="footerServices"></div>
+        <div class="footer-info" id="footerInfo">
+          <div>主办单位：中资数据科技有限公司 &nbsp;&nbsp; 技术单位：福建天创信息科技股份有限公司</div>
+          <div>网站备案：闽ICP备2024012345号-1</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 平台公告 Tab 内容 -->
+    <div id="tabContentAnnounce" class="hidden">
+      <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <div class="font-semibold text-gray-900 mb-3">平台公告</div>
+        <ul class="text-sm text-gray-600 space-y-2">
+          <li>• 阳光优采平台隐私政策</li>
+          <li>• 阳光优采平台用户服务协议</li>
+          <li>• 阳光优采平台采购规则说明</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 阳光见证链 Tab 内容 -->
+    <div id="tabContentWitness" class="hidden">
+      <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <div class="font-semibold text-gray-900 mb-3">阳光见证链</div>
+        <div class="text-sm text-gray-600">展示阳光见证链入口与可信溯源说明（占位）。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 右侧悬浮功能区 ==================== -->
+  <div class="right-float-panel no-print" id="rightFloatPanel">
+    <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+      <p class="text-gray-700 mb-3">Hi~欢迎登录平台</p>
+      <div class="flex gap-2">
+        <button type="button" class="flex-1 py-2 bg-primary text-white text-sm rounded hover:bg-primary/90" onclick="hideRightFloatPanel(); showLogin();">登录</button>
+        <button type="button" class="flex-1 py-2 border border-primary text-primary text-sm rounded hover:bg-red-50" onclick="hideRightFloatPanel(); alert('原型演示：注册功能暂未实现'); return false;">注册</button>
+      </div>
+      <div class="mt-4 pt-4 border-t border-gray-100 grid grid-cols-3 gap-2 text-center text-xs text-gray-500">
+        <a href="workbench/workbench_home.html" class="hover:text-primary"><i class="fas fa-tachometer-alt block mb-1 text-base"></i>工作台</a>
+        <a href="#" class="hover:text-primary" onclick="return false;"><i class="fas fa-file-alt block mb-1 text-base"></i>平台规则</a>
+        <a href="#" class="hover:text-primary" onclick="return false;"><i class="fas fa-book block mb-1 text-base"></i>采购指南</a>
+      </div>
+    </div>
   </div>
   
   <!-- ==================== 浮动菜单 ==================== -->
@@ -232,6 +350,213 @@
   </div>
   
   <script>
+    // ---------- 首页数据加载 ----------
+    let homeData = null;
+    function loadHomeData() {
+      if (typeof initHomePageData === 'function') {
+        homeData = initHomePageData();
+      } else {
+        homeData = { tabTabs: [], categories: [], carousel: [], settledSuppliers: [], footerServices: [] };
+      }
+    }
+
+    // ---------- Tab 切换 ----------
+    function switchTab(tabId) {
+      document.querySelectorAll('#tabNav .tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+      document.getElementById('tabContentHome').classList.toggle('hidden', tabId !== 'home');
+      document.getElementById('tabContentAnnounce').classList.toggle('hidden', tabId !== 'announce');
+      document.getElementById('tabContentWitness').classList.toggle('hidden', tabId !== 'witness');
+    }
+
+    function bindTabEvents() {
+      document.querySelectorAll('#tabNav .tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      });
+    }
+
+    // ---------- 左侧分类 & 悬停浮层 ----------
+    let hideTimer = null;
+
+    function renderCategoryList() {
+      const container = document.getElementById('categoryList');
+      if (!container || !homeData) return;
+      container.innerHTML = homeData.categories.map((cat, idx) => `
+        <a href="${cat.link || '#'}" class="cat-item block py-2.5 px-4 text-sm border-l-2 border-transparent ${idx === 0 ? 'active' : ''}" data-index="${idx}" onclick="return false;">
+          <i class="fas ${cat.icon || 'fa-box'} w-5 text-center mr-1 text-gray-500"></i>${cat.name}
+        </a>
+      `).join('');
+
+      container.querySelectorAll('[data-index]').forEach(item => {
+        item.addEventListener('mouseenter', () => showMegaPanel(Number(item.dataset.index)));
+        item.addEventListener('click', (e) => e.preventDefault());
+      });
+      container.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+      container.addEventListener('mouseleave', () => scheduleHideMega());
+    }
+
+    function showMegaPanel(index) {
+      const panel = document.getElementById('megaPanel');
+      if (!panel || !homeData) return;
+      clearTimeout(hideTimer);
+      document.querySelectorAll('#categoryList .cat-item').forEach((el, idx) => {
+        el.classList.toggle('active', idx === index);
+      });
+      renderMegaPanel(homeData.categories[index]);
+      panel.classList.remove('hidden');
+    }
+
+    function scheduleHideMega() {
+      const panel = document.getElementById('megaPanel');
+      if (!panel) return;
+      hideTimer = setTimeout(() => panel.classList.add('hidden'), 180);
+    }
+
+    function renderMegaPanel(category) {
+      const left = document.getElementById('megaCategories');
+      const right = document.getElementById('megaHotProducts');
+      if (!left || !right) return;
+
+      const childCols = (category.children || []).map(child => {
+        const subItems = (Array.isArray(child.children) ? child.children : []).map(name => `<a href="#" class="mega-item" onclick="return false;">${name}</a>`).join('');
+        return `
+          <div class="mega-col">
+            <div class="mega-col-title">${child.name} <span class="text-gray-400">></span></div>
+            <div>${subItems || `<a href="#" class="mega-item" onclick="return false;">查看</a>`}</div>
+          </div>
+        `;
+      }).join('');
+
+      left.innerHTML = childCols || '<div class="text-sm text-gray-500">暂无二级分类</div>';
+
+      const hotProducts = category.hotProducts || [];
+      const productCards = hotProducts.slice(0, 3).map(p => `
+        <a href="${p.link || '#'}" class="mega-product-card" onclick="return false;">
+          <img src="${p.image || ''}" alt="" onerror="this.src='https://placehold.co/56/eee/999?text=+'">
+          <div class="info">
+            <div class="name">${p.name || ''}</div>
+            <div class="price">¥${(p.price != null ? Number(p.price).toFixed(2) : '0.00')}</div>
+          </div>
+        </a>
+      `).join('');
+
+      right.innerHTML = `
+        <div class="mega-hot-header">
+          <span class="font-semibold text-gray-900">热门商品</span>
+          <a href="#" class="mega-hot-more" onclick="return false;">查看更多 <i class="fas fa-chevron-right text-xs"></i></a>
+        </div>
+        <div class="mega-hot-products flex-1 min-h-0 overflow-y-auto">${productCards || '<div class="text-sm text-gray-500">暂无热门商品</div>'}</div>
+        <div class="mt-3 text-xs text-gray-500">在线咨询 · ${category.servicePhone || '400-XXX-XXXX'}</div>
+      `;
+    }
+
+    // ---------- 推广轮播 ----------
+    let carouselIndex = 0;
+    let carouselTimer = null;
+
+    function renderCarousel() {
+      const slidesEl = document.getElementById('carouselSlides');
+      const dotsEl = document.getElementById('carouselDots');
+      if (!slidesEl || !dotsEl || !homeData) return;
+
+      const slides = homeData.carousel || [];
+      if (!slides.length) {
+        slidesEl.innerHTML = `<div class="carousel-slide" style="background-image: none; background: #e5e7eb;">
+          <div class="carousel-text">
+            <div class="text-xl font-bold text-gray-800">推广轮播占位</div>
+            <div class="text-sm text-gray-600">请在 Mock 数据中补充轮播图片与文案</div>
+          </div>
+        </div>`;
+        dotsEl.innerHTML = '';
+        return;
+      }
+      const defaultCarouselImg = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&h=675&fit=crop';
+      slidesEl.innerHTML = slides.map(s => `
+        <div class="carousel-slide" style="background-image: url('${s.image || defaultCarouselImg}');">
+          <div class="carousel-overlay"></div>
+          <div class="carousel-text">
+            ${s.tag ? `<div class="carousel-tag">${s.tag}</div>` : ''}
+            <div class="text-2xl font-bold mb-2">${s.title || ''}</div>
+            <div class="text-sm text-white/90">${s.subTitle || ''}</div>
+          </div>
+        </div>
+      `).join('');
+
+      dotsEl.innerHTML = slides.map((_, i) => `<div class="carousel-dot ${i===0?'active':''}" data-index="${i}"></div>`).join('');
+
+      dotsEl.querySelectorAll('.carousel-dot').forEach(dot => {
+        dot.addEventListener('click', () => goToSlide(Number(dot.dataset.index)));
+      });
+      updateCarousel();
+      startCarouselAuto();
+    }
+
+    function updateCarousel() {
+      const slidesEl = document.getElementById('carouselSlides');
+      const dots = document.querySelectorAll('.carousel-dot');
+      if (!slidesEl) return;
+      slidesEl.style.transform = `translateX(-${carouselIndex * 100}%)`;
+      dots.forEach((d, i) => d.classList.toggle('active', i === carouselIndex));
+    }
+
+    function goToSlide(index) {
+      const slidesCount = (homeData.carousel || []).length;
+      if (!slidesCount) return;
+      carouselIndex = (index + slidesCount) % slidesCount;
+      updateCarousel();
+    }
+
+    function nextSlide() { goToSlide(carouselIndex + 1); }
+    function prevSlide() { goToSlide(carouselIndex - 1); }
+
+    function startCarouselAuto() {
+      clearInterval(carouselTimer);
+      carouselTimer = setInterval(nextSlide, 5000);
+    }
+
+    function bindCarouselEvents() {
+      const prev = document.getElementById('carouselPrev');
+      const next = document.getElementById('carouselNext');
+      const carousel = document.getElementById('carousel');
+      if (prev) prev.addEventListener('click', prevSlide);
+      if (next) next.addEventListener('click', nextSlide);
+      if (carousel) {
+        carousel.addEventListener('mouseenter', () => clearInterval(carouselTimer));
+        carousel.addEventListener('mouseleave', startCarouselAuto);
+      }
+    }
+
+    // ---------- 入驻供应商（两行，每行 6 个：图片 + 名称 + 主营业务） ----------
+    function renderSuppliers() {
+      const el = document.getElementById('supplierGrid');
+      if (!el || !homeData) return;
+      const list = (homeData.settledSuppliers || []).slice(0, 12);
+      el.innerHTML = list.map(s => `
+        <a href="${s.link || '#'}" class="supplier-card block">
+          <div class="supplier-card-img-wrap">
+            <img src="${s.image || s.logo || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=250&fit=crop'}" alt="${s.name}" class="supplier-card-img" loading="lazy">
+            <div class="supplier-card-overlay">
+              <div class="supplier-card-name line-clamp-2">${s.name}</div>
+              <div class="supplier-card-business line-clamp-2">${s.business || s.subName || ''}</div>
+            </div>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    // ---------- 底部商城信息 ----------
+    function renderFooterServices() {
+      const el = document.getElementById('footerServices');
+      if (!el || !homeData) return;
+      el.innerHTML = (homeData.footerServices || []).map(s => `
+        <div class="footer-service-item">
+          <div class="footer-service-icon"><i class="fas ${s.icon || 'fa-shield-alt'}"></i></div>
+          <div class="footer-service-text">${s.text}</div>
+        </div>
+      `).join('');
+    }
+
     // ---------- Mock：分类推荐商品 ----------
     const recoMock = {
       0: { // 办公用品 电脑数码
@@ -255,6 +580,17 @@
           { id: 12, name: '霍尼韦尔 防尘口罩 KN95 防护口罩 50只装', price: 89.90, unit: '盒', supplier: '霍尼韦尔(中国)有限公司', ref: 109.90, img: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b34b?w=400&h=300&fit=crop' }
         ],
         head: [ 5, 11, 6, 7, 8 ], resp: [ 6, 12, 5, 7, 8 ], hand: [ 7, 5, 6, 8, 11 ], road: [ 8, 5, 6, 7, 12 ]
+      },
+      2: { // 工具耗材 机床数控
+        all: [
+          { id: 21, name: '博世 GSR 手电钻 13mm 家用电动螺丝刀', price: 299, unit: '台', supplier: '博世(中国)有限公司', ref: 359, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' },
+          { id: 22, name: '世达 32件套筒扳手套装 公制', price: 268, unit: '套', supplier: '世达工具(上海)有限公司', ref: 318, img: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=300&fit=crop' },
+          { id: 23, name: '三丰 数显游标卡尺 150mm', price: 158, unit: '把', supplier: '三丰精密量仪(上海)有限公司', ref: 188, img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop' },
+          { id: 24, name: '牧田 角磨机 100mm 750W', price: 398, unit: '台', supplier: '牧田(中国)有限公司', ref: 458, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' },
+          { id: 25, name: '史丹利 羊角锤 0.5kg 木柄', price: 45, unit: '把', supplier: '史丹利工具(上海)有限公司', ref: 55, img: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=300&fit=crop' },
+          { id: 26, name: '得伟 锂电钻 12V 双电版', price: 588, unit: '套', supplier: '得伟(中国)有限公司', ref: 688, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' }
+        ],
+        manual: [ 22, 25, 21, 23, 24 ], electric: [ 21, 24, 26, 22, 23 ], machine: [ 23, 24, 21, 22, 26 ], measure: [ 23, 22, 21, 24, 25 ]
       }
     };
     
@@ -301,6 +637,10 @@
       if (type === 'product') { window.location.href = '#'; /* category.html?q= */ return; }
     }
     
+    function hideRightFloatPanel() {
+      const el = document.getElementById('rightFloatPanel');
+      if (el) el.classList.add('hidden');
+    }
     function showLogin() { alert('原型演示：登录功能暂未实现'); }
     
     function getCurrentRole() { return localStorage.getItem('role') || 'guest'; }
@@ -313,11 +653,27 @@
     }
     
     document.addEventListener('DOMContentLoaded', function() {
+      loadHomeData();
+      bindTabEvents();
+      switchTab('home');
+      renderCategoryList();
+      renderCarousel();
+      bindCarouselEvents();
+      renderSuppliers();
+      renderFooterServices();
+
+      const megaPanel = document.getElementById('megaPanel');
+      if (megaPanel) {
+        megaPanel.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+        megaPanel.addEventListener('mouseleave', scheduleHideMega);
+      }
+
       var r = getCurrentRole();
       var sel = document.getElementById('roleSelect'); if (sel) sel.value = r;
       updateGreet();
       renderBlock(0);
       renderBlock(1);
+      renderBlock(2);
     });
   </script>
 </body>
