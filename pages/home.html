@@ -99,6 +99,406 @@
 
     .search-input:focus { outline: none; border-color: #E2231A; box-shadow: 0 0 0 2px rgba(226,35,26,0.15); }
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* ========== AI 智能助手悬浮按钮（科技感） ========== */
+    .float-item-ai {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #E2231A 100%);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4), 0 0 30px rgba(118, 75, 162, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .float-item-ai::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2, #E2231A, #667eea);
+      z-index: -1;
+      animation: ai-glow 3s linear infinite;
+    }
+    .float-item-ai::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #E2231A 100%);
+      z-index: -1;
+    }
+    @keyframes ai-glow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .float-item-ai:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5), 0 0 40px rgba(118, 75, 162, 0.3);
+    }
+    .float-item-ai i { font-size: 22px; margin-bottom: 2px; }
+    .float-item-ai span { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
+
+    /* ========== AI 助手弹窗（贴右侧按钮） ========== */
+    .ai-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: 800;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .ai-modal-overlay.show { opacity: 1; visibility: visible; }
+
+    .ai-modal {
+      position: fixed;
+      right: 90px; /* 贴着浮动菜单左侧 */
+      bottom: 20px;
+      width: 380px;
+      height: 600px;
+      max-height: calc(100vh - 40px);
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05);
+      z-index: 850;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px) scale(0.95);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    .ai-modal.show { 
+      opacity: 1; 
+      visibility: visible; 
+      transform: translateY(0) scale(1); 
+    }
+
+    .ai-modal-header {
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .ai-modal-header h3 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .ai-modal-header h3 i { font-size: 18px; }
+    .ai-modal-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      font-size: 12px;
+    }
+    .ai-modal-close:hover { background: rgba(255,255,255,0.3); }
+
+    .ai-modal-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .ai-chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* ========== AI 功能弹窗（独立弹窗，显示在对话弹窗左侧） ========== */
+    .ai-func-modal {
+      position: fixed;
+      right: 480px; /* 对话弹窗左侧 */
+      bottom: 20px;
+      width: 360px;
+      max-height: calc(100vh - 40px);
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05);
+      z-index: 840;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(20px) scale(0.95);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    .ai-func-modal.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0) scale(1);
+    }
+    .ai-func-modal-header {
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .ai-func-modal-header h4 { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .ai-func-modal-header h4 i { font-size: 16px; }
+    .ai-func-modal-close {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      font-size: 11px;
+    }
+    .ai-func-modal-close:hover { background: rgba(255,255,255,0.3); }
+    .ai-func-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: #fafafa;
+      max-height: 520px;
+    }
+
+    .ai-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ai-message {
+      max-width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ai-message.user { align-self: flex-end; }
+    .ai-message.assistant { align-self: flex-start; }
+
+    .ai-message-bubble {
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+    .ai-message.user .ai-message-bubble {
+      background: linear-gradient(135deg, #E2231A 0%, #c01e16 100%);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .ai-message.assistant .ai-message-bubble {
+      background: #f3f4f6;
+      color: #374151;
+      border-bottom-left-radius: 4px;
+    }
+
+    .ai-message-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .ai-option-btn {
+      padding: 5px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ai-option-btn:hover { border-color: #E2231A; color: #E2231A; background: #fff5f4; }
+
+    .ai-input-area {
+      padding: 12px;
+      border-top: 1px solid #e5e7eb;
+      background: #fff;
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .ai-input-area input {
+      flex: 1;
+      height: 40px;
+      padding: 0 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .ai-input-area input:focus { border-color: #667eea; }
+    .ai-input-area button {
+      height: 40px;
+      padding: 0 18px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ai-input-area button:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+
+    /* AI 功能弹窗内的商品卡片 */
+    .ai-product-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .ai-product-card:hover { border-color: #E2231A; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .ai-product-card-img { width: 100%; aspect-ratio: 16/10; object-fit: cover; border-radius: 6px; margin-bottom: 8px; background: #f3f4f6; }
+    .ai-product-card-name { font-size: 12px; color: #111827; line-height: 1.4; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .ai-product-card-info { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; flex-wrap: wrap; gap: 4px; }
+    .ai-product-card-price { font-size: 14px; color: #E2231A; font-weight: 600; }
+    .ai-product-card-score { font-size: 11px; color: #6b7280; }
+    .ai-product-card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ai-btn-primary {
+      flex: 1;
+      min-width: 70px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #E2231A;
+      color: #fff;
+    }
+    .ai-btn-primary:hover { background: #c01e16; }
+    .ai-btn-secondary {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f3f4f6;
+      color: #374151;
+    }
+    .ai-btn-secondary:hover { background: #e5e7eb; }
+
+    /* 加载动画 */
+    .ai-loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .ai-loading-dots {
+      display: flex;
+      gap: 4px;
+    }
+    .ai-loading-dots span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #667eea;
+      animation: ai-dot-bounce 1.4s infinite ease-in-out both;
+    }
+    .ai-loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .ai-loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes ai-dot-bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    /* 比质比价表格 */
+    .ai-compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .ai-compare-table th, .ai-compare-table td {
+      padding: 8px 10px;
+      border: 1px solid #e5e7eb;
+      text-align: center;
+    }
+    .ai-compare-table th { background: #f3f4f6; font-weight: 600; color: #374151; }
+    .ai-compare-table td { color: #4b5563; }
+
+    /* 评价列表 */
+    .ai-review-item {
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .ai-review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .ai-review-user { font-size: 13px; color: #374151; font-weight: 500; }
+    .ai-review-tag { padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+    .ai-review-tag.positive { background: #dcfce7; color: #166534; }
+    .ai-review-tag.negative { background: #fee2e2; color: #991b1b; }
+    .ai-review-content { font-size: 13px; color: #6b7280; line-height: 1.5; }
+
+    /* 预算标识 */
+    .ai-budget-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 11px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+
+    /* 收藏心形 */
+    .ai-favorite-icon { color: #E2231A; }
+
+    /* Toast 提示 */
+    .ai-toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 24px;
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 900;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .ai-toast.show { opacity: 1; visibility: visible; }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;">
@@ -347,7 +747,60 @@
       <i class="fas fa-chevron-up"></i>
       <span>返回顶部</span>
     </a>
+    <!-- AI 智能助手悬浮按钮（科技感样式） -->
+    <div class="float-item-ai" id="aiAssistantBtn" title="AI 智能助手" onclick="openAiModal()">
+      <i class="fas fa-robot"></i>
+      <span>AI助手</span>
+    </div>
   </div>
+
+  <!-- ==================== AI 智能助手弹窗（对话窗口） ==================== -->
+  <div class="ai-modal-overlay" id="aiModalOverlay" onclick="closeAiModal()"></div>
+  <div class="ai-modal" id="aiModal">
+    <div class="ai-modal-header">
+      <h3><i class="fas fa-robot"></i> AI 智能助手</h3>
+      <button class="ai-modal-close" onclick="closeAiModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="ai-modal-body">
+      <div class="ai-chat-area" id="aiChatArea">
+        <div class="ai-chat-messages" id="aiChatMessages">
+          <!-- 欢迎消息 -->
+          <div class="ai-message assistant">
+            <div class="ai-message-bubble">
+              您好！我是阳光优采智能助手，可以帮您：<br>
+              <strong>• 找商品</strong>：推荐商品、预算筛选、查看评价<br>
+              <strong>• 做决策</strong>：比质比价、收藏商品、快速下单<br>
+              <strong>• 解疑问</strong>：平台规则咨询<br><br>
+              请问有什么可以帮您的？
+            </div>
+            <div class="ai-message-options">
+              <button class="ai-option-btn" onclick="aiSendQuickMsg('有没有好用的复印纸？')">找复印纸</button>
+              <button class="ai-option-btn" onclick="aiSendQuickMsg('200元内采购10箱A4复印纸')">预算内采购</button>
+              <button class="ai-option-btn" onclick="aiSendQuickMsg('商品如何结算？')">规则咨询</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-input-area">
+      <input type="text" id="aiInput" placeholder="请输入您的问题..." onkeypress="if(event.key==='Enter')aiSendMessage()">
+      <button onclick="aiSendMessage()">发送</button>
+    </div>
+  </div>
+
+  <!-- ==================== AI 功能弹窗（商品推荐/比价/评价等） ==================== -->
+  <div class="ai-func-modal" id="aiFuncModal">
+    <div class="ai-func-modal-header">
+      <h4><i class="fas fa-box-open"></i> <span id="aiFuncTitle">推荐商品</span></h4>
+      <button class="ai-func-modal-close" onclick="closeFuncModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="ai-func-modal-body" id="aiFuncBody">
+      <!-- 功能区内容由 JS 动态渲染 -->
+    </div>
+  </div>
+
+  <!-- AI Toast 提示 -->
+  <div class="ai-toast" id="aiToast"></div>
   
   <script>
     // ---------- 首页数据加载 ----------
@@ -675,6 +1128,494 @@
       renderBlock(1);
       renderBlock(2);
     });
+
+    // ==================== AI 智能助手逻辑 ====================
+    
+    // Mock 商品数据
+    const aiMockProducts = [
+      { id: 1, name: '齐心 C3674-5 A4复印纸 70g 500张/包', brand: '齐心', price: 25.92, unit: '包', sales: 8520, score: 4.8, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+      { id: 2, name: '天章复印纸 A4 80g 白色 500张/包 10包/箱', brand: '天章', price: 28.50, unit: '包', sales: 6230, score: 4.7, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+      { id: 3, name: '得力 A4复印纸 70g 办公用纸 500张/包', brand: '得力', price: 23.80, unit: '包', sales: 12350, score: 4.9, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+      { id: 4, name: '星宇 劳保手套 防穿刺 防滑耐磨 12双/包', brand: '星宇', price: 59.10, unit: '包', sales: 3280, score: 4.6, img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop' },
+      { id: 5, name: '唐丰 安全帽 ABS-V型 蓝色 1顶', brand: '唐丰', price: 17.70, unit: '顶', sales: 5620, score: 4.5, img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=300&fit=crop' },
+    ];
+    
+    // Mock 评价数据
+    const aiMockReviews = {
+      positive: [
+        { user: '采购员小李', content: '纸张质量很好，打印清晰，物流很快！', tag: 'positive' },
+        { user: '办公室王经理', content: '一直用这个牌子，性价比很高，推荐！', tag: 'positive' },
+        { user: '张先生', content: '包装完好，纸张厚度合适，非常满意。', tag: 'positive' },
+      ],
+      negative: [
+        { user: '匿名用户', content: '物流有点慢，等了5天才到。', tag: 'negative' },
+        { user: '采购部小陈', content: '有一包纸边角有点破损，希望加强包装。', tag: 'negative' },
+      ]
+    };
+    
+    // 当前对话上下文
+    let aiContext = {
+      lastProducts: [],
+      lastIntent: null,
+      favorites: []
+    };
+    
+    // 打开 AI 弹窗
+    function openAiModal() {
+      document.getElementById('aiModalOverlay').classList.add('show');
+      document.getElementById('aiModal').classList.add('show');
+      document.getElementById('aiInput').focus();
+    }
+    
+    // 关闭 AI 弹窗
+    function closeAiModal() {
+      document.getElementById('aiModalOverlay').classList.remove('show');
+      document.getElementById('aiModal').classList.remove('show');
+      // 同时关闭功能弹窗
+      closeFuncModal();
+    }
+    
+    // 关闭功能弹窗
+    function closeFuncModal() {
+      document.getElementById('aiFuncModal').classList.remove('show');
+    }
+    
+    // 发送快捷消息
+    function aiSendQuickMsg(msg) {
+      document.getElementById('aiInput').value = msg;
+      aiSendMessage();
+    }
+    
+    // 发送消息
+    function aiSendMessage() {
+      const input = document.getElementById('aiInput');
+      const msg = (input.value || '').trim();
+      if (!msg) return;
+      
+      // 添加用户消息
+      aiAddMessage(msg, 'user');
+      input.value = '';
+      
+      // 显示加载
+      aiShowLoading();
+      
+      // 模拟延迟后响应
+      setTimeout(() => {
+        aiHideLoading();
+        aiProcessMessage(msg);
+      }, 800 + Math.random() * 400);
+    }
+    
+    // 添加消息到对话区
+    function aiAddMessage(content, type, options = null) {
+      const container = document.getElementById('aiChatMessages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `ai-message ${type}`;
+      
+      let html = `<div class="ai-message-bubble">${content}</div>`;
+      if (options && options.length) {
+        html += `<div class="ai-message-options">${options.map(o => 
+          `<button class="ai-option-btn" onclick="${o.action}">${o.label}</button>`
+        ).join('')}</div>`;
+      }
+      msgDiv.innerHTML = html;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    // 显示/隐藏加载
+    function aiShowLoading() {
+      const container = document.getElementById('aiChatMessages');
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'ai-message assistant';
+      loadingDiv.id = 'aiLoading';
+      loadingDiv.innerHTML = `<div class="ai-loading"><div class="ai-loading-dots"><span></span><span></span><span></span></div><span>正在思考...</span></div>`;
+      container.appendChild(loadingDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    function aiHideLoading() {
+      const loading = document.getElementById('aiLoading');
+      if (loading) loading.remove();
+    }
+    
+    // 显示功能弹窗（独立弹窗，显示在对话弹窗左侧）
+    function aiShowFuncPanel(content, title = '推荐商品', icon = 'fa-box-open') {
+      const modal = document.getElementById('aiFuncModal');
+      const body = document.getElementById('aiFuncBody');
+      const titleEl = document.getElementById('aiFuncTitle');
+      
+      // 更新标题和图标
+      titleEl.innerHTML = title;
+      modal.querySelector('.ai-func-modal-header h4 i').className = `fas ${icon}`;
+      
+      // 更新内容
+      body.innerHTML = content;
+      
+      // 显示弹窗
+      modal.classList.add('show');
+    }
+    
+    // 隐藏功能弹窗
+    function aiHideFuncPanel() {
+      document.getElementById('aiFuncModal').classList.remove('show');
+    }
+    
+    // 显示 Toast
+    function aiShowToast(msg) {
+      const toast = document.getElementById('aiToast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+    
+    // 处理消息 - 意图识别与响应
+    function aiProcessMessage(msg) {
+      const msgLower = msg.toLowerCase();
+      
+      // 1.1 商品推荐（模糊查询）
+      if (msgLower.includes('复印纸') || msgLower.includes('打印纸') || msgLower.includes('纸')) {
+        aiContext.lastIntent = 'product_recommend';
+        aiContext.lastProducts = aiMockProducts.filter(p => p.name.includes('纸')).slice(0, 3);
+        
+        // 追问规格
+        aiAddMessage('请问您需要什么规格的复印纸？', 'assistant', [
+          { label: 'A4 70g', action: "aiSelectSpec('A4', '70g')" },
+          { label: 'A4 80g', action: "aiSelectSpec('A4', '80g')" },
+          { label: 'A5 70g', action: "aiSelectSpec('A5', '70g')" },
+        ]);
+        return;
+      }
+      
+      if (msgLower.includes('手套') || msgLower.includes('防穿刺') || msgLower.includes('劳保')) {
+        aiContext.lastIntent = 'product_recommend';
+        aiContext.lastProducts = aiMockProducts.filter(p => p.name.includes('手套')).slice(0, 3);
+        aiShowProductRecommend('为您找到以下劳保手套：', aiContext.lastProducts);
+        return;
+      }
+      
+      // 1.2 预算内商品筛选
+      if (msgLower.includes('元') && (msgLower.includes('采购') || msgLower.includes('预算'))) {
+        aiContext.lastIntent = 'budget_filter';
+        const budgetMatch = msg.match(/(\d+)\s*元/);
+        const budget = budgetMatch ? parseInt(budgetMatch[1]) : 200;
+        const quantityMatch = msg.match(/(\d+)\s*箱/);
+        const quantity = quantityMatch ? parseInt(quantityMatch[1]) : 10;
+        
+        const products = aiMockProducts.filter(p => p.name.includes('纸') && p.price * quantity <= budget);
+        if (products.length > 0) {
+          aiContext.lastProducts = products;
+          aiShowBudgetProducts(budget, quantity, products);
+        } else {
+          aiAddMessage(`未找到预算 ${budget} 元内的商品，是否提高预算至 ${budget + 100} 元？`, 'assistant', [
+            { label: '是', action: `aiSendQuickMsg('${budget + 100}元内采购${quantity}箱A4复印纸')` },
+            { label: '否', action: "aiAddMessage('好的，您可以尝试其他搜索条件。', 'assistant')" },
+          ]);
+        }
+        return;
+      }
+      
+      // 1.3 商品评价查询
+      if (msgLower.includes('评价') || msgLower.includes('好评') || msgLower.includes('差评')) {
+        aiContext.lastIntent = 'review_query';
+        aiShowReviews();
+        return;
+      }
+      
+      // 2.1 比质比价
+      if (msgLower.includes('比') || msgLower.includes('对比') || msgLower.includes('哪个更好')) {
+        aiContext.lastIntent = 'compare';
+        if (aiContext.lastProducts.length >= 2) {
+          aiShowCompare(aiContext.lastProducts.slice(0, 3));
+        } else {
+          aiAddMessage('请先搜索商品后再进行比较。您可以问我"有没有好用的复印纸？"', 'assistant');
+        }
+        return;
+      }
+      
+      // 2.2 收藏商品
+      if (msgLower.includes('收藏')) {
+        aiContext.lastIntent = 'favorite';
+        if (aiContext.lastProducts.length > 0) {
+          const product = aiContext.lastProducts[0];
+          if (aiContext.favorites.includes(product.id)) {
+            aiAddMessage(`<i class="fas fa-heart ai-favorite-icon"></i> "${product.name}" 已在收藏夹中，无需重复收藏。`, 'assistant', [
+              { label: '取消收藏', action: `aiRemoveFavorite(${product.id})` },
+              { label: '前往我的收藏', action: "aiShowToast('跳转到收藏页面...')" },
+            ]);
+          } else {
+            aiContext.favorites.push(product.id);
+            aiAddMessage(`<i class="fas fa-heart ai-favorite-icon"></i> 已收藏 "${product.name}"`, 'assistant', [
+              { label: '前往我的收藏', action: "aiShowToast('跳转到收藏页面...')" },
+            ]);
+          }
+        } else {
+          aiAddMessage('未找到该商品，请先搜索商品后再收藏。', 'assistant');
+        }
+        return;
+      }
+      
+      // 2.3 下单
+      if (msgLower.includes('下单') || msgLower.includes('购买') || msgLower.includes('订单')) {
+        aiContext.lastIntent = 'order';
+        if (aiContext.lastProducts.length > 0) {
+          const product = aiContext.lastProducts[0];
+          aiShowOrderConfirm(product);
+        } else {
+          aiAddMessage('请先搜索并选择商品后再下单。您可以问我"有没有好用的复印纸？"', 'assistant');
+        }
+        return;
+      }
+      
+      // 3. 规则咨询
+      if (msgLower.includes('结算') || msgLower.includes('付款') || msgLower.includes('支付')) {
+        aiContext.lastIntent = 'rule_consult';
+        aiAddMessage(`<strong>商品结算方式：</strong><br><br>
+          <strong>1. 在线支付</strong><br>
+          支持支付宝、微信支付、银联等多种支付方式，支付成功后订单自动确认。<br><br>
+          <strong>2. 对公转账</strong><br>
+          适用于企业客户，下单后生成对公账户信息，转账后上传凭证，财务确认后发货。<br><br>
+          <strong>3. 账期结算</strong><br>
+          通过信用评估的企业客户可申请账期，支持月结、季结等方式。`, 'assistant', [
+          { label: '查看详情', action: "aiShowToast('跳转到结算规则页面...')" },
+        ]);
+        aiHideFuncPanel();
+        return;
+      }
+      
+      if (msgLower.includes('退货') || msgLower.includes('退换') || msgLower.includes('退款')) {
+        aiContext.lastIntent = 'rule_consult';
+        aiAddMessage(`<strong>退货规则说明：</strong><br><br>
+          <strong>1. 退货时限</strong><br>
+          签收后 <strong>7 天内</strong> 可申请无理由退货（部分特殊商品除外）。<br><br>
+          <strong>2. 退货条件</strong><br>
+          商品需保持原包装完好，不影响二次销售。<br><br>
+          <strong>3. 退款时效</strong><br>
+          退货审核通过后，<strong>3-5 个工作日</strong> 内原路退回。`, 'assistant', [
+          { label: '查看详情', action: "aiShowToast('跳转到退货规则页面...')" },
+        ]);
+        aiHideFuncPanel();
+        return;
+      }
+      
+      // 默认回复
+      aiAddMessage('抱歉，我没有理解您的问题。您可以尝试：<br>• 找商品：如"有没有好用的复印纸？"<br>• 预算筛选：如"200元内采购10箱A4复印纸"<br>• 查评价：如"齐心复印纸有负面评价吗？"<br>• 规则咨询：如"商品如何结算？"', 'assistant');
+      aiHideFuncPanel();
+    }
+    
+    // 选择规格后显示推荐
+    function aiSelectSpec(size, weight) {
+      aiAddMessage(`${size} ${weight}`, 'user');
+      setTimeout(() => {
+        aiShowProductRecommend(`为您推荐以下 ${size} ${weight} 复印纸：`, aiContext.lastProducts);
+      }, 500);
+    }
+    
+    // 显示商品推荐
+    function aiShowProductRecommend(text, products) {
+      aiAddMessage(text, 'assistant');
+      
+      const cardsHtml = products.map((p, idx) => `
+        <div class="ai-product-card">
+          <img src="${p.img}" class="ai-product-card-img" alt="${p.name}">
+          <div class="ai-product-card-name">${p.name}</div>
+          <div class="ai-product-card-info">
+            <span class="ai-product-card-price">¥${p.price.toFixed(2)}/${p.unit}</span>
+            <span class="ai-product-card-score">销量 ${p.sales} | 评分 ${p.score}</span>
+          </div>
+          <div class="ai-product-card-actions">
+            <button class="ai-btn-primary" onclick="aiAddToCart(${p.id})"><i class="fas fa-cart-plus"></i> 加入购物车</button>
+            <button class="ai-btn-secondary" onclick="aiFavorite(${p.id})"><i class="fas fa-heart"></i></button>
+            <button class="ai-btn-secondary" onclick="aiShowToast('跳转到商品详情页...')">详情</button>
+          </div>
+        </div>
+      `).join('');
+      
+      aiShowFuncPanel(cardsHtml, '推荐商品', 'fa-box-open');
+    }
+    
+    // 显示预算内商品
+    function aiShowBudgetProducts(budget, quantity, products) {
+      const product = products[0];
+      const totalPrice = (product.price * quantity).toFixed(2);
+      
+      aiAddMessage(`为您找到预算 ${budget} 元内的商品，采购 ${quantity} 箱总价约 ¥${totalPrice}：`, 'assistant');
+      
+      const cardsHtml = products.map(p => `
+        <div class="ai-product-card">
+          <div class="ai-budget-tag"><i class="fas fa-check-circle"></i> 预算内</div>
+          <img src="${p.img}" class="ai-product-card-img" alt="${p.name}">
+          <div class="ai-product-card-name">${p.name}</div>
+          <div class="ai-product-card-info">
+            <span class="ai-product-card-price">¥${p.price.toFixed(2)}/${p.unit}</span>
+            <span class="ai-product-card-score">总价 ¥${(p.price * quantity).toFixed(2)}（≤${budget}元）</span>
+          </div>
+          <div class="ai-product-card-actions">
+            <button class="ai-btn-primary" onclick="aiAddToCart(${p.id})">加入购物车</button>
+            <button class="ai-btn-primary" onclick="aiQuickOrder(${p.id}, ${quantity})">一键下单</button>
+          </div>
+        </div>
+      `).join('');
+      
+      aiShowFuncPanel(cardsHtml, '预算内商品', 'fa-wallet');
+    }
+    
+    // 显示评价
+    function aiShowReviews() {
+      aiAddMessage('该商品好评率 <strong>92%</strong>，负面评价主要集中在物流速度方面。', 'assistant', [
+        { label: '查看全部评价', action: "aiShowToast('跳转到商品详情页评价标签...')" },
+      ]);
+      
+      const positiveHtml = aiMockReviews.positive.map(r => `
+        <div class="ai-review-item">
+          <div class="ai-review-header">
+            <span class="ai-review-user">${r.user}</span>
+            <span class="ai-review-tag positive">好评</span>
+          </div>
+          <div class="ai-review-content">${r.content}</div>
+        </div>
+      `).join('');
+      
+      const negativeHtml = aiMockReviews.negative.map(r => `
+        <div class="ai-review-item">
+          <div class="ai-review-header">
+            <span class="ai-review-user">${r.user}</span>
+            <span class="ai-review-tag negative">差评</span>
+          </div>
+          <div class="ai-review-content">${r.content}</div>
+        </div>
+      `).join('');
+      
+      aiShowFuncPanel(`
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <button class="ai-option-btn" style="background: #dcfce7; border-color: #166534; color: #166534;" onclick="document.getElementById('reviewPositive').style.display='block';document.getElementById('reviewNegative').style.display='none';">正面 (${aiMockReviews.positive.length})</button>
+          <button class="ai-option-btn" style="background: #fee2e2; border-color: #991b1b; color: #991b1b;" onclick="document.getElementById('reviewPositive').style.display='none';document.getElementById('reviewNegative').style.display='block';">负面 (${aiMockReviews.negative.length})</button>
+        </div>
+        <div id="reviewPositive">${positiveHtml}</div>
+        <div id="reviewNegative" style="display: none;">${negativeHtml}</div>
+      `, '商品评价', 'fa-star');
+    }
+    
+    // 显示比质比价
+    function aiShowCompare(products) {
+      const p1 = products[0], p2 = products[1], p3 = products[2] || products[0];
+      
+      aiAddMessage(`根据对比分析，<strong>${p1.name}</strong> 在性价比方面表现最佳，推荐您优先选择。`, 'assistant');
+      
+      const tableHtml = `
+        <table class="ai-compare-table">
+          <tr><th>维度</th><th>商品1</th><th>商品2</th>${p3 !== p1 ? '<th>商品3</th>' : ''}</tr>
+          <tr><td>品牌</td><td>${p1.brand}</td><td>${p2.brand}</td>${p3 !== p1 ? `<td>${p3.brand}</td>` : ''}</tr>
+          <tr><td>价格</td><td style="color:#E2231A;">¥${p1.price}</td><td>¥${p2.price}</td>${p3 !== p1 ? `<td>¥${p3.price}</td>` : ''}</tr>
+          <tr><td>销量</td><td>${p1.sales}</td><td>${p2.sales}</td>${p3 !== p1 ? `<td>${p3.sales}</td>` : ''}</tr>
+          <tr><td>评分</td><td style="color:#166534;">${p1.score}</td><td>${p2.score}</td>${p3 !== p1 ? `<td>${p3.score}</td>` : ''}</tr>
+        </table>
+        <div style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 8px; margin-bottom: 12px;">
+          <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px;">雷达图（示意）</div>
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <polygon points="60,10 110,40 95,100 25,100 10,40" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            <polygon points="60,25 90,45 80,85 40,85 30,45" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            <polygon points="60,40 70,50 65,70 55,70 50,50" fill="rgba(102,126,234,0.3)" stroke="#667eea" stroke-width="2"/>
+          </svg>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="ai-btn-primary" style="flex:1;" onclick="aiAddToCart(${p1.id})">选择商品1</button>
+          <button class="ai-btn-secondary" style="flex:1;" onclick="aiAddToCart(${p2.id})">选择商品2</button>
+          ${p3 !== p1 ? `<button class="ai-btn-secondary" style="flex:1;" onclick="aiAddToCart(${p3.id})">选择商品3</button>` : ''}
+        </div>
+      `;
+      
+      aiShowFuncPanel(tableHtml, '比质比价', 'fa-balance-scale');
+    }
+    
+    // 显示订单确认
+    function aiShowOrderConfirm(product) {
+      const quantity = 2;
+      const totalPrice = (product.price * quantity).toFixed(2);
+      
+      // 模拟库存检查
+      const stock = 5;
+      if (quantity > stock) {
+        aiAddMessage(`库存仅 ${stock} ${product.unit}，是否调整数量？`, 'assistant', [
+          { label: `调整为 ${stock} ${product.unit}`, action: `aiConfirmOrder(${product.id}, ${stock})` },
+          { label: '取消', action: "aiAddMessage('好的，已取消下单。', 'assistant')" },
+        ]);
+        return;
+      }
+      
+      aiAddMessage(`即将为您创建订单：<br>商品：${product.name}<br>数量：${quantity} ${product.unit}<br>总价：¥${totalPrice}`, 'assistant');
+      
+      aiShowFuncPanel(`
+        <div class="ai-product-card">
+          <img src="${product.img}" class="ai-product-card-img" alt="${product.name}">
+          <div class="ai-product-card-name">${product.name}</div>
+          <div style="display: flex; justify-content: space-between; margin: 10px 0; font-size: 13px;">
+            <span>数量：${quantity} ${product.unit}</span>
+            <span style="color: #E2231A; font-weight: 600;">¥${totalPrice}</span>
+          </div>
+          <button class="ai-btn-primary" style="width: 100%;" onclick="aiConfirmOrder(${product.id}, ${quantity})">
+            <i class="fas fa-check"></i> 确认下单
+          </button>
+        </div>
+      `, '订单确认', 'fa-shopping-cart');
+    }
+    
+    // 加入购物车
+    function aiAddToCart(productId) {
+      const product = aiMockProducts.find(p => p.id === productId);
+      if (product) {
+        aiShowToast(`已将 "${product.name}" 加入购物车`);
+        // 更新购物车角标
+        const badge = document.getElementById('cartBadge');
+        if (badge) {
+          const count = parseInt(badge.textContent || '0') + 1;
+          badge.textContent = count;
+          badge.classList.remove('hidden');
+        }
+      }
+    }
+    
+    // 收藏商品
+    function aiFavorite(productId) {
+      const product = aiMockProducts.find(p => p.id === productId);
+      if (product) {
+        if (aiContext.favorites.includes(productId)) {
+          aiShowToast(`"${product.name}" 已在收藏夹中`);
+        } else {
+          aiContext.favorites.push(productId);
+          aiShowToast(`已收藏 "${product.name}"`);
+        }
+      }
+    }
+    
+    // 取消收藏
+    function aiRemoveFavorite(productId) {
+      aiContext.favorites = aiContext.favorites.filter(id => id !== productId);
+      aiShowToast('已取消收藏');
+    }
+    
+    // 快速下单
+    function aiQuickOrder(productId, quantity) {
+      const product = aiMockProducts.find(p => p.id === productId);
+      if (product) {
+        aiShowToast('正在跳转到订单创建页...');
+        setTimeout(() => {
+          aiAddMessage(`订单已创建，商品：${product.name}，数量：${quantity}，正在跳转到订单提交页...`, 'assistant');
+        }, 1000);
+      }
+    }
+    
+    // 确认下单
+    function aiConfirmOrder(productId, quantity) {
+      const product = aiMockProducts.find(p => p.id === productId);
+      if (product) {
+        aiShowToast('订单创建成功，正在跳转...');
+        aiHideFuncPanel();
+        setTimeout(() => {
+          aiAddMessage(`<i class="fas fa-check-circle" style="color: #10B981;"></i> 订单创建成功！商品：${product.name}，数量：${quantity} ${product.unit}，总价：¥${(product.price * quantity).toFixed(2)}`, 'assistant');
+        }, 500);
+      }
+    }
   </script>
 </body>
 </html>
