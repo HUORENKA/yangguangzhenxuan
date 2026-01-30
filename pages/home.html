@@ -19,26 +19,37 @@
     .top-dark { background: #3d4451; color: #e5e7eb; }
     .top-red { background: linear-gradient(135deg, #E2231A 0%, #c01e16 100%); }
     
-    .product-card { transition: all 0.25s ease; border: 1px solid #e5e7eb; }
+    .product-card {
+      display: flex; flex-direction: column; transition: all 0.25s ease; border: 1px solid #e5e7eb;
+    }
     .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #E2231A; }
+    .product-card > a { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .product-card > a .reco-card-top { flex: 1; min-height: 0; }
+    .product-card .price-rational-wrap { flex-shrink: 0; }
+    .product-card .reco-card-actions { flex-shrink: 0; }
+    .product-card .reco-card-supplier {
+      height: 1.25rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      flex-shrink: 0;
+    }
     
     .cat-left { background: linear-gradient(180deg, #fff5f4 0%, #fff 100%); border: 1px solid #fde2e0; }
     .cat-item:hover { background: #ffebe9; color: #E2231A; }
     .cat-item.active { background: #ffebe9; color: #E2231A; font-weight: 600; border-left: 3px solid #E2231A; }
     
-    .reco-panel { background: #4a5568; color: #fff; }
+    .reco-panel { background: #4a5568; color: #fff; min-height: 320px; }
     .reco-panel.sec2 { background: #6b5b4f; }
     .reco-panel.sec3 { background: #4a6b5c; }
+    .reco-section { min-height: 320px; }
     .tab-2nd { transition: all 0.2s; }
     .tab-2nd.active { background: #E2231A; color: #fff; }
     .tab-2nd:not(.active) { background: #f3f4f6; color: #374151; }
     .tab-2nd:not(.active):hover { background: #e5e7eb; }
     
     .float-menu { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); z-index: 500; }
-    .float-item { width: 60px; min-height: 60px; border-radius: 4px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.12); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; gap: 4px; }
+    .float-item { width: 76px; min-height: 76px; border-radius: 8px; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.14); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 6px; gap: 6px; }
     .float-item:hover { background: #E2231A; color: #fff; }
-    .float-item i { font-size: 18px; }
-    .float-item span { font-size: 11px; line-height: 1.2; }
+    .float-item i { font-size: 22px; }
+    .float-item span { font-size: 13px; line-height: 1.2; }
     
     .tab-btn { height: 44px; padding: 0 16px; font-size: 14px; color: #4b5563; border-bottom: 2px solid transparent; display: inline-flex; align-items: center; }
     .tab-btn.active { color: #E2231A; border-color: #E2231A; font-weight: 600; }
@@ -90,20 +101,157 @@
     .supplier-card-business { font-size: 12px; color: rgba(255,255,255,0.92); line-height: 1.4; }
 
     .footer-services { background: #3f3f46; color: #fff; }
-    .footer-service-item { display: flex; align-items: center; gap: 12px; }
-    .footer-service-icon { width: 44px; height: 44px; border: 1px solid #E2231A; color: #E2231A; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-    .footer-service-text { font-size: 16px; }
-    .footer-info { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.15); text-align: center; font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.8; }
+    .footer-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+    .footer-left { flex: 1; min-width: 0; }
+    .footer-quick-links { font-size: 14px; color: #fff; margin-bottom: 14px; }
+    .footer-quick-links a { color: #fff; text-decoration: none; }
+    .footer-quick-links a:hover { text-decoration: underline; color: rgba(255,255,255,0.9); }
+    .footer-quick-links span.sep { margin: 0 8px; color: rgba(255,255,255,0.5); }
+    .footer-org { font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.8; }
+    .footer-right { display: flex; align-items: flex-start; gap: 20px; flex-shrink: 0; }
+    .footer-icon-item { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; min-width: 64px; }
+    .footer-icon-item .icon-wrap { width: 44px; height: 44px; border: 1px solid #E2231A; color: #E2231A; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .footer-icon-item .icon-text { font-size: 12px; color: rgba(255,255,255,0.9); line-height: 1.3; }
 
-    .right-float-panel { position: fixed; right: 90px; top: 50%; transform: translateY(-50%); width: 220px; z-index: 600; }
+    .float-item-login { color: #E2231A !important; font-weight: 600; }
+    .float-item-login:hover { background: #E2231A; color: #fff !important; }
 
     .search-input:focus { outline: none; border-color: #E2231A; box-shadow: 0 0 0 2px rgba(226,35,26,0.15); }
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
+    /* 价格合理性标识模块：与上方供应商留足间距，评价贴近横条，区间与点位样式优化 */
+    .price-rational-wrap {
+      margin-top: 18px;
+      padding-top: 4px;
+      border-top: 1px solid #f3f4f6;
+    }
+    .price-rational-bar-container { position: relative; width: 100%; padding-top: 16px; }
+    .price-rational-label {
+      position: absolute; font-size: 11px; font-weight: 600; line-height: 1.2;
+      color: #1d4ed8; white-space: nowrap; transform: translateX(-50%); z-index: 3;
+      bottom: 100%; margin-bottom: 2px; pointer-events: none;
+    }
+    .price-rational-label.high { color: #b91c1c; }
+    .price-rational-bar-wrap {
+      position: relative; width: 100%; height: 10px; border-radius: 5px;
+      overflow: visible; display: flex; box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+    }
+    .price-rational-bar-green {
+      width: 80%; height: 100%; background: linear-gradient(180deg, #99f6e4 0%, #5eead4 50%, #2dd4bf 100%);
+      border-radius: 5px 0 0 5px; border: 1px solid rgba(45,212,191,0.35); border-right: none;
+    }
+    .price-rational-bar-red {
+      width: 20%; height: 100%; background: linear-gradient(180deg, #fecaca 0%, #fca5a5 50%, #f87171 100%);
+      border-radius: 0 5px 5px 0; border: 1px solid rgba(248,113,113,0.4); border-left: none;
+    }
+    .price-rational-dot {
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      border-radius: 2px; z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+    .price-rational-dot-min {
+      width: 4px; height: 11px; background: #047857; left: 0;
+      border: 1px solid rgba(4,120,87,0.5);
+    }
+    .price-rational-dot-ref {
+      width: 4px; height: 11px; background: #b45309; left: 80%;
+      border: 1px solid rgba(180,83,9,0.5);
+    }
+    .price-rational-dot-price {
+      width: 4px; height: 16px; background: #2563eb;
+      border: 1px solid rgba(37,99,235,0.5); box-shadow: 0 1px 3px rgba(37,99,235,0.35);
+    }
+    .price-rational-labels {
+      display: flex; justify-content: space-between; margin-top: 4px;
+      font-size: 10px; color: #6b7280; line-height: 1.3;
+    }
+    .price-rational-labels .left { text-align: left; }
+    .price-rational-labels .right { text-align: right; }
+
+    /* 商品卡片操作按钮：比质比价、寻源询价 */
+    .reco-card-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .reco-card-actions .btn-compare, .reco-card-actions .btn-inquiry {
+      flex: 1; height: 32px; border-radius: 6px; font-size: 12px; font-weight: 500;
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      border: 1px solid #e5e7eb; background: #fff; color: #374151; cursor: pointer;
+      transition: all 0.2s; text-decoration: none;
+    }
+    .reco-card-actions .btn-compare:hover, .reco-card-actions .btn-inquiry:hover {
+      border-color: #E2231A; color: #E2231A; background: #fff5f4;
+    }
+
+    /* 比质比价弹窗：全宽、贴底部、无遮罩，仅通过关闭按钮关闭 */
+    .compare-modal {
+      position: fixed; left: 0; right: 0; bottom: 0; width: 100%;
+      max-height: 75vh; z-index: 701; background: #f3f4f6;
+      display: flex; flex-direction: column; gap: 12px;
+      padding: 0 20px 20px 20px; box-shadow: 0 -8px 32px rgba(0,0,0,0.2);
+      opacity: 0; visibility: hidden; transform: translateY(100%);
+      transition: all 0.3s ease; overflow: hidden; border-radius: 16px 16px 0 0;
+    }
+    .compare-modal.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    .compare-modal-header {
+      flex-shrink: 0; height: 44px; display: flex; align-items: center; justify-content: flex-end; padding: 0 4px 0 0;
+    }
+    .compare-modal-close {
+      width: 32px; height: 32px; border-radius: 50%; background: #E2231A; color: #fff; border: none;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .compare-modal-close:hover { background: #c01e16; }
+    .compare-section {
+      flex-shrink: 0; background: #e5e7eb; border-radius: 10px; padding: 12px 16px;
+    }
+    .compare-section-title { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px; }
+    .compare-section-similar .compare-section-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;
+    }
+    .compare-section-similar .compare-section-head .compare-section-title { margin-bottom: 0; }
+    .compare-section-similar.collapsed .compare-section-body { display: none; }
+    .compare-section-similar .btn-toggle-similar {
+      padding: 10px 24px; font-size: 14px; color: #6b7280; background: #fff; border: 1px solid #d1d5db;
+      border-radius: 8px; cursor: pointer; flex-shrink: 0; min-width: 100px;
+    }
+    .compare-section-similar .btn-toggle-similar:hover { border-color: #9ca3af; color: #374151; }
+    .compare-section-body {
+      display: flex; flex-wrap: wrap; gap: 12px; overflow-x: auto; overflow-y: hidden;
+      min-height: 60px; align-items: flex-start;
+    }
+    .compare-card {
+      flex-shrink: 0; width: 140px; background: #fff; border-radius: 8px;
+      border: 1px solid #e5e7eb; overflow: hidden; transition: all 0.2s;
+    }
+    .compare-card:hover { border-color: #E2231A; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .compare-card .thumb { display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover; background: #f3f4f6; }
+    .compare-card .info { padding: 8px 10px; }
+    .compare-card .name { font-size: 12px; color: #111827; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .compare-card .price { font-size: 13px; color: #E2231A; font-weight: 600; margin-top: 4px; }
+    .compare-card.compare-card-checkable { cursor: pointer; }
+    .compare-card .thumb-wrap { position: relative; display: block; }
+    .compare-card.compare-card-checkable input[type="checkbox"] {
+      position: absolute; top: 6px; right: 6px; width: 18px; height: 18px; z-index: 2;
+      cursor: pointer; margin: 0;
+    }
+    .compare-card .btn-remove {
+      position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(0,0,0,0.5); color: #fff; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 10px;
+    }
+    .compare-card .btn-remove:hover { background: #E2231A; }
+    .compare-card.has-remove { position: relative; }
+    .compare-section-actions { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; margin-left: 16px; }
+    .compare-section-actions .btn-clear { padding: 10px 24px; font-size: 14px; color: #6b7280; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer; min-width: 100px; }
+    .compare-section-actions .btn-clear:hover { border-color: #9ca3af; color: #374151; }
+    .compare-section-actions .btn-do { padding: 10px 24px; font-size: 14px; color: #fff; background: #E2231A; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; min-width: 100px; }
+    .compare-section-actions .btn-do:hover { background: #c01e16; }
+    .compare-section.compare-section-with-actions { display: flex; flex-direction: column; }
+    .compare-section.compare-section-with-actions .compare-section-row { display: flex; align-items: flex-start; margin-top: 0; flex: 1; min-height: 0; }
+    .compare-section.compare-section-with-actions .compare-section-body { flex: 1; min-width: 0; }
+    .compare-empty-hint { font-size: 12px; color: #9ca3af; padding: 12px 0; }
+
     /* ========== AI 智能助手悬浮按钮（科技感） ========== */
     .float-item-ai {
-      width: 64px;
-      height: 64px;
+      width: 76px;
+      height: 76px;
       border-radius: 50%;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #E2231A 100%);
       box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4), 0 0 30px rgba(118, 75, 162, 0.2);
@@ -142,8 +290,8 @@
       transform: scale(1.1);
       box-shadow: 0 6px 30px rgba(102, 126, 234, 0.5), 0 0 40px rgba(118, 75, 162, 0.3);
     }
-    .float-item-ai i { font-size: 22px; margin-bottom: 2px; }
-    .float-item-ai span { font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
+    .float-item-ai i { font-size: 24px; margin-bottom: 2px; }
+    .float-item-ai span { font-size: 13px; font-weight: 500; letter-spacing: 0.5px; }
 
     /* ========== AI 助手弹窗（贴右侧按钮） ========== */
     .ai-modal-overlay {
@@ -503,33 +651,6 @@
 </head>
 <body class="bg-gray-100 min-h-screen" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;">
   
-  <!-- ==================== 顶部暗色条 ==================== -->
-  <div class="top-dark text-sm">
-    <div class="max-w-[1400px] mx-auto px-4 h-9 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <span id="topGreet">您好，请登录</span>
-        <a href="#" class="hover:text-white" onclick="showLogin(); return false;">登录</a>
-        <a href="#" class="hover:text-white" onclick="return false;">注册</a>
-      </div>
-      <div class="flex items-center gap-6">
-        <a href="home.html" class="text-white font-medium">首页</a>
-        <a href="workbench/workbench_home.html" class="hover:text-white">我的工作台</a>
-        <a href="#" class="hover:text-white" onclick="return false;">采购指南</a>
-        <span class="text-gray-400">客服电话：400-XXX-XXXX</span>
-        <div class="flex items-center gap-2">
-          <label class="text-gray-400 text-xs">角色：</label>
-          <select id="roleSelect" class="px-2 py-1 border border-gray-500 rounded text-xs bg-transparent text-gray-300 focus:outline-none focus:ring-1 focus:ring-white" onchange="switchRole(this.value)">
-            <option value="guest">访客</option>
-            <option value="buyer-user">普通采购用户</option>
-            <option value="buyer">采购专员</option>
-            <option value="supplier">供应商</option>
-            <option value="admin">平台管理员</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
-  
   <!-- ==================== 红色主栏：Logo + 搜索 ==================== -->
   <div class="top-red text-white">
     <div class="max-w-[1400px] mx-auto px-4 py-4">
@@ -597,9 +718,9 @@
 
       <!-- ==================== 分类推荐区 ==================== -->
     <!-- 分类推荐 1：办公用品 电脑数码 -->
-    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
+    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4 reco-section">
       <div class="font-semibold text-gray-900 px-4 py-3 border-b border-gray-100">分类推荐</div>
-      <div class="flex">
+      <div class="flex min-h-[300px]">
         <div class="reco-panel w-56 shrink-0 flex flex-col justify-between p-4">
           <div>
             <h3 class="text-lg font-bold text-white mb-2">办公用品 电脑数码</h3>
@@ -624,8 +745,8 @@
     </section>
     
     <!-- 分类推荐 2：个人防护 安全防护 -->
-    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4">
-      <div class="flex">
+    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden mb-4 reco-section">
+      <div class="flex min-h-[300px]">
         <div class="reco-panel sec2 w-56 shrink-0 flex flex-col justify-between p-4">
           <div>
             <h3 class="text-lg font-bold text-white mb-2">个人防护 安全防护</h3>
@@ -650,8 +771,8 @@
     </section>
 
     <!-- 分类推荐 3：工具耗材 机床数控 -->
-    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div class="flex">
+    <section class="bg-white rounded-lg border border-gray-200 overflow-hidden reco-section">
+      <div class="flex min-h-[300px]">
         <div class="reco-panel sec3 w-56 shrink-0 flex flex-col justify-between p-4">
           <div>
             <h3 class="text-lg font-bold text-white mb-2">工具耗材 机床数控</h3>
@@ -687,10 +808,18 @@
 
       <!-- ==================== 底部商城信息 ==================== -->
       <section class="footer-services rounded-lg mt-4 px-6 py-5">
-        <div class="grid grid-cols-5 gap-6" id="footerServices"></div>
-        <div class="footer-info" id="footerInfo">
-          <div>主办单位：中资数据科技有限公司 &nbsp;&nbsp; 技术单位：福建天创信息科技股份有限公司</div>
-          <div>网站备案：闽ICP备2024012345号-1</div>
+        <div class="footer-inner">
+          <div class="footer-left">
+            <div class="footer-quick-links" id="footerQuickLinks">
+              <a href="home.html">首页</a><span class="sep">|</span><a href="#">行业专区</a><span class="sep">|</span><a href="sourcing_inquiry.html">寻源询价</a><span class="sep">|</span><a href="#">询价报价</a><span class="sep">|</span><a href="#">风险查询</a><span class="sep">|</span><a href="#">供应商信用认证</a>
+            </div>
+            <div class="footer-org" id="footerMeta">
+              主办单位：中资数据科技有限公司 &nbsp;&nbsp; 技术单位：中富通集团股份有限公司 &nbsp;&nbsp; 网站备案：京ICP备2020043237号-4
+            </div>
+          </div>
+          <div class="footer-right" id="footerServices">
+            <!-- 5 个图标+文字由 JS 渲染 -->
+          </div>
         </div>
       </section>
     </div>
@@ -716,39 +845,53 @@
     </div>
   </div>
 
-  <!-- ==================== 右侧悬浮功能区 ==================== -->
-  <div class="right-float-panel no-print" id="rightFloatPanel">
-    <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-      <p class="text-gray-700 mb-3">Hi~欢迎登录平台</p>
-      <div class="flex gap-2">
-        <button type="button" class="flex-1 py-2 bg-primary text-white text-sm rounded hover:bg-primary/90" onclick="hideRightFloatPanel(); showLogin();">登录</button>
-        <button type="button" class="flex-1 py-2 border border-primary text-primary text-sm rounded hover:bg-red-50" onclick="hideRightFloatPanel(); alert('原型演示：注册功能暂未实现'); return false;">注册</button>
+  <!-- ==================== 比质比价弹窗（全宽贴底、上下两块，无遮罩） ==================== -->
+  <div class="compare-modal" id="compareModal">
+    <div class="compare-modal-header">
+      <button type="button" class="compare-modal-close" onclick="closeCompareModal()" title="关闭"><i class="fas fa-times"></i></button>
+    </div>
+    <!-- 上方：相近品规商品（可收起/展开） -->
+    <div class="compare-section compare-section-similar" id="compareSectionSimilar">
+      <div class="compare-section-head">
+        <span class="compare-section-title">相近品规商品</span>
+        <button type="button" class="btn-toggle-similar" id="btnToggleSimilar" onclick="toggleCompareSimilarSection()">收起</button>
       </div>
-      <div class="mt-4 pt-4 border-t border-gray-100 grid grid-cols-3 gap-2 text-center text-xs text-gray-500">
-        <a href="workbench/workbench_home.html" class="hover:text-primary"><i class="fas fa-tachometer-alt block mb-1 text-base"></i>工作台</a>
-        <a href="#" class="hover:text-primary" onclick="return false;"><i class="fas fa-file-alt block mb-1 text-base"></i>平台规则</a>
-        <a href="#" class="hover:text-primary" onclick="return false;"><i class="fas fa-book block mb-1 text-base"></i>采购指南</a>
+      <div class="compare-section-body" id="compareSimilarList"></div>
+    </div>
+    <!-- 下方：比质比价（按钮在右侧上下排列） -->
+    <div class="compare-section compare-section-with-actions">
+      <div class="compare-section-title">比质比价</div>
+      <div class="compare-section-row">
+        <div class="compare-section-body" id="comparePendingList"></div>
+        <div class="compare-section-actions">
+          <button type="button" class="btn-clear" onclick="clearPendingCompare()">清空</button>
+          <button type="button" class="btn-do" onclick="doCompare()">比质比价</button>
+        </div>
       </div>
     </div>
   </div>
-  
+
   <!-- ==================== 浮动菜单 ==================== -->
   <div class="float-menu flex flex-col gap-2 no-print">
-    <a href="#" class="float-item text-gray-600" title="我的" onclick="return false;">
-      <i class="fas fa-user"></i>
-      <span>我的</span>
+    <a href="javascript:void(0)" class="float-item float-item-login" id="floatLoginOrWorkbench" title="登录">
+      <i class="fas fa-sign-in-alt" id="floatLoginOrWorkbenchIcon"></i>
+      <span id="floatLoginOrWorkbenchText">登录</span>
     </a>
     <a href="#" class="float-item text-gray-600 relative" title="购物车" onclick="return false;">
       <i class="fas fa-shopping-cart"></i>
       <span>购物车</span>
       <span id="cartBadge" class="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-primary text-white text-[10px] rounded-full hidden">0</span>
     </a>
+    <a href="sourcing_inquiry.html" class="float-item text-gray-600" title="寻源询价">
+      <i class="fas fa-search"></i>
+      <span>寻源询价</span>
+    </a>
     <a href="#" class="float-item text-gray-600" title="返回顶部" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
       <i class="fas fa-chevron-up"></i>
       <span>返回顶部</span>
     </a>
     <!-- AI 智能助手悬浮按钮（科技感样式） -->
-    <div class="float-item-ai" id="aiAssistantBtn" title="AI 智能助手" onclick="openAiModal()">
+    <div class="float-item-ai" id="aiAssistantBtn" title="AI 智能助手" onclick="openAiAssistant()">
       <i class="fas fa-robot"></i>
       <span>AI助手</span>
     </div>
@@ -825,6 +968,7 @@
 
     function bindTabEvents() {
       document.querySelectorAll('#tabNav .tab-btn').forEach(btn => {
+        if (btn.tagName === 'A') return;
         btn.addEventListener('click', () => switchTab(btn.dataset.tab));
       });
     }
@@ -998,54 +1142,64 @@
       `).join('');
     }
 
-    // ---------- 底部商城信息 ----------
+    // ---------- 底部商城信息（右侧 5 个图标+文字） ----------
     function renderFooterServices() {
       const el = document.getElementById('footerServices');
       if (!el || !homeData) return;
-      el.innerHTML = (homeData.footerServices || []).map(s => `
-        <div class="footer-service-item">
-          <div class="footer-service-icon"><i class="fas ${s.icon || 'fa-shield-alt'}"></i></div>
-          <div class="footer-service-text">${s.text}</div>
+      const list = (homeData.footerServices || []).slice(0, 5);
+      el.innerHTML = list.map(s => `
+        <div class="footer-icon-item">
+          <div class="icon-wrap"><i class="fas ${s.icon || 'fa-shield-alt'}"></i></div>
+          <span class="icon-text">${s.text}</span>
         </div>
       `).join('');
     }
 
-    // ---------- Mock：分类推荐商品 ----------
+    // ---------- Mock：分类推荐商品（含最低价 min 用于合理性横条） ----------
     const recoMock = {
       0: { // 办公用品 电脑数码
         all: [
-          { id: 1, name: 'FUJIFILM/富士胶片 A4黑白激光打印机 ApeosPort Print  C4572', price: 1653.46, unit: '台', supplier: '震坤行工业超市(上海)有限公司', ref: 1986.35, img: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400&h=300&fit=crop' },
-          { id: 2, name: '晨光 M&G 中性笔 GP1163(盒) 0.5mm 中性笔 黑色 12支/盒', price: 19.46, unit: '盒', supplier: '咸亨国际科技股份有限公司', ref: 24.94, img: 'https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=400&h=300&fit=crop' },
-          { id: 3, name: '天章复印纸 A5 80g 白色 500张/包 10包/箱 新绿天章', price: 123, unit: '件', supplier: '苏宁易购集团股份有限公司', ref: 139.67, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
-          { id: 4, name: '齐心 C3674-5 A4复印纸白色 70g 500张/包 白色/70g/50', price: 25.92, unit: '包', supplier: '鑫方盛数智科技股份有限公司', ref: 33.87, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
-          { id: 9, name: '得力 文件夹 A4 文件袋 资料袋 透明塑料文件夹 10个装', price: 28.50, unit: '套', supplier: '得力集团股份有限公司', ref: 35.80, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
-          { id: 10, name: '惠普 HP LaserJet Pro 激光打印机 无线打印 自动双面', price: 1899.00, unit: '台', supplier: '惠普(中国)有限公司', ref: 2299.00, img: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400&h=300&fit=crop' }
+          { id: 1, name: 'FUJIFILM/富士胶片 A4黑白激光打印机 ApeosPort Print  C4572', price: 1653.46, unit: '台', supplier: '震坤行工业超市(上海)有限公司', ref: 1986.35, min: 1580, img: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400&h=300&fit=crop' },
+          { id: 2, name: '晨光 M&G 中性笔 GP1163(盒) 0.5mm 中性笔 黑色 12支/盒', price: 19.46, unit: '盒', supplier: '咸亨国际科技股份有限公司', ref: 24.94, min: 16, img: 'https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=400&h=300&fit=crop' },
+          { id: 3, name: '天章复印纸 A5 80g 白色 500张/包 10包/箱 新绿天章', price: 123, unit: '件', supplier: '苏宁易购集团股份有限公司', ref: 139.67, min: 98, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+          { id: 4, name: '齐心 C3674-5 A4复印纸白色 70g 500张/包 白色/70g/50', price: 25.92, unit: '包', supplier: '鑫方盛数智科技股份有限公司', ref: 33.87, min: 22, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+          { id: 9, name: '得力 文件夹 A4 文件袋 资料袋 透明塑料文件夹 10个装', price: 28.50, unit: '套', supplier: '得力集团股份有限公司', ref: 35.80, min: 24, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+          { id: 10, name: '惠普 HP LaserJet Pro 激光打印机 无线打印 自动双面', price: 1899.00, unit: '台', supplier: '惠普(中国)有限公司', ref: 2299.00, min: 2100, img: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400&h=300&fit=crop' }
         ],
         paper: [ 2, 3, 4, 1, 9 ], printer: [ 1, 10, 2, 3, 4 ], file: [ 9, 3, 4, 1, 2 ], write: [ 2, 4, 1, 9, 3 ]
       },
       1: { // 个人防护 安全防护
         all: [
-          { id: 5, name: '唐丰 安全帽 TF/唐丰ABS-V 安全帽 蓝 售卖规格:1顶', price: 17.70, unit: '顶', supplier: '西域智慧供应链(上海)股份公司', ref: 19.09, img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=300&fit=crop' },
-          { id: 6, name: 'CM/朝美 含活性炭颗粒物防护口罩 活性炭净化加厚型口罩', price: 1.24, unit: '只', supplier: '震坤行工业超市(上海)有限公司', ref: 1.44, img: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b34b?w=400&h=300&fit=crop' },
-          { id: 7, name: '星宇 劳保手套300#毛圈加绒加厚pvc浸胶发泡防滑防水耐', price: 59.10, unit: '双', supplier: '欧菲斯集团股份有限公司', ref: 59.41, img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop' },
-          { id: 8, name: '安赛瑞 310075 安赛瑞基坑护栏网 建筑工地施工围栏隔离', price: 239, unit: '个', supplier: '深圳市怡亚通供应链股份有限公司', ref: 288.76, img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop' },
-          { id: 11, name: '3M 防护眼镜 防冲击护目镜 防雾防尘 工业安全眼镜', price: 45.80, unit: '副', supplier: '3M中国有限公司', ref: 58.00, img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=300&fit=crop' },
-          { id: 12, name: '霍尼韦尔 防尘口罩 KN95 防护口罩 50只装', price: 89.90, unit: '盒', supplier: '霍尼韦尔(中国)有限公司', ref: 109.90, img: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b34b?w=400&h=300&fit=crop' }
+          { id: 5, name: '唐丰 安全帽 TF/唐丰ABS-V 安全帽 蓝 售卖规格:1顶', price: 17.70, unit: '顶', supplier: '西域智慧供应链(上海)股份公司', ref: 19.09, min: 15, img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=300&fit=crop' },
+          { id: 6, name: 'CM/朝美 含活性炭颗粒物防护口罩 活性炭净化加厚型口罩', price: 1.24, unit: '只', supplier: '震坤行工业超市(上海)有限公司', ref: 1.44, min: 1.0, img: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b34b?w=400&h=300&fit=crop' },
+          { id: 7, name: '星宇 劳保手套300#毛圈加绒加厚pvc浸胶发泡防滑防水耐', price: 59.10, unit: '双', supplier: '欧菲斯集团股份有限公司', ref: 59.41, min: 52, img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop' },
+          { id: 8, name: '安赛瑞 310075 安赛瑞基坑护栏网 建筑工地施工围栏隔离', price: 239, unit: '个', supplier: '深圳市怡亚通供应链股份有限公司', ref: 288.76, min: 210, img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop' },
+          { id: 11, name: '3M 防护眼镜 防冲击护目镜 防雾防尘 工业安全眼镜', price: 45.80, unit: '副', supplier: '3M中国有限公司', ref: 58.00, min: 42, img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=300&fit=crop' },
+          { id: 12, name: '霍尼韦尔 防尘口罩 KN95 防护口罩 50只装', price: 89.90, unit: '盒', supplier: '霍尼韦尔(中国)有限公司', ref: 109.90, min: 95, img: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b34b?w=400&h=300&fit=crop' }
         ],
         head: [ 5, 11, 6, 7, 8 ], resp: [ 6, 12, 5, 7, 8 ], hand: [ 7, 5, 6, 8, 11 ], road: [ 8, 5, 6, 7, 12 ]
       },
       2: { // 工具耗材 机床数控
         all: [
-          { id: 21, name: '博世 GSR 手电钻 13mm 家用电动螺丝刀', price: 299, unit: '台', supplier: '博世(中国)有限公司', ref: 359, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' },
-          { id: 22, name: '世达 32件套筒扳手套装 公制', price: 268, unit: '套', supplier: '世达工具(上海)有限公司', ref: 318, img: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=300&fit=crop' },
-          { id: 23, name: '三丰 数显游标卡尺 150mm', price: 158, unit: '把', supplier: '三丰精密量仪(上海)有限公司', ref: 188, img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop' },
-          { id: 24, name: '牧田 角磨机 100mm 750W', price: 398, unit: '台', supplier: '牧田(中国)有限公司', ref: 458, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' },
-          { id: 25, name: '史丹利 羊角锤 0.5kg 木柄', price: 45, unit: '把', supplier: '史丹利工具(上海)有限公司', ref: 55, img: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=300&fit=crop' },
-          { id: 26, name: '得伟 锂电钻 12V 双电版', price: 588, unit: '套', supplier: '得伟(中国)有限公司', ref: 688, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' }
+          { id: 21, name: '博世 GSR 手电钻 13mm 家用电动螺丝刀', price: 299, unit: '台', supplier: '博世(中国)有限公司', ref: 359, min: 260, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' },
+          { id: 22, name: '世达 32件套筒扳手套装 公制', price: 268, unit: '套', supplier: '世达工具(上海)有限公司', ref: 318, min: 240, img: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=300&fit=crop' },
+          { id: 23, name: '三丰 数显游标卡尺 150mm', price: 158, unit: '把', supplier: '三丰精密量仪(上海)有限公司', ref: 188, min: 140, img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop' },
+          { id: 24, name: '牧田 角磨机 100mm 750W', price: 398, unit: '台', supplier: '牧田(中国)有限公司', ref: 458, min: 360, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' },
+          { id: 25, name: '史丹利 羊角锤 0.5kg 木柄', price: 45, unit: '把', supplier: '史丹利工具(上海)有限公司', ref: 55, min: 38, img: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=400&h=300&fit=crop' },
+          { id: 26, name: '得伟 锂电钻 12V 双电版', price: 588, unit: '套', supplier: '得伟(中国)有限公司', ref: 688, min: 620, img: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=300&fit=crop' }
         ],
         manual: [ 22, 25, 21, 23, 24 ], electric: [ 21, 24, 26, 22, 23 ], machine: [ 23, 24, 21, 22, 26 ], measure: [ 23, 22, 21, 24, 25 ]
       }
     };
+
+    function getPriceEvaluation(price, minPrice, refPrice) {
+      if (refPrice <= minPrice) return '价格合理';
+      var ratio = (price - minPrice) / (refPrice - minPrice);
+      if (ratio <= 0.25) return '高性价比';
+      if (ratio <= 0.5) return '价格适中';
+      if (ratio <= 1) return '价格合理';
+      return '价格偏高';
+    }
     
     function getProductByBlockIndex(block, tab) {
       const d = recoMock[block];
@@ -1053,26 +1207,174 @@
       return d[tab].map(id => d.all.find(p => p.id === id)).filter(Boolean).slice(0, 5);
     }
     
-    function renderProductCard(p) {
-      return `<a href="#" class="product-card block rounded-lg p-3 bg-white" onclick="return false;">
-        <div class="aspect-[16/10] rounded overflow-hidden bg-gray-100 mb-2"><img src="${p.img}" alt="" class="w-full h-full object-cover" loading="lazy"></div>
-        <div class="text-gray-900 text-sm line-clamp-2 leading-snug mb-1">${p.name}</div>
-        <div class="text-primary font-semibold mb-1">¥${p.price.toFixed(2)} 元/${p.unit}</div>
-        <div class="text-xs text-gray-500 mb-1"><i class="fas fa-crown text-amber-500 mr-1"></i>${p.supplier}</div>
-        <div class="flex items-center gap-2">
-          <div class="flex-1 h-1.5 bg-gray-200 rounded overflow-hidden"><div class="h-full w-3/4 bg-green-500 rounded"></div></div>
-          <span class="text-xs text-gray-400 line-through">¥${(p.ref||0).toFixed(2)}</span>
+    function renderProductCard(p, blockId) {
+      var price = Number(p.price) || 0;
+      var refPrice = (p.ref != null && p.ref !== '') ? Number(p.ref) : price;
+      var minPrice = (p.min != null && p.min !== '') ? Number(p.min) : (refPrice * 0.6);
+      if (refPrice <= minPrice) refPrice = minPrice + 1;
+      var range = refPrice - minPrice;
+      var pricePercent;
+      if (price <= minPrice) pricePercent = 0;
+      else if (price <= refPrice) pricePercent = ((price - minPrice) / range) * 80;
+      else pricePercent = Math.min(100, 80 + ((price - refPrice) / (range * 0.25)) * 20);
+      var evalText = getPriceEvaluation(price, minPrice, refPrice);
+      var bid = (blockId != null ? blockId : 0);
+      return `<div class="product-card rounded-lg p-3 bg-white" data-product-id="${p.id}" data-block-id="${bid}">
+        <a href="store/store_detail.html?id=${p.id}" class="block" onclick="event.stopPropagation()">
+          <div class="reco-card-top">
+            <div class="aspect-[16/10] rounded overflow-hidden bg-gray-100 mb-2"><img src="${p.img}" alt="" class="w-full h-full object-cover" loading="lazy"></div>
+            <div class="text-gray-900 text-sm line-clamp-2 leading-snug mb-1">${p.name}</div>
+            <div class="text-primary font-semibold mb-1">¥${price.toFixed(2)} 元/${p.unit}</div>
+            <div class="text-xs text-gray-500 mb-1 reco-card-supplier" title="${(p.supplier || '').replace(/"/g, '&quot;')}"><i class="fas fa-crown text-amber-500 mr-1"></i>${p.supplier}</div>
+          </div>
+          <div class="price-rational-wrap">
+            <div class="price-rational-bar-container">
+              <div class="price-rational-label ${evalText === '价格偏高' ? 'high' : ''}" style="left:${pricePercent}%">${evalText}</div>
+              <div class="price-rational-bar-wrap">
+                <div class="price-rational-bar-green"></div>
+                <div class="price-rational-bar-red"></div>
+                <div class="price-rational-dot price-rational-dot-min"></div>
+                <div class="price-rational-dot price-rational-dot-ref"></div>
+                <div class="price-rational-dot price-rational-dot-price" style="left:${pricePercent}%"></div>
+              </div>
+              <div class="price-rational-labels">
+                <span class="left">¥${minPrice.toFixed(2)}</span>
+                <span class="right">¥${refPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+        <div class="reco-card-actions">
+          <button type="button" class="btn-compare" onclick="event.preventDefault();event.stopPropagation();openCompareModal(this)"><i class="fas fa-balance-scale"></i> 比质比价</button>
         </div>
-      </a>`;
+      </div>`;
     }
     
     function renderBlock(blockId) {
       const tab = document.querySelector(`[data-block="${blockId}"].tab-2nd.active`)?.dataset.tab || 'all';
       const list = getProductByBlockIndex(Number(blockId), tab);
       const el = document.getElementById('recoProducts' + blockId);
-      if (el) el.innerHTML = list.map(renderProductCard).join('');
+if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
     }
-    
+
+    // ---------- 比质比价弹窗 ----------
+    var compareSimilarProducts = [];
+    var comparePendingList = [];
+    var compareMaxItems = 10;
+
+    function getProductById(blockId, productId) {
+      var d = recoMock[blockId];
+      if (!d || !d.all) return null;
+      return d.all.find(function(p) { return p.id === productId || p.id === Number(productId); });
+    }
+
+    function openCompareModal(btn) {
+      var card = btn.closest('.product-card');
+      if (!card) return;
+      var productId = card.dataset.productId;
+      var blockId = card.dataset.blockId;
+      var product = getProductById(Number(blockId), productId);
+      if (!product) return;
+      comparePendingList = [{ id: product.id, name: product.name, price: product.price, img: product.img, unit: product.unit }];
+      var allInBlock = recoMock[Number(blockId)] ? (recoMock[Number(blockId)].all || []) : [];
+      compareSimilarProducts = allInBlock.filter(function(p) { return p.id !== product.id && String(p.id) !== String(productId); });
+      renderCompareSimilarList();
+      renderComparePendingList();
+      var sectionSimilar = document.getElementById('compareSectionSimilar');
+      if (sectionSimilar) sectionSimilar.classList.remove('collapsed');
+      var btnToggle = document.getElementById('btnToggleSimilar');
+      if (btnToggle) btnToggle.textContent = '收起';
+      document.getElementById('compareModal').classList.add('show');
+    }
+
+    function toggleCompareSimilarSection() {
+      var section = document.getElementById('compareSectionSimilar');
+      var btn = document.getElementById('btnToggleSimilar');
+      if (!section || !btn) return;
+      section.classList.toggle('collapsed');
+      btn.textContent = section.classList.contains('collapsed') ? '展开' : '收起';
+    }
+
+    function closeCompareModal() {
+      document.getElementById('compareModal').classList.remove('show');
+    }
+
+    function renderCompareSimilarList() {
+      var el = document.getElementById('compareSimilarList');
+      if (!el) return;
+      if (!compareSimilarProducts.length) {
+        el.innerHTML = '<span class="compare-empty-hint">暂无相近品规商品</span>';
+        return;
+      }
+      el.innerHTML = compareSimilarProducts.map(function(p) {
+        var checked = comparePendingList.some(function(x) { return x.id === p.id; }) ? ' checked' : '';
+        var nameEsc = (p.name || '').replace(/"/g, '&quot;');
+        return '<label class="compare-card compare-card-checkable">' +
+          '<span class="thumb-wrap">' +
+          '<img src="' + (p.img || '') + '" alt="" class="thumb" onerror="this.src=\'https://placehold.co/140/eee/999?text=+\'">' +
+          '<input type="checkbox" data-product-id="' + p.id + '" onchange="toggleComparePending(' + p.id + ', this.checked, this)"' + checked + '>' +
+          '</span>' +
+          '<div class="info"><div class="name" title="' + nameEsc + '">' + (p.name || '') + '</div><div class="price">¥' + (p.price != null ? Number(p.price).toFixed(2) : '0.00') + '</div></div>' +
+          '</label>';
+      }).join('');
+    }
+
+    function renderComparePendingList() {
+      var el = document.getElementById('comparePendingList');
+      if (!el) return;
+      if (!comparePendingList.length) {
+        el.innerHTML = '<span class="compare-empty-hint">待比质比价（已选商品）</span>';
+        return;
+      }
+      el.innerHTML = comparePendingList.map(function(p) {
+        var nameEsc = (p.name || '').replace(/"/g, '&quot;');
+        return '<div class="compare-card has-remove">' +
+          '<button type="button" class="btn-remove" onclick="removeFromComparePending(' + p.id + ')" title="移除"><i class="fas fa-times"></i></button>' +
+          '<img src="' + (p.img || '') + '" alt="" class="thumb" onerror="this.src=\'https://placehold.co/140/eee/999?text=+\'">' +
+          '<div class="info"><div class="name" title="' + nameEsc + '">' + (p.name || '') + '</div><div class="price">¥' + (p.price != null ? Number(p.price).toFixed(2) : '0.00') + '</div></div>' +
+          '</div>';
+      }).join('');
+    }
+
+    function toggleComparePending(productId, checked, checkboxEl) {
+      if (checked) {
+        if (comparePendingList.length >= compareMaxItems) {
+          alert('最多可添加' + compareMaxItems + '个商品');
+          if (checkboxEl) checkboxEl.checked = false;
+          return;
+        }
+        var p = compareSimilarProducts.find(function(x) { return x.id === productId; });
+        if (p && !comparePendingList.some(function(x) { return x.id === productId; })) {
+          comparePendingList.push({ id: p.id, name: p.name, price: p.price, img: p.img, unit: p.unit });
+        }
+      } else {
+        comparePendingList = comparePendingList.filter(function(x) { return x.id !== productId; });
+      }
+      renderCompareSimilarList();
+      renderComparePendingList();
+    }
+
+    function removeFromComparePending(productId) {
+      comparePendingList = comparePendingList.filter(function(x) { return x.id !== productId; });
+      renderCompareSimilarList();
+      renderComparePendingList();
+    }
+
+    function clearPendingCompare() {
+      comparePendingList = [];
+      renderCompareSimilarList();
+      renderComparePendingList();
+    }
+
+    function doCompare() {
+      if (comparePendingList.length < 2) {
+        alert('请至少添加2个商品进行比质比价');
+        return;
+      }
+      closeCompareModal();
+      alert('原型演示：比质比价功能（已选' + comparePendingList.length + '个商品）');
+    }
+
     // 二级分类标签切换
     document.querySelectorAll('.tab-2nd').forEach(btn => {
       btn.addEventListener('click', function() {
@@ -1090,22 +1392,50 @@
       if (type === 'product') { window.location.href = '#'; /* category.html?q= */ return; }
     }
     
-    function hideRightFloatPanel() {
-      const el = document.getElementById('rightFloatPanel');
-      if (el) el.classList.add('hidden');
-    }
     function showLogin() { alert('原型演示：登录功能暂未实现'); }
+    
+    function isProtoLoggedIn() { return localStorage.getItem('protoLoggedIn') === '1'; }
+    function updateFloatMenuLoginState() {
+      var link = document.getElementById('floatLoginOrWorkbench');
+      var icon = document.getElementById('floatLoginOrWorkbenchIcon');
+      var text = document.getElementById('floatLoginOrWorkbenchText');
+      if (!link || !icon || !text) return;
+      if (isProtoLoggedIn()) {
+        link.href = 'workbench/workbench_home.html';
+        link.title = '工作台';
+        link.classList.remove('float-item-login');
+        link.removeAttribute('onclick');
+        link.onclick = null;
+        icon.className = 'fas fa-tachometer-alt';
+        text.textContent = '工作台';
+      } else {
+        link.href = 'javascript:void(0)';
+        link.title = '登录';
+        link.classList.add('float-item-login');
+        link.onclick = function(e) { e.preventDefault(); handleFloatLoginClick(); return false; };
+        icon.className = 'fas fa-sign-in-alt';
+        text.textContent = '登录';
+      }
+    }
+    function handleFloatLoginClick() {
+      if (isProtoLoggedIn()) return;
+      localStorage.setItem('protoLoggedIn', '1');
+      updateFloatMenuLoginState();
+      updateGreet();
+    }
     
     function getCurrentRole() { return localStorage.getItem('role') || 'guest'; }
     function switchRole(v) { localStorage.setItem('role', v); updateGreet(); }
     function updateGreet() {
       var r = getCurrentRole();
+      var proto = localStorage.getItem('protoLoggedIn') === '1';
       var greet = document.getElementById('topGreet');
-      if (r === 'guest') { if (greet) greet.textContent = '您好，请登录'; } 
-      else { if (greet) greet.textContent = '张三（' + (r==='buyer'?'采购专员':r==='buyer-user'?'普通采购用户':r==='supplier'?'供应商':'管理员') + '）'; }
+      if (!proto && r === 'guest') { if (greet) greet.textContent = '您好，请登录'; } 
+      else { if (greet) greet.textContent = '张三（' + (r==='buyer'?'采购专员':r==='buyer-user'?'普通采购用户':r==='supplier'?'供应商':r==='admin'?'管理员':'普通采购用户') + '）'; }
     }
     
     document.addEventListener('DOMContentLoaded', function() {
+      localStorage.removeItem('protoLoggedIn');
       loadHomeData();
       bindTabEvents();
       switchTab('home');
@@ -1123,6 +1453,7 @@
 
       var r = getCurrentRole();
       var sel = document.getElementById('roleSelect'); if (sel) sel.value = r;
+      updateFloatMenuLoginState();
       updateGreet();
       renderBlock(0);
       renderBlock(1);
@@ -1160,24 +1491,43 @@
       favorites: []
     };
     
-    // 打开 AI 弹窗
-    function openAiModal() {
-      document.getElementById('aiModalOverlay').classList.add('show');
-      document.getElementById('aiModal').classList.add('show');
-      document.getElementById('aiInput').focus();
+    // 打开 AI 智能助手（新窗口）
+    function openAiAssistant() {
+      // 检查登录状态
+      if (!isProtoLoggedIn()) {
+        // 未登录，提示用户登录
+        if (confirm('请先登录后使用 AI 智能助手。\n\n点击「确定」进行登录。')) {
+          // 模拟登录
+          localStorage.setItem('protoLoggedIn', '1');
+          updateFloatMenuLoginState();
+          updateGreet();
+          // 登录成功后打开 AI 助手
+          window.open('ai_assistant.html', '_blank');
+        }
+        return;
+      }
+      // 已登录，在新窗口打开 AI 交互页面
+      window.open('ai_assistant.html', '_blank');
     }
     
-    // 关闭 AI 弹窗
+    // 保留原弹窗函数（兼容）
+    function openAiModal() {
+      openAiAssistant();
+    }
+    
+    // 关闭 AI 弹窗（兼容）
     function closeAiModal() {
-      document.getElementById('aiModalOverlay').classList.remove('show');
-      document.getElementById('aiModal').classList.remove('show');
-      // 同时关闭功能弹窗
+      const overlay = document.getElementById('aiModalOverlay');
+      const modal = document.getElementById('aiModal');
+      if (overlay) overlay.classList.remove('show');
+      if (modal) modal.classList.remove('show');
       closeFuncModal();
     }
     
     // 关闭功能弹窗
     function closeFuncModal() {
-      document.getElementById('aiFuncModal').classList.remove('show');
+      const funcModal = document.getElementById('aiFuncModal');
+      if (funcModal) funcModal.classList.remove('show');
     }
     
     // 发送快捷消息

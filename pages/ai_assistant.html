@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 智能助手 | 阳光优采</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+  
+  <style>
+    :root {
+      --color-primary: #E2231A;
+      --color-primary-hover: #c01e16;
+      --gradient-ai: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: #f5f7fa;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    /* ==================== 顶部导航 ==================== */
+    .ai-header {
+      background: var(--gradient-ai);
+      color: #fff;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .ai-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .ai-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+    }
+    
+    .ai-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    
+    .ai-logo-text {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    
+    .ai-header-title {
+      font-size: 15px;
+      font-weight: 500;
+      padding-left: 16px;
+      border-left: 1px solid rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .ai-header-title i {
+      font-size: 18px;
+    }
+    
+    .ai-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .ai-user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    
+    .ai-user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    /* ==================== 主体三栏布局 ==================== */
+    .ai-main {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      padding: 16px;
+      gap: 16px;
+    }
+    
+    /* 左侧：对话页面 */
+    .ai-chat-panel {
+      flex: 0 0 35%;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .ai-panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+    }
+    
+    .ai-panel-header-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--gradient-ai);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    
+    .ai-panel-header-text h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 2px;
+    }
+    
+    .ai-panel-header-text p {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    
+    .ai-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .ai-message {
+      display: flex;
+      gap: 10px;
+      max-width: 90%;
+    }
+    
+    .ai-message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+    
+    .ai-message.assistant {
+      align-self: flex-start;
+    }
+    
+    .ai-message-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    .ai-message.user .ai-message-avatar {
+      background: linear-gradient(135deg, #E2231A 0%, #ff6b6b 100%);
+      color: #fff;
+    }
+    
+    .ai-message.assistant .ai-message-avatar {
+      background: var(--gradient-ai);
+      color: #fff;
+    }
+    
+    .ai-message-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .ai-message-bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+    
+    .ai-message.user .ai-message-bubble {
+      background: linear-gradient(135deg, #E2231A 0%, #c01e16 100%);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    
+    .ai-message.assistant .ai-message-bubble {
+      background: #f3f4f6;
+      color: #374151;
+      border-bottom-left-radius: 4px;
+    }
+    
+    .ai-message-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .ai-option-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .ai-option-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+      background: #f8f9ff;
+    }
+    
+    .ai-chat-input {
+      padding: 16px;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      gap: 12px;
+      background: #fafafa;
+    }
+    
+    .ai-chat-input input {
+      flex: 1;
+      height: 44px;
+      padding: 0 18px;
+      border: 1px solid #e5e7eb;
+      border-radius: 22px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      background: #fff;
+    }
+    
+    .ai-chat-input input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .ai-chat-input button {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: 22px;
+      background: var(--gradient-ai);
+      color: #fff;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .ai-chat-input button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* 中间：智能分析页 */
+    .ai-analysis-panel {
+      flex: 0 0 40%;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .ai-analysis-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+    }
+    
+    .ai-analysis-header .ai-panel-header-icon {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .ai-analysis-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    .ai-analysis-empty {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .ai-analysis-empty-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #d1d5db;
+      margin-bottom: 16px;
+    }
+    
+    .ai-analysis-empty h4 {
+      font-size: 16px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+    
+    .ai-analysis-empty p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    /* 分析内容 - 商品卡片 */
+    .ai-product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    
+    .ai-product-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    
+    .ai-product-card:hover {
+      border-color: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .ai-product-card-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #f3f4f6;
+      margin-bottom: 10px;
+    }
+    
+    .ai-product-card-name {
+      font-size: 13px;
+      color: #1f2937;
+      line-height: 1.4;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .ai-product-card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .ai-product-card-price {
+      font-size: 16px;
+      color: #E2231A;
+      font-weight: 600;
+    }
+    
+    .ai-product-card-score {
+      font-size: 12px;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .ai-product-card-score i {
+      color: #fbbf24;
+    }
+    
+    .ai-product-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .ai-btn-sm {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    
+    .ai-btn-sm.primary {
+      background: #E2231A;
+      color: #fff;
+    }
+    
+    .ai-btn-sm.primary:hover {
+      background: #c01e16;
+    }
+    
+    .ai-btn-sm.secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    
+    .ai-btn-sm.secondary:hover {
+      background: #e5e7eb;
+    }
+    
+    /* 比价表格 */
+    .ai-compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .ai-compare-table th,
+    .ai-compare-table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .ai-compare-table th {
+      background: linear-gradient(135deg, #f8f9ff 0%, #f3f4f6 100%);
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .ai-compare-table td {
+      color: #4b5563;
+    }
+    
+    .ai-compare-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .ai-compare-table .highlight {
+      color: #10b981;
+      font-weight: 600;
+    }
+    
+    /* 评价列表 */
+    .ai-review-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .ai-review-tab {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .ai-review-tab.positive {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .ai-review-tab.positive.active {
+      background: #10b981;
+      color: #fff;
+    }
+    
+    .ai-review-tab.negative {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .ai-review-tab.negative.active {
+      background: #ef4444;
+      color: #fff;
+    }
+    
+    .ai-review-item {
+      padding: 12px;
+      background: #f9fafb;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .ai-review-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .ai-review-user {
+      font-size: 13px;
+      color: #374151;
+      font-weight: 500;
+    }
+    
+    .ai-review-tag {
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+    
+    .ai-review-tag.positive {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .ai-review-tag.negative {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .ai-review-content {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+    
+    /* 右侧：快捷操作页 */
+    .ai-quick-panel {
+      flex: 0 0 25%;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .ai-quick-tabs {
+      display: flex;
+      border-bottom: 1px solid #f0f0f0;
+      padding-top: 4px;
+    }
+    
+    .ai-quick-tab {
+      flex: 1;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #6b7280;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    
+    .ai-quick-tab.active {
+      color: #E2231A;
+    }
+    
+    .ai-quick-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 3px;
+      background: #E2231A;
+      border-radius: 3px 3px 0 0;
+    }
+    
+    .ai-quick-tab:hover:not(.active) {
+      color: #374151;
+      background: #f9fafb;
+    }
+    
+    .ai-quick-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    .ai-quick-empty {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    
+    .ai-quick-empty-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #d1d5db;
+      margin-bottom: 12px;
+    }
+    
+    .ai-quick-empty p {
+      font-size: 13px;
+    }
+    
+    /* 快捷操作商品项 */
+    .ai-quick-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    
+    .ai-quick-item:hover {
+      border-color: #f97316;
+      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.1);
+    }
+    
+    .ai-quick-item-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f3f4f6;
+      flex-shrink: 0;
+    }
+    
+    .ai-quick-item-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .ai-quick-item-name {
+      font-size: 13px;
+      color: #1f2937;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .ai-quick-item-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .ai-quick-item-price {
+      font-size: 14px;
+      color: #E2231A;
+      font-weight: 600;
+    }
+    
+    .ai-quick-item-send {
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .ai-quick-item-send:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+    }
+    
+    /* 加载动画 */
+    .ai-loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #9ca3af;
+    }
+    
+    .ai-loading-dots {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .ai-loading-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #667eea;
+      animation: ai-bounce 1.4s infinite ease-in-out both;
+    }
+    
+    .ai-loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .ai-loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+    
+    @keyframes ai-bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+    
+    /* Toast 提示 */
+    .ai-toast {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      padding: 12px 24px;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .ai-toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    /* 分析内容标题 */
+    .ai-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .ai-section-title i {
+      color: #10b981;
+    }
+    
+    /* 预算标签 */
+    .ai-budget-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 11px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    
+    /* 评价摘要 */
+    .ai-review-summary {
+      padding: 16px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .ai-review-summary-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #166534;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .ai-review-summary-content {
+      font-size: 13px;
+      color: #15803d;
+      line-height: 1.6;
+    }
+    
+    /* 订单确认卡片 */
+    .ai-order-card {
+      border: 2px solid #10b981;
+      border-radius: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+    }
+    
+    .ai-order-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed #d1fae5;
+      margin-bottom: 12px;
+    }
+    
+    .ai-order-card-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #f3f4f6;
+    }
+    
+    .ai-order-card-info {
+      flex: 1;
+    }
+    
+    .ai-order-card-name {
+      font-size: 14px;
+      color: #1f2937;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    
+    .ai-order-card-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    
+    .ai-order-card-total {
+      text-align: right;
+      margin-bottom: 16px;
+    }
+    
+    .ai-order-card-total span {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    
+    .ai-order-card-total strong {
+      font-size: 20px;
+      color: #E2231A;
+      margin-left: 8px;
+    }
+    
+    .ai-order-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .ai-order-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <!-- ==================== 顶部导航 ==================== -->
+  <header class="ai-header">
+    <div class="ai-header-left">
+      <a href="home.html" target="_blank" class="ai-logo">
+        <div class="ai-logo-icon"><i class="fas fa-sun"></i></div>
+        <span class="ai-logo-text">阳光优采</span>
+      </a>
+      <div class="ai-header-title">
+        <i class="fas fa-robot"></i>
+        AI 智能助手
+      </div>
+    </div>
+    <div class="ai-header-right">
+      <div class="ai-user-info">
+        <div class="ai-user-avatar"><i class="fas fa-user"></i></div>
+        <span id="userNameDisplay">张三（采购专员）</span>
+      </div>
+    </div>
+  </header>
+  
+  <!-- ==================== 主体三栏布局 ==================== -->
+  <main class="ai-main">
+    <!-- 左侧：对话页面 -->
+    <section class="ai-chat-panel">
+      <div class="ai-panel-header">
+        <div class="ai-panel-header-icon"><i class="fas fa-comments"></i></div>
+        <div class="ai-panel-header-text">
+          <h3>智能对话</h3>
+          <p>有问题随时问我</p>
+        </div>
+      </div>
+      <div class="ai-chat-messages" id="chatMessages">
+        <!-- 欢迎消息 -->
+        <div class="ai-message assistant">
+          <div class="ai-message-avatar"><i class="fas fa-robot"></i></div>
+          <div class="ai-message-content">
+            <div class="ai-message-bubble">
+              您好！我是阳光优采智能助手 🤖<br><br>
+              我可以帮您：<br>
+              <strong>• 找商品</strong>：推荐商品、预算筛选、查看评价<br>
+              <strong>• 做决策</strong>：比质比价、收藏商品、快速下单<br>
+              <strong>• 解疑问</strong>：平台规则咨询<br><br>
+              请问有什么可以帮您的？
+            </div>
+            <div class="ai-message-options">
+              <button class="ai-option-btn" onclick="sendQuickMsg('有没有好用的复印纸？')">找复印纸</button>
+              <button class="ai-option-btn" onclick="sendQuickMsg('200元内采购10箱A4复印纸')">预算内采购</button>
+              <button class="ai-option-btn" onclick="sendQuickMsg('商品如何结算？')">规则咨询</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ai-chat-input">
+        <input type="text" id="chatInput" placeholder="请输入您的问题..." onkeypress="if(event.key==='Enter')sendMessage()">
+        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> 发送</button>
+      </div>
+    </section>
+    
+    <!-- 中间：智能分析页 -->
+    <section class="ai-analysis-panel">
+      <div class="ai-analysis-header">
+        <div class="ai-panel-header-icon"><i class="fas fa-chart-line"></i></div>
+        <div class="ai-panel-header-text">
+          <h3>智能分析</h3>
+          <p>商品推荐与数据分析</p>
+        </div>
+      </div>
+      <div class="ai-analysis-content" id="analysisContent">
+        <!-- 空状态 -->
+        <div class="ai-analysis-empty" id="analysisEmpty">
+          <div class="ai-analysis-empty-icon"><i class="fas fa-lightbulb"></i></div>
+          <h4>等待您的提问</h4>
+          <p>向 AI 提问后，这里将展示<br>相关商品推荐和数据分析</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 右侧：快捷操作页 -->
+    <section class="ai-quick-panel">
+      <div class="ai-quick-tabs">
+        <button class="ai-quick-tab active" data-tab="favorites" onclick="switchQuickTab('favorites')">
+          <i class="fas fa-heart"></i> 我的收藏
+        </button>
+        <button class="ai-quick-tab" data-tab="cart" onclick="switchQuickTab('cart')">
+          <i class="fas fa-shopping-cart"></i> 购物车
+        </button>
+      </div>
+      <div class="ai-quick-content" id="quickContent">
+        <!-- 收藏列表 -->
+        <div id="favoritesTab">
+          <div class="ai-quick-item">
+            <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+            <div class="ai-quick-item-info">
+              <div class="ai-quick-item-name">齐心 C3674-5 A4复印纸 70g 500张/包</div>
+              <div class="ai-quick-item-bottom">
+                <span class="ai-quick-item-price">¥25.92</span>
+                <button class="ai-quick-item-send" onclick="sendProductQuery('齐心 C3674-5 A4复印纸')">发送</button>
+              </div>
+            </div>
+          </div>
+          <div class="ai-quick-item">
+            <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+            <div class="ai-quick-item-info">
+              <div class="ai-quick-item-name">天章复印纸 A4 80g 白色 500张/包</div>
+              <div class="ai-quick-item-bottom">
+                <span class="ai-quick-item-price">¥28.50</span>
+                <button class="ai-quick-item-send" onclick="sendProductQuery('天章复印纸 A4 80g')">发送</button>
+              </div>
+            </div>
+          </div>
+          <div class="ai-quick-item">
+            <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+            <div class="ai-quick-item-info">
+              <div class="ai-quick-item-name">星宇 劳保手套 防穿刺 防滑耐磨</div>
+              <div class="ai-quick-item-bottom">
+                <span class="ai-quick-item-price">¥59.10</span>
+                <button class="ai-quick-item-send" onclick="sendProductQuery('星宇 劳保手套')">发送</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 购物车列表（默认隐藏） -->
+        <div id="cartTab" style="display: none;">
+          <div class="ai-quick-item">
+            <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+            <div class="ai-quick-item-info">
+              <div class="ai-quick-item-name">得力 A4复印纸 70g 办公用纸 500张/包</div>
+              <div class="ai-quick-item-bottom">
+                <span class="ai-quick-item-price">¥23.80 × 5</span>
+                <button class="ai-quick-item-send" onclick="sendProductQuery('得力 A4复印纸')">发送</button>
+              </div>
+            </div>
+          </div>
+          <div class="ai-quick-item">
+            <img src="https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+            <div class="ai-quick-item-info">
+              <div class="ai-quick-item-name">唐丰 安全帽 ABS-V型 蓝色</div>
+              <div class="ai-quick-item-bottom">
+                <span class="ai-quick-item-price">¥17.70 × 10</span>
+                <button class="ai-quick-item-send" onclick="sendProductQuery('唐丰 安全帽')">发送</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Toast 提示 -->
+  <div class="ai-toast" id="toast"></div>
+  
+  <script>
+    // ==================== Mock 数据 ====================
+    const mockProducts = [
+      { id: 1, name: '齐心 C3674-5 A4复印纸 70g 500张/包', brand: '齐心', price: 25.92, unit: '包', sales: 8520, score: 4.8, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+      { id: 2, name: '天章复印纸 A4 80g 白色 500张/包', brand: '天章', price: 28.50, unit: '包', sales: 6230, score: 4.7, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+      { id: 3, name: '得力 A4复印纸 70g 办公用纸 500张/包', brand: '得力', price: 23.80, unit: '包', sales: 12350, score: 4.9, img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop' },
+      { id: 4, name: '星宇 劳保手套 防穿刺 防滑耐磨', brand: '星宇', price: 59.10, unit: '双', sales: 3280, score: 4.6, img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=300&fit=crop' },
+      { id: 5, name: '唐丰 安全帽 ABS-V型 蓝色', brand: '唐丰', price: 17.70, unit: '顶', sales: 5620, score: 4.5, img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=300&fit=crop' },
+    ];
+    
+    const mockReviews = {
+      positive: [
+        { user: '采购员小李', content: '纸张质量很好，打印清晰，物流很快！' },
+        { user: '办公室王经理', content: '一直用这个牌子，性价比很高，推荐！' },
+        { user: '张先生', content: '包装完好，纸张厚度合适，非常满意。' },
+      ],
+      negative: [
+        { user: '匿名用户', content: '物流有点慢，等了5天才到。' },
+        { user: '采购部小陈', content: '有一包纸边角有点破损，希望加强包装。' },
+      ]
+    };
+    
+    // ==================== 核心函数 ====================
+    
+    // 发送快捷消息
+    function sendQuickMsg(msg) {
+      document.getElementById('chatInput').value = msg;
+      sendMessage();
+    }
+    
+    // 发送商品查询（从右侧快捷操作发送）
+    function sendProductQuery(productName) {
+      addMessage(productName, 'user');
+      showLoading();
+      
+      setTimeout(() => {
+        hideLoading();
+        // AI 回复
+        addMessageWithOptions(
+          `好的，我来帮您了解「${productName}」这款商品。请问您想：`,
+          [
+            { label: '查看商品详情', action: `showProductDetail('${productName}')` },
+            { label: '查看评价', action: `showReviews('${productName}')` },
+            { label: '与其他商品比价', action: `showCompare('${productName}')` },
+            { label: '直接下单', action: `showOrder('${productName}')` },
+          ]
+        );
+        // 在分析区显示商品信息
+        showProductAnalysis(productName);
+      }, 600);
+    }
+    
+    // 发送消息
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const msg = (input.value || '').trim();
+      if (!msg) return;
+      
+      addMessage(msg, 'user');
+      input.value = '';
+      
+      showLoading();
+      
+      setTimeout(() => {
+        hideLoading();
+        processMessage(msg);
+      }, 800 + Math.random() * 400);
+    }
+    
+    // 添加消息
+    function addMessage(content, type) {
+      const container = document.getElementById('chatMessages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `ai-message ${type}`;
+      
+      const avatarIcon = type === 'user' ? 'fa-user' : 'fa-robot';
+      
+      msgDiv.innerHTML = `
+        <div class="ai-message-avatar"><i class="fas ${avatarIcon}"></i></div>
+        <div class="ai-message-content">
+          <div class="ai-message-bubble">${content}</div>
+        </div>
+      `;
+      
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    // 添加带选项的消息
+    function addMessageWithOptions(content, options) {
+      const container = document.getElementById('chatMessages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'ai-message assistant';
+      
+      const optionsHtml = options.map(o => 
+        `<button class="ai-option-btn" onclick="${o.action}">${o.label}</button>`
+      ).join('');
+      
+      msgDiv.innerHTML = `
+        <div class="ai-message-avatar"><i class="fas fa-robot"></i></div>
+        <div class="ai-message-content">
+          <div class="ai-message-bubble">${content}</div>
+          <div class="ai-message-options">${optionsHtml}</div>
+        </div>
+      `;
+      
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    // 显示/隐藏加载
+    function showLoading() {
+      const container = document.getElementById('chatMessages');
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'ai-message assistant';
+      loadingDiv.id = 'loadingMsg';
+      loadingDiv.innerHTML = `
+        <div class="ai-message-avatar"><i class="fas fa-robot"></i></div>
+        <div class="ai-message-content">
+          <div class="ai-loading">
+            <div class="ai-loading-dots"><span></span><span></span><span></span></div>
+            <span>正在思考...</span>
+          </div>
+        </div>
+      `;
+      container.appendChild(loadingDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    function hideLoading() {
+      const loading = document.getElementById('loadingMsg');
+      if (loading) loading.remove();
+    }
+    
+    // 处理消息
+    function processMessage(msg) {
+      const msgLower = msg.toLowerCase();
+      
+      // 商品推荐
+      if (msgLower.includes('复印纸') || msgLower.includes('打印纸') || msgLower.includes('纸')) {
+        addMessageWithOptions(
+          '请问您需要什么规格的复印纸？',
+          [
+            { label: 'A4 70g', action: "selectSpec('A4 70g')" },
+            { label: 'A4 80g', action: "selectSpec('A4 80g')" },
+            { label: 'A5 70g', action: "selectSpec('A5 70g')" },
+          ]
+        );
+        return;
+      }
+      
+      // 预算筛选
+      if (msgLower.includes('元') && (msgLower.includes('采购') || msgLower.includes('预算'))) {
+        const budgetMatch = msg.match(/(\d+)\s*元/);
+        const budget = budgetMatch ? parseInt(budgetMatch[1]) : 200;
+        addMessage(`为您找到预算 ${budget} 元内的商品，请查看右侧分析区域：`, 'assistant');
+        showBudgetProducts(budget);
+        return;
+      }
+      
+      // 评价查询
+      if (msgLower.includes('评价') || msgLower.includes('好评') || msgLower.includes('差评')) {
+        addMessage('该商品好评率 <strong>92%</strong>，负面评价主要集中在物流速度方面。详情请看右侧分析区域。', 'assistant');
+        showReviewsAnalysis();
+        return;
+      }
+      
+      // 比价
+      if (msgLower.includes('比') || msgLower.includes('对比') || msgLower.includes('哪个更好')) {
+        addMessage('根据对比分析，<strong>得力 A4复印纸</strong> 在性价比方面表现最佳。详情请看右侧分析区域。', 'assistant');
+        showCompareAnalysis();
+        return;
+      }
+      
+      // 规则咨询
+      if (msgLower.includes('结算') || msgLower.includes('付款') || msgLower.includes('支付')) {
+        addMessage(`<strong>商品结算方式：</strong><br><br>
+          <strong>1. 在线支付</strong><br>
+          支持支付宝、微信支付、银联等多种支付方式。<br><br>
+          <strong>2. 对公转账</strong><br>
+          适用于企业客户，下单后生成对公账户信息。<br><br>
+          <strong>3. 账期结算</strong><br>
+          通过信用评估的企业客户可申请账期。`, 'assistant');
+        clearAnalysis();
+        return;
+      }
+      
+      if (msgLower.includes('退货') || msgLower.includes('退换')) {
+        addMessage(`<strong>退货规则说明：</strong><br><br>
+          <strong>1. 退货时限</strong>：签收后 7 天内可申请无理由退货<br><br>
+          <strong>2. 退货条件</strong>：商品需保持原包装完好<br><br>
+          <strong>3. 退款时效</strong>：审核通过后 3-5 个工作日内原路退回`, 'assistant');
+        clearAnalysis();
+        return;
+      }
+      
+      // 默认回复
+      addMessageWithOptions(
+        '抱歉，我没有完全理解您的问题。您可以尝试以下操作：',
+        [
+          { label: '找复印纸', action: "sendQuickMsg('有没有好用的复印纸？')" },
+          { label: '预算采购', action: "sendQuickMsg('200元内采购10箱A4复印纸')" },
+          { label: '查看评价', action: "sendQuickMsg('这个商品评价怎么样？')" },
+          { label: '规则咨询', action: "sendQuickMsg('商品如何结算？')" },
+        ]
+      );
+    }
+    
+    // 选择规格
+    function selectSpec(spec) {
+      addMessage(spec, 'user');
+      setTimeout(() => {
+        addMessage(`为您推荐以下 ${spec} 复印纸，请查看右侧分析区域：`, 'assistant');
+        showProductsAnalysis();
+      }, 500);
+    }
+    
+    // ==================== 分析区显示函数 ====================
+    
+    function clearAnalysis() {
+      document.getElementById('analysisContent').innerHTML = `
+        <div class="ai-analysis-empty" id="analysisEmpty">
+          <div class="ai-analysis-empty-icon"><i class="fas fa-lightbulb"></i></div>
+          <h4>等待您的提问</h4>
+          <p>向 AI 提问后，这里将展示<br>相关商品推荐和数据分析</p>
+        </div>
+      `;
+    }
+    
+    function showProductsAnalysis() {
+      const products = mockProducts.filter(p => p.name.includes('纸')).slice(0, 4);
+      const html = `
+        <div class="ai-section-title"><i class="fas fa-box-open"></i> 推荐商品</div>
+        <div class="ai-product-grid">
+          ${products.map(p => `
+            <div class="ai-product-card" onclick="showProductDetail('${p.name}')">
+              <img src="${p.img}" class="ai-product-card-img" alt="">
+              <div class="ai-product-card-name">${p.name}</div>
+              <div class="ai-product-card-meta">
+                <span class="ai-product-card-price">¥${p.price.toFixed(2)}</span>
+                <span class="ai-product-card-score"><i class="fas fa-star"></i> ${p.score}</span>
+              </div>
+              <div class="ai-product-card-actions">
+                <button class="ai-btn-sm primary" onclick="event.stopPropagation();addToCart(${p.id})"><i class="fas fa-cart-plus"></i> 加购</button>
+                <button class="ai-btn-sm secondary" onclick="event.stopPropagation();addToFavorite(${p.id})"><i class="fas fa-heart"></i></button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      document.getElementById('analysisContent').innerHTML = html;
+    }
+    
+    function showProductAnalysis(productName) {
+      const product = mockProducts.find(p => p.name.includes(productName.split(' ')[0])) || mockProducts[0];
+      const html = `
+        <div class="ai-section-title"><i class="fas fa-info-circle"></i> 商品信息</div>
+        <div class="ai-product-card" style="margin-bottom: 16px;">
+          <img src="${product.img}" class="ai-product-card-img" alt="">
+          <div class="ai-product-card-name">${product.name}</div>
+          <div class="ai-product-card-meta">
+            <span class="ai-product-card-price">¥${product.price.toFixed(2)}/${product.unit}</span>
+            <span class="ai-product-card-score"><i class="fas fa-star"></i> ${product.score} | 销量 ${product.sales}</span>
+          </div>
+          <div class="ai-product-card-actions">
+            <button class="ai-btn-sm primary" onclick="addToCart(${product.id})"><i class="fas fa-cart-plus"></i> 加入购物车</button>
+            <button class="ai-btn-sm secondary" onclick="addToFavorite(${product.id})"><i class="fas fa-heart"></i> 收藏</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('analysisContent').innerHTML = html;
+    }
+    
+    function showBudgetProducts(budget) {
+      const products = mockProducts.filter(p => p.price * 10 <= budget).slice(0, 4);
+      const html = `
+        <div class="ai-section-title"><i class="fas fa-wallet"></i> 预算内商品</div>
+        <div class="ai-product-grid">
+          ${products.map(p => `
+            <div class="ai-product-card">
+              <div class="ai-budget-tag"><i class="fas fa-check-circle"></i> 预算内</div>
+              <img src="${p.img}" class="ai-product-card-img" alt="">
+              <div class="ai-product-card-name">${p.name}</div>
+              <div class="ai-product-card-meta">
+                <span class="ai-product-card-price">¥${p.price.toFixed(2)}</span>
+                <span class="ai-product-card-score">10箱 ¥${(p.price * 10).toFixed(2)}</span>
+              </div>
+              <div class="ai-product-card-actions">
+                <button class="ai-btn-sm primary" onclick="showOrderConfirm(${p.id}, 10)"><i class="fas fa-bolt"></i> 一键下单</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      document.getElementById('analysisContent').innerHTML = html;
+    }
+    
+    function showReviewsAnalysis() {
+      const html = `
+        <div class="ai-section-title"><i class="fas fa-star"></i> 商品评价</div>
+        <div class="ai-review-summary">
+          <div class="ai-review-summary-title"><i class="fas fa-chart-pie"></i> 评价摘要</div>
+          <div class="ai-review-summary-content">好评率 <strong>92%</strong>，负面评价主要集中在物流速度方面。整体质量稳定，值得推荐。</div>
+        </div>
+        <div class="ai-review-tabs">
+          <button class="ai-review-tab positive active" onclick="showPositiveReviews()">好评 (${mockReviews.positive.length})</button>
+          <button class="ai-review-tab negative" onclick="showNegativeReviews()">差评 (${mockReviews.negative.length})</button>
+        </div>
+        <div id="reviewsList">
+          ${mockReviews.positive.map(r => `
+            <div class="ai-review-item">
+              <div class="ai-review-header">
+                <span class="ai-review-user">${r.user}</span>
+                <span class="ai-review-tag positive">好评</span>
+              </div>
+              <div class="ai-review-content">${r.content}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      document.getElementById('analysisContent').innerHTML = html;
+    }
+    
+    function showPositiveReviews() {
+      document.querySelectorAll('.ai-review-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('.ai-review-tab.positive').classList.add('active');
+      document.getElementById('reviewsList').innerHTML = mockReviews.positive.map(r => `
+        <div class="ai-review-item">
+          <div class="ai-review-header">
+            <span class="ai-review-user">${r.user}</span>
+            <span class="ai-review-tag positive">好评</span>
+          </div>
+          <div class="ai-review-content">${r.content}</div>
+        </div>
+      `).join('');
+    }
+    
+    function showNegativeReviews() {
+      document.querySelectorAll('.ai-review-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('.ai-review-tab.negative').classList.add('active');
+      document.getElementById('reviewsList').innerHTML = mockReviews.negative.map(r => `
+        <div class="ai-review-item">
+          <div class="ai-review-header">
+            <span class="ai-review-user">${r.user}</span>
+            <span class="ai-review-tag negative">差评</span>
+          </div>
+          <div class="ai-review-content">${r.content}</div>
+        </div>
+      `).join('');
+    }
+    
+    function showCompareAnalysis() {
+      const products = mockProducts.filter(p => p.name.includes('纸')).slice(0, 3);
+      const html = `
+        <div class="ai-section-title"><i class="fas fa-balance-scale"></i> 比质比价</div>
+        <table class="ai-compare-table">
+          <tr>
+            <th>维度</th>
+            ${products.map(p => `<th>${p.brand}</th>`).join('')}
+          </tr>
+          <tr>
+            <td>价格</td>
+            ${products.map((p, i) => `<td ${i === 2 ? 'class="highlight"' : ''}>¥${p.price.toFixed(2)}</td>`).join('')}
+          </tr>
+          <tr>
+            <td>销量</td>
+            ${products.map((p, i) => `<td ${i === 2 ? 'class="highlight"' : ''}>${p.sales}</td>`).join('')}
+          </tr>
+          <tr>
+            <td>评分</td>
+            ${products.map((p, i) => `<td ${i === 2 ? 'class="highlight"' : ''}>${p.score}</td>`).join('')}
+          </tr>
+        </table>
+        <div style="text-align: center; padding: 16px; background: #f9fafb; border-radius: 10px; margin-bottom: 16px;">
+          <div style="font-size: 12px; color: #9ca3af; margin-bottom: 8px;">综合评分雷达图</div>
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <polygon points="70,15 125,45 110,115 30,115 15,45" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            <polygon points="70,35 100,55 90,100 50,100 40,55" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+            <polygon points="70,40 85,55 80,85 60,85 55,55" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+          </svg>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+          ${products.map((p, i) => `
+            <button class="ai-btn-sm ${i === 2 ? 'primary' : 'secondary'}" onclick="addToCart(${p.id})">选${p.brand}</button>
+          `).join('')}
+        </div>
+      `;
+      document.getElementById('analysisContent').innerHTML = html;
+    }
+    
+    function showOrderConfirm(productId, quantity) {
+      const product = mockProducts.find(p => p.id === productId) || mockProducts[0];
+      const total = (product.price * quantity).toFixed(2);
+      const html = `
+        <div class="ai-section-title"><i class="fas fa-shopping-cart"></i> 订单确认</div>
+        <div class="ai-order-card">
+          <div class="ai-order-card-header">
+            <img src="${product.img}" class="ai-order-card-img" alt="">
+            <div class="ai-order-card-info">
+              <div class="ai-order-card-name">${product.name}</div>
+              <div class="ai-order-card-meta">
+                <span>单价：¥${product.price.toFixed(2)}/${product.unit}</span>
+                <span>数量：${quantity}${product.unit}</span>
+              </div>
+            </div>
+          </div>
+          <div class="ai-order-card-total">
+            <span>合计金额：</span>
+            <strong>¥${total}</strong>
+          </div>
+          <button class="ai-order-btn" onclick="confirmOrder(${productId}, ${quantity})">
+            <i class="fas fa-check"></i> 确认下单
+          </button>
+        </div>
+      `;
+      document.getElementById('analysisContent').innerHTML = html;
+      addMessage(`即将为您创建订单，商品：${product.name}，数量：${quantity}${product.unit}，总价：¥${total}`, 'assistant');
+    }
+    
+    function showProductDetail(name) {
+      showProductAnalysis(name);
+    }
+    
+    function showReviews(name) {
+      showReviewsAnalysis();
+    }
+    
+    function showCompare(name) {
+      showCompareAnalysis();
+    }
+    
+    function showOrder(name) {
+      const product = mockProducts.find(p => p.name.includes(name.split(' ')[0])) || mockProducts[0];
+      showOrderConfirm(product.id, 1);
+    }
+    
+    // ==================== 操作函数 ====================
+    
+    function addToCart(productId) {
+      const product = mockProducts.find(p => p.id === productId);
+      if (product) {
+        showToast(`已将「${product.name}」加入购物车`);
+      }
+    }
+    
+    function addToFavorite(productId) {
+      const product = mockProducts.find(p => p.id === productId);
+      if (product) {
+        showToast(`已收藏「${product.name}」`);
+      }
+    }
+    
+    function confirmOrder(productId, quantity) {
+      const product = mockProducts.find(p => p.id === productId);
+      if (product) {
+        showToast('订单创建成功，正在跳转...');
+        addMessage(`<i class="fas fa-check-circle" style="color: #10b981;"></i> 订单创建成功！商品：${product.name}，数量：${quantity}${product.unit}`, 'assistant');
+        setTimeout(() => clearAnalysis(), 1500);
+      }
+    }
+    
+    // Toast 提示
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+    
+    // 快捷操作 Tab 切换
+    function switchQuickTab(tab) {
+      document.querySelectorAll('.ai-quick-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.ai-quick-tab[data-tab="${tab}"]`).classList.add('active');
+      
+      document.getElementById('favoritesTab').style.display = tab === 'favorites' ? 'block' : 'none';
+      document.getElementById('cartTab').style.display = tab === 'cart' ? 'block' : 'none';
+    }
+    
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取用户信息
+      const role = localStorage.getItem('role') || 'buyer';
+      const roleNames = {
+        'guest': '访客',
+        'buyer-user': '普通采购用户',
+        'buyer': '采购专员',
+        'supplier': '供应商',
+        'admin': '平台管理员'
+      };
+      document.getElementById('userNameDisplay').textContent = `张三（${roleNames[role] || '采购专员'}）`;
+    });
+  </script>
+</body>
+</html>
