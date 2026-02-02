@@ -167,6 +167,26 @@
     .price-rational-labels .left { text-align: left; }
     .price-rational-labels .right { text-align: right; }
 
+    /* 分类推荐区商品卡片：价格行与“合规”标签（绿色标签样式） */
+    .reco-card-price-row {
+      display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; margin-bottom: 8px;
+    }
+    .reco-card-price-row > span:first-child { flex-shrink: 0; }
+    .reco-card-price-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 8px; font-size: 11px; font-weight: 600;
+      color: #065f46;
+      background: #d1fae5;
+      border: 1px solid #34d399; border-radius: 999px;
+      box-shadow: 0 1px 2px rgba(6, 95, 70, 0.12);
+      white-space: nowrap; letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .reco-card-price-tag::before {
+      content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 9px;
+      color: #059669;
+    }
+
     /* 商品卡片操作按钮：比质比价、寻源询价 */
     .reco-card-actions { display: flex; gap: 8px; margin-top: 10px; }
     .reco-card-actions .btn-compare, .reco-card-actions .btn-inquiry {
@@ -206,6 +226,17 @@
       display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px;
     }
     .compare-section-similar .compare-section-head .compare-section-title { margin-bottom: 0; }
+    .compare-section-tabs { display: flex; align-items: center; gap: 0; flex-shrink: 0; }
+    .compare-section-tab {
+      padding: 8px 16px; font-size: 13px; font-weight: 500; border-radius: 0;
+      border: 1px solid #d1d5db; background: #fff; color: #6b7280; cursor: pointer;
+      margin-left: -1px; transition: all 0.2s;
+    }
+    .compare-section-tab:first-child { margin-left: 0; border-radius: 6px 0 0 6px; }
+    .compare-section-tab:last-child { border-radius: 0 6px 6px 0; }
+    .compare-section-tab:hover { border-color: #E2231A; color: #E2231A; background: #fff5f4; z-index: 1; }
+    .compare-section-tab.active { background: #E2231A; color: #fff; border-color: #E2231A; z-index: 2; }
+    .compare-section-tab.active:hover { background: #c01e16; border-color: #c01e16; color: #fff; }
     .compare-section-similar.collapsed .compare-section-body { display: none; }
     .compare-section-similar .btn-toggle-similar {
       padding: 10px 24px; font-size: 14px; color: #6b7280; background: #fff; border: 1px solid #d1d5db;
@@ -224,6 +255,8 @@
     .compare-card .thumb { display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover; background: #f3f4f6; }
     .compare-card .info { padding: 8px 10px; }
     .compare-card .name { font-size: 12px; color: #111827; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .compare-card .price-row { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; margin-top: 4px; }
+    .compare-card .price-row .price { margin: 0; }
     .compare-card .price { font-size: 13px; color: #E2231A; font-weight: 600; margin-top: 4px; }
     .compare-card.compare-card-checkable { cursor: pointer; }
     .compare-card .thumb-wrap { position: relative; display: block; }
@@ -850,13 +883,16 @@
     <div class="compare-modal-header">
       <button type="button" class="compare-modal-close" onclick="closeCompareModal()" title="关闭"><i class="fas fa-times"></i></button>
     </div>
-    <!-- 上方：相近品规商品（可收起/展开） -->
+    <!-- 上方：同品同规 / 相近品规 Tab 切换（可收起/展开） -->
     <div class="compare-section compare-section-similar" id="compareSectionSimilar">
       <div class="compare-section-head">
-        <span class="compare-section-title">相近品规商品</span>
+        <div class="compare-section-tabs">
+          <button type="button" class="compare-section-tab" data-compare-tab="same" onclick="switchCompareUpperTab('same')">同品同规商品</button>
+          <button type="button" class="compare-section-tab active" data-compare-tab="similar" onclick="switchCompareUpperTab('similar')">相近品规商品</button>
+        </div>
         <button type="button" class="btn-toggle-similar" id="btnToggleSimilar" onclick="toggleCompareSimilarSection()">收起</button>
       </div>
-      <div class="compare-section-body" id="compareSimilarList"></div>
+      <div class="compare-section-body" id="compareUpperBody"></div>
     </div>
     <!-- 下方：比质比价（按钮在右侧上下排列） -->
     <div class="compare-section compare-section-with-actions">
@@ -1224,7 +1260,10 @@
           <div class="reco-card-top">
             <div class="aspect-[16/10] rounded overflow-hidden bg-gray-100 mb-2"><img src="${p.img}" alt="" class="w-full h-full object-cover" loading="lazy"></div>
             <div class="text-gray-900 text-sm line-clamp-2 leading-snug mb-1">${p.name}</div>
-            <div class="text-primary font-semibold mb-1">¥${price.toFixed(2)} 元/${p.unit}</div>
+            <div class="reco-card-price-row text-primary font-semibold">
+              <span>¥${price.toFixed(2)} 元/${p.unit}</span>
+              <span class="reco-card-price-tag">合规</span>
+            </div>
             <div class="text-xs text-gray-500 mb-1 reco-card-supplier" title="${(p.supplier || '').replace(/"/g, '&quot;')}"><i class="fas fa-crown text-amber-500 mr-1"></i>${p.supplier}</div>
           </div>
           <div class="price-rational-wrap">
@@ -1245,7 +1284,7 @@
           </div>
         </a>
         <div class="reco-card-actions">
-          <button type="button" class="btn-compare" onclick="event.preventDefault();event.stopPropagation();openCompareModal(this)"><i class="fas fa-balance-scale"></i> 比质比价</button>
+          <button type="button" class="btn-compare" onclick="event.preventDefault();event.stopPropagation();openCompareModal(this)"><i class="fas fa-balance-scale"></i> AI比质比价</button>
         </div>
       </div>`;
     }
@@ -1259,8 +1298,26 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
 
     // ---------- 比质比价弹窗 ----------
     var compareSimilarProducts = [];
+    var compareSameSpecProducts = [];
     var comparePendingList = [];
+    var compareUpperTab = 'similar';
     var compareMaxItems = 10;
+
+    function getCurrentCompareSourceList() {
+      return compareUpperTab === 'same' ? compareSameSpecProducts : compareSimilarProducts;
+    }
+
+    function updateCompareUpperTabButtons() {
+      document.querySelectorAll('.compare-section-tab').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.compareTab === compareUpperTab);
+      });
+    }
+
+    function switchCompareUpperTab(tab) {
+      compareUpperTab = tab;
+      updateCompareUpperTabButtons();
+      renderCompareUpperContent();
+    }
 
     function getProductById(blockId, productId) {
       var d = recoMock[blockId];
@@ -1278,7 +1335,10 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
       comparePendingList = [{ id: product.id, name: product.name, price: product.price, img: product.img, unit: product.unit }];
       var allInBlock = recoMock[Number(blockId)] ? (recoMock[Number(blockId)].all || []) : [];
       compareSimilarProducts = allInBlock.filter(function(p) { return p.id !== product.id && String(p.id) !== String(productId); });
-      renderCompareSimilarList();
+      compareSameSpecProducts = allInBlock.filter(function(p) { return p.id !== product.id && String(p.id) !== String(productId) && (p.unit === product.unit); });
+      compareUpperTab = 'similar';
+      updateCompareUpperTabButtons();
+      renderCompareUpperContent();
       renderComparePendingList();
       var sectionSimilar = document.getElementById('compareSectionSimilar');
       if (sectionSimilar) sectionSimilar.classList.remove('collapsed');
@@ -1299,14 +1359,16 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
       document.getElementById('compareModal').classList.remove('show');
     }
 
-    function renderCompareSimilarList() {
-      var el = document.getElementById('compareSimilarList');
+    function renderCompareUpperContent() {
+      var el = document.getElementById('compareUpperBody');
       if (!el) return;
-      if (!compareSimilarProducts.length) {
-        el.innerHTML = '<span class="compare-empty-hint">暂无相近品规商品</span>';
+      var list = getCurrentCompareSourceList();
+      var emptyText = compareUpperTab === 'same' ? '暂无同品同规商品' : '暂无相近品规商品';
+      if (!list.length) {
+        el.innerHTML = '<span class="compare-empty-hint">' + emptyText + '</span>';
         return;
       }
-      el.innerHTML = compareSimilarProducts.map(function(p) {
+      el.innerHTML = list.map(function(p) {
         var checked = comparePendingList.some(function(x) { return x.id === p.id; }) ? ' checked' : '';
         var nameEsc = (p.name || '').replace(/"/g, '&quot;');
         return '<label class="compare-card compare-card-checkable">' +
@@ -1314,7 +1376,7 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
           '<img src="' + (p.img || '') + '" alt="" class="thumb" onerror="this.src=\'https://placehold.co/140/eee/999?text=+\'">' +
           '<input type="checkbox" data-product-id="' + p.id + '" onchange="toggleComparePending(' + p.id + ', this.checked, this)"' + checked + '>' +
           '</span>' +
-          '<div class="info"><div class="name" title="' + nameEsc + '">' + (p.name || '') + '</div><div class="price">¥' + (p.price != null ? Number(p.price).toFixed(2) : '0.00') + '</div></div>' +
+          '<div class="info"><div class="name" title="' + nameEsc + '">' + (p.name || '') + '</div><div class="price-row"><span class="price">¥' + (p.price != null ? Number(p.price).toFixed(2) : '0.00') + '</span><span class="reco-card-price-tag">合规</span></div></div>' +
           '</label>';
       }).join('');
     }
@@ -1331,38 +1393,39 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
         return '<div class="compare-card has-remove">' +
           '<button type="button" class="btn-remove" onclick="removeFromComparePending(' + p.id + ')" title="移除"><i class="fas fa-times"></i></button>' +
           '<img src="' + (p.img || '') + '" alt="" class="thumb" onerror="this.src=\'https://placehold.co/140/eee/999?text=+\'">' +
-          '<div class="info"><div class="name" title="' + nameEsc + '">' + (p.name || '') + '</div><div class="price">¥' + (p.price != null ? Number(p.price).toFixed(2) : '0.00') + '</div></div>' +
+          '<div class="info"><div class="name" title="' + nameEsc + '">' + (p.name || '') + '</div><div class="price-row"><span class="price">¥' + (p.price != null ? Number(p.price).toFixed(2) : '0.00') + '</span><span class="reco-card-price-tag">合规</span></div></div>' +
           '</div>';
       }).join('');
     }
 
     function toggleComparePending(productId, checked, checkboxEl) {
+      var list = getCurrentCompareSourceList();
       if (checked) {
         if (comparePendingList.length >= compareMaxItems) {
           alert('最多可添加' + compareMaxItems + '个商品');
           if (checkboxEl) checkboxEl.checked = false;
           return;
         }
-        var p = compareSimilarProducts.find(function(x) { return x.id === productId; });
+        var p = list.find(function(x) { return x.id === productId; });
         if (p && !comparePendingList.some(function(x) { return x.id === productId; })) {
           comparePendingList.push({ id: p.id, name: p.name, price: p.price, img: p.img, unit: p.unit });
         }
       } else {
         comparePendingList = comparePendingList.filter(function(x) { return x.id !== productId; });
       }
-      renderCompareSimilarList();
+      renderCompareUpperContent();
       renderComparePendingList();
     }
 
     function removeFromComparePending(productId) {
       comparePendingList = comparePendingList.filter(function(x) { return x.id !== productId; });
-      renderCompareSimilarList();
+      renderCompareUpperContent();
       renderComparePendingList();
     }
 
     function clearPendingCompare() {
       comparePendingList = [];
-      renderCompareSimilarList();
+      renderCompareUpperContent();
       renderComparePendingList();
     }
 

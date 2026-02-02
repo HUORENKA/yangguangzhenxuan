@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI 智能助手 | 阳光优采</title>
+  <title>阳光甄选AI助手</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -11,39 +11,65 @@
   
   <style>
     :root {
-      --color-primary: #E2231A;
-      --color-primary-hover: #c01e16;
-      --gradient-ai: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --color-primary: #2563eb;
+      --color-primary-light: #3b82f6;
+      --color-primary-bg: #dbeafe;
+      --color-primary-border: #93c5fd;
+      --color-accent: #6366f1;
+      --color-red: #E2231A;
+      --gradient-ai: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
     }
     
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
-      background: #f5f7fa;
       height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      /* 整个页面底部背景：浅蓝渐变 + 轻微几何图案，与参考图简洁蓝白风格一致 */
+      background: linear-gradient(160deg, #f8fafc 0%, #f1f5f9 25%, #e8ecf4 50%, #e0e7ff 75%, #dbeafe 100%);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% 100%, rgba(59, 130, 246, 0.08) 0%, transparent 55%),
+        radial-gradient(circle at 20% 85%, rgba(99, 102, 241, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 80% 90%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 24px,
+          rgba(59, 130, 246, 0.03) 24px,
+          rgba(59, 130, 246, 0.03) 25px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 24px,
+          rgba(99, 102, 241, 0.02) 24px,
+          rgba(99, 102, 241, 0.02) 25px
+        ),
+        linear-gradient(160deg, #f8fafc 0%, #f1f5f9 25%, #e8ecf4 50%, #e0e7ff 75%, #dbeafe 100%);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
     }
     
     /* ==================== 顶部导航 ==================== */
     .ai-header {
-      background: var(--gradient-ai);
-      color: #fff;
+      background: #fff;
+      color: #1e293b;
       padding: 0 24px;
       height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
-      box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      border-bottom: 1px solid #e2e8f0;
     }
     
     .ai-header-left {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
     }
     
     .ai-logo {
@@ -51,13 +77,14 @@
       align-items: center;
       gap: 10px;
       text-decoration: none;
-      color: #fff;
+      color: var(--color-primary);
     }
     
     .ai-logo-icon {
-      width: 36px;
-      height: 36px;
-      background: rgba(255,255,255,0.2);
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+      color: #fff;
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -67,22 +94,9 @@
     
     .ai-logo-text {
       font-size: 18px;
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-    
-    .ai-header-title {
-      font-size: 15px;
-      font-weight: 500;
-      padding-left: 16px;
-      border-left: 1px solid rgba(255,255,255,0.3);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .ai-header-title i {
-      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #1e293b;
     }
     
     .ai-header-right {
@@ -96,20 +110,22 @@
       align-items: center;
       gap: 8px;
       font-size: 14px;
+      color: #475569;
     }
     
     .ai-user-avatar {
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.2);
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 14px;
     }
     
-    /* ==================== 主体三栏布局 ==================== */
+    /* ==================== 主体布局 ==================== */
     .ai-main {
       flex: 1;
       display: flex;
@@ -118,31 +134,94 @@
       gap: 16px;
     }
     
-    /* 左侧：对话页面 */
-    .ai-chat-panel {
-      flex: 0 0 35%;
+    /* 中+右+底条 整体 */
+    .ai-middle-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+    }
+    
+    .ai-middle-right-top {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      gap: 16px;
+    }
+    
+    /* 右侧列：AI寻源 + AI询价，与中间 3:4 填满整行 */
+    .ai-right-column {
+      flex: 3 1 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 0;
+      min-width: 0;
+    }
+    
+    .ai-util-panel {
+      flex: 1;
+      min-height: 0;
       background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .ai-util-panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .ai-util-panel-header i {
+      color: var(--color-primary);
+    }
+    
+    .ai-util-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      font-size: 13px;
+      color: #64748b;
+    }
+    
+    /* 左侧：AI对话导购 */
+    .ai-chat-panel {
+      flex: 0 0 30%;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
     
     .ai-panel-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+      gap: 12px;
+      background: #f8fafc;
     }
     
     .ai-panel-header-icon {
       width: 36px;
       height: 36px;
       border-radius: 10px;
-      background: var(--gradient-ai);
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
       color: #fff;
       display: flex;
       align-items: center;
@@ -153,13 +232,13 @@
     .ai-panel-header-text h3 {
       font-size: 15px;
       font-weight: 600;
-      color: #1f2937;
+      color: #1e293b;
       margin-bottom: 2px;
     }
     
     .ai-panel-header-text p {
       font-size: 12px;
-      color: #9ca3af;
+      color: #64748b;
     }
     
     .ai-chat-messages {
@@ -198,12 +277,12 @@
     }
     
     .ai-message.user .ai-message-avatar {
-      background: linear-gradient(135deg, #E2231A 0%, #ff6b6b 100%);
-      color: #fff;
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
     }
     
     .ai-message.assistant .ai-message-avatar {
-      background: var(--gradient-ai);
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
       color: #fff;
     }
     
@@ -222,15 +301,31 @@
     }
     
     .ai-message.user .ai-message-bubble {
-      background: linear-gradient(135deg, #E2231A 0%, #c01e16 100%);
-      color: #fff;
+      background: var(--color-primary-bg);
+      color: #1e40af;
+      border: 1px solid var(--color-primary-border);
       border-bottom-right-radius: 4px;
     }
     
     .ai-message.assistant .ai-message-bubble {
-      background: #f3f4f6;
-      color: #374151;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
       border-bottom-left-radius: 4px;
+    }
+    
+    .ai-message-options-label {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .ai-message-options-label i {
+      font-size: 10px;
+      color: #94a3b8;
     }
     
     .ai-message-options {
@@ -240,56 +335,40 @@
     }
     
     .ai-option-btn {
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 8px 14px;
+      border-radius: 16px;
       font-size: 13px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid #e2e8f0;
       background: #fff;
-      color: #374151;
+      color: #475569;
       cursor: pointer;
       transition: all 0.2s;
     }
     
     .ai-option-btn:hover {
-      border-color: #667eea;
-      color: #667eea;
-      background: #f8f9ff;
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-bg);
     }
     
-    .ai-chat-input {
-      padding: 16px;
-      border-top: 1px solid #f0f0f0;
+    /* 对话区功能切换按钮 */
+    .ai-chat-func-tabs {
       display: flex;
-      gap: 12px;
-      background: #fafafa;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      flex-wrap: wrap;
     }
     
-    .ai-chat-input input {
-      flex: 1;
-      height: 44px;
-      padding: 0 18px;
-      border: 1px solid #e5e7eb;
-      border-radius: 22px;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.2s;
-      background: #fff;
-    }
-    
-    .ai-chat-input input:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .ai-chat-input button {
-      height: 44px;
-      padding: 0 24px;
-      border-radius: 22px;
-      background: var(--gradient-ai);
-      color: #fff;
-      border: none;
-      font-size: 14px;
+    .ai-chat-func-tab {
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
       font-weight: 500;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #64748b;
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
@@ -297,33 +376,125 @@
       gap: 6px;
     }
     
-    .ai-chat-input button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    .ai-chat-func-tab.active {
+      border-color: var(--color-primary);
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
     }
     
-    /* 中间：智能分析页 */
-    .ai-analysis-panel {
-      flex: 0 0 40%;
+    .ai-chat-func-tab:hover:not(.active) {
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+    
+    .ai-chat-input-wrap {
+      padding: 16px;
+      border-top: 1px solid #e2e8f0;
       background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .ai-chat-input {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    
+    .ai-chat-input input {
+      flex: 1;
+      min-height: 48px;
+      padding: 12px 18px;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      background: #f8fafc;
+    }
+    
+    .ai-chat-input input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      background: #fff;
+    }
+    
+    .ai-chat-input button {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+    }
+    
+    .ai-chat-input button:hover {
+      background: var(--color-primary-light);
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+    
+    .ai-chat-input-upload {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .ai-chat-input-upload:hover {
+      background: var(--color-primary-bg);
+      color: var(--color-primary);
+      border-color: var(--color-primary-border);
+    }
+    
+    .ai-chat-input-upload input[type="file"] {
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+    
+    /* 中间：智能分析页（搜索结果），与右侧 4:3 填满整行 */
+    .ai-analysis-panel {
+      flex: 4 1 0;
+      min-width: 0;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
     
     .ai-analysis-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e2e8f0;
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+      gap: 12px;
+      background: #f8fafc;
     }
     
     .ai-analysis-header .ai-panel-header-icon {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
     }
     
     .ai-analysis-content {
@@ -347,12 +518,12 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+      background: linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 32px;
-      color: #d1d5db;
+      color: var(--color-primary-border);
       margin-bottom: 16px;
     }
     
@@ -376,17 +547,32 @@
     
     .ai-product-card {
       background: #fff;
-      border: 1px solid #e5e7eb;
+      border: 1px solid #e2e8f0;
       border-radius: 12px;
-      padding: 12px;
+      padding: 14px;
       transition: all 0.2s;
       cursor: pointer;
+      position: relative;
     }
     
     .ai-product-card:hover {
-      border-color: #10b981;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+      border-color: var(--color-primary-border);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
       transform: translateY(-2px);
+    }
+    
+    .ai-product-card-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
     }
     
     .ai-product-card-img {
@@ -418,8 +604,13 @@
     
     .ai-product-card-price {
       font-size: 16px;
-      color: #E2231A;
+      color: var(--color-primary);
       font-weight: 600;
+    }
+    
+    .ai-product-card-suppliers {
+      font-size: 12px;
+      color: #64748b;
     }
     
     .ai-product-card-score {
@@ -455,12 +646,13 @@
     }
     
     .ai-btn-sm.primary {
-      background: #E2231A;
+      background: var(--color-primary);
       color: #fff;
     }
     
     .ai-btn-sm.primary:hover {
-      background: #c01e16;
+      background: var(--color-primary-light);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
     }
     
     .ai-btn-sm.secondary {
@@ -505,7 +697,7 @@
     }
     
     .ai-compare-table .highlight {
-      color: #10b981;
+      color: var(--color-primary);
       font-weight: 600;
     }
     
@@ -587,92 +779,7 @@
       line-height: 1.6;
     }
     
-    /* 右侧：快捷操作页 */
-    .ai-quick-panel {
-      flex: 0 0 25%;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    
-    .ai-quick-tabs {
-      display: flex;
-      border-bottom: 1px solid #f0f0f0;
-      padding-top: 4px;
-    }
-    
-    .ai-quick-tab {
-      flex: 1;
-      padding: 14px 16px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #6b7280;
-      background: none;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-    
-    .ai-quick-tab.active {
-      color: #E2231A;
-    }
-    
-    .ai-quick-tab.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 40px;
-      height: 3px;
-      background: #E2231A;
-      border-radius: 3px 3px 0 0;
-    }
-    
-    .ai-quick-tab:hover:not(.active) {
-      color: #374151;
-      background: #f9fafb;
-    }
-    
-    .ai-quick-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-    }
-    
-    .ai-quick-empty {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #9ca3af;
-      text-align: center;
-      padding: 40px 20px;
-    }
-    
-    .ai-quick-empty-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: #f3f4f6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: #d1d5db;
-      margin-bottom: 12px;
-    }
-    
-    .ai-quick-empty p {
-      font-size: 13px;
-    }
-    
-    /* 快捷操作商品项 */
+    /* 底条内商品项（复用原快捷项样式） */
     .ai-quick-item {
       display: flex;
       gap: 12px;
@@ -684,8 +791,8 @@
     }
     
     .ai-quick-item:hover {
-      border-color: #f97316;
-      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.1);
+      border-color: var(--color-primary-border);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
     }
     
     .ai-quick-item-img {
@@ -723,7 +830,7 @@
     
     .ai-quick-item-price {
       font-size: 14px;
-      color: #E2231A;
+      color: var(--color-primary);
       font-weight: 600;
     }
     
@@ -732,7 +839,7 @@
       border-radius: 16px;
       font-size: 12px;
       font-weight: 500;
-      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      background: var(--color-primary);
       color: #fff;
       border: none;
       cursor: pointer;
@@ -741,7 +848,7 @@
     
     .ai-quick-item-send:hover {
       transform: scale(1.05);
-      box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
     }
     
     /* 加载动画 */
@@ -761,7 +868,7 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #667eea;
+      background: var(--color-primary);
       animation: ai-bounce 1.4s infinite ease-in-out both;
     }
     
@@ -808,7 +915,7 @@
     }
     
     .ai-section-title i {
-      color: #10b981;
+      color: var(--color-primary);
     }
     
     /* 预算标签 */
@@ -928,6 +1035,165 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
     }
+    
+    /* 底条：购物车/我的收藏（横跨中+右，左 Tab + 中内容 + 右收起/展开） */
+    .ai-bottom-bar {
+      flex-shrink: 0;
+      margin-top: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 12px;
+      display: flex;
+      align-items: stretch;
+      min-height: 116px;
+      transition: min-height 0.25s ease;
+      overflow: hidden;
+    }
+    
+    .ai-bottom-bar.collapsed {
+      min-height: 44px;
+    }
+    
+    .ai-bottom-bar.collapsed .ai-bottom-bar-content {
+      display: none;
+    }
+    
+    /* 收起时：左侧两按钮横向排列 */
+    .ai-bottom-bar.collapsed .ai-bottom-bar-tabs {
+      flex-direction: row;
+      align-items: center;
+      padding: 0 16px;
+    }
+    
+    .ai-bottom-bar-tabs {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 16px;
+      border-right: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    
+    /* 展开时：左侧两按钮上下排列 */
+    .ai-bottom-bar:not(.collapsed) .ai-bottom-bar-tabs {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 8px 16px;
+      gap: 4px;
+    }
+    
+    .ai-bottom-bar-tab {
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #64748b;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .ai-bottom-bar-tab.active {
+      color: var(--color-primary);
+      background: var(--color-primary-bg);
+    }
+    
+    .ai-bottom-bar-tab:hover:not(.active) {
+      color: #475569;
+      background: #f1f5f9;
+    }
+    
+    .ai-bottom-bar-content {
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 10px 12px;
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+    }
+    
+    .ai-bottom-bar-content #favoritesTab,
+    .ai-bottom-bar-content #cartTab {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+    }
+    
+    /* 收起/展开按钮始终在模块右侧：用 margin-left: auto 顶到右侧 */
+    .ai-bottom-bar-toggle {
+      flex-shrink: 0;
+      margin-left: auto;
+      padding: 0 16px;
+      border-left: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .ai-bottom-bar-toggle-btn {
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #64748b;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .ai-bottom-bar-toggle-btn:hover {
+      color: var(--color-primary);
+      border-color: var(--color-primary-border);
+      background: var(--color-primary-bg);
+    }
+    
+    /* 底条内商品项：展开时较大卡片，横向排列 */
+    .ai-bottom-bar .ai-quick-item {
+      flex-shrink: 0;
+      width: 240px;
+      margin-bottom: 0;
+      padding: 12px 14px;
+      align-items: center;
+    }
+    
+    .ai-bottom-bar .ai-quick-item-img {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+    }
+    
+    .ai-bottom-bar .ai-quick-item-info {
+      gap: 6px;
+    }
+    
+    .ai-bottom-bar .ai-quick-item-name {
+      -webkit-line-clamp: 2;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    
+    .ai-bottom-bar .ai-quick-item-price {
+      font-size: 14px;
+    }
+    
+    .ai-bottom-bar .ai-quick-item-send {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -935,13 +1201,9 @@
   <header class="ai-header">
     <div class="ai-header-left">
       <a href="home.html" target="_blank" class="ai-logo">
-        <div class="ai-logo-icon"><i class="fas fa-sun"></i></div>
-        <span class="ai-logo-text">阳光优采</span>
+        <div class="ai-logo-icon"><i class="fas fa-robot"></i></div>
+        <span class="ai-logo-text">阳光甄选AI助手</span>
       </a>
-      <div class="ai-header-title">
-        <i class="fas fa-robot"></i>
-        AI 智能助手
-      </div>
     </div>
     <div class="ai-header-right">
       <div class="ai-user-info">
@@ -956,9 +1218,9 @@
     <!-- 左侧：对话页面 -->
     <section class="ai-chat-panel">
       <div class="ai-panel-header">
-        <div class="ai-panel-header-icon"><i class="fas fa-comments"></i></div>
+        <div class="ai-panel-header-icon"><i class="fas fa-infinity"></i></div>
         <div class="ai-panel-header-text">
-          <h3>智能对话</h3>
+          <h3>AI对话导购</h3>
           <p>有问题随时问我</p>
         </div>
       </div>
@@ -968,12 +1230,16 @@
           <div class="ai-message-avatar"><i class="fas fa-robot"></i></div>
           <div class="ai-message-content">
             <div class="ai-message-bubble">
-              您好！我是阳光优采智能助手 🤖<br><br>
+              您好！我是阳光优采智能助手。<br><br>
               我可以帮您：<br>
               <strong>• 找商品</strong>：推荐商品、预算筛选、查看评价<br>
               <strong>• 做决策</strong>：比质比价、收藏商品、快速下单<br>
               <strong>• 解疑问</strong>：平台规则咨询<br><br>
               请问有什么可以帮您的？
+            </div>
+            <div class="ai-message-options-label">
+              <span>相关提问建议</span>
+              <i class="fas fa-chevron-down"></i>
             </div>
             <div class="ai-message-options">
               <button class="ai-option-btn" onclick="sendQuickMsg('有没有好用的复印纸？')">找复印纸</button>
@@ -983,19 +1249,36 @@
           </div>
         </div>
       </div>
-      <div class="ai-chat-input">
-        <input type="text" id="chatInput" placeholder="请输入您的问题..." onkeypress="if(event.key==='Enter')sendMessage()">
-        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> 发送</button>
+      <div class="ai-chat-func-tabs">
+        <button type="button" class="ai-chat-func-tab active"><i class="fas fa-search"></i> 商品查询</button>
+        <button type="button" class="ai-chat-func-tab"><i class="fas fa-chart-line"></i> 价格分析</button>
+        <button type="button" class="ai-chat-func-tab"><i class="fas fa-book"></i> 规则咨询</button>
+        <button type="button" class="ai-chat-func-tab"><i class="fas fa-ellipsis-h"></i> 更多</button>
+      </div>
+      <div class="ai-chat-input-wrap">
+        <div class="ai-chat-input">
+          <label class="ai-chat-input-upload" title="上传采购单">
+            <i class="fas fa-file-upload"></i>
+            <input type="file" id="procurementFile" accept=".xlsx,.xls,.csv,.pdf,.txt" onchange="onProcurementFileChange(this)">
+          </label>
+          <input type="text" id="chatInput" placeholder="请输入问题..." onkeypress="if(event.key==='Enter')sendMessage()">
+          <button type="button" onclick="sendMessage()" title="发送"><i class="fas fa-paper-plane"></i></button>
+        </div>
       </div>
     </section>
     
+    <!-- 中+右+底条 -->
+    <div class="ai-middle-right">
+      <div class="ai-middle-right-top">
     <!-- 中间：智能分析页 -->
     <section class="ai-analysis-panel">
       <div class="ai-analysis-header">
-        <div class="ai-panel-header-icon"><i class="fas fa-chart-line"></i></div>
-        <div class="ai-panel-header-text">
-          <h3>智能分析</h3>
-          <p>商品推荐与数据分析</p>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="ai-panel-header-icon"><i class="fas fa-search"></i></div>
+          <div class="ai-panel-header-text">
+            <h3>智能分析</h3>
+            <p>商品推荐与数据分析</p>
+          </div>
         </div>
       </div>
       <div class="ai-analysis-content" id="analysisContent">
@@ -1008,75 +1291,86 @@
       </div>
     </section>
     
-    <!-- 右侧：快捷操作页 -->
-    <section class="ai-quick-panel">
-      <div class="ai-quick-tabs">
-        <button class="ai-quick-tab active" data-tab="favorites" onclick="switchQuickTab('favorites')">
-          <i class="fas fa-heart"></i> 我的收藏
-        </button>
-        <button class="ai-quick-tab" data-tab="cart" onclick="switchQuickTab('cart')">
-          <i class="fas fa-shopping-cart"></i> 购物车
-        </button>
+    <!-- 右侧：AI寻源 + AI询价 -->
+    <div class="ai-right-column">
+      <section class="ai-util-panel" id="aiSourcingPanel">
+        <div class="ai-util-panel-header"><i class="fas fa-search-plus"></i> AI寻源</div>
+        <div class="ai-util-panel-body">根据对话内容智能推荐供应商与货源，结果将在此展示。</div>
+      </section>
+      <section class="ai-util-panel" id="aiInquiryPanel">
+        <div class="ai-util-panel-header"><i class="fas fa-file-invoice-dollar"></i> AI询价</div>
+        <div class="ai-util-panel-body">询价记录与报价结果将在此展示。</div>
+      </section>
+    </div>
       </div>
-      <div class="ai-quick-content" id="quickContent">
-        <!-- 收藏列表 -->
-        <div id="favoritesTab">
-          <div class="ai-quick-item">
-            <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
-            <div class="ai-quick-item-info">
-              <div class="ai-quick-item-name">齐心 C3674-5 A4复印纸 70g 500张/包</div>
-              <div class="ai-quick-item-bottom">
-                <span class="ai-quick-item-price">¥25.92</span>
-                <button class="ai-quick-item-send" onclick="sendProductQuery('齐心 C3674-5 A4复印纸')">发送</button>
+      
+      <!-- 底条：购物车/我的收藏（Tab 左 + 内容中 + 收起/展开 右） -->
+      <div class="ai-bottom-bar" id="aiBottomBar">
+        <div class="ai-bottom-bar-tabs">
+          <button type="button" class="ai-bottom-bar-tab active" data-tab="favorites" onclick="switchQuickTab('favorites')"><i class="fas fa-heart"></i> 我的收藏</button>
+          <button type="button" class="ai-bottom-bar-tab" data-tab="cart" onclick="switchQuickTab('cart')"><i class="fas fa-shopping-cart"></i> 购物车</button>
+        </div>
+        <div class="ai-bottom-bar-content" id="quickContent">
+          <div id="favoritesTab">
+            <div class="ai-quick-item">
+              <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+              <div class="ai-quick-item-info">
+                <div class="ai-quick-item-name">齐心 C3674-5 A4复印纸 70g 500张/包</div>
+                <div class="ai-quick-item-bottom">
+                  <span class="ai-quick-item-price">¥25.92</span>
+                  <button class="ai-quick-item-send" onclick="sendProductQuery('齐心 C3674-5 A4复印纸')">发送</button>
+                </div>
+              </div>
+            </div>
+            <div class="ai-quick-item">
+              <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+              <div class="ai-quick-item-info">
+                <div class="ai-quick-item-name">天章复印纸 A4 80g 白色 500张/包</div>
+                <div class="ai-quick-item-bottom">
+                  <span class="ai-quick-item-price">¥28.50</span>
+                  <button class="ai-quick-item-send" onclick="sendProductQuery('天章复印纸 A4 80g')">发送</button>
+                </div>
+              </div>
+            </div>
+            <div class="ai-quick-item">
+              <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+              <div class="ai-quick-item-info">
+                <div class="ai-quick-item-name">星宇 劳保手套 防穿刺 防滑耐磨</div>
+                <div class="ai-quick-item-bottom">
+                  <span class="ai-quick-item-price">¥59.10</span>
+                  <button class="ai-quick-item-send" onclick="sendProductQuery('星宇 劳保手套')">发送</button>
+                </div>
               </div>
             </div>
           </div>
-          <div class="ai-quick-item">
-            <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
-            <div class="ai-quick-item-info">
-              <div class="ai-quick-item-name">天章复印纸 A4 80g 白色 500张/包</div>
-              <div class="ai-quick-item-bottom">
-                <span class="ai-quick-item-price">¥28.50</span>
-                <button class="ai-quick-item-send" onclick="sendProductQuery('天章复印纸 A4 80g')">发送</button>
+          <div id="cartTab" style="display: none;">
+            <div class="ai-quick-item">
+              <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+              <div class="ai-quick-item-info">
+                <div class="ai-quick-item-name">得力 A4复印纸 70g 办公用纸 500张/包</div>
+                <div class="ai-quick-item-bottom">
+                  <span class="ai-quick-item-price">¥23.80 × 5</span>
+                  <button class="ai-quick-item-send" onclick="sendProductQuery('得力 A4复印纸')">发送</button>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="ai-quick-item">
-            <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
-            <div class="ai-quick-item-info">
-              <div class="ai-quick-item-name">星宇 劳保手套 防穿刺 防滑耐磨</div>
-              <div class="ai-quick-item-bottom">
-                <span class="ai-quick-item-price">¥59.10</span>
-                <button class="ai-quick-item-send" onclick="sendProductQuery('星宇 劳保手套')">发送</button>
+            <div class="ai-quick-item">
+              <img src="https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
+              <div class="ai-quick-item-info">
+                <div class="ai-quick-item-name">唐丰 安全帽 ABS-V型 蓝色</div>
+                <div class="ai-quick-item-bottom">
+                  <span class="ai-quick-item-price">¥17.70 × 10</span>
+                  <button class="ai-quick-item-send" onclick="sendProductQuery('唐丰 安全帽')">发送</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <!-- 购物车列表（默认隐藏） -->
-        <div id="cartTab" style="display: none;">
-          <div class="ai-quick-item">
-            <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
-            <div class="ai-quick-item-info">
-              <div class="ai-quick-item-name">得力 A4复印纸 70g 办公用纸 500张/包</div>
-              <div class="ai-quick-item-bottom">
-                <span class="ai-quick-item-price">¥23.80 × 5</span>
-                <button class="ai-quick-item-send" onclick="sendProductQuery('得力 A4复印纸')">发送</button>
-              </div>
-            </div>
-          </div>
-          <div class="ai-quick-item">
-            <img src="https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=200&h=200&fit=crop" class="ai-quick-item-img" alt="">
-            <div class="ai-quick-item-info">
-              <div class="ai-quick-item-name">唐丰 安全帽 ABS-V型 蓝色</div>
-              <div class="ai-quick-item-bottom">
-                <span class="ai-quick-item-price">¥17.70 × 10</span>
-                <button class="ai-quick-item-send" onclick="sendProductQuery('唐丰 安全帽')">发送</button>
-              </div>
-            </div>
-          </div>
+        <div class="ai-bottom-bar-toggle">
+          <button type="button" class="ai-bottom-bar-toggle-btn" id="aiBottomBarToggle" onclick="toggleBottomBar()"><i class="fas fa-chevron-down"></i> 收起</button>
         </div>
       </div>
-    </section>
+    </div>
   </main>
   
   <!-- Toast 提示 -->
@@ -1151,6 +1445,28 @@
       }, 800 + Math.random() * 400);
     }
     
+    // 上传采购单
+    function onProcurementFileChange(inputEl) {
+      var file = inputEl && inputEl.files && inputEl.files[0];
+      if (!file) return;
+      var fileName = file.name;
+      addMessage('已上传采购单：' + fileName, 'user');
+      showToast('已上传采购单：' + fileName);
+      showLoading();
+      setTimeout(function() {
+        hideLoading();
+        addMessageWithOptions(
+          '已收到您的采购单「' + fileName + '」，正在为您解析。您可以：',
+          [
+            { label: '按采购单推荐商品', action: "sendQuickMsg('根据采购单推荐商品')" },
+            { label: '比价询价', action: "sendQuickMsg('对采购单商品比价询价')" },
+            { label: '查看解析结果', action: "sendQuickMsg('采购单解析结果')" },
+          ]
+        );
+      }, 600);
+      inputEl.value = '';
+    }
+    
     // 添加消息
     function addMessage(content, type) {
       const container = document.getElementById('chatMessages');
@@ -1184,6 +1500,7 @@
         <div class="ai-message-avatar"><i class="fas fa-robot"></i></div>
         <div class="ai-message-content">
           <div class="ai-message-bubble">${content}</div>
+          <div class="ai-message-options-label"><span>相关提问建议</span><i class="fas fa-chevron-down"></i></div>
           <div class="ai-message-options">${optionsHtml}</div>
         </div>
       `;
@@ -1318,11 +1635,12 @@
         <div class="ai-product-grid">
           ${products.map(p => `
             <div class="ai-product-card" onclick="showProductDetail('${p.name}')">
+              <div class="ai-product-card-icon"><i class="fas fa-shopping-cart"></i></div>
               <img src="${p.img}" class="ai-product-card-img" alt="">
               <div class="ai-product-card-name">${p.name}</div>
               <div class="ai-product-card-meta">
-                <span class="ai-product-card-price">¥${p.price.toFixed(2)}</span>
-                <span class="ai-product-card-score"><i class="fas fa-star"></i> ${p.score}</span>
+                <span class="ai-product-card-price">¥${p.price.toFixed(2)}/${p.unit}</span>
+                <span class="ai-product-card-suppliers">${p.sales} 销量</span>
               </div>
               <div class="ai-product-card-actions">
                 <button class="ai-btn-sm primary" onclick="event.stopPropagation();addToCart(${p.id})"><i class="fas fa-cart-plus"></i> 加购</button>
@@ -1340,11 +1658,12 @@
       const html = `
         <div class="ai-section-title"><i class="fas fa-info-circle"></i> 商品信息</div>
         <div class="ai-product-card" style="margin-bottom: 16px;">
+          <div class="ai-product-card-icon"><i class="fas fa-shopping-cart"></i></div>
           <img src="${product.img}" class="ai-product-card-img" alt="">
           <div class="ai-product-card-name">${product.name}</div>
           <div class="ai-product-card-meta">
             <span class="ai-product-card-price">¥${product.price.toFixed(2)}/${product.unit}</span>
-            <span class="ai-product-card-score"><i class="fas fa-star"></i> ${product.score} | 销量 ${product.sales}</span>
+            <span class="ai-product-card-suppliers"><i class="fas fa-star"></i> ${product.score} | 销量 ${product.sales}</span>
           </div>
           <div class="ai-product-card-actions">
             <button class="ai-btn-sm primary" onclick="addToCart(${product.id})"><i class="fas fa-cart-plus"></i> 加入购物车</button>
@@ -1363,11 +1682,12 @@
           ${products.map(p => `
             <div class="ai-product-card">
               <div class="ai-budget-tag"><i class="fas fa-check-circle"></i> 预算内</div>
+              <div class="ai-product-card-icon"><i class="fas fa-shopping-cart"></i></div>
               <img src="${p.img}" class="ai-product-card-img" alt="">
               <div class="ai-product-card-name">${p.name}</div>
               <div class="ai-product-card-meta">
-                <span class="ai-product-card-price">¥${p.price.toFixed(2)}</span>
-                <span class="ai-product-card-score">10箱 ¥${(p.price * 10).toFixed(2)}</span>
+                <span class="ai-product-card-price">¥${p.price.toFixed(2)}/${p.unit}</span>
+                <span class="ai-product-card-suppliers">10箱 ¥${(p.price * 10).toFixed(2)}</span>
               </div>
               <div class="ai-product-card-actions">
                 <button class="ai-btn-sm primary" onclick="showOrderConfirm(${p.id}, 10)"><i class="fas fa-bolt"></i> 一键下单</button>
@@ -1551,13 +1871,28 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
     
-    // 快捷操作 Tab 切换
+    // 底条 Tab 切换（购物车/我的收藏）
     function switchQuickTab(tab) {
-      document.querySelectorAll('.ai-quick-tab').forEach(t => t.classList.remove('active'));
-      document.querySelector(`.ai-quick-tab[data-tab="${tab}"]`).classList.add('active');
+      document.querySelectorAll('.ai-bottom-bar-tab').forEach(t => t.classList.remove('active'));
+      var el = document.querySelector('.ai-bottom-bar-tab[data-tab="' + tab + '"]');
+      if (el) el.classList.add('active');
       
-      document.getElementById('favoritesTab').style.display = tab === 'favorites' ? 'block' : 'none';
-      document.getElementById('cartTab').style.display = tab === 'cart' ? 'block' : 'none';
+      document.getElementById('favoritesTab').style.display = tab === 'favorites' ? 'flex' : 'none';
+      document.getElementById('cartTab').style.display = tab === 'cart' ? 'flex' : 'none';
+    }
+    
+    // 底条收起/展开
+    function toggleBottomBar() {
+      var bar = document.getElementById('aiBottomBar');
+      var btn = document.getElementById('aiBottomBarToggle');
+      if (!bar || !btn) return;
+      var isCollapsed = bar.classList.toggle('collapsed');
+      var icon = btn.querySelector('i');
+      if (isCollapsed) {
+        btn.innerHTML = '<i class="fas fa-chevron-up"></i> 展开';
+      } else {
+        btn.innerHTML = '<i class="fas fa-chevron-down"></i> 收起';
+      }
     }
     
     // 初始化
