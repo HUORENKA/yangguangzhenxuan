@@ -681,6 +681,23 @@
       transition: all 0.3s ease;
     }
     .ai-toast.show { opacity: 1; visibility: visible; }
+
+    /* ========== 批量采购：列表文字与垂直居中 ========== */
+    .bp-table-center tbody tr td,
+    .bp-table-center thead tr th { vertical-align: middle; }
+
+    /* ========== 批量采购：选品弹窗位置修正 ========== */
+    #bpPickModal {
+      right: 50%;
+      bottom: 20px;
+      transform: translate(50%, 20px) scale(0.95) !important;
+      width: 980px;
+      height: 640px;
+      max-height: calc(100vh - 40px);
+    }
+    #bpPickModal.show {
+      transform: translate(50%, 0) scale(1) !important;
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;">
@@ -720,6 +737,7 @@
         <button class="tab-btn active" data-tab="home">首页</button>
         <button class="tab-btn" data-tab="announce">平台公告</button>
         <button class="tab-btn" data-tab="witness">阳光见证链</button>
+        <button class="tab-btn" data-tab="batch">批量采购</button>
       </div>
     </div>
   </div>
@@ -882,6 +900,188 @@
         <div class="text-sm text-gray-600">展示阳光见证链入口与可信溯源说明（占位）。</div>
       </div>
     </div>
+
+    <!-- 批量采购 Tab 内容 -->
+    <div id="tabContentBatch" class="hidden">
+      <div class="bg-white rounded-lg border border-gray-200 p-4">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <div class="font-semibold text-gray-900">批量采购</div>
+            <div class="text-xs text-gray-500 mt-1">支持导入采购单（xlsx/xls/csv），逐行匹配商城商品。任一校验错误将导致整单不导入。</div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="relative" id="bpTemplateWrap">
+              <button type="button" class="px-3 h-9 rounded-md border border-gray-200 bg-white text-gray-700 text-sm hover:border-primary hover:text-primary transition-colors inline-flex items-center gap-2" id="bpBtnTemplate">
+                <i class="fas fa-download text-xs"></i>采购单模板下载<i class="fas fa-chevron-down text-[10px] opacity-70"></i>
+              </button>
+              <div class="hidden absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden z-[60]" id="bpTemplateMenu">
+                <button type="button" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50" data-bp-template="xlsx">Excel模板（.xlsx）</button>
+                <button type="button" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50" data-bp-template="xls">Excel模板（.xls）</button>
+                <button type="button" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50" data-bp-template="csv">CSV模板（.csv）</button>
+                <button type="button" class="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 border-t border-gray-100" data-bp-template="fields">字段说明</button>
+              </div>
+            </div>
+
+            <input type="file" id="bpImportInput" accept=".xlsx,.xls,.csv" class="hidden">
+            <button type="button" class="px-3 h-9 rounded-md bg-primary text-white text-sm hover:bg-primary/90 transition-colors inline-flex items-center gap-2" id="bpBtnImport">
+              <i class="fas fa-file-import text-xs"></i>导入采购单
+            </button>
+          </div>
+        </div>
+
+        <!-- 拖拽上传区 -->
+        <div class="mt-4 border-2 border-dashed border-gray-200 rounded-lg p-6 bg-gray-50 text-center" id="bpDropZone">
+          <div class="text-gray-700 text-sm font-medium"><i class="fas fa-cloud-upload-alt mr-1 text-gray-500"></i>拖拽文件到此处，或点击上方“导入采购单”</div>
+          <div class="text-xs text-gray-500 mt-2">支持：xlsx / xls / csv（模板含示例行，导入时会自动忽略以“【示例】”开头的行）</div>
+        </div>
+
+        <!-- 错误原因（只展示原因） -->
+        <div class="mt-4 hidden" id="bpErrorBox">
+          <div class="border border-red-200 bg-red-50 rounded-lg p-4">
+            <div class="flex items-center gap-2 text-red-700 font-semibold text-sm"><i class="fas fa-triangle-exclamation"></i>导入失败</div>
+            <div class="text-xs text-red-700/90 mt-2">发现以下问题，本次采购单未导入：</div>
+            <ul class="mt-2 text-sm text-red-800 list-disc pl-5" id="bpErrorList"></ul>
+          </div>
+        </div>
+
+        <!-- 字段说明 -->
+        <div class="mt-4 hidden" id="bpFieldsBox">
+          <div class="border border-gray-200 bg-white rounded-lg p-4">
+            <div class="flex items-center justify-between gap-2">
+              <div class="text-sm font-semibold text-gray-900">字段说明（不含税）</div>
+              <button type="button" class="text-xs text-gray-500 hover:text-gray-700" id="bpBtnCloseFields"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="mt-2 text-xs text-gray-600 leading-6">
+              <div><span class="font-semibold text-gray-800">商品名称*</span>、<span class="font-semibold text-gray-800">品牌*</span>、<span class="font-semibold text-gray-800">供应商*</span>、<span class="font-semibold text-gray-800">数量*</span>：均为必填。数量须为大于 0 的整数。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 汇总栏 -->
+        <div class="mt-4 hidden" id="bpSummaryBar">
+          <div class="flex items-center justify-between gap-3 flex-wrap border border-gray-200 bg-white rounded-lg px-4 py-3">
+            <div class="text-sm text-gray-700">总行数：<span class="font-semibold text-gray-900" id="bpSumTotal">0</span></div>
+          </div>
+        </div>
+
+        <!-- 清单表格（文字增大、垂直居中） -->
+        <div class="mt-4 hidden" id="bpTableWrap">
+          <div class="overflow-x-auto border border-gray-200 rounded-lg">
+            <table class="min-w-[800px] w-full text-base bp-table-center">
+              <thead class="bg-gray-50 text-gray-700">
+                <tr class="align-middle">
+                  <th class="text-left px-3 py-3 w-14">行号</th>
+                  <th class="text-left px-3 py-3">商品名称</th>
+                  <th class="text-left px-3 py-3 w-24">品牌</th>
+                  <th class="text-left px-3 py-3 w-32">供应商</th>
+                  <th class="text-right px-3 py-3 w-20">数量</th>
+                  <th class="text-right px-3 py-3 w-24">价格</th>
+                  <th class="text-left px-3 py-3 w-40">商品卡片</th>
+                  <th class="text-left px-3 py-3 w-28 min-w-[7rem]">状态</th>
+                  <th class="text-left px-3 py-3 w-28">操作</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white" id="bpTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 右下角：提交采购单 -->
+        <div class="mt-4 hidden flex justify-end" id="bpSubmitWrap">
+          <button type="button" class="px-6 h-10 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors" id="bpBtnSubmit">
+            提交采购单
+          </button>
+        </div>
+      </div>
+
+      <!-- 导入模拟弹窗：选择 导入成功 / 导入失败 -->
+      <div class="ai-modal-overlay hidden" id="bpImportDemoOverlay" style="z-index: 880;"></div>
+      <div class="ai-modal hidden" id="bpImportDemoModal" style="z-index: 890; right: 50%; transform: translate(50%, -50%); top: 50%; width: 360px;">
+        <div class="ai-modal-header" style="background: linear-gradient(135deg, #E2231A 0%, #c01e16 100%);">
+          <h3><i class="fas fa-file-import"></i> 原型演示</h3>
+          <button class="ai-modal-close" type="button" id="bpImportDemoClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="ai-modal-body" style="padding: 20px; background: #fafafa;">
+          <div class="text-sm text-gray-700 mb-4">请选择导入结果以模拟演示：</div>
+          <div class="flex flex-col gap-3">
+            <button type="button" class="w-full h-11 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors" id="bpBtnImportSuccess">导入成功</button>
+            <button type="button" class="w-full h-11 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors" id="bpBtnImportFail">导入失败</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 校验不通过弹窗（导入失败时展示理由） -->
+      <div class="ai-modal-overlay hidden" id="bpValidateFailOverlay" style="z-index: 900;"></div>
+      <div class="ai-modal hidden" id="bpValidateFailModal" style="z-index: 910; right: 50%; transform: translate(50%, -50%); top: 50%; width: 440px;">
+        <div class="ai-modal-header" style="background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);">
+          <h3><i class="fas fa-triangle-exclamation"></i> 校验不通过</h3>
+          <button class="ai-modal-close" type="button" id="bpValidateFailClose"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="ai-modal-body" style="padding: 20px; background: #fff;">
+          <div class="text-sm text-gray-700 mb-3">导入表格校验未通过，请根据以下理由修正后重新导入：</div>
+          <ul class="text-sm text-red-800 list-disc pl-5 space-y-1" id="bpValidateFailList"></ul>
+        </div>
+      </div>
+
+      <!-- 选品弹窗（保留 DOM，导入成功后流程中不再使用） -->
+      <div class="ai-modal-overlay" id="bpPickOverlay" style="z-index: 880;" onclick="bpClosePickModal()"></div>
+      <div class="ai-modal" id="bpPickModal" style="z-index: 890; right: 50%; transform: translate(50%, 20px) scale(0.95); width: 980px; height: 640px;">
+        <div class="ai-modal-header" style="background: linear-gradient(135deg, #E2231A 0%, #c01e16 100%);">
+          <h3><i class="fas fa-list-check"></i> 选择对应商品</h3>
+          <button class="ai-modal-close" onclick="bpClosePickModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="ai-modal-body" style="padding: 16px; background: #fafafa;">
+          <div class="grid grid-cols-12 gap-3">
+            <div class="col-span-4 bg-white border border-gray-200 rounded-lg p-3">
+              <div class="text-sm font-semibold text-gray-900">待采购信息</div>
+              <div class="text-xs text-gray-600 mt-2 leading-6" id="bpPickNeedInfo"></div>
+              <div class="mt-3 border-t border-gray-100 pt-3">
+                <div class="text-sm font-semibold text-gray-900">搜索条件</div>
+                <div class="mt-2 space-y-2">
+                  <div>
+                    <div class="text-xs text-gray-500 mb-1">关键词</div>
+                    <input type="text" id="bpPickKeyword" class="w-full h-9 px-3 rounded-md border border-gray-200 text-sm focus:border-primary" placeholder="商品名称 / 规格 / 品牌">
+                  </div>
+                  <div>
+                    <div class="text-xs text-gray-500 mb-1">店铺名（模糊匹配）</div>
+                    <input type="text" id="bpPickShop" class="w-full h-9 px-3 rounded-md border border-gray-200 text-sm focus:border-primary" placeholder="例如：震坤行">
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <div class="text-xs text-gray-500 mb-1">最低价（不含税）</div>
+                      <input type="text" id="bpPickMin" class="w-full h-9 px-3 rounded-md border border-gray-200 text-sm focus:border-primary" placeholder="可不填">
+                    </div>
+                    <div>
+                      <div class="text-xs text-gray-500 mb-1">最高价（不含税）</div>
+                      <input type="text" id="bpPickMax" class="w-full h-9 px-3 rounded-md border border-gray-200 text-sm focus:border-primary" placeholder="可不填">
+                    </div>
+                  </div>
+                  <div class="flex gap-2">
+                    <button type="button" class="flex-1 h-9 rounded-md bg-primary text-white text-sm hover:bg-primary/90" id="bpPickSearchBtn"><i class="fas fa-magnifying-glass text-xs mr-1"></i>搜索</button>
+                    <button type="button" class="h-9 px-3 rounded-md border border-gray-200 bg-white text-sm hover:border-gray-300" id="bpPickClearShopBtn">清空店铺</button>
+                  </div>
+                  <div class="text-[11px] text-gray-500 leading-5">
+                    - 默认带入：关键词 + 店铺名 + 最高/最低价<br>
+                    - 选择范围外商品：仅在清单行提示，不拦截提交
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-8 bg-white border border-gray-200 rounded-lg p-3 flex flex-col min-h-0">
+              <div class="flex items-center justify-between gap-2">
+                <div class="text-sm font-semibold text-gray-900">候选商品</div>
+                <div class="text-xs text-gray-500" id="bpPickCount">0 条</div>
+              </div>
+              <div class="mt-2 flex-1 overflow-y-auto" id="bpPickList"></div>
+              <div class="mt-2 text-xs text-gray-500" id="bpPickEmptyHint">输入关键词后点击搜索。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div class="ai-toast" id="bpToast" style="z-index: 910;"></div>
+    </div>
   </div>
 
   <!-- ==================== 比质比价弹窗（全宽贴底、上下两块，无遮罩） ==================== -->
@@ -987,6 +1187,9 @@
   <!-- AI Toast 提示 -->
   <div class="ai-toast" id="aiToast"></div>
   
+  <!-- SheetJS：用于解析/导出 xlsx/xls（批量采购原型） -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <script>
     // ---------- 首页数据加载 ----------
     let homeData = null;
@@ -1006,6 +1209,7 @@
       document.getElementById('tabContentHome').classList.toggle('hidden', tabId !== 'home');
       document.getElementById('tabContentAnnounce').classList.toggle('hidden', tabId !== 'announce');
       document.getElementById('tabContentWitness').classList.toggle('hidden', tabId !== 'witness');
+      document.getElementById('tabContentBatch').classList.toggle('hidden', tabId !== 'batch');
     }
 
     function bindTabEvents() {
@@ -1510,6 +1714,9 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
       renderBlock(0);
       renderBlock(1);
       renderBlock(2);
+
+      // 批量采购
+      if (typeof initBatchPurchase === 'function') initBatchPurchase();
     });
 
     // ==================== AI 智能助手逻辑 ====================
@@ -2017,6 +2224,677 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
           aiAddMessage(`<i class="fas fa-check-circle" style="color: #10B981;"></i> 订单创建成功！商品：${product.name}，数量：${quantity} ${product.unit}，总价：¥${(product.price * quantity).toFixed(2)}`, 'assistant');
         }, 500);
       }
+    }
+  </script>
+
+  <script>
+    // ==================== 批量采购（原型逻辑） ====================
+    function initBatchPurchase() {
+      // ----- DOM -----
+      const btnTemplate = document.getElementById('bpBtnTemplate');
+      const templateMenu = document.getElementById('bpTemplateMenu');
+      const templateWrap = document.getElementById('bpTemplateWrap');
+      const btnImport = document.getElementById('bpBtnImport');
+      const importInput = document.getElementById('bpImportInput');
+      const dropZone = document.getElementById('bpDropZone');
+
+      const errorBox = document.getElementById('bpErrorBox');
+      const errorList = document.getElementById('bpErrorList');
+      const fieldsBox = document.getElementById('bpFieldsBox');
+      const btnCloseFields = document.getElementById('bpBtnCloseFields');
+
+      const summaryBar = document.getElementById('bpSummaryBar');
+      const sumTotal = document.getElementById('bpSumTotal');
+      const btnSubmit = document.getElementById('bpBtnSubmit');
+      const submitWrap = document.getElementById('bpSubmitWrap');
+      const importDemoOverlay = document.getElementById('bpImportDemoOverlay');
+      const importDemoModal = document.getElementById('bpImportDemoModal');
+      const importDemoClose = document.getElementById('bpImportDemoClose');
+      const btnImportSuccess = document.getElementById('bpBtnImportSuccess');
+      const btnImportFail = document.getElementById('bpBtnImportFail');
+      const validateFailOverlay = document.getElementById('bpValidateFailOverlay');
+      const validateFailModal = document.getElementById('bpValidateFailModal');
+      const validateFailClose = document.getElementById('bpValidateFailClose');
+      const validateFailList = document.getElementById('bpValidateFailList');
+
+      const tableWrap = document.getElementById('bpTableWrap');
+      const tbody = document.getElementById('bpTbody');
+
+      // pick modal
+      const pickOverlay = document.getElementById('bpPickOverlay');
+      const pickModal = document.getElementById('bpPickModal');
+      const pickNeedInfo = document.getElementById('bpPickNeedInfo');
+      const pickKeyword = document.getElementById('bpPickKeyword');
+      const pickShop = document.getElementById('bpPickShop');
+      const pickMin = document.getElementById('bpPickMin');
+      const pickMax = document.getElementById('bpPickMax');
+      const pickSearchBtn = document.getElementById('bpPickSearchBtn');
+      const pickClearShopBtn = document.getElementById('bpPickClearShopBtn');
+      const pickList = document.getElementById('bpPickList');
+      const pickCount = document.getElementById('bpPickCount');
+      const pickEmptyHint = document.getElementById('bpPickEmptyHint');
+      const toast = document.getElementById('bpToast');
+
+      // ----- state -----
+      /** @type {{id:string,rowNo:number,name:string,brand:string,shop:string,qty:number,price:number,productUrl:string,image:string}[]} */
+      let bpRows = [];
+      let bpPickRowId = null;
+
+      // ----- mock products（含店铺、库存、商品链接，用于校验与导入成功列表） -----
+      const bpProducts = [
+        { id: 'SKU-1001', name: 'A4复印纸 70g 500张/包', brand: '得力', shop: '震坤行', price: 25.92, stock: 100, productUrl: 'store/store_detail.html?id=1001', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop' },
+        { id: 'SKU-1002', name: 'A4复印纸 70g 500张/包', brand: '齐心', shop: '震坤行', price: 23.50, stock: 80, productUrl: 'store/store_detail.html?id=1002', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop' },
+        { id: 'SKU-1003', name: 'A4复印纸 80g 500张/包', brand: '天章', shop: '苏宁易购', price: 28.50, stock: 200, productUrl: 'store/store_detail.html?id=1003', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=200&fit=crop' },
+        { id: 'SKU-1004', name: '中性笔 0.5mm 黑色 12支/盒', brand: '晨光', shop: '晨光文具旗舰店', price: 19.46, stock: 500, productUrl: 'store/store_detail.html?id=1004', image: 'https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=200&h=200&fit=crop' },
+        { id: 'SKU-1005', name: '中性笔 0.5mm 黑色 12支/盒', brand: '百乐', shop: '欧菲斯', price: 29.00, stock: 120, productUrl: 'store/store_detail.html?id=1005', image: 'https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=200&h=200&fit=crop' },
+        { id: 'SKU-1006', name: '黑白激光打印机（自动双面/无线）', brand: '惠普', shop: '苏宁易购', price: 1899.00, stock: 15, productUrl: 'store/store_detail.html?id=1006', image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=200&h=200&fit=crop' },
+        { id: 'SKU-1007', name: '黑白激光打印机（双面/网络）', brand: '佳能', shop: '京东企业购', price: 1699.00, stock: 8, productUrl: 'store/store_detail.html?id=1007', image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=200&h=200&fit=crop' },
+        { id: 'SKU-1008', name: '羊角锤 0.5kg 木柄', brand: '史丹利', shop: '鑫方盛', price: 45.00, stock: 60, productUrl: 'store/store_detail.html?id=1008', image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=200&h=200&fit=crop' },
+        { id: 'SKU-1009', name: '套筒扳手套装 32件/套', brand: '世达', shop: '鑫方盛', price: 268.00, stock: 30, productUrl: 'store/store_detail.html?id=1009', image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=200&h=200&fit=crop' },
+        { id: 'SKU-1010', name: 'KN95 防护口罩 50只/盒', brand: '霍尼韦尔', shop: '震坤行', price: 89.90, stock: 200, productUrl: 'store/store_detail.html?id=1010', image: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b34b?w=200&h=200&fit=crop' },
+      ];
+
+      // 导入成功时的 10 条模拟数据（与 bpProducts 一一对应），状态默认「待采购」
+      function getMockSuccessRows() {
+        return bpProducts.map((p, i) => ({
+          id: 'BP-' + p.id,
+          rowNo: i + 1,
+          name: p.name,
+          brand: p.brand,
+          shop: p.shop,
+          qty: [10, 5, 20, 5, 3, 1, 1, 2, 1, 4][i],
+          price: p.price,
+          productUrl: p.productUrl,
+          image: p.image,
+          status: 'pending'  // 'pending' 待采购 | 'skipped' 暂不采购
+        }));
+      }
+
+      // 导入失败时展示的 4 条校验理由（覆盖四项检索内容）
+      const bpValidateFailReasons = [
+        '未检索到「石墨烯电池」。',
+        '未检索到「A4复印纸」的「南极人」品牌。',
+        '未检索到「中性笔 0.5mm 黑色」的「某某小卖部」供应商。',
+        '「震坤行」的「得力 A4复印纸 70g 500张/包」库存仅为 5 个，不足 10 个。'
+      ];
+
+      // ----- utils -----
+      function bpShowToast(msg, withUndo) {
+        if (!toast) return;
+        toast.innerHTML = withUndo ? msg : (msg || '');
+        toast.classList.add('show');
+        clearTimeout(bpShowToast._timer);
+        bpShowToast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+
+      function bpHideErrors() {
+        if (errorBox) errorBox.classList.add('hidden');
+        if (errorList) errorList.innerHTML = '';
+      }
+
+      function bpShowErrors(reasons) {
+        bpHideErrors();
+        if (!errorBox || !errorList) return;
+        const uniq = Array.from(new Set((reasons || []).filter(Boolean)));
+        errorList.innerHTML = uniq.map(r => `<li>${escapeHtml(r)}</li>`).join('');
+        errorBox.classList.remove('hidden');
+        // 清空导入状态
+        bpRows = [];
+        bpRenderAll();
+      }
+
+      function bpToggleFields(show) {
+        if (!fieldsBox) return;
+        fieldsBox.classList.toggle('hidden', !show);
+      }
+
+      function escapeHtml(s) {
+        return String(s ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function toNumOrNull(v) {
+        if (v == null) return null;
+        const s = String(v).trim();
+        if (!s) return null;
+        const n = Number(s);
+        return Number.isFinite(n) ? n : NaN;
+      }
+
+      function normalizeText(v) {
+        return String(v ?? '').trim().replace(/\s+/g, ' ');
+      }
+
+      function isEmptyRow(obj) {
+        const keys = ['商品名称', '品牌', '供应商', '数量'];
+        return keys.every(k => !normalizeText(obj[k]));
+      }
+
+      // ----- template generation（4 列均必填） -----
+      const bpTemplateHeaders = ['商品名称', '品牌', '供应商', '数量'];
+      const bpTemplateExample = ['【示例】A4复印纸', '得力', '震坤行', 10];
+
+      function bpDownloadCsvTemplate() {
+        const lines = [
+          bpTemplateHeaders.join(','),
+          bpTemplateExample.map(x => csvEscape(x)).join(',')
+        ];
+        const csv = '\ufeff' + lines.join('\r\n');
+        downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), '采购单模板.csv');
+      }
+
+      function bpDownloadExcelTemplate(bookType) {
+        if (typeof XLSX === 'undefined') {
+          alert('原型演示：Excel 导出库未加载，请稍后重试');
+          return;
+        }
+        const aoa = [bpTemplateHeaders, bpTemplateExample];
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, '采购明细');
+        const ext = bookType === 'xls' ? 'xls' : 'xlsx';
+        const out = XLSX.write(wb, { bookType: bookType, type: 'array' });
+        downloadBlob(new Blob([out], { type: 'application/octet-stream' }), `采购单模板.${ext}`);
+      }
+
+      function csvEscape(v) {
+        const s = String(v ?? '');
+        if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+        return s;
+      }
+
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 500);
+      }
+
+      // ----- import parse -----
+      async function bpHandleFile(file) {
+        if (!file) return;
+        bpHideErrors();
+        bpToggleFields(false);
+
+        const name = file.name || '';
+        const ext = (name.split('.').pop() || '').toLowerCase();
+        if (!['xlsx', 'xls', 'csv'].includes(ext)) {
+          bpShowErrors(['不支持的文件格式，请使用 xlsx/xls/csv']);
+          return;
+        }
+
+        try {
+          let rows;
+          if (ext === 'csv') rows = await parseCsvFile(file);
+          else rows = await parseExcelFile(file);
+
+          const result = validateAndBuild(rows);
+          if (result.errors.length) {
+            bpShowErrors(result.errors);
+            return;
+          }
+          // 原型：文件解析仅做格式校验，展示列表请使用「导入成功」按钮以获取带价格与商品卡片的模拟数据
+          if (result.rows.length) {
+            bpShowToast('格式校验通过。原型演示请点击「导入采购单」后选择「导入成功」查看列表。');
+          }
+        } catch (e) {
+          console.error(e);
+          bpShowErrors(['解析文件失败，请检查文件内容或重试']);
+        }
+      }
+
+      function mapHeaderName(h) {
+        return normalizeText(h);
+      }
+
+      function ensureHeaders(headers) {
+        const mapped = (headers || []).map(mapHeaderName);
+        const hasName = mapped.includes('商品名称');
+        const hasBrand = mapped.includes('品牌');
+        const hasShop = mapped.includes('供应商');
+        const hasQty = mapped.includes('数量');
+        const ok = hasName && hasBrand && hasShop && hasQty;
+        return { ok, headers: mapped };
+      }
+
+      async function parseExcelFile(file) {
+        if (typeof XLSX === 'undefined') throw new Error('XLSX not loaded');
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array' });
+        const sheetName = wb.SheetNames.includes('采购明细') ? '采购明细' : wb.SheetNames[0];
+        const ws = wb.Sheets[sheetName];
+        const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, blankrows: false, defval: '' });
+        const headerRowIdx = findHeaderRowIndex(aoa);
+        if (headerRowIdx < 0) return { __header_error: true };
+        const rawHeaders = (aoa[headerRowIdx] || []).map(x => normalizeText(x));
+        const hdr = ensureHeaders(rawHeaders);
+        if (!hdr.ok) return { __header_error: true };
+
+        const body = aoa.slice(headerRowIdx + 1);
+        return body.map(line => {
+          const obj = {};
+          hdr.headers.forEach((h, i) => { if (h) obj[h] = line[i] != null ? String(line[i]).trim() : ''; });
+          return obj;
+        });
+      }
+
+      function findHeaderRowIndex(aoa) {
+        for (let i = 0; i < Math.min(10, aoa.length); i++) {
+          const row = aoa[i] || [];
+          const normalized = row.map(x => mapHeaderName(x));
+          if (normalized.includes('商品名称') && normalized.includes('品牌') && normalized.includes('供应商') && normalized.includes('数量')) return i;
+        }
+        return -1;
+      }
+
+      async function parseCsvFile(file) {
+        const text = await file.text();
+        const lines = parseCsvText(text);
+        if (!lines.length) return [];
+        const rawHeaders = (lines[0] || []).map(x => normalizeText(x));
+        const hdr = ensureHeaders(rawHeaders);
+        if (!hdr.ok) return { __header_error: true };
+        return lines.slice(1).map(arr => {
+          const obj = {};
+          hdr.headers.forEach((h, i) => { if (h) obj[h] = arr[i] != null ? String(arr[i]).trim() : ''; });
+          return obj;
+        });
+      }
+
+      function parseCsvText(text) {
+        const rows = [];
+        let row = [];
+        let cur = '';
+        let i = 0;
+        let inQuotes = false;
+        const s = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        while (i < s.length) {
+          const ch = s[i];
+          if (inQuotes) {
+            if (ch === '"') {
+              if (s[i + 1] === '"') { cur += '"'; i += 2; continue; }
+              inQuotes = false; i++; continue;
+            }
+            cur += ch; i++; continue;
+          }
+          if (ch === '"') { inQuotes = true; i++; continue; }
+          if (ch === ',') { row.push(cur); cur = ''; i++; continue; }
+          if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; i++; continue; }
+          cur += ch; i++;
+        }
+        row.push(cur);
+        rows.push(row);
+        // 去掉尾部全空行
+        return rows.filter(r => r.some(x => String(x ?? '').trim() !== ''));
+      }
+
+      function validateAndBuild(rows) {
+        const errors = [];
+        if (rows && rows.__header_error) {
+          return { errors: ['文件表头不正确，请使用模板（商品名称、品牌、供应商、数量）'], rows: [] };
+        }
+        if (!Array.isArray(rows) || !rows.length) {
+          return { errors: ['文件为空或仅包含空行'], rows: [] };
+        }
+
+        const built = [];
+        const seen = new Set();
+        let anyData = false;
+
+        for (const raw of rows) {
+          if (!raw || typeof raw !== 'object') continue;
+          const obj = {};
+          Object.keys(raw).forEach(k => { obj[mapHeaderName(k)] = raw[k]; });
+          if (isEmptyRow(obj)) continue;
+
+          const name = normalizeText(obj['商品名称']);
+          if (!name) { errors.push('商品名称必填'); continue; }
+          if (name.startsWith('【示例】')) { continue; }
+          const brand = normalizeText(obj['品牌']);
+          if (!brand) { errors.push('品牌必填'); continue; }
+          const shop = normalizeText(obj['供应商']);
+          if (!shop) { errors.push('供应商必填'); continue; }
+          anyData = true;
+
+          const qtyRaw = normalizeText(obj['数量']);
+          if (!qtyRaw) { errors.push('数量必须为大于0的整数'); continue; }
+          const qtyN = Number(qtyRaw);
+          if (!Number.isFinite(qtyN) || !Number.isInteger(qtyN) || qtyN <= 0) { errors.push('数量必须为大于0的整数'); continue; }
+
+          const key = [name, brand, shop].join('|');
+          if (seen.has(key)) { errors.push('存在重复明细，请合并后再导入'); continue; }
+          seen.add(key);
+
+          built.push({
+            id: 'BP-' + Math.random().toString(36).slice(2, 10),
+            rowNo: built.length + 1,
+            name,
+            brand,
+            shop,
+            qty: qtyN
+          });
+        }
+
+        if (!anyData) errors.push('文件为空或仅包含空行');
+        return { errors: Array.from(new Set(errors)), rows: errors.length ? [] : built };
+      }
+
+      // ----- render -----
+      function bpRenderAll() {
+        bpRenderTable();
+        bpRenderSummary();
+      }
+
+      function bpRenderTable() {
+        if (!tbody || !tableWrap) return;
+        if (!bpRows.length) {
+          tableWrap.classList.add('hidden');
+          return;
+        }
+        tableWrap.classList.remove('hidden');
+        tbody.innerHTML = bpRows.map(r => {
+          const isSkipped = r.status === 'skipped';
+          const statusText = isSkipped ? '暂不采购' : '待采购';
+          const statusCls = isSkipped ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-green-700 bg-green-50 border-green-200';
+          const price = r.price != null ? Number(r.price).toFixed(2) : '-';
+          const cardUrl = (r.productUrl || '').trim() || '#';
+          const cardImg = (r.image || '').trim() ? r.image : 'https://placehold.co/80/eee/999?text=+';
+          const cardHtml = `<a href="${escapeHtml(cardUrl)}" target="_blank" class="inline-flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:border-primary hover:bg-red-50/30 transition-colors" title="点击跳转商品详情">
+            <img src="${escapeHtml(cardImg)}" alt="" class="w-14 h-14 object-cover rounded" onerror="this.src='https://placehold.co/80/eee/999?text=+'">
+            <span class="text-sm text-gray-700 max-w-[80px] truncate">${escapeHtml(r.name)}</span>
+          </a>`;
+          const actionBtn = isSkipped
+            ? `<button type="button" class="h-8 px-3 rounded-md border border-green-600 bg-green-600 text-white text-sm hover:bg-green-700 hover:border-green-700 transition-colors" onclick="bpResumeRow('${r.id}')">采购</button>`
+            : `<button type="button" class="h-8 px-3 rounded-md border border-red-600 bg-red-600 text-white text-sm hover:bg-red-700 hover:border-red-700 transition-colors" onclick="bpSkipRow('${r.id}')">暂不采购</button>`;
+
+          return `
+            <tr class="border-t border-gray-100 align-middle">
+              <td class="px-3 py-3 text-gray-900">${r.rowNo}</td>
+              <td class="px-3 py-3">
+                <div class="text-gray-900 font-medium">${escapeHtml(r.name)}</div>
+              </td>
+              <td class="px-3 py-3 text-gray-700">${escapeHtml(r.brand || '-')}</td>
+              <td class="px-3 py-3 text-gray-700">${escapeHtml(r.shop || '-')}</td>
+              <td class="px-3 py-3 text-right text-gray-900">${r.qty}</td>
+              <td class="px-3 py-3 text-right text-gray-700">${price === '-' ? '-' : '¥' + price}</td>
+              <td class="px-3 py-3">${cardHtml}</td>
+              <td class="px-3 py-3 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-1 rounded-full border text-sm whitespace-nowrap ${statusCls}">${statusText}</span>
+              </td>
+              <td class="px-3 py-3">${actionBtn}</td>
+            </tr>
+          `;
+        }).join('');
+
+        summaryBar?.classList.remove('hidden');
+        if (submitWrap) submitWrap.classList.remove('hidden');
+      }
+
+      function bpRenderSummary() {
+        if (!summaryBar) return;
+        if (!bpRows.length) {
+          summaryBar.classList.add('hidden');
+          if (submitWrap) submitWrap.classList.add('hidden');
+          if (tbody) tbody.innerHTML = '';
+          if (tableWrap) tableWrap.classList.add('hidden');
+          return;
+        }
+        if (sumTotal) sumTotal.textContent = String(bpRows.length);
+      }
+
+      // ----- row actions（暂不采购：行保留，状态改为暂不采购，按钮变为「采购」） -----
+      window.bpSkipRow = function(rowId) {
+        const row = bpRows.find(r => r.id === rowId);
+        if (!row) return;
+        row.status = 'skipped';
+        bpRenderAll();
+        bpShowToast('已设为暂不采购');
+      };
+
+      window.bpResumeRow = function(rowId) {
+        const row = bpRows.find(r => r.id === rowId);
+        if (!row) return;
+        row.status = 'pending';
+        bpRenderAll();
+        bpShowToast('已恢复为待采购');
+      };
+
+      function bpReindexRowNo() {
+        bpRows.forEach((r, i) => { r.rowNo = i + 1; });
+      }
+
+      // ----- pick modal -----
+      window.bpOpenPickModal = function(rowId) {
+        const row = bpRows.find(r => r.id === rowId);
+        if (!row) return;
+        bpPickRowId = rowId;
+
+        if (pickNeedInfo) {
+          pickNeedInfo.innerHTML = `
+            <div><span class="text-gray-500">商品：</span><span class="font-semibold text-gray-900">${escapeHtml(row.name)}</span></div>
+            <div><span class="text-gray-500">规格：</span>${escapeHtml(row.spec || '-')}</div>
+            <div><span class="text-gray-500">品牌：</span>${escapeHtml(row.brand || '-')}</div>
+            <div><span class="text-gray-500">店铺：</span>${escapeHtml(row.shop || '-')}</div>
+            <div><span class="text-gray-500">数量：</span>${row.qty}</div>
+            <div><span class="text-gray-500">价格范围：</span>${row.minPrice==null?'-':Number(row.minPrice).toFixed(2)} ~ ${row.maxPrice==null?'-':Number(row.maxPrice).toFixed(2)}（不含税）</div>
+          `;
+        }
+
+        if (pickKeyword) pickKeyword.value = [row.name, row.spec, row.brand].filter(Boolean).join(' ');
+        if (pickShop) pickShop.value = row.shop || '';
+        if (pickMin) pickMin.value = row.minPrice == null ? '' : String(row.minPrice);
+        if (pickMax) pickMax.value = row.maxPrice == null ? '' : String(row.maxPrice);
+        bpRenderPickList([]);
+        if (pickEmptyHint) pickEmptyHint.textContent = '输入关键词后点击搜索。';
+
+        bpOpenPickModalUi();
+        // 默认触发一次搜索（更像真实体验）
+        setTimeout(bpDoPickSearch, 0);
+      };
+
+      function bpOpenPickModalUi() {
+        if (pickOverlay) pickOverlay.classList.add('show');
+        if (pickModal) pickModal.classList.add('show');
+      }
+
+      window.bpClosePickModal = function() {
+        if (pickOverlay) pickOverlay.classList.remove('show');
+        if (pickModal) pickModal.classList.remove('show');
+        bpPickRowId = null;
+      };
+
+      function bpDoPickSearch() {
+        const kw = normalizeText(pickKeyword?.value);
+        const shopQ = normalizeText(pickShop?.value);
+        const minV = toNumOrNull(pickMin?.value);
+        const maxV = toNumOrNull(pickMax?.value);
+
+        let list = bpProducts.slice();
+        if (kw) {
+          const tokens = kw.split(' ').filter(Boolean);
+          list = list.filter(p => tokens.every(t => (p.name + ' ' + p.spec + ' ' + p.brand).toLowerCase().includes(t.toLowerCase())));
+        }
+        if (shopQ) list = list.filter(p => String(p.shop || '').toLowerCase().includes(shopQ.toLowerCase()));
+        if (minV != null && !Number.isNaN(minV)) list = list.filter(p => p.price >= minV);
+        if (maxV != null && !Number.isNaN(maxV)) list = list.filter(p => p.price <= maxV);
+
+        // 排序：价格更接近区间更靠前（简单策略）
+        const minN = (minV != null && !Number.isNaN(minV)) ? minV : null;
+        const maxN = (maxV != null && !Number.isNaN(maxV)) ? maxV : null;
+        list.sort((a, b) => scoreProduct(a, minN, maxN) - scoreProduct(b, minN, maxN));
+
+        bpRenderPickList(list);
+      }
+
+      function scoreProduct(p, minN, maxN) {
+        const price = Number(p.price || 0);
+        if (minN == null && maxN == null) return price;
+        if (minN != null && price < minN) return (minN - price) * 10 + 1000;
+        if (maxN != null && price > maxN) return (price - maxN) * 10 + 1000;
+        // in range
+        if (minN != null && maxN != null) {
+          const mid = (minN + maxN) / 2;
+          return Math.abs(price - mid);
+        }
+        return 0;
+      }
+
+      function bpRenderPickList(list) {
+        if (pickList) {
+          pickList.innerHTML = (list || []).map(p => `
+            <div class="border border-gray-200 rounded-lg p-3 mb-2 hover:border-primary transition-colors">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="text-sm font-semibold text-gray-900 truncate" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
+                  <div class="text-xs text-gray-500 mt-1">${escapeHtml(p.spec)}｜${escapeHtml(p.brand)}｜${escapeHtml(p.shop)}</div>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <div class="text-primary font-bold">¥${Number(p.price).toFixed(2)}</div>
+                  <div class="text-[11px] text-gray-500">不含税</div>
+                </div>
+              </div>
+              <div class="mt-2 flex justify-end">
+                <button type="button" class="h-8 px-3 rounded-md bg-primary text-white text-sm hover:bg-primary/90" onclick="bpSelectProduct('${escapeHtml(p.id)}')">选为对应商品</button>
+              </div>
+            </div>
+          `).join('');
+        }
+        const count = (list || []).length;
+        if (pickCount) pickCount.textContent = `${count} 条`;
+        if (pickEmptyHint) pickEmptyHint.textContent = count ? '' : '未找到候选商品，可清空店铺筛选或调整关键词/价格范围。';
+      }
+
+      window.bpSelectProduct = function(productId) {
+        const row = bpRows.find(r => r.id === bpPickRowId);
+        const p = bpProducts.find(x => x.id === productId);
+        if (!row || !p) return;
+
+        row.selectedProduct = p;
+        row.status = 'matched';
+        row.overPrice = false;
+        const minN = row.minPrice;
+        const maxN = row.maxPrice;
+        if (minN != null && p.price < minN) row.overPrice = true;
+        if (maxN != null && p.price > maxN) row.overPrice = true;
+
+        bpRenderAll();
+        bpClosePickModal();
+        bpShowToast('已完成匹配');
+      };
+
+      // ----- submit -----
+      function bpSubmit() {
+        if (!bpRows.length) return;
+        const totalQty = bpRows.reduce((sum, r) => sum + (Number(r.qty) || 0), 0);
+        bpShowToast('已提交采购单');
+        alert('原型演示：已提交采购单（共 ' + bpRows.length + ' 条，数量 ' + totalQty + '）');
+      }
+
+      // ----- 导入演示弹窗 -----
+      function bpShowImportDemoModal() {
+        if (importDemoOverlay) { importDemoOverlay.classList.remove('hidden'); importDemoOverlay.classList.add('show'); }
+        if (importDemoModal) { importDemoModal.classList.remove('hidden'); importDemoModal.classList.add('show'); }
+      }
+      function bpCloseImportDemoModal() {
+        if (importDemoOverlay) { importDemoOverlay.classList.add('hidden'); importDemoOverlay.classList.remove('show'); }
+        if (importDemoModal) { importDemoModal.classList.add('hidden'); importDemoModal.classList.remove('show'); }
+      }
+      function bpShowValidateFailModal() {
+        if (validateFailList) validateFailList.innerHTML = bpValidateFailReasons.map(r => `<li>${escapeHtml(r)}</li>`).join('');
+        if (validateFailOverlay) { validateFailOverlay.classList.remove('hidden'); validateFailOverlay.classList.add('show'); }
+        if (validateFailModal) { validateFailModal.classList.remove('hidden'); validateFailModal.classList.add('show'); }
+      }
+      function bpCloseValidateFailModal() {
+        if (validateFailOverlay) { validateFailOverlay.classList.add('hidden'); validateFailOverlay.classList.remove('show'); }
+        if (validateFailModal) { validateFailModal.classList.add('hidden'); validateFailModal.classList.remove('show'); }
+      }
+
+      // ----- menu / events -----
+      function toggleTemplateMenu(show) {
+        if (!templateMenu) return;
+        templateMenu.classList.toggle('hidden', !show);
+      }
+
+      btnTemplate?.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleTemplateMenu(templateMenu.classList.contains('hidden'));
+      });
+      document.addEventListener('click', function(e) {
+        if (!templateWrap) return;
+        if (!templateWrap.contains(e.target)) toggleTemplateMenu(false);
+      });
+      templateMenu?.addEventListener('click', function(e) {
+        const t = e.target.closest('[data-bp-template]');
+        if (!t) return;
+        const type = t.dataset.bpTemplate;
+        toggleTemplateMenu(false);
+        if (type === 'fields') { bpToggleFields(true); return; }
+        if (type === 'csv') { bpDownloadCsvTemplate(); return; }
+        if (type === 'xlsx') { bpDownloadExcelTemplate('xlsx'); return; }
+        if (type === 'xls') { bpDownloadExcelTemplate('xls'); return; }
+      });
+      btnCloseFields?.addEventListener('click', () => bpToggleFields(false));
+
+      // 点击「导入采购单」时弹出原型演示（导入成功 / 导入失败）
+      btnImport?.addEventListener('click', () => {
+        bpHideErrors();
+        bpShowImportDemoModal();
+      });
+      importDemoClose?.addEventListener('click', bpCloseImportDemoModal);
+      importDemoOverlay?.addEventListener('click', bpCloseImportDemoModal);
+      btnImportSuccess?.addEventListener('click', () => {
+        bpRows = getMockSuccessRows();
+        bpRenderAll();
+        bpCloseImportDemoModal();
+        bpShowToast('导入成功：' + bpRows.length + ' 条');
+      });
+      btnImportFail?.addEventListener('click', () => {
+        bpCloseImportDemoModal();
+        bpShowValidateFailModal();
+      });
+      validateFailClose?.addEventListener('click', bpCloseValidateFailModal);
+      validateFailOverlay?.addEventListener('click', bpCloseValidateFailModal);
+
+      // 可选：仍支持选择文件导入（格式校验通过后需有表格校验与匹配逻辑，此处仅解析）
+      importInput?.addEventListener('change', function() {
+        const file = this.files && this.files[0];
+        this.value = '';
+        bpHandleFile(file);
+      });
+
+      // drag & drop（同上，可选）
+      if (dropZone) {
+        ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, (e) => {
+          e.preventDefault(); e.stopPropagation();
+          dropZone.classList.add('border-primary', 'bg-white');
+        }));
+        ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, (e) => {
+          e.preventDefault(); e.stopPropagation();
+          dropZone.classList.remove('border-primary', 'bg-white');
+        }));
+        dropZone.addEventListener('drop', (e) => {
+          const file = e.dataTransfer?.files?.[0];
+          if (file) bpHandleFile(file);
+        });
+      }
+
+      pickSearchBtn?.addEventListener('click', bpDoPickSearch);
+      pickClearShopBtn?.addEventListener('click', function() {
+        if (pickShop) pickShop.value = '';
+        bpDoPickSearch();
+      });
+      pickKeyword?.addEventListener('keypress', function(ev) { if (ev.key === 'Enter') bpDoPickSearch(); });
+      pickShop?.addEventListener('keypress', function(ev) { if (ev.key === 'Enter') bpDoPickSearch(); });
+
+      btnSubmit?.addEventListener('click', bpSubmit);
     }
   </script>
 </body>
