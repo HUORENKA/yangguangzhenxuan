@@ -907,7 +907,7 @@
         <div class="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <div class="font-semibold text-gray-900">批量采购</div>
-            <div class="text-xs text-gray-500 mt-1">支持导入采购单（xlsx/xls/csv），逐行匹配商城商品。任一校验错误将导致整单不导入。</div>
+            <div class="text-xs text-gray-500 mt-1">支持导入采购单（jpg、jpeg、png、xls、xlsx、pdf），逐行匹配商城商品。任一校验错误将导致整单不导入。</div>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
             <div class="relative" id="bpTemplateWrap">
@@ -922,17 +922,23 @@
               </div>
             </div>
 
-            <input type="file" id="bpImportInput" accept=".xlsx,.xls,.csv" class="hidden">
+            <input type="file" id="bpImportInput" accept=".jpg,.jpeg,.png,.xls,.xlsx,.pdf" class="hidden">
             <button type="button" class="px-3 h-9 rounded-md bg-primary text-white text-sm hover:bg-primary/90 transition-colors inline-flex items-center gap-2" id="bpBtnImport">
               <i class="fas fa-file-import text-xs"></i>导入采购单
             </button>
           </div>
         </div>
 
-        <!-- 拖拽上传区 -->
-        <div class="mt-4 border-2 border-dashed border-gray-200 rounded-lg p-6 bg-gray-50 text-center" id="bpDropZone">
-          <div class="text-gray-700 text-sm font-medium"><i class="fas fa-cloud-upload-alt mr-1 text-gray-500"></i>拖拽文件到此处，或点击上方“导入采购单”</div>
-          <div class="text-xs text-gray-500 mt-2">支持：xlsx / xls / csv（模板含示例行，导入时会自动忽略以“【示例】”开头的行）</div>
+        <!-- 待导入区域：未导入时为拖拽上传区，导入成功后显示文件名与删除 -->
+        <div class="mt-4 border-2 border-dashed border-gray-200 rounded-lg p-6 bg-gray-50 text-center min-h-[80px] flex items-center justify-center" id="bpDropZone">
+          <div id="bpDropZonePlaceholder">
+            <div class="text-gray-700 text-sm font-medium"><i class="fas fa-cloud-upload-alt mr-1 text-gray-500"></i>拖拽文件到此处，或点击上方“导入采购单”</div>
+            <div class="text-xs text-gray-500 mt-2">支持：jpg、jpeg、png、xls、xlsx、pdf</div>
+          </div>
+          <div id="bpDropZoneFile" class="hidden flex items-center justify-between gap-3 w-full max-w-md mx-auto">
+            <span class="text-gray-800 text-sm font-medium truncate flex-1 min-w-0" id="bpImportedFileNameText"></span>
+            <button type="button" class="flex-shrink-0 h-8 px-3 rounded-md border border-red-600 text-red-600 text-sm hover:bg-red-50 transition-colors" id="bpBtnRemoveFile"><i class="fas fa-trash-alt mr-1"></i>删除</button>
+          </div>
         </div>
 
         <!-- 错误原因（只展示原因） -->
@@ -970,15 +976,13 @@
             <table class="min-w-[800px] w-full text-base bp-table-center">
               <thead class="bg-gray-50 text-gray-700">
                 <tr class="align-middle">
-                  <th class="text-left px-3 py-3 w-14">行号</th>
-                  <th class="text-left px-3 py-3">商品名称</th>
-                  <th class="text-left px-3 py-3 w-24">品牌</th>
+                  <th class="text-left px-3 py-3">我的询价信息</th>
+                  <th class="text-left px-3 py-3 w-48">商品</th>
                   <th class="text-left px-3 py-3 w-32">供应商</th>
-                  <th class="text-right px-3 py-3 w-20">数量</th>
-                  <th class="text-right px-3 py-3 w-24">价格</th>
-                  <th class="text-left px-3 py-3 w-40">商品卡片</th>
-                  <th class="text-left px-3 py-3 w-28 min-w-[7rem]">状态</th>
-                  <th class="text-left px-3 py-3 w-28">操作</th>
+                  <th class="text-left px-3 py-3 w-28">规格</th>
+                  <th class="text-right px-3 py-3 w-24">单价</th>
+                  <th class="text-right px-3 py-3 w-24">数量</th>
+                  <th class="text-center px-3 py-3 w-24">采购</th>
                 </tr>
               </thead>
               <tbody class="bg-white" id="bpTbody"></tbody>
@@ -986,9 +990,10 @@
           </div>
         </div>
 
-        <!-- 右下角：提交采购单 -->
-        <div class="mt-4 hidden flex justify-end" id="bpSubmitWrap">
-          <button type="button" class="px-6 h-10 rounded-md bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors" id="bpBtnSubmit">
+        <!-- 底部：已选总价紧靠提交按钮 -->
+        <div class="mt-4 hidden flex items-center justify-end gap-3" id="bpSubmitWrap">
+          <span class="text-base text-gray-700">已选商品总价格：<span class="font-semibold text-red-600" id="bpSelectedTotalPrice">¥0.00</span></span>
+          <button type="button" class="px-6 h-10 rounded-md bg-primary text-white text-base font-medium hover:bg-primary/90 transition-colors" id="bpBtnSubmit">
             提交采购单
           </button>
         </div>
@@ -2237,6 +2242,10 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
       const btnImport = document.getElementById('bpBtnImport');
       const importInput = document.getElementById('bpImportInput');
       const dropZone = document.getElementById('bpDropZone');
+      const dropZonePlaceholder = document.getElementById('bpDropZonePlaceholder');
+      const dropZoneFile = document.getElementById('bpDropZoneFile');
+      const importedFileNameText = document.getElementById('bpImportedFileNameText');
+      const btnRemoveFile = document.getElementById('bpBtnRemoveFile');
 
       const errorBox = document.getElementById('bpErrorBox');
       const errorList = document.getElementById('bpErrorList');
@@ -2245,6 +2254,7 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
 
       const summaryBar = document.getElementById('bpSummaryBar');
       const sumTotal = document.getElementById('bpSumTotal');
+      const selectedTotalPriceEl = document.getElementById('bpSelectedTotalPrice');
       const btnSubmit = document.getElementById('bpBtnSubmit');
       const submitWrap = document.getElementById('bpSubmitWrap');
       const importDemoOverlay = document.getElementById('bpImportDemoOverlay');
@@ -2276,9 +2286,13 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
       const toast = document.getElementById('bpToast');
 
       // ----- state -----
-      /** @type {{id:string,rowNo:number,name:string,brand:string,shop:string,qty:number,price:number,productUrl:string,image:string}[]} */
+      /** @type {{id:string,rowNo:number,name:string,brand:string,expanded:boolean,recommendedProducts:Array<{name:string,brand:string,shop:string,spec:string,qty:number,price:number,productUrl:string,image:string,matchRate:number}>}[]} */
       let bpRows = [];
       let bpPickRowId = null;
+      /** 导入成功后在待导入区域显示的文件名 */
+      let bpImportedFileName = null;
+      /** 用户最近选择的文件（用于导入成功时记录文件名） */
+      let bpLastSelectedFile = null;
 
       // ----- mock products（含店铺、库存、商品链接，用于校验与导入成功列表） -----
       const bpProducts = [
@@ -2294,19 +2308,35 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
         { id: 'SKU-1010', name: 'KN95 防护口罩 50只/盒', brand: '霍尼韦尔', shop: '震坤行', price: 89.90, stock: 200, productUrl: 'store/store_detail.html?id=1010', image: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b34b?w=200&h=200&fit=crop' },
       ];
 
-      // 导入成功时的 10 条模拟数据（与 bpProducts 一一对应），状态默认「待采购」
+      // 导入成功时的模拟数据：每条询价信息对应多个推荐商品，方案 A 展开时多行 rowSpan
       function getMockSuccessRows() {
-        return bpProducts.map((p, i) => ({
-          id: 'BP-' + p.id,
+        const qtyList = [10, 5, 20, 5, 3];
+        // 每个询价 2～3 个推荐商品（不同供应商/规格）
+        const inquiryProducts = [
+          [bpProducts[0], bpProducts[1], bpProducts[2]],
+          [bpProducts[3], bpProducts[4]],
+          [bpProducts[5], bpProducts[6]],
+          [bpProducts[7], bpProducts[8]],
+          [bpProducts[9], bpProducts[0], bpProducts[3]]
+        ];
+        const specs = ['70克/500张/A4', '70g/A4/500张/包', '80g/500张/A4', '0.5mm 黑色 12支/盒', '0.5mm 12支', '黑白 双面 无线', '双面/网络', '0.5kg 木柄', '32件/套 公制', 'KN95 50只/盒'];
+        return inquiryProducts.map((recs, i) => ({
+          id: 'BP-' + (i + 1),
           rowNo: i + 1,
-          name: p.name,
-          brand: p.brand,
-          shop: p.shop,
-          qty: [10, 5, 20, 5, 3, 1, 1, 2, 1, 4][i],
-          price: p.price,
-          productUrl: p.productUrl,
-          image: p.image,
-          status: 'pending'  // 'pending' 待采购 | 'skipped' 暂不采购
+          name: recs[0].name,
+          brand: recs[0].brand,
+          expanded: false,
+          recommendedProducts: recs.map((p, j) => ({
+            name: p.name,
+            brand: p.brand,
+            shop: p.shop,
+            spec: specs[(i * 3 + j) % specs.length] || p.name,
+            qty: qtyList[i] || 1,
+            price: p.price,
+            productUrl: p.productUrl,
+            image: p.image,
+            matchRate: [95, 92, 88, 90, 85][j % 5] || 90
+          }))
         }));
       }
 
@@ -2419,36 +2449,45 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
       }
 
       // ----- import parse -----
+      const bpAllowedExts = ['jpg', 'jpeg', 'png', 'xls', 'xlsx', 'pdf'];
       async function bpHandleFile(file) {
         if (!file) return;
         bpHideErrors();
         bpToggleFields(false);
+        bpLastSelectedFile = file;
 
         const name = file.name || '';
         const ext = (name.split('.').pop() || '').toLowerCase();
-        if (!['xlsx', 'xls', 'csv'].includes(ext)) {
-          bpShowErrors(['不支持的文件格式，请使用 xlsx/xls/csv']);
+        if (!bpAllowedExts.includes(ext)) {
+          bpShowErrors(['不支持的文件格式，请使用 jpg、jpeg、png、xls、xlsx、pdf']);
           return;
         }
 
-        try {
-          let rows;
-          if (ext === 'csv') rows = await parseCsvFile(file);
-          else rows = await parseExcelFile(file);
-
-          const result = validateAndBuild(rows);
-          if (result.errors.length) {
-            bpShowErrors(result.errors);
-            return;
+        // 表格类：解析并校验，不通过则展示错误；通过则默认导入成功
+        if (ext === 'xls' || ext === 'xlsx') {
+          try {
+            const rows = await parseExcelFile(file);
+            const result = validateAndBuild(rows);
+            if (result.errors.length) {
+              bpShowErrors(result.errors);
+              return;
+            }
+            bpDoImportSuccess();
+          } catch (e) {
+            console.error(e);
+            bpShowErrors(['解析文件失败，请检查文件内容或重试']);
           }
-          // 原型：文件解析仅做格式校验，展示列表请使用「导入成功」按钮以获取带价格与商品卡片的模拟数据
-          if (result.rows.length) {
-            bpShowToast('格式校验通过。原型演示请点击「导入采购单」后选择「导入成功」查看列表。');
-          }
-        } catch (e) {
-          console.error(e);
-          bpShowErrors(['解析文件失败，请检查文件内容或重试']);
+          return;
         }
+        // 图片/PDF：仅做格式校验，默认导入成功
+        bpDoImportSuccess();
+      }
+
+      function bpDoImportSuccess() {
+        bpImportedFileName = (bpLastSelectedFile && bpLastSelectedFile.name) ? bpLastSelectedFile.name : '采购单.xlsx';
+        bpRows = getMockSuccessRows();
+        bpRenderAll();
+        bpShowToast('导入成功：' + bpRows.length + ' 条');
       }
 
       function mapHeaderName(h) {
@@ -2589,8 +2628,42 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
 
       // ----- render -----
       function bpRenderAll() {
+        bpRenderDropZone();
         bpRenderTable();
         bpRenderSummary();
+      }
+
+      function bpRenderDropZone() {
+        if (!dropZonePlaceholder || !dropZoneFile || !importedFileNameText) return;
+        if (bpImportedFileName) {
+          dropZonePlaceholder.classList.add('hidden');
+          dropZoneFile.classList.remove('hidden');
+          importedFileNameText.textContent = bpImportedFileName;
+        } else {
+          dropZonePlaceholder.classList.remove('hidden');
+          dropZoneFile.classList.add('hidden');
+        }
+      }
+
+      function bpRenderRecProduct(rec) {
+        const price = rec.price != null ? Number(rec.price).toFixed(2) : '-';
+        const cardUrl = (rec.productUrl || '').trim() || '#';
+        const cardImg = (rec.image || '').trim() ? rec.image : 'https://placehold.co/80/eee/999?text=+';
+        const matchTag = rec.matchRate != null ? `<span class="inline-block px-2 py-0.5 rounded border border-red-200 bg-red-50 text-red-700 text-xs whitespace-nowrap">匹配度${rec.matchRate}%以上</span>` : '';
+        const cardHtml = `<a href="${escapeHtml(cardUrl)}" target="_blank" class="inline-flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:border-primary hover:bg-red-50/30 transition-colors" title="点击跳转商品详情">
+          <img src="${escapeHtml(cardImg)}" alt="" class="w-14 h-14 object-cover rounded flex-shrink-0" onerror="this.src='https://placehold.co/80/eee/999?text=+'">
+          <div class="min-w-0">
+            ${matchTag}
+            <div class="text-sm text-gray-900 mt-1 line-clamp-2">${escapeHtml(rec.name)}</div>
+          </div>
+        </a>`;
+        return {
+          cardHtml,
+          shop: escapeHtml(rec.shop || '-'),
+          spec: escapeHtml(rec.spec || '-'),
+          price: price === '-' ? '-' : '¥' + price,
+          qty: rec.qty
+        };
       }
 
       function bpRenderTable() {
@@ -2600,39 +2673,50 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
           return;
         }
         tableWrap.classList.remove('hidden');
-        tbody.innerHTML = bpRows.map(r => {
-          const isSkipped = r.status === 'skipped';
-          const statusText = isSkipped ? '暂不采购' : '待采购';
-          const statusCls = isSkipped ? 'text-amber-700 bg-amber-50 border-amber-200' : 'text-green-700 bg-green-50 border-green-200';
-          const price = r.price != null ? Number(r.price).toFixed(2) : '-';
-          const cardUrl = (r.productUrl || '').trim() || '#';
-          const cardImg = (r.image || '').trim() ? r.image : 'https://placehold.co/80/eee/999?text=+';
-          const cardHtml = `<a href="${escapeHtml(cardUrl)}" target="_blank" class="inline-flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:border-primary hover:bg-red-50/30 transition-colors" title="点击跳转商品详情">
-            <img src="${escapeHtml(cardImg)}" alt="" class="w-14 h-14 object-cover rounded" onerror="this.src='https://placehold.co/80/eee/999?text=+'">
-            <span class="text-sm text-gray-700 max-w-[80px] truncate">${escapeHtml(r.name)}</span>
-          </a>`;
-          const actionBtn = isSkipped
-            ? `<button type="button" class="h-8 px-3 rounded-md border border-green-600 bg-green-600 text-white text-sm hover:bg-green-700 hover:border-green-700 transition-colors" onclick="bpResumeRow('${r.id}')">采购</button>`
-            : `<button type="button" class="h-8 px-3 rounded-md border border-red-600 bg-red-600 text-white text-sm hover:bg-red-700 hover:border-red-700 transition-colors" onclick="bpSkipRow('${r.id}')">暂不采购</button>`;
-
-          return `
-            <tr class="border-t border-gray-100 align-middle">
-              <td class="px-3 py-3 text-gray-900">${r.rowNo}</td>
-              <td class="px-3 py-3">
-                <div class="text-gray-900 font-medium">${escapeHtml(r.name)}</div>
-              </td>
-              <td class="px-3 py-3 text-gray-700">${escapeHtml(r.brand || '-')}</td>
-              <td class="px-3 py-3 text-gray-700">${escapeHtml(r.shop || '-')}</td>
-              <td class="px-3 py-3 text-right text-gray-900">${r.qty}</td>
-              <td class="px-3 py-3 text-right text-gray-700">${price === '-' ? '-' : '¥' + price}</td>
-              <td class="px-3 py-3">${cardHtml}</td>
-              <td class="px-3 py-3 whitespace-nowrap">
-                <span class="inline-flex items-center px-2 py-1 rounded-full border text-sm whitespace-nowrap ${statusCls}">${statusText}</span>
-              </td>
-              <td class="px-3 py-3">${actionBtn}</td>
-            </tr>
+        const frag = [];
+        bpRows.forEach(inq => {
+          const recs = inq.recommendedProducts || [];
+          const n = recs.length;
+          if (n === 0) return;
+          const firstRec = bpRenderRecProduct(recs[0]);
+          const inquiryCellContent = `
+            <div class="text-gray-900 font-medium">${inq.rowNo}. ${escapeHtml(inq.name)}</div>
+            <div class="text-xs text-gray-500 mt-1">品牌: ${escapeHtml(inq.brand || '-')}</div>
+            ${n > 1 ? `<button type="button" class="mt-2 text-xs text-primary hover:underline" onclick="bpToggleExpand('${inq.id}')">${inq.expanded ? '收起' : '查看更多匹配商品'}</button>` : ''}
           `;
-        }).join('');
+          const qtyInput = (rec, recIdx) => `<input type="number" min="1" step="1" value="${rec.qty}" class="w-16 px-2 py-1 text-right border border-gray-200 rounded text-sm" onchange="bpUpdateQty('${inq.id}', ${recIdx}, this.value)">`;
+          const selectCheckbox = (recIdx) => `<input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary" ${(recs[recIdx].selected ? 'checked' : '')} onchange="bpToggleSelectRec('${inq.id}', ${recIdx}, this.checked)">`;
+          if (!inq.expanded || n === 1) {
+            frag.push(`
+              <tr class="border-t border-gray-100 align-middle">
+                <td class="px-3 py-3 align-top">${inquiryCellContent}</td>
+                <td class="px-3 py-3">${firstRec.cardHtml}</td>
+                <td class="px-3 py-3 text-gray-700">${firstRec.shop}</td>
+                <td class="px-3 py-3 text-gray-700">${firstRec.spec}</td>
+                <td class="px-3 py-3 text-right text-red-600 font-medium">${firstRec.price}</td>
+                <td class="px-3 py-3 text-right text-gray-900">${qtyInput(recs[0], 0)}</td>
+                <td class="px-3 py-3 text-center">${selectCheckbox(0)}</td>
+              </tr>
+            `);
+          } else {
+            recs.forEach((rec, idx) => {
+              const r = bpRenderRecProduct(rec);
+              const firstTd = idx === 0 ? `<td class="px-3 py-3 align-top" rowspan="${n}">${inquiryCellContent}</td>` : '';
+              frag.push(`
+                <tr class="border-t border-gray-100 align-middle">
+                  ${firstTd}
+                  <td class="px-3 py-3">${r.cardHtml}</td>
+                  <td class="px-3 py-3 text-gray-700">${r.shop}</td>
+                  <td class="px-3 py-3 text-gray-700">${r.spec}</td>
+                  <td class="px-3 py-3 text-right text-red-600 font-medium">${r.price}</td>
+                  <td class="px-3 py-3 text-right text-gray-900">${qtyInput(rec, idx)}</td>
+                  <td class="px-3 py-3 text-center">${selectCheckbox(idx)}</td>
+                </tr>
+              `);
+            });
+          }
+        });
+        tbody.innerHTML = frag.join('');
 
         summaryBar?.classList.remove('hidden');
         if (submitWrap) submitWrap.classList.remove('hidden');
@@ -2648,23 +2732,43 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
           return;
         }
         if (sumTotal) sumTotal.textContent = String(bpRows.length);
+        bpRenderSelectedTotal();
       }
 
-      // ----- row actions（暂不采购：行保留，状态改为暂不采购，按钮变为「采购」） -----
-      window.bpSkipRow = function(rowId) {
-        const row = bpRows.find(r => r.id === rowId);
-        if (!row) return;
-        row.status = 'skipped';
+      function bpRenderSelectedTotal() {
+        if (!selectedTotalPriceEl) return;
+        let total = 0;
+        bpRows.forEach(inq => {
+          (inq.recommendedProducts || []).forEach(rec => {
+            if (rec.selected) total += (Number(rec.price) || 0) * (Number(rec.qty) || 0);
+          });
+        });
+        selectedTotalPriceEl.textContent = '¥' + total.toFixed(2);
+      }
+
+      // ----- 展开/收起（方案 A：多推荐商品多行展示，首列 rowSpan） -----
+      window.bpToggleExpand = function(inquiryId) {
+        const inq = bpRows.find(r => r.id === inquiryId);
+        if (!inq) return;
+        inq.expanded = !inq.expanded;
         bpRenderAll();
-        bpShowToast('已设为暂不采购');
       };
 
-      window.bpResumeRow = function(rowId) {
-        const row = bpRows.find(r => r.id === rowId);
-        if (!row) return;
-        row.status = 'pending';
+      // 数量修改：更新对应推荐商品的数量并重绘
+      window.bpUpdateQty = function(inquiryId, recIndex, value) {
+        const inq = bpRows.find(r => r.id === inquiryId);
+        if (!inq || !inq.recommendedProducts || !inq.recommendedProducts[recIndex]) return;
+        const num = parseInt(value, 10);
+        inq.recommendedProducts[recIndex].qty = (Number.isFinite(num) && num >= 1) ? num : 1;
         bpRenderAll();
-        bpShowToast('已恢复为待采购');
+      };
+
+      // 采购复选框：勾选/取消对应推荐商品，并刷新已选总价
+      window.bpToggleSelectRec = function(inquiryId, recIndex, checked) {
+        const inq = bpRows.find(r => r.id === inquiryId);
+        if (!inq || !inq.recommendedProducts || !inq.recommendedProducts[recIndex]) return;
+        inq.recommendedProducts[recIndex].selected = !!checked;
+        bpRenderSelectedTotal();
       };
 
       function bpReindexRowNo() {
@@ -2843,14 +2947,16 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
       });
       btnCloseFields?.addEventListener('click', () => bpToggleFields(false));
 
-      // 点击「导入采购单」时弹出原型演示（导入成功 / 导入失败）
+      // 点击「导入采购单」不真实导入，直接加载并展示模拟数据
       btnImport?.addEventListener('click', () => {
         bpHideErrors();
-        bpShowImportDemoModal();
+        bpLastSelectedFile = null;
+        bpDoImportSuccess();
       });
       importDemoClose?.addEventListener('click', bpCloseImportDemoModal);
       importDemoOverlay?.addEventListener('click', bpCloseImportDemoModal);
       btnImportSuccess?.addEventListener('click', () => {
+        bpImportedFileName = (bpLastSelectedFile && bpLastSelectedFile.name) ? bpLastSelectedFile.name : '已导入文件';
         bpRows = getMockSuccessRows();
         bpRenderAll();
         bpCloseImportDemoModal();
@@ -2863,7 +2969,16 @@ if (el) el.innerHTML = list.map(p => renderProductCard(p, blockId)).join('');
       validateFailClose?.addEventListener('click', bpCloseValidateFailModal);
       validateFailOverlay?.addEventListener('click', bpCloseValidateFailModal);
 
-      // 可选：仍支持选择文件导入（格式校验通过后需有表格校验与匹配逻辑，此处仅解析）
+      // 删除已导入文件：清空待导入区域与列表，恢复为上传区
+      btnRemoveFile?.addEventListener('click', () => {
+        bpImportedFileName = null;
+        bpLastSelectedFile = null;
+        bpRows = [];
+        bpRenderAll();
+        bpHideErrors();
+        bpShowToast('已删除');
+      });
+
       importInput?.addEventListener('change', function() {
         const file = this.files && this.files[0];
         this.value = '';
