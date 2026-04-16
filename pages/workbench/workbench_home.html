@@ -353,6 +353,81 @@
       padding-top: 18px !important;
       padding-bottom: 18px !important;
     }
+
+    .status-overview-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .status-overview-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      border-color: rgba(226, 35, 26, 0.2);
+    }
+
+    .status-overview-number {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+      margin-top: 12px;
+      margin-bottom: 8px;
+    }
+
+    .status-overview-desc {
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .goods-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .goods-action-btn-primary {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 22px rgba(239, 68, 68, 0.22);
+    }
+
+    .goods-action-btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(239, 68, 68, 0.28);
+    }
+
+    .goods-action-btn-secondary {
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+
+    .goods-action-btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .goods-process-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #475569;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -409,8 +484,8 @@
         </div>
           </div>
           
-      <!-- 供应商角色待办（5个指标） -->
-      <div id="supplierTodos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" style="display: none;">
+      <!-- 供应商角色待办（6个指标） -->
+      <div id="supplierTodos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" style="display: none;">
         <div class="todo-card border-blue-200 text-blue-600" onclick="navigateTo('orders-list?status=pending')">
           <div class="todo-card-content">
             <div class="todo-card-icon bg-blue-100 text-blue-600">
@@ -455,6 +530,15 @@
             <div class="todo-card-label">待开票</div>
           </div>
           <div class="todo-card-number text-orange-600" id="supplierTodo5">8</div>
+        </div>
+        <div class="todo-card border-purple-200 text-purple-600" onclick="window.location.href='../product/my_products.html?status=reviewing'">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-purple-100 text-purple-600">
+              <i class="fas fa-boxes-stacked"></i>
+            </div>
+            <div class="todo-card-label">上架中</div>
+          </div>
+          <div class="todo-card-number text-purple-600" id="supplierTodo6">16</div>
         </div>
       </div>
       
@@ -949,8 +1033,8 @@
       
     </div>
     
-    <!-- ==================== 第三行：我的收藏（占满一行） ==================== -->
-    <div class="module-card rounded-xl shadow-sm p-4 mb-5">
+    <!-- ==================== 第三行：我的收藏（采购视角） ==================== -->
+    <div class="module-card rounded-xl shadow-sm p-4 mb-5" data-role="buyer">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-3">
           <div class="module-icon bg-gradient-to-br from-red-500 to-pink-500 text-white shadow-sm">
@@ -1086,6 +1170,89 @@
           
       </div>
     </div>
+
+    <!-- ==================== 第三行：我的商品（供应商视角） ==================== -->
+    <div class="module-card rounded-xl shadow-sm p-5 mb-5" data-role="supplier" style="display: none;">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+        <div class="flex items-start gap-3">
+          <div class="module-icon bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-sm">
+            <i class="fas fa-box-open"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">我的商品</h2>
+            <p class="text-sm text-gray-500 mt-1">统一管理商品上架、审核、下架与整改状态，首页仅展示汇总入口。</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="goods-action-btn goods-action-btn-secondary" onclick="window.location.href='../product/my_products.html'">
+            <i class="fas fa-list"></i>
+            <span>查看全部</span>
+          </button>
+          <button class="goods-action-btn goods-action-btn-primary" onclick="window.location.href='../product/product_upload.html'">
+            <i class="fas fa-plus"></i>
+            <span>上架商品</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+        <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=published'">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-gray-700">已上架商品</span>
+            <span class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center">
+              <i class="fas fa-circle-check"></i>
+            </span>
+          </div>
+          <div class="status-overview-number text-green-600" id="productPublishedCount">128</div>
+          <p class="status-overview-desc">已审核通过并在商城展示，可进入列表页继续维护库存、价格和类目。</p>
+        </div>
+        <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=reviewing'">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-gray-700">审核中商品</span>
+            <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+              <i class="fas fa-robot"></i>
+            </span>
+          </div>
+          <div class="status-overview-number text-blue-600" id="productReviewingCount">16</div>
+          <p class="status-overview-desc">已提交审核，正在进行 AI 信息校验、风险识别或复核，点击查看进度明细。</p>
+        </div>
+        <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=offline'">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-gray-700">已下架商品</span>
+            <span class="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center">
+              <i class="fas fa-box-archive"></i>
+            </span>
+          </div>
+          <div class="status-overview-number text-gray-700" id="productOfflineCount">9</div>
+          <p class="status-overview-desc">已停止对外展示，可前往列表页查看原因、补充资料并重新发起上架申请。</p>
+        </div>
+        <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=rejected'">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold text-gray-700">审核未通过</span>
+            <span class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+              <i class="fas fa-triangle-exclamation"></i>
+            </span>
+          </div>
+          <div class="status-overview-number text-red-600" id="productRejectedCount">4</div>
+          <p class="status-overview-desc">存在语义风险、参数冲突或图片问题，需进入列表页查看 AI 结论并整改后重提。</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-semibold text-slate-800 mb-2">上架流程</h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="goods-process-pill"><i class="fas fa-download text-blue-500"></i>下载模板</span>
+              <span class="goods-process-pill"><i class="fas fa-file-arrow-up text-orange-500"></i>批量上传商品</span>
+              <span class="goods-process-pill"><i class="fas fa-robot text-purple-500"></i>AI自动校验</span>
+              <span class="goods-process-pill"><i class="fas fa-square-check text-green-500"></i>输出校验结果</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-500">首页不展示商品详情，点击任一状态卡即可跳转至对应列表页查看明细。</p>
+        </div>
+      </div>
+    </div>
     
     <!-- 页脚版权信息 -->
     <div class="mt-5 text-center text-sm text-gray-400">
@@ -1105,7 +1272,7 @@
     // ========== 权限说明映射 ==========
     const roleHintMap = {
       'buyer': '采购专员可审批采购单、跟进订单和售后',
-      'supplier': '供应商可管理订单、售后和合同'
+      'supplier': '供应商可管理商品、订单、售后和合同'
     };
     
     // ========== 用户名称映射 ==========
@@ -1175,7 +1342,7 @@
       // 更新页面描述
       if (pageDesc) {
         if (role === 'supplier') {
-          pageDesc.textContent = '管理订单、结算和售后，提升服务效率';
+          pageDesc.textContent = '管理商品、订单、结算和售后，提升服务效率';
         } else {
           pageDesc.textContent = '您的工作中心，快速处理待办事项';
         }
@@ -1243,6 +1410,7 @@
         const supplierTodo3 = document.getElementById('supplierTodo3'); // 退货待确认
         const supplierTodo4 = document.getElementById('supplierTodo4'); // 待提交合同
         const supplierTodo5 = document.getElementById('supplierTodo5'); // 待开票
+        const supplierTodo6 = document.getElementById('supplierTodo6'); // 上架中
         
         // 同步数据（从现有模块获取）
         if (supplierTodo1) supplierTodo1.textContent = document.getElementById('orderPending')?.textContent || '8';
@@ -1250,6 +1418,7 @@
         if (supplierTodo3) supplierTodo3.textContent = document.getElementById('afterSaleConfirm')?.textContent || '3';
         if (supplierTodo4) supplierTodo4.textContent = document.getElementById('contractSubmit')?.textContent || '6';
         if (supplierTodo5) supplierTodo5.textContent = document.getElementById('settlementInvoice')?.textContent || '8';
+        if (supplierTodo6) supplierTodo6.textContent = document.getElementById('productReviewingCount')?.textContent || '16';
       } else {
         // 采购专员：从现有模块同步数据
         const buyerTodo1 = document.getElementById('buyerTodo1'); // 待我审核采购单
@@ -1711,6 +1880,15 @@
     
     // ========== 页面跳转（模拟） ==========
     function navigateTo(page) {
+      const routeMap = {
+        'my-products': '../product/my_products.html',
+        'my-products-reviewing': '../product/my_products.html?status=reviewing',
+        'product-upload': '../product/product_upload.html'
+      };
+      if (routeMap[page]) {
+        window.location.href = routeMap[page];
+        return;
+      }
       console.log('Navigate to:', page);
       alert(`跳转到：${page}（演示中，真实环境会跳转到对应页面）`);
     }

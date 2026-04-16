@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>下单确认 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #E2231A;
+      --primary-dark: #c01e16;
+      --primary-light: #fff1f0;
+      --text-main: #111827;
+      --text-sub: #6b7280;
+      --border: #e5e7eb;
+      --bg: #f5f5f5;
+      --success: #16a34a;
+      --warn: #d97706;
+      --info: #2563eb;
+      --danger: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 110;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(226, 35, 26, 0.22);
+    }
+
+    .topbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      font-size: 12px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.92);
+      flex-wrap: wrap;
+    }
+
+    .page-wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px 20px 80px;
+    }
+
+    .crumb {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-main,
+    .btn-sub,
+    .btn-ghost,
+    .btn-link {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-main {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-main:hover { background: var(--primary-dark); }
+
+    .btn-sub {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+
+    .btn-sub:hover {
+      background: #dbeafe;
+    }
+
+    .btn-ghost {
+      background: #fff;
+      color: #374151;
+      border-color: var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+
+    .btn-link {
+      background: transparent;
+      color: var(--info);
+      border: none;
+      padding: 0;
+      height: auto;
+    }
+
+    .compliance-mini {
+      position: sticky;
+      top: 64px;
+      z-index: 105;
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .compliance-mini.show {
+      display: block;
+    }
+
+    .compliance-mini-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #dbeafe;
+      background: rgba(239, 246, 255, 0.98);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+      flex-wrap: wrap;
+    }
+
+    .mini-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mini-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #dbeafe;
+      color: #1d4ed8;
+      flex-shrink: 0;
+    }
+
+    .mini-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .mini-summary,
+    .mini-report-text {
+      font-size: 13px;
+      color: #475569;
+    }
+
+    .mini-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .status-pass {
+      background: #ecfdf5;
+      color: var(--success);
+    }
+
+    .status-warn {
+      background: #fff7ed;
+      color: var(--warn);
+    }
+
+    .status-run {
+      background: #eff6ff;
+      color: var(--info);
+    }
+
+    .status-block {
+      background: #fef2f2;
+      color: var(--danger);
+    }
+
+    .order-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .order-section {
+      padding: 18px 20px;
+    }
+
+    .goods-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .goods-table th,
+    .goods-table td {
+      padding: 16px 12px;
+      text-align: left;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    .goods-table th {
+      background: #f3f4f6;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    .store-row td {
+      background: #fafafa;
+      font-weight: 700;
+      color: #111827;
+      padding: 12px;
+    }
+
+    .goods-cell {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .goods-thumb {
+      width: 56px;
+      height: 56px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .price-text {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .remark-box {
+      width: 100%;
+      min-height: 92px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .remark-box:focus {
+      border-color: #fca5a5;
+    }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #f1f5f9;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+      border-right: 1px solid #f1f5f9;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 14px 12px;
+      font-size: 14px;
+    }
+
+    .invoice-table th {
+      background: #fafafa;
+      color: #6b7280;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .address-list {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .address-card {
+      width: 280px;
+      min-height: 96px;
+      border: 1px solid #f9a8d4;
+      border-radius: 2px;
+      padding: 16px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .address-card.active {
+      border-color: #fb7185;
+      box-shadow: 0 0 0 2px rgba(251, 113, 133, 0.12);
+    }
+
+    .address-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .more-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #94a3b8;
+      cursor: pointer;
+      margin: 4px auto 0;
+    }
+
+    .more-panel {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #fafafa;
+      border: 1px dashed #d1d5db;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #475569;
+    }
+
+    .more-panel.show {
+      display: block;
+    }
+
+    .bottom-summary {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .summary-box {
+      width: min(420px, 100%);
+      padding: 10px 0;
+      text-align: right;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .summary-line strong {
+      color: #111827;
+      min-width: 110px;
+      text-align: right;
+    }
+
+    .summary-total {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+      margin: 12px 0;
+    }
+
+    .summary-total strong {
+      color: var(--primary);
+      font-size: 36px;
+      margin-left: 8px;
+    }
+
+    .summary-address {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #4b5563;
+      margin-bottom: 14px;
+    }
+
+    .submit-btn {
+      width: 112px;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ff1d1d 0%, #d7000f 100%);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(220, 38, 38, 0.2);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .compliance-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(15, 23, 42, 0.52);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .compliance-overlay.show {
+      display: flex;
+    }
+
+    .compliance-modal {
+      width: min(1180px, 96vw);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+    }
+
+    .compliance-head {
+      padding: 20px 22px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: linear-gradient(135deg, #fffaf0 0%, #fff 100%);
+    }
+
+    .ai-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 28px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .head-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .compliance-progress {
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .compliance-progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(135deg, #2563eb 0%, #14b8a6 100%);
+      transition: width 0.35s ease;
+    }
+
+    .compliance-body {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 0;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .check-list {
+      border-right: 1px solid #eef2f7;
+      background: #fbfdff;
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .check-item {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .check-item.active {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.08);
+      background: #eff6ff;
+    }
+
+    .check-item:hover {
+      border-color: #bfdbfe;
+      background: #f8fbff;
+    }
+
+    .check-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .check-item-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .check-item-desc {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #64748b;
+    }
+
+    .check-item-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .check-detail {
+      padding: 22px;
+      overflow: auto;
+      background: #fff;
+    }
+
+    .detail-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 18px;
+      background: #fff;
+      margin-bottom: 16px;
+    }
+
+    .detail-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-card h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .detail-view-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .detail-view-title h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .detail-view-subtitle {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .subcheck-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .subcheck-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .subcheck-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .subcheck-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .subcheck-detail {
+      font-size: 13px;
+      line-height: 1.85;
+      color: #475569;
+    }
+
+    .subcheck-detail strong {
+      color: #0f172a;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+    }
+
+    .detail-item {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #475569;
+    }
+
+    .detail-item strong {
+      color: #0f172a;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .summary-card {
+      border: 1px solid #dbeafe;
+      background: linear-gradient(180deg, #f8fdff 0%, #fff 100%);
+    }
+
+    .summary-text {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #334155;
+    }
+
+    .report-card {
+      border: 1px solid #e5e7eb;
+      background: #fafafa;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .report-card-title {
+      width: 100%;
+      padding: 16px 18px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #fff;
+      font-size: 18px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .report-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      flex-wrap: wrap;
+      margin: 16px 18px 0;
+    }
+
+    .report-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .report-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .report-preview-item {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      font-size: 13px;
+      line-height: 1.9;
+      color: #475569;
+    }
+
+    .report-preview-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #111827;
+      font-size: 13px;
+    }
+
+    .report-outline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .report-outline-item {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .report-note {
+      margin: 12px 18px 18px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #64748b;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      z-index: 260;
+      min-width: 240px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #111827;
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.25);
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hidden-report {
+      position: fixed;
+      left: -99999px;
+      top: 0;
+      width: 794px;
+      padding: 24px;
+      background: #fff;
+      color: #111827;
+    }
+
+    .hidden-report h1,
+    .hidden-report h2,
+    .hidden-report h3,
+    .hidden-report p,
+    .hidden-report div {
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+
+    .report-print-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+      page-break-inside: avoid;
+    }
+
+    .report-print-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .report-print-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .report-print-item strong {
+      display: block;
+      color: #334155;
+      font-size: 12px;
+    }
+
+    @media (max-width: 960px) {
+      .compliance-body,
+      .detail-grid,
+      .subcheck-grid,
+      .report-preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .goods-table {
+        min-width: 760px;
+      }
+
+      .order-section {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-logo"><i class="fa-solid fa-cart-shopping"></i></div>
+        <div>国采e购</div>
+        <span class="top-chip">订单确认页</span>
+      </div>
+      <div class="top-actions">
+        <span><i class="fa-solid fa-house mr-1"></i>商城首页</span>
+        <span><i class="fa-solid fa-file-invoice mr-1"></i>订单确认</span>
+        <span class="top-chip" id="roleDisplay">采购专员</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <div class="crumb">首页 &gt; 购物车/立即下单 &gt; <span>确认订单</span></div>
+
+    <div class="compliance-mini" id="complianceMiniBar">
+      <div class="compliance-mini-inner">
+        <div class="mini-meta">
+          <div class="mini-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div>
+            <div class="mini-title">订单合规分析</div>
+            <div class="mini-summary" id="miniSummaryText">正在逐项校验订单信息，请稍候。</div>
+            <div class="mini-report-text" id="miniReportText">报告生成中，完成后将在此保留打开链接。</div>
+          </div>
+        </div>
+        <div class="mini-actions">
+          <span class="status-tag status-run" id="miniStatusTag"><i class="fa-solid fa-spinner fa-spin"></i>校验中</span>
+          <a class="btn-sub" id="miniOpenReport" href="javascript:void(0)" target="_blank" style="display:none;"><i class="fa-regular fa-file-pdf"></i>打开报告</a>
+          <a class="btn-ghost" id="miniDownloadReport" href="javascript:void(0)" download style="display:none;"><i class="fa-solid fa-download"></i>下载PDF</a>
+          <button class="btn-ghost" type="button" onclick="expandComplianceModal()"><i class="fa-solid fa-up-right-and-down-left-from-center"></i>展开查看</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-grid">
+      <section class="card order-section">
+        <div class="section-title">商品清单</div>
+        <table class="goods-table">
+          <thead>
+            <tr>
+              <th style="width:48%;">商品</th>
+              <th style="width:18%;">规格型号</th>
+              <th style="width:12%;">单价</th>
+              <th style="width:10%;">数量</th>
+              <th style="width:12%;">小计</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="store-row">
+              <td colspan="5">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                  <span id="storeName">京东</span>
+                  <span class="price-text">运费: ￥0</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="goods-cell">
+                  <img class="goods-thumb" id="goodsThumb" src="" alt="商品图片">
+                  <div>
+                    <div class="font-semibold text-gray-900 leading-7" id="goodsName"></div>
+                  </div>
+                </div>
+              </td>
+              <td id="goodsModel"></td>
+              <td class="price-text" id="goodsPrice"></td>
+              <td id="goodsQty"></td>
+              <td class="price-text" id="goodsSubtotal"></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card order-section">
+        <div class="section-title">备注信息：</div>
+        <textarea class="remark-box" id="remarkInput" placeholder="请输入备注信息（非必填）"></textarea>
+      </section>
+
+      <section class="card order-section">
+        <div class="section-head">
+          <div class="section-title" style="margin-bottom:0;">发票信息</div>
+          <button class="btn-sub" type="button" onclick="mockChangeInvoice()"><i class="fa-solid fa-plus"></i>新增发票信息</button>
+        </div>
+        <table class="invoice-table">
+          <thead>
+            <tr>
+              <th>发票类型</th>
+              <th>发票抬头</th>
+              <th>纳税人识别号</th>
+              <th>开户行名称</th>
+              <th>开户行账号</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="invoiceTypeCell"></td>
+              <td id="invoiceTitleCell"></td>
+              <td id="invoiceTaxNoCell"></td>
+              <td id="invoiceBankCell"></td>
+              <td id="invoiceAccountCell"></td>
+              <td><button class="btn-link" type="button" onclick="showToast('已打开发票详情')">查看</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card order-section">
+        <div class="section-head">
+          <div class="section-title" style="margin-bottom:0;">收货人信息</div>
+          <button class="btn-sub" type="button" onclick="mockChangeAddress()"><i class="fa-solid fa-plus"></i>新增收货地址</button>
+        </div>
+        <div class="address-list" id="addressList"></div>
+        <div class="text-center">
+          <span class="more-toggle" onclick="toggleMorePanel()"><i class="fa-solid fa-angle-down" id="moreToggleIcon"></i><span id="moreToggleText">展开</span></span>
+        </div>
+        <div class="more-panel" id="morePanel">
+          <div>补充信息：</div>
+          <div>1. 本订单已自动带出采购主体、发票信息、配送地址等基础字段。</div>
+          <div>2. 页面顶部保留订单合规分析入口；若信息变更，系统会提示重新生成《采购合规分析报告》。</div>
+          <div>3. 合规分析报告生成后，可用于审批留痕、采购归档及会签查阅。</div>
+        </div>
+      </section>
+
+      <section class="bottom-summary">
+        <div class="summary-box">
+          <div class="summary-line"><span>1件商品，总商品金额：</span><strong id="summaryGoodsAmount"></strong></div>
+          <div class="summary-line"><span>运费：</span><strong>￥0</strong></div>
+          <div class="summary-total">应付总额:<strong id="summaryPayAmount"></strong></div>
+          <div class="summary-address">
+            <div>配送至：<span id="summaryAddress"></span></div>
+            <div>收货人：<span id="summaryReceiver"></span></div>
+          </div>
+          <button class="submit-btn" id="submitOrderBtn" type="button" onclick="submitOrder()">提交订单</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="compliance-overlay show" id="complianceOverlay">
+    <div class="compliance-modal">
+      <div class="compliance-head">
+        <div style="min-width:0; flex:1;">
+          <div class="ai-title"><i class="fa-solid fa-shield-halved text-red-500"></i>订单合规性校验</div>
+          <div class="compliance-progress">
+            <div class="compliance-progress-bar" id="complianceProgressBar"></div>
+          </div>
+        </div>
+        <div class="head-actions">
+          <span class="status-tag status-run" id="modalStatusTag"><i class="fa-solid fa-spinner fa-spin"></i>校验中</span>
+          <button class="btn-ghost" type="button" onclick="minimizeComplianceModal()"><i class="fa-solid fa-window-minimize"></i>最小化</button>
+        </div>
+      </div>
+
+      <div class="compliance-body">
+        <div class="check-list" id="checkList"></div>
+
+        <div class="check-detail" id="detailPanel"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="hidden-report" id="reportPrintable">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:18px;">
+      <div>
+        <div style="font-size:28px; font-weight:800; color:#111827;">采购合规分析报告</div>
+        <div style="margin-top:8px; color:#64748b; font-size:13px; line-height:1.8;">
+          <div>报告编号：<span id="reportDocNo"></span></div>
+          <div>生成时间：<span id="reportGeneratedAt"></span></div>
+          <div>订单编号：<span id="reportOrderNo"></span></div>
+        </div>
+      </div>
+      <div style="padding:8px 12px; border-radius:999px; background:#eff6ff; color:#1d4ed8; font-size:12px; font-weight:700;">国采e购 AI 合规中心</div>
+    </div>
+
+    <div class="report-print-card">
+      <h2 style="margin:0 0 12px; font-size:18px;">一、订单基础信息</h2>
+      <div class="report-print-grid">
+        <div class="report-print-item"><strong>商品名称</strong><span id="reportProductName"></span></div>
+        <div class="report-print-item"><strong>规格型号</strong><span id="reportProductModel"></span></div>
+        <div class="report-print-item"><strong>供应商</strong><span id="reportSupplier"></span></div>
+        <div class="report-print-item"><strong>采购编码</strong><span id="reportCode"></span></div>
+        <div class="report-print-item"><strong>单价</strong><span id="reportPrice"></span></div>
+        <div class="report-print-item"><strong>数量</strong><span id="reportQty"></span></div>
+        <div class="report-print-item"><strong>发票抬头</strong><span id="reportInvoiceTitle"></span></div>
+        <div class="report-print-item"><strong>收货信息</strong><span id="reportAddress"></span></div>
+      </div>
+    </div>
+
+    <div class="report-print-card">
+      <h2 style="margin:0 0 12px; font-size:18px;">二、合规校验明细</h2>
+      <div id="reportChecks"></div>
+    </div>
+
+    <div class="report-print-card">
+      <h2 style="margin:0 0 12px; font-size:18px;">三、AI 合规总结</h2>
+      <div id="reportSummaryText" style="font-size:14px; line-height:2; color:#334155;"></div>
+    </div>
+
+    <div class="report-print-card">
+      <h2 style="margin:0 0 12px; font-size:18px;">四、结论判定</h2>
+      <div id="reportConclusion" style="font-size:16px; line-height:2; color:#111827; font-weight:700;"></div>
+      <div style="margin-top:8px; font-size:13px; line-height:1.9; color:#64748b;">
+        本报告由平台合规分析能力自动生成，用于采购审批辅助与留痕归档。若订单关键信息发生变更，请重新发起合规分析并生成新版本报告。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ORDER_STORAGE_KEY = 'gcOrderConfirmPayload';
+    const REPORT_FILE_NAME = '采购合规分析报告.pdf';
+    let orderData = null;
+    let activeAddressId = '';
+    let complianceState = {
+      minimized: false,
+      checks: [],
+      currentIndex: -1,
+      selectedIndex: -1,
+      isRunning: false,
+      completed: false,
+      overallStatus: 'run',
+      summaryText: '',
+      reportStatus: 'idle',
+      reportUrl: '',
+      reportDirty: false
+    };
+
+    function getRoleName() {
+      const role = localStorage.getItem('role') || 'buyer';
+      const map = {
+        admin: '管理员',
+        buyer: '采购专员',
+        'buyer-user': '普通采购用户',
+        supplier: '供应商',
+        guest: '访客'
+      };
+      return map[role] || '采购专员';
+    }
+
+    function formatCurrency(value) {
+      return `￥${Number(value || 0).toFixed(2)}`;
+    }
+
+    function getStatusMeta(status) {
+      const map = {
+        pending: { cls: 'status-run', label: '待校验' },
+        running: { cls: 'status-run', label: '校验中' },
+        generating: { cls: 'status-run', label: '生成中' },
+        pass: { cls: 'status-pass', label: '通过' },
+        ready: { cls: 'status-pass', label: '已生成' },
+        warn: { cls: 'status-warn', label: '需关注' },
+        dirty: { cls: 'status-warn', label: '需重生成' },
+        block: { cls: 'status-block', label: '不通过' }
+      };
+      return map[status] || map.pending;
+    }
+
+    function getFallbackOrder() {
+      return {
+        orderNo: `ORD${Date.now().toString().slice(-8)}`,
+        productId: 'demo-printer-001',
+        name: '惠普 HP DeskJet 2775彩色喷墨多功能一体机（打印/复印/扫描）',
+        model: 'DeskJet 2775',
+        unit: '台',
+        qty: 1,
+        price: 50.41,
+        subtotal: 50.41,
+        supplier: '京东自营政采专区',
+        storeName: '京东',
+        code: 'GC-HP-2775-20260416',
+        deliveryArea: '天津市辖区河东区创业大厦17楼',
+        deliveryTime: '24小时内发货',
+        receiver: '小庄',
+        receiverPhone: '138****5621',
+        stockStatus: '现货充足，可直接下单',
+        image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=120&h=120&fit=crop',
+        floor: 45,
+        ceiling: 58,
+        inspectionReport: { status: '有效', expiry: '2026-12-31' },
+        supplierScore: 4.8,
+        goodRate: '98.9%',
+        invoice: {
+          type: '增值税普通发票',
+          title: '天创信总公司',
+          taxNo: '93827472837237172Y',
+          bank: '--',
+          account: '--'
+        },
+        addresses: [
+          {
+            id: 'addr-1',
+            label: '天津市辖区河东区',
+            detail: '创业大厦17楼',
+            receiver: '小庄'
+          }
+        ]
+      };
+    }
+
+    function loadOrderData() {
+      const raw = sessionStorage.getItem(ORDER_STORAGE_KEY);
+      if (!raw) return getFallbackOrder();
+      try {
+        const parsed = JSON.parse(raw);
+        return {
+          orderNo: parsed.orderNo || `ORD${Date.now().toString().slice(-8)}`,
+          productId: parsed.productId || parsed.id || 'product-order',
+          name: parsed.name,
+          model: parsed.model || '标准规格',
+          unit: parsed.unit || '件',
+          qty: parsed.qty || 1,
+          price: Number(parsed.price || 0),
+          subtotal: Number(parsed.price || 0) * Number(parsed.qty || 1),
+          supplier: parsed.supplier || '平台供应商',
+          storeName: parsed.storeName || '京东',
+          code: parsed.code || 'GC-ORDER-DEMO',
+          deliveryArea: parsed.deliveryArea || '北京市海淀区',
+          deliveryTime: parsed.deliveryTime || '48小时内发货',
+          receiver: parsed.receiver || '张三',
+          receiverPhone: parsed.receiverPhone || '138****0000',
+          stockStatus: parsed.stockStatus || '库存稳定，可持续供货',
+          image: parsed.image || (parsed.images && parsed.images[0]) || getFallbackOrder().image,
+          floor: Number(parsed.floor || 0),
+          ceiling: Number(parsed.ceiling || 0),
+          inspectionReport: parsed.inspectionReport || { status: '有效', expiry: '2026-12-31' },
+          supplierScore: Number(parsed.supplierScore || 4.8),
+          goodRate: parsed.goodRate || '98.0%',
+          invoice: parsed.invoice || getFallbackOrder().invoice,
+          addresses: (parsed.addresses && parsed.addresses.length ? parsed.addresses : getFallbackOrder().addresses).map(item => ({ ...item }))
+        };
+      } catch (error) {
+        return getFallbackOrder();
+      }
+    }
+
+    function buildComplianceChecks() {
+      const priceReasonable = orderData.price <= orderData.ceiling;
+      const inspectionOk = orderData.inspectionReport && orderData.inspectionReport.status === '有效';
+      const invoiceOk = !!(orderData.invoice.title && orderData.invoice.taxNo);
+      const addressOk = !!(orderData.deliveryArea && orderData.receiver);
+      const supplierStable = orderData.supplierScore >= 4.6;
+      const quantityOk = orderData.qty > 0;
+
+      return [
+        {
+          type: 'analysis',
+          title: '商品基础信息完整性校验',
+          basis: '核验商品名称、规格型号、计价单位、采购编码和供应商等基础字段。',
+          successText: `商品名称、规格型号、采购编码、计价单位和供应商信息齐全，可进入订单审核流程。`,
+          status: quantityOk ? 'pass' : 'block',
+          children: [
+            { title: '商品名称完整性', detail: orderData.name ? `商品名称已登记：${orderData.name}` : '商品名称缺失。', status: orderData.name ? 'pass' : 'block' },
+            { title: '规格型号完整性', detail: orderData.model ? `规格型号已登记：${orderData.model}` : '规格型号缺失。', status: orderData.model ? 'pass' : 'block' },
+            { title: '计价与数量合法性', detail: quantityOk ? `计价单位为${orderData.unit}，下单数量为 ${orderData.qty}${orderData.unit}，数量合法。` : '下单数量异常，无法进入订单流程。', status: quantityOk ? 'pass' : 'block' },
+            { title: '采购标识完整性', detail: orderData.code ? `采购编码已登记：${orderData.code}；供应商信息已绑定。` : '采购编码缺失，影响归档。', status: orderData.code ? 'pass' : 'block' }
+          ]
+        },
+        {
+          type: 'analysis',
+          title: '采购制度与类目匹配校验',
+          basis: '核验商品是否具备采购基础资料，是否可进入当前采购场景。',
+          successText: `当前商品已具备基础采购资料，适配当前采购确认流程，未发现明显类目冲突。`,
+          status: 'pass',
+          children: [
+            { title: '采购场景匹配', detail: '当前商品可进入商城下单确认流程，未发现采购制度冲突。', status: 'pass' },
+            { title: '类目适配性', detail: '商品类目与当前政采场景匹配，未命中限制采购类目。', status: 'pass' },
+            { title: '流程准入条件', detail: '当前订单具备基础资料、价格与履约信息，可继续进行合规分析。', status: 'pass' },
+            { title: '审批留痕适配', detail: '订单字段满足后续审批、留痕和报告归档需要。', status: 'pass' }
+          ]
+        },
+        {
+          type: 'analysis',
+          title: '价格合理性校验',
+          basis: `对比当前下单价 ${formatCurrency(orderData.price)} 与平台建议区间 ${formatCurrency(orderData.floor)} - ${formatCurrency(orderData.ceiling)}。`,
+          successText: priceReasonable
+            ? `当前下单价位于平台建议采购区间内，价格合理性通过。`
+            : `当前下单价高于平台建议上限，建议复核预算或重新议价。`,
+          status: priceReasonable ? 'pass' : 'warn',
+          children: [
+            { title: '平台建议区间对比', detail: `当前下单价 ${formatCurrency(orderData.price)}；建议区间 ${formatCurrency(orderData.floor)} - ${formatCurrency(orderData.ceiling)}。`, status: priceReasonable ? 'pass' : 'warn' },
+            { title: '上限偏离情况', detail: priceReasonable ? '当前价格未高于建议上限，价格风险可控。' : '当前价格高于建议上限，建议复核预算或议价。', status: priceReasonable ? 'pass' : 'warn' },
+            { title: '预算可接受性', detail: '订单总额与当前采购金额规模匹配，未发现明显异常金额波动。', status: 'pass' },
+            { title: '成交合理性判断', detail: priceReasonable ? '价格处于合理采购区间，可作为当前订单参考价。' : '当前价格存在偏高风险，不建议直接确认。', status: priceReasonable ? 'pass' : 'warn' }
+          ]
+        },
+        {
+          type: 'analysis',
+          title: '供应商履约与资质校验',
+          basis: `结合供应商综合评分 ${orderData.supplierScore.toFixed(1)}、商品好评率 ${orderData.goodRate} 和安全资料状态。`,
+          successText: inspectionOk && supplierStable
+            ? `供应商履约评分稳定，安全资料有效，资质表现正常。`
+            : `供应商资料存在待关注项，建议在提交前补充复核。`,
+          status: inspectionOk && supplierStable ? 'pass' : 'warn',
+          children: [
+            { title: '综合评分稳定性', detail: `供应商综合评分 ${orderData.supplierScore.toFixed(1)}，处于${supplierStable ? '稳定' : '待关注'}区间。`, status: supplierStable ? 'pass' : 'warn' },
+            { title: '商品评价表现', detail: `商品好评率 ${orderData.goodRate}，可作为履约表现辅助参考。`, status: 'pass' },
+            { title: '资质安全资料', detail: inspectionOk ? `安全资料状态为${orderData.inspectionReport.status}，到期时间 ${orderData.inspectionReport.expiry}。` : '安全资料状态异常，建议补充复核。', status: inspectionOk ? 'pass' : 'warn' },
+            { title: '履约风险判断', detail: inspectionOk && supplierStable ? '当前供应商履约风险较低，可继续下单。' : '当前供应商存在待关注履约项。', status: inspectionOk && supplierStable ? 'pass' : 'warn' }
+          ]
+        },
+        {
+          type: 'analysis',
+          title: '发票主体一致性校验',
+          basis: '核验发票类型、抬头与纳税人识别号是否完整，是否可用于当前订单留档。',
+          successText: invoiceOk
+            ? `发票主体信息完整，可用于订单归档和后续审批。`
+            : `发票主体信息不完整，建议补充后再提交订单。`,
+          status: invoiceOk ? 'pass' : 'warn',
+          children: [
+            { title: '发票类型校验', detail: `当前发票类型为：${orderData.invoice.type || '未填写'}。`, status: orderData.invoice.type ? 'pass' : 'warn' },
+            { title: '发票抬头校验', detail: orderData.invoice.title ? `发票抬头已登记：${orderData.invoice.title}。` : '发票抬头缺失。', status: orderData.invoice.title ? 'pass' : 'warn' },
+            { title: '税号校验', detail: orderData.invoice.taxNo ? `纳税人识别号已登记：${orderData.invoice.taxNo}。` : '纳税人识别号缺失。', status: orderData.invoice.taxNo ? 'pass' : 'warn' },
+            { title: '归档适配性', detail: invoiceOk ? '当前发票主体满足订单留档和审批要求。' : '发票主体信息不完整，影响后续归档。', status: invoiceOk ? 'pass' : 'warn' }
+          ]
+        },
+        {
+          type: 'analysis',
+          title: '收货信息有效性校验',
+          basis: '核验配送地址、收货人及交付时效信息是否具备订单履约条件。',
+          successText: addressOk
+            ? `配送地址与收货人信息完整，且在当前可配送范围内。`
+            : `收货信息不完整，可能影响履约和报告归档。`,
+          status: addressOk ? 'pass' : 'block',
+          children: [
+            { title: '配送地址完整性', detail: orderData.deliveryArea ? `当前配送地址：${orderData.deliveryArea}。` : '配送地址缺失。', status: orderData.deliveryArea ? 'pass' : 'block' },
+            { title: '收货人信息完整性', detail: orderData.receiver ? `当前收货人：${orderData.receiver}。` : '收货人信息缺失。', status: orderData.receiver ? 'pass' : 'block' },
+            { title: '交付时效确认', detail: `预计交付信息：${orderData.deliveryTime}。`, status: 'pass' },
+            { title: '履约可达性', detail: addressOk ? '当前地址与联系人信息满足履约要求。' : '当前收货信息不完整，存在履约风险。', status: addressOk ? 'pass' : 'block' }
+          ]
+        },
+        {
+          type: 'report',
+          title: '采购合规分析报告',
+          basis: '汇总前 6 项校验结论，自动生成《采购合规分析报告》PDF 文件并提供查看入口。',
+          successText: '点击后查看报告内容、报告状态以及打开/下载/重新生成操作。',
+          status: 'pending',
+          children: [
+            { title: '报告编号', detail: `RPT-${orderData.orderNo}` },
+            { title: '报告范围', detail: '订单基础信息、一级合规校验结果、AI 合规总结、结论判定。' },
+            { title: '报告格式', detail: '自动生成 PDF 文件，用于审批留痕、采购归档与会签查阅。' },
+            { title: '报告动作', detail: '报告生成后支持打开查看、下载 PDF、重新生成。' }
+          ]
+        }
+      ];
+    }
+
+    function renderPage() {
+      document.title = `确认订单 - ${orderData.name} | 国采e购`;
+      document.getElementById('roleDisplay').textContent = getRoleName();
+      document.getElementById('storeName').textContent = orderData.storeName;
+      document.getElementById('goodsThumb').src = orderData.image;
+      document.getElementById('goodsName').textContent = `${orderData.name}（计价单位：${orderData.unit}）`;
+      document.getElementById('goodsModel').textContent = orderData.model;
+      document.getElementById('goodsPrice').textContent = formatCurrency(orderData.price);
+      document.getElementById('goodsQty').textContent = `x ${orderData.qty}`;
+      document.getElementById('goodsSubtotal').textContent = formatCurrency(orderData.subtotal);
+      document.getElementById('summaryGoodsAmount').textContent = formatCurrency(orderData.subtotal);
+      document.getElementById('summaryPayAmount').textContent = formatCurrency(orderData.subtotal);
+      document.getElementById('summaryAddress').textContent = orderData.deliveryArea;
+      document.getElementById('summaryReceiver').textContent = orderData.receiver;
+      document.getElementById('invoiceTypeCell').textContent = orderData.invoice.type;
+      document.getElementById('invoiceTitleCell').textContent = orderData.invoice.title;
+      document.getElementById('invoiceTaxNoCell').textContent = orderData.invoice.taxNo;
+      document.getElementById('invoiceBankCell').textContent = orderData.invoice.bank;
+      document.getElementById('invoiceAccountCell').textContent = orderData.invoice.account;
+      renderAddresses();
+      renderReportPrintable();
+    }
+
+    function renderAddresses() {
+      const list = document.getElementById('addressList');
+      list.innerHTML = orderData.addresses.map(item => `
+        <div class="address-card ${item.id === activeAddressId ? 'active' : ''}" onclick="selectAddress('${item.id}')">
+          <div class="address-top">
+            <span>${item.label}</span>
+            <span>${item.receiver}</span>
+          </div>
+          <div class="text-gray-500 leading-7">${item.detail}</div>
+        </div>
+      `).join('');
+    }
+
+    function selectAddress(id) {
+      activeAddressId = id;
+      const selected = orderData.addresses.find(item => item.id === id);
+      if (selected) {
+        orderData.deliveryArea = `${selected.label}${selected.detail}`;
+        orderData.receiver = selected.receiver;
+        document.getElementById('summaryAddress').textContent = orderData.deliveryArea;
+        document.getElementById('summaryReceiver').textContent = orderData.receiver;
+        document.getElementById('contextDelivery').textContent = `${orderData.deliveryTime} / ${orderData.deliveryArea}`;
+      }
+      renderAddresses();
+      markReportDirty('收货地址已更新，请重新生成合规报告。');
+    }
+
+    function toggleMorePanel() {
+      const panel = document.getElementById('morePanel');
+      const icon = document.getElementById('moreToggleIcon');
+      const text = document.getElementById('moreToggleText');
+      const show = panel.classList.toggle('show');
+      icon.className = show ? 'fa-solid fa-angle-up' : 'fa-solid fa-angle-down';
+      text.textContent = show ? '收起' : '展开';
+    }
+
+    function renderCheckList() {
+      const list = document.getElementById('checkList');
+      list.innerHTML = complianceState.checks.map((item, index) => {
+        const meta = getStatusMeta(item.runtimeStatus || 'pending');
+        return `
+          <div class="check-item ${index === complianceState.selectedIndex ? 'active' : ''}" onclick="selectComplianceCheck(${index})">
+            <div class="check-item-head">
+              <div class="check-item-title">${item.title}</div>
+              <span class="status-tag ${meta.cls}">${meta.label}</span>
+            </div>
+            <div class="check-item-desc">${item.successText}</div>
+            <div class="check-item-meta">${item.type === 'report' ? '报告内容视图' : `二级校验项 ${item.children.length} 项`}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAnalysisDetail(current) {
+      const meta = getStatusMeta(current.runtimeStatus || 'pending');
+      return `
+        <div class="detail-view-title">
+          <div>
+            <h2>${current.title}</h2>
+            <div class="detail-view-subtitle">${current.basis}</div>
+          </div>
+          <span class="status-tag ${meta.cls}">${meta.label}</span>
+        </div>
+
+        <div class="detail-card">
+          <h3>一级分析结论</h3>
+          <div class="summary-text">${current.successText}</div>
+        </div>
+
+        <div class="detail-card">
+          <h3>对应二级校验项目</h3>
+          <div class="subcheck-grid">
+            ${current.children.map(item => {
+              const childMeta = getStatusMeta(item.status);
+              return `
+                <div class="subcheck-card">
+                  <div class="subcheck-head">
+                    <div class="subcheck-title">${item.title}</div>
+                    <span class="status-tag ${childMeta.cls}">${childMeta.label}</span>
+                  </div>
+                  <div class="subcheck-detail">${item.detail}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>订单上下文</h3>
+          <div class="detail-grid">
+            <div class="detail-item"><strong>商品名称</strong><span>${orderData.name}</span></div>
+            <div class="detail-item"><strong>供应商</strong><span>${orderData.supplier}</span></div>
+            <div class="detail-item"><strong>采购编码</strong><span>${orderData.code}</span></div>
+            <div class="detail-item"><strong>交付信息</strong><span>${orderData.deliveryTime} / ${orderData.deliveryArea}</span></div>
+          </div>
+        </div>
+
+        <div class="detail-card summary-card">
+          <h3>AI 合规总结</h3>
+          <div class="summary-text">${complianceState.summaryText || '系统正在汇总逐项校验结果，校验完成后将在此生成总结意见。'}</div>
+        </div>
+      `;
+    }
+
+    function renderReportDetail(current) {
+      return `
+        <div class="detail-view-title">
+          <div>
+            <h2>${current.title}</h2>
+            <div class="detail-view-subtitle">${current.basis}</div>
+          </div>
+          <span class="status-tag ${getStatusMeta(current.runtimeStatus || 'pending').cls}">${getStatusMeta(current.runtimeStatus || 'pending').label}</span>
+        </div>
+
+        <div class="detail-card report-card">
+          <div class="report-card-title">报告内容</div>
+          <div class="report-status">
+            <div>
+              <div class="font-semibold text-gray-900" id="reportStatusTitle">报告尚未生成</div>
+              <div class="text-sm text-gray-500 mt-1" id="reportStatusText">校验完成后将自动生成《采购合规分析报告》PDF 文件。</div>
+            </div>
+            <div class="report-actions">
+              <a class="btn-sub" id="modalOpenReport" href="javascript:void(0)" target="_blank" style="display:none;"><i class="fa-regular fa-file-pdf"></i>打开报告</a>
+              <a class="btn-ghost" id="modalDownloadReport" href="javascript:void(0)" download style="display:none;"><i class="fa-solid fa-download"></i>下载PDF</a>
+              <button class="btn-main" id="regenReportBtn" type="button" onclick="rerunCompliance()" style="display:none;"><i class="fa-solid fa-rotate-right"></i>重新生成</button>
+            </div>
+          </div>
+          <div class="report-note">最小化后，页面顶部会持续保留合规结论与报告文件入口，便于在填写发票、地址和备注时随时打开查看。</div>
+        </div>
+
+        <div class="detail-card">
+          <h3>报告预览</h3>
+          <div class="report-preview-grid">
+            <div class="report-preview-item">
+              <strong>报告编号</strong>
+              <div>RPT-${orderData.orderNo}</div>
+            </div>
+            <div class="report-preview-item">
+              <strong>订单编号</strong>
+              <div>${orderData.orderNo}</div>
+            </div>
+            <div class="report-preview-item">
+              <strong>报告对象</strong>
+              <div>${orderData.name}</div>
+            </div>
+            <div class="report-preview-item">
+              <strong>报告生成时间</strong>
+              <div>${new Date().toLocaleString('zh-CN', { hour12: false })}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>报告正文结构</h3>
+          <div class="report-outline">
+            <div class="report-outline-item">一、订单基础信息：商品名称、规格型号、供应商、采购编码、价格、数量、发票与收货信息。</div>
+            <div class="report-outline-item">二、一级合规校验结果：逐项汇总前 6 项一级分析结论与状态。</div>
+            <div class="report-outline-item">三、AI 合规总结：输出订单整体风险判断、关注点与建议动作。</div>
+            <div class="report-outline-item">四、结论判定：给出“可提交 / 需关注 / 暂不建议提交”的最终意见。</div>
+          </div>
+        </div>
+
+        <div class="detail-card summary-card">
+          <h3>AI 合规总结</h3>
+          <div class="summary-text">${complianceState.summaryText || '系统正在汇总逐项校验结果，校验完成后将在此生成总结意见。'}</div>
+        </div>
+      `;
+    }
+
+    function renderDetailPanel() {
+      const current = complianceState.checks[complianceState.selectedIndex] || complianceState.checks[0];
+      if (!current) return;
+      document.getElementById('detailPanel').innerHTML = current.type === 'report'
+        ? renderReportDetail(current)
+        : renderAnalysisDetail(current);
+      updateReportStatus();
+    }
+
+    function selectComplianceCheck(index) {
+      complianceState.selectedIndex = index;
+      renderCheckList();
+      renderDetailPanel();
+    }
+
+    function updateProgress() {
+      const doneCount = complianceState.checks.filter(item => ['pass', 'warn', 'block', 'ready'].includes(item.runtimeStatus)).length;
+      const percent = complianceState.checks.length ? Math.round(doneCount / complianceState.checks.length * 100) : 0;
+      document.getElementById('complianceProgressBar').style.width = `${percent}%`;
+      const modalStatusTag = document.getElementById('modalStatusTag');
+      const miniStatusTag = document.getElementById('miniStatusTag');
+
+      if (complianceState.isRunning) {
+        modalStatusTag.className = 'status-tag status-run';
+        modalStatusTag.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>校验中';
+        miniStatusTag.className = 'status-tag status-run';
+        miniStatusTag.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>校验中';
+      } else {
+        const overallClass = complianceState.overallStatus === 'pass'
+          ? 'status-pass'
+          : complianceState.overallStatus === 'warn'
+            ? 'status-warn'
+            : 'status-block';
+        const label = complianceState.overallStatus === 'pass'
+          ? '可提交'
+          : complianceState.overallStatus === 'warn'
+            ? '需关注'
+            : '需拦截';
+        modalStatusTag.className = `status-tag ${overallClass}`;
+        modalStatusTag.innerHTML = `<i class="fa-solid fa-circle-check"></i>${label}`;
+        miniStatusTag.className = `status-tag ${overallClass}`;
+        miniStatusTag.innerHTML = `<i class="fa-solid fa-circle-check"></i>${label}`;
+      }
+    }
+
+    function updateSummary() {
+      const analysisChecks = complianceState.checks.filter(item => item.type === 'analysis');
+      const doneCount = complianceState.checks.filter(item => ['pass', 'warn', 'block', 'ready'].includes(item.runtimeStatus)).length;
+      const analysisDoneCount = analysisChecks.filter(item => ['pass', 'warn', 'block'].includes(item.runtimeStatus)).length;
+      const warnCount = analysisChecks.filter(item => item.runtimeStatus === 'warn').length;
+      const blockCount = analysisChecks.filter(item => item.runtimeStatus === 'block').length;
+      let summary = '系统正在汇总逐项校验结果，校验完成后将在此生成总结意见。';
+
+      if (analysisDoneCount === analysisChecks.length) {
+        if (blockCount) {
+          complianceState.overallStatus = 'block';
+          summary = `本次订单已完成前 ${analysisDoneCount} 项一级合规分析，但存在 ${blockCount} 项关键问题，当前不建议直接提交。建议先补充或修正收货/基础资料后，再重新生成合规报告。`;
+        } else if (warnCount) {
+          complianceState.overallStatus = 'warn';
+          summary = `本次订单已完成前 ${analysisDoneCount} 项一级合规分析，整体可继续处理，但存在 ${warnCount} 项需关注内容。当前价格、供应商资质与发票信息基本满足要求，建议在提交前再次确认关注项。`;
+        } else {
+          complianceState.overallStatus = 'pass';
+          summary = `本次订单已完成前 ${analysisDoneCount} 项一级合规分析，商品信息、价格区间、供应商履约、发票主体和收货信息均满足当前采购要求，建议按当前订单信息提交。`;
+        }
+      }
+
+      complianceState.summaryText = summary;
+      document.getElementById('miniSummaryText').textContent = complianceState.completed
+        ? `已完成 ${doneCount}/${complianceState.checks.length} 项校验，${complianceState.overallStatus === 'pass' ? '当前订单可提交。' : complianceState.overallStatus === 'warn' ? '存在待关注项。' : '当前订单需先处理风险项。'}`
+        : `正在校验 ${Math.min(doneCount + 1, complianceState.checks.length)}/${complianceState.checks.length} 项，请稍候。`;
+      updateProgress();
+      updateSubmitBtn();
+      renderReportPrintable();
+      renderDetailPanel();
+    }
+
+    function updateReportStatus() {
+      const miniText = document.getElementById('miniReportText');
+      const title = document.getElementById('reportStatusTitle');
+      const text = document.getElementById('reportStatusText');
+      const modalOpenReport = document.getElementById('modalOpenReport');
+      const modalDownloadReport = document.getElementById('modalDownloadReport');
+      const regenBtn = document.getElementById('regenReportBtn');
+      const miniOpenReport = document.getElementById('miniOpenReport');
+      const miniDownloadReport = document.getElementById('miniDownloadReport');
+      const reportCheck = complianceState.checks.find(item => item.type === 'report');
+
+      [miniOpenReport, modalOpenReport].forEach(link => {
+        if (!link) return;
+        link.style.display = 'none';
+        link.removeAttribute('href');
+      });
+      [miniDownloadReport, modalDownloadReport].forEach(link => {
+        if (!link) return;
+        link.style.display = 'none';
+        link.removeAttribute('href');
+        link.removeAttribute('download');
+      });
+      if (regenBtn) regenBtn.style.display = 'none';
+
+      if (complianceState.reportStatus === 'generating') {
+        if (title) title.textContent = '正在生成报告';
+        if (text) text.textContent = '正在汇总校验结果、订单信息和 AI 合规总结，并生成 PDF 文件。';
+        miniText.textContent = '报告生成中，完成后将在顶部保留打开链接。';
+        if (reportCheck) reportCheck.runtimeStatus = 'generating';
+      } else if (complianceState.reportStatus === 'ready') {
+        if (title) title.textContent = '报告已生成';
+        if (text) text.textContent = '《采购合规分析报告》PDF 文件已生成，可在线打开或下载留档。';
+        miniText.textContent = '《采购合规分析报告》已生成，可直接打开查看。';
+        [miniOpenReport, modalOpenReport].forEach(link => {
+          if (!link) return;
+          link.href = complianceState.reportUrl;
+          link.style.display = 'inline-flex';
+        });
+        [miniDownloadReport, modalDownloadReport].forEach(link => {
+          if (!link) return;
+          link.href = complianceState.reportUrl;
+          link.download = REPORT_FILE_NAME;
+          link.style.display = 'inline-flex';
+        });
+        if (regenBtn) regenBtn.style.display = 'inline-flex';
+        if (reportCheck) reportCheck.runtimeStatus = 'ready';
+      } else if (complianceState.reportStatus === 'dirty') {
+        if (title) title.textContent = '报告需重新生成';
+        if (text) text.textContent = '订单关键信息已变更，原报告可能不再适用，请重新生成最新版本。';
+        miniText.textContent = '原报告已失效，请重新生成最新报告。';
+        if (complianceState.reportUrl) {
+          [miniOpenReport, modalOpenReport].forEach(link => {
+            if (!link) return;
+            link.href = complianceState.reportUrl;
+            link.style.display = 'inline-flex';
+          });
+        }
+        if (regenBtn) regenBtn.style.display = 'inline-flex';
+        if (reportCheck) reportCheck.runtimeStatus = 'dirty';
+      } else if (complianceState.reportStatus === 'failed') {
+        if (title) title.textContent = '报告生成失败';
+        if (text) text.textContent = '当前报告生成失败，请重新尝试。';
+        miniText.textContent = '报告生成失败，请展开顶部条重新生成。';
+        if (regenBtn) regenBtn.style.display = 'inline-flex';
+        if (reportCheck) reportCheck.runtimeStatus = 'block';
+      } else {
+        if (title) title.textContent = '报告尚未生成';
+        if (text) text.textContent = '校验完成后将自动生成《采购合规分析报告》PDF 文件。';
+        miniText.textContent = '报告生成中，完成后将在此保留打开链接。';
+        if (reportCheck) reportCheck.runtimeStatus = 'pending';
+      }
+
+      renderCheckList();
+    }
+
+    function updateSubmitBtn() {
+      const btn = document.getElementById('submitOrderBtn');
+      btn.disabled = complianceState.isRunning || complianceState.overallStatus === 'block';
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function startComplianceFlow() {
+      complianceState.checks = buildComplianceChecks().map(item => ({ ...item, runtimeStatus: 'pending' }));
+      complianceState.currentIndex = 0;
+      complianceState.selectedIndex = 0;
+      complianceState.isRunning = true;
+      complianceState.completed = false;
+      complianceState.overallStatus = 'run';
+      if (complianceState.reportStatus !== 'dirty') {
+        complianceState.reportStatus = 'idle';
+      }
+      renderCheckList();
+      renderDetailPanel();
+      updateSummary();
+      updateReportStatus();
+
+      const analysisIndexes = complianceState.checks
+        .map((item, index) => ({ item, index }))
+        .filter(entry => entry.item.type === 'analysis')
+        .map(entry => entry.index);
+
+      for (const index of analysisIndexes) {
+        complianceState.currentIndex = index;
+        complianceState.selectedIndex = index;
+        complianceState.checks[index].runtimeStatus = 'running';
+        renderCheckList();
+        renderDetailPanel();
+        updateSummary();
+        await sleep(900);
+        complianceState.checks[index].runtimeStatus = complianceState.checks[index].status;
+        renderCheckList();
+        renderDetailPanel();
+        updateSummary();
+        await sleep(260);
+      }
+
+      complianceState.isRunning = false;
+      complianceState.completed = true;
+      complianceState.currentIndex = complianceState.checks.length - 1;
+      complianceState.selectedIndex = complianceState.currentIndex;
+      renderCheckList();
+      renderDetailPanel();
+      updateSummary();
+      updateReportStatus();
+      await generateReportPdf();
+    }
+
+    async function generateReportPdf() {
+      complianceState.reportStatus = 'generating';
+      updateReportStatus();
+      renderReportPrintable();
+      await sleep(500);
+
+      try {
+        const reportEl = document.getElementById('reportPrintable');
+        const canvas = await html2canvas(reportEl, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true
+        });
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        if (complianceState.reportUrl) {
+          URL.revokeObjectURL(complianceState.reportUrl);
+        }
+        complianceState.reportUrl = URL.createObjectURL(pdf.output('blob'));
+        complianceState.reportStatus = 'ready';
+      } catch (error) {
+        complianceState.reportStatus = 'failed';
+      }
+
+      updateReportStatus();
+    }
+
+    function minimizeComplianceModal() {
+      complianceState.minimized = true;
+      document.getElementById('complianceOverlay').classList.remove('show');
+      document.getElementById('complianceMiniBar').classList.add('show');
+    }
+
+    function expandComplianceModal() {
+      document.getElementById('complianceOverlay').classList.add('show');
+    }
+
+    function markReportDirty(message) {
+      if (!complianceState.completed || complianceState.isRunning) return;
+      complianceState.reportDirty = true;
+      complianceState.reportStatus = 'dirty';
+      updateReportStatus();
+      renderDetailPanel();
+      if (message) showToast(message);
+    }
+
+    function rerunCompliance() {
+      complianceState.reportDirty = false;
+      complianceState.completed = false;
+      complianceState.reportStatus = 'idle';
+      document.getElementById('complianceOverlay').classList.add('show');
+      startComplianceFlow();
+    }
+
+    function mockChangeInvoice() {
+      orderData.invoice.title = orderData.invoice.title === '天创信总公司' ? '天创信总公司（采购中心）' : '天创信总公司';
+      document.getElementById('invoiceTitleCell').textContent = orderData.invoice.title;
+      renderReportPrintable();
+      markReportDirty('发票信息已变更，请重新生成合规报告。');
+    }
+
+    function mockChangeAddress() {
+      const newId = `addr-${orderData.addresses.length + 1}`;
+      orderData.addresses.push({
+        id: newId,
+        label: '天津市和平区',
+        detail: '创新中心B座12层',
+        receiver: '小庄'
+      });
+      activeAddressId = newId;
+      renderAddresses();
+      selectAddress(newId);
+    }
+
+    function renderReportPrintable() {
+      const statusMap = {
+        pass: '通过',
+        warn: '需关注',
+        block: '不通过',
+        pending: '待校验',
+        running: '校验中'
+      };
+      document.getElementById('reportDocNo').textContent = `RPT-${orderData.orderNo}`;
+      document.getElementById('reportGeneratedAt').textContent = new Date().toLocaleString('zh-CN', { hour12: false });
+      document.getElementById('reportOrderNo').textContent = orderData.orderNo;
+      document.getElementById('reportProductName').textContent = orderData.name;
+      document.getElementById('reportProductModel').textContent = orderData.model;
+      document.getElementById('reportSupplier').textContent = orderData.supplier;
+      document.getElementById('reportCode').textContent = orderData.code;
+      document.getElementById('reportPrice').textContent = formatCurrency(orderData.price);
+      document.getElementById('reportQty').textContent = `${orderData.qty}${orderData.unit}`;
+      document.getElementById('reportInvoiceTitle').textContent = `${orderData.invoice.type} / ${orderData.invoice.title}`;
+      document.getElementById('reportAddress').textContent = `${orderData.deliveryArea} / ${orderData.receiver}`;
+      document.getElementById('reportSummaryText').textContent = complianceState.summaryText || '系统正在生成总结。';
+      document.getElementById('reportConclusion').textContent = complianceState.overallStatus === 'pass'
+        ? '结论：当前订单合规，可提交。'
+        : complianceState.overallStatus === 'warn'
+          ? '结论：当前订单基本合规，可关注风险项后提交。'
+          : '结论：当前订单存在关键风险，暂不建议直接提交。';
+      document.getElementById('reportChecks').innerHTML = complianceState.checks.map(item => `
+        <div class="report-print-item" style="margin-bottom:10px;">
+          <strong>${item.title} / ${statusMap[item.runtimeStatus || 'pending']}</strong>
+          <div>依据：${item.basis}</div>
+          <div>结果：${item.successText}</div>
+        </div>
+      `).join('');
+    }
+
+    function submitOrder() {
+      if (complianceState.isRunning) {
+        showToast('订单合规分析尚未完成，请稍候。');
+        return;
+      }
+      if (complianceState.overallStatus === 'block') {
+        showToast('当前订单存在关键风险项，请修正后再提交。');
+        return;
+      }
+      if (complianceState.reportStatus !== 'ready') {
+        showToast('请先生成最新《采购合规分析报告》后再提交订单。');
+        return;
+      }
+      showToast(complianceState.overallStatus === 'warn' ? '订单已提交，系统已记录关注项。' : '订单提交成功，已同步留存合规报告。');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    function bindFormEvents() {
+      document.getElementById('remarkInput').addEventListener('input', function() {
+        markReportDirty('备注信息已更新，请重新生成合规报告。');
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      orderData = loadOrderData();
+      activeAddressId = orderData.addresses[0] ? orderData.addresses[0].id : '';
+      renderPage();
+      bindFormEvents();
+      startComplianceFlow();
+    });
+  </script>
+</body>
+</html>

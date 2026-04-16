@@ -1480,6 +1480,95 @@
       background: var(--color-primary-bg);
     }
     
+    /* 右下角悬浮：购物车 / 我的收藏 */
+    .ai-float-wrap {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    .ai-float-panel {
+      display: none;
+      flex-direction: column;
+      width: 360px;
+      max-height: 55vh;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+    .ai-float-panel.open {
+      display: flex;
+    }
+    .ai-float-panel-tabs {
+      display: flex;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    .ai-float-panel-tabs .ai-float-tab {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #64748b;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ai-float-panel-tabs .ai-float-tab.active {
+      color: var(--color-primary);
+      background: #fff;
+      border-bottom: 2px solid var(--color-primary);
+    }
+    .ai-float-panel-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 10px 12px;
+    }
+    .ai-float-panel-actions {
+      padding: 10px 12px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .ai-float-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #fff;
+      background: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: all 0.2s;
+    }
+    .ai-float-btn:hover {
+      background: var(--color-primary-light);
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+    }
+    .ai-float-btn.favorites {
+      background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+    }
+    .ai-float-btn.favorites:hover {
+      box-shadow: 0 6px 16px rgba(236, 72, 153, 0.5);
+    }
+    
     /* 底条内商品项：展开时较大卡片，横向排列 */
     .ai-bottom-bar .ai-quick-item {
       flex-shrink: 0;
@@ -1817,7 +1906,7 @@
   <!-- ==================== 顶部导航 ==================== -->
   <header class="ai-header">
     <div class="ai-header-left">
-      <a href="home.html" target="_blank" class="ai-logo">
+      <a href="search.html" target="_blank" class="ai-logo">
         <div class="ai-logo-icon"><i class="fas fa-robot"></i></div>
         <span class="ai-logo-text">阳光甄选AI助手</span>
       </a>

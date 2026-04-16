@@ -354,6 +354,11 @@
           <span>分类推荐管理</span>
           <span class="badge badge-new">NEW</span>
         </div>
+        <a href="pages/admin/admin_cockpit.html" target="_blank" class="menu-item" style="text-decoration: none; color: inherit;">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>运营驾驶舱</span>
+          <span class="badge badge-new">NEW</span>
+        </a>
         <div class="menu-item" onclick="loadPage('admin_users', this)" style="opacity: 0.5; cursor: not-allowed;">
           <i class="fas fa-users"></i>
           <span>用户信息</span>
@@ -387,10 +392,15 @@
           <span>商品分类</span>
           <span class="badge badge-count">待开发</span>
         </div>
-        <div class="menu-item" onclick="loadPage('product', this)" style="opacity: 0.5; cursor: not-allowed;">
+        <div class="menu-item" onclick="loadPage('product', this)">
           <i class="fas fa-box"></i>
           <span>商品详情</span>
-          <span class="badge badge-count">待开发</span>
+          <span class="badge badge-new">NEW</span>
+        </div>
+        <div class="menu-item" onclick="loadPage('order_confirm', this)">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>订单确认</span>
+          <span class="badge badge-new">NEW</span>
         </div>
         <div class="menu-item" onclick="loadPage('cart', this)" style="opacity: 0.5; cursor: not-allowed;">
           <i class="fas fa-shopping-cart"></i>
@@ -436,6 +446,16 @@
         <div class="menu-item" onclick="loadPage('workbench_supplier', this)">
           <i class="fas fa-store"></i>
           <span>供应商工作台</span>
+          <span class="badge badge-new">NEW</span>
+        </div>
+        <div class="menu-item" onclick="loadPage('supplier_goods_list', this)">
+          <i class="fas fa-boxes-stacked"></i>
+          <span>我的商品</span>
+          <span class="badge badge-new">NEW</span>
+        </div>
+        <div class="menu-item" onclick="loadPage('supplier_goods_upload', this)">
+          <i class="fas fa-cloud-arrow-up"></i>
+          <span>上架商品</span>
           <span class="badge badge-new">NEW</span>
         </div>
         <div class="menu-item" onclick="loadPage('orders_supplier', this)" style="opacity: 0.5; cursor: not-allowed;">
@@ -592,18 +612,26 @@
             <iframe src="./pages/home.html"></iframe>
           </div>
           
-          <!-- 占位卡片：待开发页面 -->
-          <div class="iframe-card" style="opacity: 0.6;">
+          <!-- 卡片9：商品详情 -->
+          <div class="iframe-card">
             <div class="iframe-card-header">
-              <span><i class="fas fa-users"></i> 管理后台 - 用户信息</span>
-              <span style="font-size: 12px; color: #64748b;">待开发</span>
+              <span><i class="fas fa-box"></i> 商品详情</span>
+              <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" onclick="focusPage('product')">
+                <i class="fas fa-expand"></i> 聚焦查看
+              </button>
             </div>
-            <div style="height: 600px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 14px;">
-              <div style="text-align: center;">
-                <i class="fas fa-tools" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
-                <p>该页面正在开发中</p>
-              </div>
+            <iframe src="./pages/product.html"></iframe>
+          </div>
+
+          <!-- 卡片10：订单确认 -->
+          <div class="iframe-card">
+            <div class="iframe-card-header">
+              <span><i class="fas fa-file-invoice-dollar"></i> 订单确认</span>
+              <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" onclick="focusPage('order_confirm')">
+                <i class="fas fa-expand"></i> 聚焦查看
+              </button>
             </div>
+            <iframe src="./pages/order_confirm.html"></iframe>
           </div>
           
           <!-- 可继续添加更多卡片... -->
@@ -656,6 +684,18 @@
         roles: ['admin', 'buyer', 'buyer-user', 'supplier', 'guest'],
         status: 'ready'
       },
+      product: {
+        title: '商品详情',
+        path: './pages/product.html',
+        roles: ['admin', 'buyer', 'buyer-user', 'supplier', 'guest'],
+        status: 'ready'
+      },
+      order_confirm: {
+        title: '订单确认',
+        path: './pages/order_confirm.html',
+        roles: ['admin', 'buyer', 'buyer-user', 'supplier', 'guest'],
+        status: 'ready'
+      },
       workbench_home: {
         title: '工作台首页',
         path: './pages/workbench/workbench_home.html',
@@ -669,6 +709,18 @@
         roles: ['admin', 'supplier'],
         status: 'ready',
         defaultRole: 'supplier'  // 默认角色
+      },
+      supplier_goods_list: {
+        title: '我的商品',
+        path: './pages/product/my_products.html',
+        roles: ['admin', 'supplier'],
+        status: 'ready'
+      },
+      supplier_goods_upload: {
+        title: '上架商品',
+        path: './pages/product/product_upload.html',
+        roles: ['admin', 'supplier'],
+        status: 'ready'
       },
       after_sales_buyer: {
         title: '售后管理',

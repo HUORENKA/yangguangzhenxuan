@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购搜索 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #E2231A;
+      --primary-dark: #c01e16;
+      --primary-light: #fff3f2;
+      --text-main: #111827;
+      --text-sub: #6b7280;
+      --bg: #f6f7fb;
+      --border: #e5e7eb;
+      --dark: #454545;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(226, 35, 26, 0.18);
+    }
+
+    .topbar-inner {
+      max-width: 1600px;
+      margin: 0 auto;
+      height: 58px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .brand-name {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .brand-name em {
+      font-style: normal;
+      color: #ffe1df;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+    }
+
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .org-chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      font-size: 12px;
+    }
+
+    .page-wrap {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 16px 18px 36px;
+    }
+
+    .search-hero {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 24px 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .search-bar {
+      max-width: 920px;
+      margin: 0 auto;
+      height: 56px;
+      border-radius: 999px;
+      border: 2px solid #f1b6b2;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 54px 1fr 110px;
+      align-items: center;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(226, 35, 26, 0.08);
+    }
+
+    .search-icon {
+      text-align: center;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .search-input {
+      height: 100%;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      background: transparent;
+      color: var(--text-main);
+    }
+
+    .search-btn {
+      height: 100%;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .hot-terms {
+      max-width: 920px;
+      margin: 12px auto 0;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--text-sub);
+      font-size: 13px;
+    }
+
+    .term-chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .term-chip:hover {
+      border-color: #f1b6b2;
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .tab-row {
+      margin-top: 16px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .tab-item {
+      height: 52px;
+      padding: 0 18px;
+      border: none;
+      background: transparent;
+      color: #475569;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .tab-item.active {
+      color: var(--primary);
+    }
+
+    .tab-item.active::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 0;
+      height: 3px;
+      border-radius: 3px 3px 0 0;
+      background: var(--primary);
+    }
+
+    .filter-bar {
+      margin-top: 14px;
+      background: #4a4a4a;
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: #fff;
+    }
+
+    .filter-left,
+    .filter-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sort-btn {
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sort-btn.active {
+      background: var(--primary);
+    }
+
+    .filter-select {
+      height: 32px;
+      min-width: 112px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .filter-select option {
+      color: #111827;
+    }
+
+    .filter-right {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .filter-right b {
+      color: #ff968f;
+    }
+
+    .ai-strip {
+      max-width: 920px;
+      margin: 12px auto 0;
+      background: linear-gradient(135deg, #fff8f7 0%, #ffffff 100%);
+      border: 1px solid #fee2e2;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .ai-strip-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #991b1b;
+      font-size: 13px;
+      line-height: 1.8;
+      flex-wrap: wrap;
+    }
+
+    .ai-suggest {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .suggest-chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #fecaca;
+      background: #fff;
+      color: #b91c1c;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .suggest-chip:hover {
+      background: #fff1f0;
+    }
+
+    .results-wrap {
+      margin-top: 16px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .product-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .product-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #f8fafc;
+    }
+
+    .product-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .product-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #fecaca;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .product-body {
+      padding: 12px 12px 10px;
+    }
+
+    .product-name {
+      display: block;
+      min-height: 46px;
+      color: #1f2937;
+      text-decoration: none;
+      font-size: 15px;
+      line-height: 1.55;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .product-name:hover {
+      color: var(--primary);
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .price-num {
+      color: var(--primary);
+      font-size: 33px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .price-unit {
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .supplier-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #6b7280;
+      font-size: 12px;
+      margin-bottom: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .range-wrap {
+      margin-bottom: 10px;
+    }
+
+    .range-track {
+      position: relative;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(to right, #60a5fa 0%, #38bdf8 50%, #f87171 100%);
+    }
+
+    .range-marker {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.15);
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 5px;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn {
+      height: 34px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .action-btn.compare {
+      flex: 1;
+      border: none;
+      background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+      color: #fff;
+    }
+
+    .action-btn.compare:hover {
+      filter: brightness(0.98);
+    }
+
+    .action-btn.favorite {
+      width: 82px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      color: #475569;
+    }
+
+    .action-btn.favorite.active {
+      border-color: #fecaca;
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .action-btn.cart {
+      width: 110px;
+      border: 1px solid #fecaca;
+      background: #fff5f5;
+      color: var(--primary);
+    }
+
+    .action-btn.cart:hover {
+      background: #fff0ef;
+    }
+
+    .empty-box {
+      background: #fff;
+      border: 1px dashed #d1d5db;
+      border-radius: 16px;
+      padding: 60px 20px;
+      text-align: center;
+      color: #9ca3af;
+      grid-column: 1 / -1;
+    }
+
+    .compare-picker-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 180;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .compare-picker-overlay.show {
+      display: flex;
+    }
+
+    .compare-picker-modal {
+      width: min(1180px, 96vw);
+      max-height: 88vh;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .compare-picker-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .compare-picker-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .compare-picker-content {
+      padding: 18px 20px;
+      overflow: auto;
+      flex: 1;
+      background: #fafafa;
+    }
+
+    .compare-picker-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .compare-picker-current {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #dbeafe;
+      color: #1e3a8a;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .compare-picker-count {
+      font-size: 14px;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    .compare-tab-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .compare-tab {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #475569;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .compare-tab.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .compare-picker-table-wrap {
+      margin-top: 14px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: auto;
+    }
+
+    .compare-picker-table {
+      width: 100%;
+      min-width: 1080px;
+      border-collapse: collapse;
+    }
+
+    .compare-picker-table th,
+    .compare-picker-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: left;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .compare-picker-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    .compare-picker-foot {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: #fff;
+    }
+
+    .compare-picker-tip {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+      color: #fff;
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .secondary-btn {
+      background: #fff;
+      color: #475569;
+      border: 1px solid var(--border);
+    }
+
+    @media (max-width: 1440px) {
+      .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 1100px) {
+      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filter-bar { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#">
+        <div class="brand-logo">e</div>
+        <div class="brand-name">国采<em>e</em>购</div>
+      </a>
+      <div class="topbar-actions">
+        <div class="topbar-user">
+          <div class="avatar">
+            <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=buyer&backgroundColor=f3f4f6" alt="头像">
+          </div>
+          <span>张三</span>
+        </div>
+        <span class="org-chip"><i class="fa-regular fa-building mr-1"></i>某某机关单位</span>
+        <span><i class="fa-regular fa-bell"></i></span>
+        <span><i class="fa-solid fa-right-from-bracket mr-1"></i>退出</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="search-hero">
+      <div class="search-bar">
+        <div class="search-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <input id="searchInput" class="search-input" placeholder='请输入采购需求，如“A4打印纸，15元以内，华南供应商，高时效”'>
+        <button id="searchBtn" class="search-btn">搜索</button>
+      </div>
+      <div class="ai-strip">
+        <div class="ai-strip-top" id="aiSummary"></div>
+        <div class="ai-suggest" id="aiSuggest"></div>
+      </div>
+      <div class="hot-terms">
+        <span>热门搜索：</span>
+        <button class="term-chip" data-term="A4打印纸">A4打印纸</button>
+        <button class="term-chip" data-term="硒鼓">硒鼓</button>
+        <button class="term-chip" data-term="办公椅">办公椅</button>
+        <button class="term-chip" data-term="会议设备">会议设备</button>
+        <button class="term-chip" data-term="低价优先">低价优先</button>
+        <button class="term-chip" data-term="高合规">高合规</button>
+      </div>
+    </section>
+
+    <section class="tab-row" id="tabRow"></section>
+
+    <section class="filter-bar">
+      <div class="filter-left">
+        <button class="sort-btn active" data-sort="comprehensive">综合</button>
+        <button class="sort-btn" data-sort="priceAsc">价格 <i class="fa-solid fa-chevron-down text-xs"></i></button>
+        <button class="sort-btn" data-sort="priceDesc">价格高低 <i class="fa-solid fa-chevron-up text-xs"></i></button>
+        <select class="filter-select" id="regionSelect">
+          <option value="全部">销地区</option>
+        </select>
+        <select class="filter-select" id="citySelect">
+          <option value="全部">销地市</option>
+        </select>
+        <select class="filter-select" id="attrSelect">
+          <option value="全部">属性</option>
+        </select>
+      </div>
+      <div class="filter-right">
+        <span>共 <b id="resultCount">0</b> 件商品</span>
+        <span id="pageInfo">1 / 100</span>
+      </div>
+    </section>
+
+    <section class="results-wrap">
+      <div class="product-grid" id="productGrid"></div>
+    </section>
+  </main>
+
+  <div class="compare-picker-overlay" id="comparePickerOverlay" onclick="if(event.target===this) closeComparePicker()">
+    <div class="compare-picker-modal" onclick="event.stopPropagation()">
+      <div class="compare-picker-head">
+        <div>
+          <div class="text-xl font-extrabold text-gray-900">选择比质比价候选商品</div>
+          <div class="text-sm text-gray-500 mt-1">在同品同规优先、相近品规补充的候选商品中勾选对比对象，进入整体分析页。</div>
+        </div>
+        <button class="compare-picker-close" type="button" onclick="closeComparePicker()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="compare-picker-content">
+        <div class="compare-picker-summary">
+          <div class="compare-picker-current" id="comparePickerCurrent"></div>
+          <div class="compare-picker-count" id="comparePickerCount"></div>
+        </div>
+        <div class="compare-tab-row">
+          <button class="compare-tab active" type="button" data-picker-tab="same">同品同规商品</button>
+          <button class="compare-tab" type="button" data-picker-tab="similar">相近品规商品</button>
+        </div>
+        <div class="compare-picker-table-wrap">
+          <table class="compare-picker-table">
+            <thead>
+              <tr>
+                <th style="width:56px;">勾选</th>
+                <th>商品名称</th>
+                <th>供应商</th>
+                <th>报价</th>
+                <th>建议区间</th>
+                <th>价格排名</th>
+                <th>风险</th>
+                <th>质量</th>
+                <th>售后</th>
+                <th>履约</th>
+                <th>综合评分</th>
+              </tr>
+            </thead>
+            <tbody id="comparePickerBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="compare-picker-foot">
+        <div class="compare-picker-tip">至少勾选 1 个候选商品后，进入整体分析页；当前商品会作为默认对照项一并参与分析。</div>
+        <div class="flex items-center gap-2">
+          <button class="secondary-btn" type="button" onclick="closeComparePicker()">取消</button>
+          <button class="primary-btn" type="button" id="goCompareAnalysisBtn" onclick="goToCompareAnalysis()">进入整体分析页</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TAB_META = {
+      guess: { label: '猜你喜欢', icon: 'fa-regular fa-star', tip: '基于采购偏好推荐相关商品' },
+      quality: { label: '品质甄选', icon: 'fa-solid fa-medal', tip: '优先展示合规资料齐全、质量稳定商品' },
+      value: { label: '性价之选', icon: 'fa-solid fa-bolt', tip: '优先展示价格竞争力较高的商品' },
+      hot: { label: '热门商品', icon: 'fa-solid fa-fire', tip: '近期热度较高的采购商品' }
+    };
+
+    const PRODUCTS = [
+      {
+        id: 'GC-001',
+        name: '办公桌套装 1.2米简约现代电脑桌书桌写字台',
+        category: '办公家具',
+        unit: '套',
+        supplier: '德邦办公家具有限公司',
+        price: 1280,
+        floor: 1120,
+        ceiling: 1450,
+        sold: 682,
+        stock: 98,
+        deliveryArea: '广东省',
+        deliveryCity: '广州市',
+        deliveryTime: '72小时内发货',
+        tags: ['品质甄选', '政采适配'],
+        hotScore: 82,
+        prefScore: 76,
+        supplierScore: 4.8,
+        descScore: 4.7,
+        deliveryScore: 4.8,
+        serviceScore: 4.7,
+        goodRate: '98.6%',
+        inspectionReport: { status: '有效', expiry: '2026-12-31' },
+        priceChange: { date: '2026-04-05', direction: '降价', percent: 2.3 },
+        image: 'https://images.unsplash.com/photo-1515876305429-15d7b8d94977?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-002',
+        name: '商务笔记本电脑 i7处理器 16G内存 512G固态硬盘',
+        category: '办公设备',
+        unit: '台',
+        supplier: '联采科技项目有限公司',
+        price: 5999,
+        floor: 5580,
+        ceiling: 6350,
+        sold: 421,
+        stock: 56,
+        deliveryArea: '广东省',
+        deliveryCity: '深圳市',
+        deliveryTime: '48小时内发货',
+        tags: ['热门商品', '高性能'],
+        hotScore: 93,
+        prefScore: 88,
+        supplierScore: 4.9,
+        descScore: 4.8,
+        deliveryScore: 4.8,
+        serviceScore: 4.9,
+        goodRate: '99.1%',
+        inspectionReport: { status: '有效', expiry: '2026-11-20' },
+        priceChange: { date: '2026-04-09', direction: '加价', percent: 1.6 },
+        image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-003',
+        name: '人体工学办公椅 网布透气 可躺靠背 电脑椅老板椅',
+        category: '办公家具',
+        unit: '把',
+        supplier: '黑白调家具股份有限公司',
+        price: 890,
+        floor: 790,
+        ceiling: 980,
+        sold: 1054,
+        stock: 186,
+        deliveryArea: '广东省',
+        deliveryCity: '佛山市',
+        deliveryTime: '24小时内发货',
+        tags: ['性价之选', '高时效'],
+        hotScore: 95,
+        prefScore: 91,
+        supplierScore: 4.8,
+        descScore: 4.8,
+        deliveryScore: 4.9,
+        serviceScore: 4.7,
+        goodRate: '98.9%',
+        inspectionReport: { status: '有效', expiry: '2026-10-18' },
+        priceChange: { date: '2026-04-03', direction: '降价', percent: 3.1 },
+        image: 'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-004',
+        name: '激光打印机 黑白双面打印 办公家用A4打印机',
+        category: '办公设备',
+        unit: '台',
+        supplier: '慧普贸易有限公司',
+        price: 2380,
+        floor: 2180,
+        ceiling: 2560,
+        sold: 436,
+        stock: 92,
+        deliveryArea: '广东省',
+        deliveryCity: '广州市',
+        deliveryTime: '72小时内发货',
+        tags: ['热门商品', '设备类采购'],
+        hotScore: 87,
+        prefScore: 84,
+        supplierScore: 4.9,
+        descScore: 4.8,
+        deliveryScore: 4.9,
+        serviceScore: 4.9,
+        goodRate: '99.1%',
+        inspectionReport: { status: '即将到期', expiry: '2026-05-12' },
+        priceChange: { date: '2026-04-02', direction: '降价', percent: 4.6 },
+        image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-005',
+        name: 'A4打印纸 70g 500张/包 8包整箱 高白复印纸',
+        category: '办公耗材',
+        unit: '箱',
+        supplier: '晨采办公用品有限公司',
+        price: 138,
+        floor: 120,
+        ceiling: 155,
+        sold: 3200,
+        stock: 520,
+        deliveryArea: '广东省',
+        deliveryCity: '东莞市',
+        deliveryTime: '24小时内发货',
+        tags: ['猜你喜欢', '高频复购'],
+        hotScore: 98,
+        prefScore: 96,
+        supplierScore: 4.8,
+        descScore: 4.7,
+        deliveryScore: 4.9,
+        serviceScore: 4.8,
+        goodRate: '99.3%',
+        inspectionReport: { status: '有效', expiry: '2026-12-12' },
+        priceChange: { date: '2026-04-10', direction: '降价', percent: 1.2 },
+        image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-006',
+        name: '中性笔 0.5mm 黑色 12支装 会议签字笔办公文具',
+        category: '办公耗材',
+        unit: '盒',
+        supplier: '晨光政采供应站',
+        price: 15.8,
+        floor: 12.6,
+        ceiling: 19.5,
+        sold: 2480,
+        stock: 980,
+        deliveryArea: '广东省',
+        deliveryCity: '广州市',
+        deliveryTime: '24小时内发货',
+        tags: ['性价之选', '低价优先'],
+        hotScore: 89,
+        prefScore: 92,
+        supplierScore: 4.7,
+        descScore: 4.6,
+        deliveryScore: 4.9,
+        serviceScore: 4.7,
+        goodRate: '98.8%',
+        inspectionReport: { status: '有效', expiry: '2026-09-30' },
+        priceChange: { date: '2026-04-01', direction: '降价', percent: 2.8 },
+        image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-007',
+        name: '档案盒 55mm A4蓝色办公文件盒 资料收纳盒',
+        category: '办公耗材',
+        unit: '个',
+        supplier: '齐心政企采购中心',
+        price: 12.5,
+        floor: 9.8,
+        ceiling: 16.0,
+        sold: 1820,
+        stock: 760,
+        deliveryArea: '广东省',
+        deliveryCity: '深圳市',
+        deliveryTime: '48小时内发货',
+        tags: ['最近采购', '合规齐全'],
+        hotScore: 80,
+        prefScore: 78,
+        supplierScore: 4.7,
+        descScore: 4.6,
+        deliveryScore: 4.8,
+        serviceScore: 4.7,
+        goodRate: '98.2%',
+        inspectionReport: { status: '有效', expiry: '2026-08-15' },
+        priceChange: { date: '2026-04-11', direction: '降价', percent: 1.9 },
+        image: 'https://images.unsplash.com/photo-1456324504439-367cee3b3c32?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-008',
+        name: '会议平板一体机 65寸 智能投屏 远程会议终端',
+        category: '会议设备',
+        unit: '台',
+        supplier: '华采视讯科技有限公司',
+        price: 12600,
+        floor: 11800,
+        ceiling: 13400,
+        sold: 138,
+        stock: 34,
+        deliveryArea: '广东省',
+        deliveryCity: '深圳市',
+        deliveryTime: '72小时内发货',
+        tags: ['品质甄选', '会议设备'],
+        hotScore: 76,
+        prefScore: 81,
+        supplierScore: 4.9,
+        descScore: 4.8,
+        deliveryScore: 4.7,
+        serviceScore: 4.9,
+        goodRate: '99.0%',
+        inspectionReport: { status: '有效', expiry: '2026-12-20' },
+        priceChange: { date: '2026-04-06', direction: '加价', percent: 0.9 },
+        image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=900&h=900&fit=crop'
+      }
+    ];
+
+    const state = {
+      tab: 'hot',
+      query: '',
+      sort: 'comprehensive',
+      region: '全部',
+      city: '全部',
+      attr: '全部',
+      favorites: new Set(['GC-003']),
+      cart: { 'GC-001': 1, 'GC-005': 2 }
+    };
+
+    let currentCompareProduct = null;
+    let currentCompareTab = 'same';
+    let comparePickerSelections = { same: [], similar: [] };
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function avg(values) {
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    }
+
+    function productScore(product) {
+      return Math.round(avg([
+        getPriceScore(product),
+        getRiskScore(product),
+        getQualityScore(product),
+        getAfterSalesScore(product),
+        getFulfillmentScore(product)
+      ]));
+    }
+
+    function getPriceScore(product) {
+      const pct = ((product.price - product.floor) / product.floor) * 100;
+      return Math.max(76, Math.round(98 - pct));
+    }
+
+    function getRiskScore(product) {
+      return Math.round((product.supplierScore / 5) * 100);
+    }
+
+    function getQualityScore(product) {
+      return Math.min(96, Math.round(parseFloat(product.goodRate) || 90));
+    }
+
+    function getAfterSalesScore(product) {
+      return Math.round((product.serviceScore / 5) * 100);
+    }
+
+    function getFulfillmentScore(product) {
+      return Math.round((product.deliveryScore / 5) * 100);
+    }
+
+    function pBand(price) {
+      if (price <= 20) return '低价优先';
+      if (price <= 300) return '性价比';
+      if (price <= 3000) return '设备采购';
+      return '高客单价';
+    }
+
+    function getTabData(tab) {
+      const list = [...PRODUCTS];
+      if (tab === 'guess') return list.sort((a, b) => b.prefScore - a.prefScore);
+      if (tab === 'quality') return list.sort((a, b) => getQualityScore(b) - getQualityScore(a));
+      if (tab === 'value') return list.sort((a, b) => getPriceScore(b) - getPriceScore(a));
+      if (tab === 'hot') return list.sort((a, b) => b.hotScore - a.hotScore);
+      return list;
+    }
+
+    function applySearch(list) {
+      if (!state.query.trim()) return list;
+      const tokens = state.query.toLowerCase().split(/[\s,，]+/).filter(Boolean);
+      return list.filter(item => {
+        const blob = [
+          item.name,
+          item.category,
+          item.supplier,
+          item.deliveryArea,
+          item.deliveryCity,
+          item.deliveryTime,
+          item.tags.join(' ')
+        ].join(' ').toLowerCase();
+        return tokens.every(token => blob.includes(token));
+      });
+    }
+
+    function applyFilters(list) {
+      let result = [...list];
+      if (state.region !== '全部') result = result.filter(item => item.deliveryArea === state.region);
+      if (state.city !== '全部') result = result.filter(item => item.deliveryCity === state.city);
+      if (state.attr !== '全部') {
+        result = result.filter(item => {
+          if (state.attr === '高合规') return item.inspectionReport.status === '有效' && getRiskScore(item) >= 94;
+          if (state.attr === '48小时可发货') return /24小时|48小时/.test(item.deliveryTime);
+          if (state.attr === '低价优先') return item.price <= item.ceiling * 0.92;
+          return item.tags.includes(state.attr) || item.category === state.attr;
+        });
+      }
+
+      if (state.sort === 'priceAsc') result.sort((a, b) => a.price - b.price);
+      else if (state.sort === 'priceDesc') result.sort((a, b) => b.price - a.price);
+      else result.sort((a, b) => productScore(b) - productScore(a) || a.price - b.price);
+
+      return result;
+    }
+
+    function currentResults() {
+      return applyFilters(applySearch(getTabData(state.tab)));
+    }
+
+    function renderTabs() {
+      $('tabRow').innerHTML = Object.entries(TAB_META).map(([key, meta]) => `
+        <button class="tab-item ${state.tab === key ? 'active' : ''}" data-tab="${key}">
+          <i class="${meta.icon}"></i>${meta.label}
+        </button>
+      `).join('');
+
+      document.querySelectorAll('.tab-item[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.tab = btn.dataset.tab;
+          render();
+        });
+      });
+    }
+
+    function renderSelectOptions() {
+      const regions = ['全部', ...new Set(PRODUCTS.map(item => item.deliveryArea))];
+      const cities = ['全部', ...new Set(PRODUCTS.map(item => item.deliveryCity))];
+      const attrs = ['全部', '高合规', '48小时可发货', '低价优先', ...new Set(PRODUCTS.flatMap(item => item.tags).slice(0, 4))];
+
+      $('regionSelect').innerHTML = regions.map(v => `<option value="${v}" ${state.region === v ? 'selected' : ''}>${v}</option>`).join('');
+      $('citySelect').innerHTML = cities.map(v => `<option value="${v}" ${state.city === v ? 'selected' : ''}>${v}</option>`).join('');
+      $('attrSelect').innerHTML = attrs.map(v => `<option value="${v}" ${state.attr === v ? 'selected' : ''}>${v}</option>`).join('');
+    }
+
+    function renderSummary(list) {
+      const summary = [];
+      summary.push(`<i class="fa-solid fa-robot text-red-500"></i>`);
+      if (state.query.trim()) {
+        summary.push(`AI已识别：<strong>${state.query}</strong>`);
+      } else {
+        summary.push(`AI已根据当前页签“<strong>${TAB_META[state.tab].label}</strong>”自动推荐候选商品`);
+      }
+      summary.push(`当前结果按“<strong>${state.sort === 'comprehensive' ? '综合评分' : state.sort === 'priceAsc' ? '价格由低到高' : '价格由高到低'}</strong>”排序`);
+      $('aiSummary').innerHTML = summary.join('，');
+
+      const suggestions = [];
+      if (!state.attr || state.attr === '全部') suggestions.push('高合规', '48小时可发货', '低价优先');
+      if (state.query.includes('打印') || state.query.includes('纸')) suggestions.push('办公耗材');
+      if (state.query.includes('会议')) suggestions.push('会议设备');
+      const unique = [...new Set(suggestions)].slice(0, 5);
+      $('aiSuggest').innerHTML = unique.map(item => `<button class="suggest-chip" data-suggest="${item}">${item}</button>`).join('');
+      document.querySelectorAll('.suggest-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.attr = btn.dataset.suggest;
+          render();
+        });
+      });
+    }
+
+    function renderCounts(list) {
+      $('resultCount').textContent = list.length;
+      $('pageInfo').textContent = `1 / ${Math.max(1, Math.ceil(list.length / 16))}`;
+    }
+
+    function tagText(item) {
+      if (state.tab === 'quality') return '品质甄选';
+      if (state.tab === 'value') return '性价之选';
+      if (state.tab === 'hot') return '热门商品';
+      return item.tags[0] || '猜你喜欢';
+    }
+
+    function renderCards(list) {
+      const grid = $('productGrid');
+      if (!list.length) {
+        grid.innerHTML = `<div class="empty-box">未找到符合条件的商品，请调整搜索条件或清空筛选。</div>`;
+        return;
+      }
+
+      grid.innerHTML = list.map(item => {
+        const marker = Math.max(6, Math.min(94, ((item.price - item.floor) / (item.ceiling - item.floor)) * 100));
+        return `
+          <article class="product-card" onclick="window.location.href='product.html?id=${item.id}'">
+            <div class="product-thumb">
+              <img src="${item.image}" alt="${item.name}">
+              <span class="product-tag">${tagText(item)}</span>
+            </div>
+            <div class="product-body">
+              <a class="product-name" href="product.html?id=${item.id}">${item.name}</a>
+              <div class="price-row">
+                <span class="price-num">¥${item.price.toFixed(2)}</span>
+                <span class="price-unit">/${item.unit}</span>
+              </div>
+              <div class="supplier-row">
+                <i class="fa-regular fa-building"></i>
+                <span>${item.supplier}</span>
+              </div>
+              <div class="range-wrap">
+                <div class="range-track"><span class="range-marker" style="left:${marker}%"></span></div>
+                <div class="range-labels"><span>¥${item.floor.toFixed(2)}</span><span>¥${item.ceiling.toFixed(2)}</span></div>
+              </div>
+              <div class="card-actions">
+                <button class="action-btn compare" onclick="event.stopPropagation();openComparePickerById('${item.id}')"><i class="fa-solid fa-scale-balanced"></i>比质比价</button>
+                <button class="action-btn favorite ${state.favorites.has(item.id) ? 'active' : ''}" onclick="event.stopPropagation();toggleFavorite('${item.id}')"><i class="fa-${state.favorites.has(item.id) ? 'solid' : 'regular'} fa-heart"></i>${state.favorites.has(item.id) ? '已收藏' : '收藏'}</button>
+                <button class="action-btn cart" onclick="event.stopPropagation();addToCart('${item.id}')"><i class="fa-solid fa-cart-plus"></i>加入购物车</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function toggleFavorite(id) {
+      if (state.favorites.has(id)) {
+        state.favorites.delete(id);
+        showToast('已取消收藏');
+      } else {
+        state.favorites.add(id);
+        showToast('已加入收藏');
+      }
+      render();
+    }
+
+    function addToCart(id) {
+      state.cart[id] = (state.cart[id] || 0) + 1;
+      showToast('已加入购物车');
+    }
+
+    function productById(id) {
+      return PRODUCTS.find(item => item.id === id);
+    }
+
+    function buildCompareRows(base, type) {
+      const offsets = type === 'same' ? [-8, 0, 6, 12] : [-12, -4, 9, 15];
+      const supplierNames = ['晨光政采店', '得力企业采购店', '华采办公旗舰店', '京采优选供应站'];
+      const supplierTags = ['信用认证', '次日达', '价格优势', '售后稳定'];
+      const productNames = type === 'same'
+        ? [base.name, `${base.name} 商务版`, `${base.name} 政采优选`, `${base.name} 速发款`]
+        : [`相近品规 ${base.category} 候选A`, `相近品规 ${base.category} 候选B`, `相近品规 ${base.category} 候选C`, `相近品规 ${base.category} 候选D`];
+
+      const rows = offsets.map((offset, index) => {
+        const price = +(base.price + offset).toFixed(2);
+        const delta = +(price - base.ceiling).toFixed(2);
+        const ratio = ((delta / base.ceiling) * 100).toFixed(1);
+        const priceScore = Math.max(72, 96 - Math.abs(offset) * 2 - (type === 'similar' ? 4 : 0));
+        const riskScore = Math.max(68, 92 - index * 4 - (type === 'similar' ? 5 : 0));
+        const qualityScore = Math.max(70, 89 - index * 2 + (type === 'same' ? 2 : -1));
+        const afterSalesScore = Math.max(69, 90 - index * 3 - (type === 'similar' ? 4 : 0));
+        const fulfillmentScore = Math.max(70, 91 - index * 3 - (type === 'similar' ? 5 : 0));
+        const totalScore = Math.round(avg([priceScore, riskScore, qualityScore, afterSalesScore, fulfillmentScore]));
+        return {
+          id: `${type}_${index}`,
+          type,
+          productName: productNames[index],
+          supplier: supplierNames[index],
+          tag: supplierTags[index],
+          price,
+          floor: base.floor,
+          ceiling: base.ceiling,
+          delta,
+          ratio,
+          delivery: index % 2 === 0 ? '24小时内发货' : '48小时内发货',
+          riskScore,
+          qualityScore,
+          afterSalesScore,
+          fulfillmentScore,
+          priceScore,
+          inspectionStatus: index === 2 && type === 'similar' ? '即将到期' : (index === 3 && type === 'same' ? '无' : '有效'),
+          inspectionExpiry: index === 2 && type === 'similar' ? '2026-05-20' : (index === 3 && type === 'same' ? '无' : '2026-12-31'),
+          priceChangeDate: `2026-04-0${index + 2}`,
+          priceChangeDirection: (type === 'similar' && index % 2 === 0) || (type === 'same' && index === 3) ? '加价' : '降价',
+          priceChangePercent: +(1.8 + index * 0.7 + (type === 'similar' ? 0.6 : 0)).toFixed(1),
+          riskLevel: riskScore >= 88 ? '低' : riskScore >= 78 ? '中' : '高',
+          qualityLevel: qualityScore >= 88 ? '优' : qualityScore >= 78 ? '良' : '一般',
+          afterSalesLabel: afterSalesScore >= 88 ? '24h内' : afterSalesScore >= 78 ? '48h内' : '较慢',
+          fulfillmentLabel: fulfillmentScore >= 88 ? '高' : fulfillmentScore >= 78 ? '中' : '一般',
+          totalScore,
+          score: (4.6 + index * 0.1).toFixed(1),
+          isCurrent: price === base.price
+        };
+      });
+
+      const ranked = [...rows].sort((a, b) => a.price - b.price);
+      rows.forEach(row => {
+        row.rankValue = ranked.findIndex(item => item.id === row.id) + 1;
+        row.rankText = `${row.rankValue}/${rows.length}`;
+      });
+      return rows;
+    }
+
+    function resetComparePicker() {
+      currentCompareTab = 'same';
+      comparePickerSelections = { same: [], similar: [] };
+      document.querySelectorAll('[data-picker-tab]').forEach((item, index) => {
+        item.classList.toggle('active', index === 0);
+      });
+    }
+
+    function openComparePickerById(id) {
+      const product = productById(id);
+      if (!product) return;
+      currentCompareProduct = {
+        ...product,
+        compare: {
+          same: buildCompareRows(product, 'same'),
+          similar: buildCompareRows(product, 'similar')
+        }
+      };
+      resetComparePicker();
+      renderComparePickerTable();
+      $('comparePickerOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeComparePicker() {
+      $('comparePickerOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function updateComparePickerSummary() {
+      const count = comparePickerSelections.same.length + comparePickerSelections.similar.length;
+      $('comparePickerCurrent').innerHTML = `当前商品：<strong>${currentCompareProduct.name}</strong><br>将作为默认对照项参与整体分析。`;
+      $('comparePickerCount').textContent = `已勾选 ${count} 个候选商品`;
+      const btn = $('goCompareAnalysisBtn');
+      btn.disabled = count === 0;
+    }
+
+    function renderComparePickerTable() {
+      const rows = currentCompareProduct.compare[currentCompareTab] || [];
+      $('comparePickerBody').innerHTML = rows.map(row => {
+        const checked = comparePickerSelections[currentCompareTab].includes(row.id);
+        return `
+          <tr>
+            <td><input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleCompareSelection('${currentCompareTab}','${row.id}')"></td>
+            <td>
+              <div class="font-semibold text-gray-900">${row.productName}</div>
+              ${row.isCurrent ? '<div class="text-xs text-red-500 mt-1">当前商品同源款</div>' : ''}
+            </td>
+            <td>${row.supplier}</td>
+            <td class="font-bold text-red-600">￥${row.price.toFixed(2)}</td>
+            <td>￥${row.floor.toFixed(2)} - ￥${row.ceiling.toFixed(2)}</td>
+            <td>${row.rankText}</td>
+            <td>${row.riskLevel}</td>
+            <td>${row.qualityLevel}</td>
+            <td>${row.afterSalesLabel}</td>
+            <td>${row.fulfillmentLabel}</td>
+            <td class="font-semibold text-sky-600">${row.totalScore}</td>
+          </tr>
+        `;
+      }).join('');
+      updateComparePickerSummary();
+    }
+
+    function toggleCompareSelection(type, id) {
+      const list = comparePickerSelections[type];
+      const index = list.indexOf(id);
+      if (index >= 0) list.splice(index, 1);
+      else list.push(id);
+      renderComparePickerTable();
+    }
+
+    function goToCompareAnalysis() {
+      const sameRows = currentCompareProduct.compare.same.filter(row => comparePickerSelections.same.includes(row.id));
+      const similarRows = currentCompareProduct.compare.similar.filter(row => comparePickerSelections.similar.includes(row.id));
+      const total = sameRows.length + similarRows.length;
+      if (!total) {
+        showToast('请至少勾选 1 个候选商品');
+        return;
+      }
+
+      const payload = {
+        sourceProduct: {
+          id: currentCompareProduct.id,
+          name: currentCompareProduct.name,
+          supplier: currentCompareProduct.supplier,
+          price: currentCompareProduct.price,
+          floor: currentCompareProduct.floor,
+          ceiling: currentCompareProduct.ceiling,
+          delivery: currentCompareProduct.deliveryTime,
+          qualityLevel: (parseFloat(currentCompareProduct.goodRate) || 0) >= 98 ? '优' : (parseFloat(currentCompareProduct.goodRate) || 0) >= 95 ? '良' : '一般',
+          afterSalesLabel: '24h内',
+          fulfillmentLabel: currentCompareProduct.deliveryTime,
+          riskLevel: currentCompareProduct.inspectionReport.status === '无' ? '中' : '低',
+          inspectionStatus: currentCompareProduct.inspectionReport.status,
+          inspectionExpiry: currentCompareProduct.inspectionReport.expiry,
+          priceChangeDate: currentCompareProduct.priceChange.date,
+          priceChangeDirection: currentCompareProduct.priceChange.direction,
+          priceChangePercent: currentCompareProduct.priceChange.percent,
+          priceScore: getPriceScore(currentCompareProduct),
+          riskScore: getRiskScore(currentCompareProduct),
+          qualityScore: getQualityScore(currentCompareProduct),
+          afterSalesScore: getAfterSalesScore(currentCompareProduct),
+          fulfillmentScore: getFulfillmentScore(currentCompareProduct)
+        },
+        selectedRows: {
+          same: sameRows,
+          similar: similarRows
+        },
+        generatedAt: new Date().toISOString()
+      };
+
+      sessionStorage.setItem('compareAnalysisPayload', JSON.stringify(payload));
+      closeComparePicker();
+      window.location.href = './compare_analysis.html';
+    }
+
+    function bindCompareTabs() {
+      document.querySelectorAll('[data-picker-tab]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          currentCompareTab = this.dataset.pickerTab;
+          document.querySelectorAll('[data-picker-tab]').forEach(item => item.classList.remove('active'));
+          this.classList.add('active');
+          renderComparePickerTable();
+        });
+      });
+    }
+
+    function showToast(text) {
+      const toast = document.createElement('div');
+      toast.textContent = text;
+      Object.assign(toast.style, {
+        position: 'fixed',
+        top: '76px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: '#111827',
+        color: '#fff',
+        padding: '8px 18px',
+        borderRadius: '8px',
+        fontSize: '13px',
+        fontWeight: '600',
+        zIndex: '999',
+        boxShadow: '0 6px 16px rgba(0,0,0,0.18)',
+        animation: 'fadeInOut 1.6s ease forwards'
+      });
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 1700);
+    }
+
+    function render() {
+      renderTabs();
+      renderSelectOptions();
+      const list = currentResults();
+      renderCounts(list);
+      renderSummary(list);
+      renderCards(list);
+      document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.sort === state.sort);
+      });
+    }
+
+    function bindStaticEvents() {
+      $('searchBtn').addEventListener('click', () => {
+        state.query = $('searchInput').value.trim();
+        render();
+      });
+
+      $('searchInput').addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          state.query = $('searchInput').value.trim();
+          render();
+        }
+      });
+
+      document.querySelectorAll('.term-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          $('searchInput').value = btn.dataset.term;
+          state.query = btn.dataset.term;
+          render();
+        });
+      });
+
+      document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.sort = btn.dataset.sort;
+          render();
+        });
+      });
+
+      $('regionSelect').addEventListener('change', event => {
+        state.region = event.target.value;
+        render();
+      });
+
+      $('citySelect').addEventListener('change', event => {
+        state.city = event.target.value;
+        render();
+      });
+
+      $('attrSelect').addEventListener('change', event => {
+        state.attr = event.target.value;
+        render();
+      });
+
+      bindCompareTabs();
+    }
+
+    const fadeStyle = document.createElement('style');
+    fadeStyle.textContent = `@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-8px);}15%{opacity:1;transform:translateX(-50%) translateY(0);}75%{opacity:1;}100%{opacity:0;transform:translateX(-50%) translateY(-8px);}}`;
+    document.head.appendChild(fadeStyle);
+
+    bindStaticEvents();
+    render();
+  </script>
+</body>
+</html>

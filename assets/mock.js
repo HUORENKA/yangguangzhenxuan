@@ -146,6 +146,90 @@ const dashboardData = {
   }
 };
 
+// ========== 大屏驾驶舱 Mock 数据 ==========
+const cockpitData = {
+  // 核心业务总览（三块大数字）
+  coreOverview: {
+    compliantOrderCount: 4403500,
+    compliantOrderAmount: 94.66,  // 亿元
+    compliantOrderRatio: 98.20     // %
+  },
+  // 阳光采购中心环绕指标
+  centerKpis: {
+    totalOrders: 4403500,
+    totalAmount: 95.64,      // 亿元
+    todayOrders: 1858,
+    todayAmount: 161.3,     // 万元
+    productCount: 1240397,
+    supplierCount: 15,
+    categoryCount: 343
+  },
+  // 近一年采购成交趋势（月粒度）
+  dealTrend: [
+    { month: '24-06', orders: 320, amount: 68 },
+    { month: '24-07', orders: 380, amount: 72 },
+    { month: '24-08', orders: 420, amount: 78 },
+    { month: '24-09', orders: 450, amount: 82 },
+    { month: '24-10', orders: 480, amount: 85 },
+    { month: '24-11', orders: 520, amount: 88 },
+    { month: '24-12', orders: 580, amount: 92 },
+    { month: '25-01', orders: 620, amount: 95 },
+    { month: '25-02', orders: 650, amount: 96 },
+    { month: '25-03', orders: 680, amount: 98 },
+    { month: '25-04', orders: 710, amount: 100 },
+    { month: '25-05', orders: 750, amount: 102 }
+  ],
+  // 近一年采购合规趋势（月粒度）
+  compliantTrend: [
+    { month: '24-06', orders: 310, amount: 65 },
+    { month: '24-07', orders: 365, amount: 69 },
+    { month: '24-08', orders: 408, amount: 75 },
+    { month: '24-09', orders: 438, amount: 79 },
+    { month: '24-10', orders: 468, amount: 82 },
+    { month: '24-11', orders: 508, amount: 85 },
+    { month: '24-12', orders: 565, amount: 89 },
+    { month: '25-01', orders: 605, amount: 92 },
+    { month: '25-02', orders: 635, amount: 93 },
+    { month: '25-03', orders: 665, amount: 95 },
+    { month: '25-04', orders: 695, amount: 97 },
+    { month: '25-05', orders: 735, amount: 99 }
+  ],
+  // 采购商品类目 TOP5（销售金额，亿元）
+  categoryTop5: [
+    { name: '办公用纸', amount: 16.48 },
+    { name: '办公耗材', amount: 14.06 },
+    { name: '办公文具', amount: 12.35 },
+    { name: '电脑及配件', amount: 10.82 },
+    { name: '办公电器', amount: 9.56 }
+  ],
+  // 采购单位合规情况
+  buyerCompliance: [
+    { name: '某省财政厅', rate: 100 },
+    { name: '某市国资委', rate: 99.5 },
+    { name: '某区教育局', rate: 98.9 },
+    { name: '某县卫健局', rate: 98.5 },
+    { name: '某集团采购中心', rate: 98.2 },
+    { name: '某高校后勤处', rate: 97.8 },
+    { name: '某医院采购科', rate: 97.5 },
+    { name: '某国企物资部', rate: 97.2 },
+    { name: '某事业单位', rate: 96.8 },
+    { name: '某开发区管委会', rate: 96.5 }
+  ],
+  // 供应商合规情况
+  supplierCompliance: [
+    { name: '华信办公物资有限公司', rate: 92 },
+    { name: '安盾劳保安防科技有限公司', rate: 91.1 },
+    { name: '恒信工业零部件有限公司', rate: 89.8 },
+    { name: '康泰医疗设备有限公司', rate: 89.2 },
+    { name: '创科电子科技有限公司', rate: 88.5 },
+    { name: '绿源食品供应链有限公司', rate: 88.1 },
+    { name: '鑫盛办公家具有限公司', rate: 87.6 },
+    { name: '恒达物流包装有限公司', rate: 87.2 },
+    { name: '博瑞印刷文创有限公司', rate: 86.8 },
+    { name: '锦程化工原料有限公司', rate: 86.3 }
+  ]
+};
+
 // 工具函数：格式化金额
 function formatCurrency(amount) {
   if (amount >= 10000) {
@@ -671,6 +755,7 @@ function initHomePageData() {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { 
     dashboardData, 
+    cockpitData,
     formatCurrency, 
     formatNumber,
     storeListData,

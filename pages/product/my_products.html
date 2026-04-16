@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的商品 | 阳光甄选</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities {
+      .text-primary { color: #E2231A; }
+      .bg-primary { background-color: #E2231A; }
+      .border-primary { border-color: #E2231A; }
+    }
+
+    body {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    .page-card {
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    .summary-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .summary-number {
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 700;
+      margin-top: 12px;
+      margin-bottom: 10px;
+    }
+
+    .toolbar-input,
+    .toolbar-select {
+      width: 100%;
+      border: 1px solid #dbe2ea;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: #334155;
+      transition: all 0.2s ease;
+    }
+
+    .toolbar-input:focus,
+    .toolbar-select:focus {
+      outline: none;
+      border-color: #E2231A;
+      box-shadow: 0 0 0 4px rgba(226, 35, 26, 0.08);
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-published { background: #dcfce7; color: #166534; }
+    .status-reviewing { background: #dbeafe; color: #1d4ed8; }
+    .status-offline { background: #e2e8f0; color: #475569; }
+    .status-rejected { background: #fee2e2; color: #b91c1c; }
+
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .result-pass { background: #dcfce7; color: #15803d; }
+    .result-warn { background: #fef3c7; color: #b45309; }
+    .result-fail { background: #fee2e2; color: #b91c1c; }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn-primary {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+    }
+
+    .action-btn-secondary {
+      border: 1px solid #dbe2ea;
+      color: #475569;
+      background: #ffffff;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .table-wrap {
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+    }
+
+    .drawer-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.42);
+      display: none;
+      z-index: 40;
+    }
+
+    .drawer-mask.show {
+      display: block;
+    }
+
+    .detail-drawer {
+      position: fixed;
+      top: 0;
+      right: -520px;
+      width: min(520px, 100vw);
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: -20px 0 40px rgba(15, 23, 42, 0.16);
+      transition: right 0.28s ease;
+      z-index: 50;
+      overflow-y: auto;
+    }
+
+    .detail-drawer.show {
+      right: 0;
+    }
+
+    .issue-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body class="text-slate-800">
+  <div class="max-w-[1680px] mx-auto p-5">
+    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
+      <div>
+        <div class="text-sm text-slate-500 mb-2">
+          <a href="../workbench/workbench_home.html" class="hover:text-primary transition-colors">工作台</a>
+          <span class="mx-2">/</span>
+          <span>我的商品</span>
+        </div>
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 text-white flex items-center justify-center shadow-lg">
+            <i class="fas fa-box-open text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-slate-900">我的商品</h1>
+            <p class="text-sm text-slate-500 mt-1">查看商品状态、审核结论与整改建议，点击首页模块后默认带入对应筛选。</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button class="action-btn action-btn-secondary" onclick="window.location.href='../workbench/workbench_home.html'">
+          <i class="fas fa-arrow-left"></i>
+          <span>返回工作台</span>
+        </button>
+        <button class="action-btn action-btn-primary" onclick="window.location.href='./product_upload.html'">
+          <i class="fas fa-plus"></i>
+          <span>上架商品</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+      <div class="summary-card" onclick="setStatusFilter('published')">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-semibold text-slate-700">已上架商品</span>
+          <span class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center">
+            <i class="fas fa-circle-check"></i>
+          </span>
+        </div>
+        <div class="summary-number text-green-600" id="summaryPublished">0</div>
+        <p class="text-sm text-slate-500">已审核通过并正常展示，可继续查看销售表现与库存状态。</p>
+      </div>
+      <div class="summary-card" onclick="setStatusFilter('reviewing')">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-semibold text-slate-700">审核中商品</span>
+          <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+            <i class="fas fa-spinner"></i>
+          </span>
+        </div>
+        <div class="summary-number text-blue-600" id="summaryReviewing">0</div>
+        <p class="text-sm text-slate-500">AI 语义、参数、图片一致性校验中，或处于整改复核阶段。</p>
+      </div>
+      <div class="summary-card" onclick="setStatusFilter('offline')">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-semibold text-slate-700">已下架商品</span>
+          <span class="w-10 h-10 rounded-xl bg-slate-200 text-slate-600 flex items-center justify-center">
+            <i class="fas fa-box-archive"></i>
+          </span>
+        </div>
+        <div class="summary-number text-slate-700" id="summaryOffline">0</div>
+        <p class="text-sm text-slate-500">因库存、价格策略或合规要求已下架，可再次编辑后重新上架。</p>
+      </div>
+      <div class="summary-card" onclick="setStatusFilter('rejected')">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-semibold text-slate-700">审核未通过</span>
+          <span class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+            <i class="fas fa-triangle-exclamation"></i>
+          </span>
+        </div>
+        <div class="summary-number text-red-600" id="summaryRejected">0</div>
+        <p class="text-sm text-slate-500">存在夸大宣传、参数冲突或图片问题，需查看结论并整改后重提。</p>
+      </div>
+    </div>
+
+    <div class="page-card p-5 mb-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+        <div class="xl:col-span-2">
+          <input id="searchInput" class="toolbar-input" placeholder="搜索商品名称、型号或商品编码" />
+        </div>
+        <div>
+          <select id="categoryFilter" class="toolbar-select">
+            <option value="">全部类目</option>
+            <option value="办公设备">办公设备</option>
+            <option value="办公耗材">办公耗材</option>
+            <option value="网络设备">网络设备</option>
+            <option value="办公家具">办公家具</option>
+          </select>
+        </div>
+        <div class="flex gap-3">
+          <button class="action-btn action-btn-secondary flex-1" onclick="resetFilters()">
+            <i class="fas fa-rotate-left"></i>
+            <span>重置</span>
+          </button>
+          <button class="action-btn action-btn-primary flex-1" onclick="renderTable()">
+            <i class="fas fa-magnifying-glass"></i>
+            <span>查询</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-card p-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+        <div class="flex flex-wrap gap-2" id="statusTabs">
+          <button class="tab-btn" data-status="all" onclick="setStatusFilter('all')">全部商品</button>
+          <button class="tab-btn" data-status="published" onclick="setStatusFilter('published')">已上架</button>
+          <button class="tab-btn" data-status="reviewing" onclick="setStatusFilter('reviewing')">审核中</button>
+          <button class="tab-btn" data-status="offline" onclick="setStatusFilter('offline')">已下架</button>
+          <button class="tab-btn" data-status="rejected" onclick="setStatusFilter('rejected')">审核未通过</button>
+        </div>
+        <div class="text-sm text-slate-500" id="tableSummary">共 0 条商品记录</div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-slate-50 text-slate-500 text-sm">
+              <tr>
+                <th class="text-left px-5 py-4 font-semibold">商品信息</th>
+                <th class="text-left px-5 py-4 font-semibold">类目 / 规格</th>
+                <th class="text-left px-5 py-4 font-semibold">当前状态</th>
+                <th class="text-left px-5 py-4 font-semibold">最近一次校验</th>
+                <th class="text-left px-5 py-4 font-semibold">提交时间</th>
+                <th class="text-left px-5 py-4 font-semibold">操作</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody" class="text-sm text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="drawerMask" class="drawer-mask" onclick="closeDrawer()"></div>
+  <aside id="detailDrawer" class="detail-drawer">
+    <div class="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white">
+      <div>
+        <div class="text-xs uppercase tracking-[0.16em] text-slate-400">AI 校验结果</div>
+        <h2 id="drawerTitle" class="text-xl font-bold text-slate-900 mt-1">商品名称</h2>
+      </div>
+      <button class="w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors" onclick="closeDrawer()">
+        <i class="fas fa-xmark"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-5">
+      <div class="grid grid-cols-3 gap-3">
+        <div class="rounded-2xl bg-slate-50 p-4 border border-slate-200">
+          <div class="text-xs text-slate-500">商品状态</div>
+          <div id="drawerStatus" class="mt-2"></div>
+        </div>
+        <div class="rounded-2xl bg-slate-50 p-4 border border-slate-200">
+          <div class="text-xs text-slate-500">校验结论</div>
+          <div id="drawerResult" class="mt-2"></div>
+        </div>
+        <div class="rounded-2xl bg-slate-50 p-4 border border-slate-200">
+          <div class="text-xs text-slate-500">问题数</div>
+          <div id="drawerIssuesCount" class="mt-2 text-2xl font-bold text-slate-900">0</div>
+        </div>
+      </div>
+
+      <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4">
+        <div class="text-sm font-semibold text-blue-800 mb-2">AI 综合结论</div>
+        <p id="drawerSummary" class="text-sm text-blue-900 leading-6"></p>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-base font-semibold text-slate-900">问题明细</h3>
+          <span class="text-xs text-slate-400">按严重程度排序</span>
+        </div>
+        <div id="drawerIssues" class="space-y-3"></div>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    const products = [
+      {
+        id: 'SPU-202604-001',
+        name: '联想启天M550商用台式机',
+        category: '办公设备',
+        spec: 'i5 / 16G / 512G SSD',
+        status: 'reviewing',
+        result: 'warn',
+        submittedAt: '2026-04-16 10:22',
+        summary: '标题和图片一致，但详情中存在“旗舰级体验”表述，且参数表缺少显卡接口信息，建议补充后进入复核。',
+        issues: [
+          { level: '黄色预警', type: 'AI语义校验', field: '详情', desc: '命中“旗舰级体验”表述，存在隐性夸大宣传风险。', advice: '建议改为“适用于日常办公与数据处理的标准商用配置”。' },
+          { level: '黄色预警', type: '参数智能校验', field: '参数表', desc: '商用台式机类目建议补充显卡接口与电源功率字段。', advice: '补充 HDMI、VGA 接口信息及电源额定功率后重提。' }
+        ]
+      },
+      {
+        id: 'SPU-202604-002',
+        name: '得力A4复印纸 70g 8包/箱',
+        category: '办公耗材',
+        spec: '70g / 500张 / 8包',
+        status: 'published',
+        result: 'pass',
+        submittedAt: '2026-04-15 16:05',
+        summary: '商品标题、参数、图片及包装说明一致，AI 校验通过，可继续维护价格与库存。',
+        issues: []
+      },
+      {
+        id: 'SPU-202604-003',
+        name: '华三千兆交换机 S1850-24P',
+        category: '网络设备',
+        spec: '24口千兆 / 交换容量 56Gbps',
+        status: 'rejected',
+        result: 'fail',
+        submittedAt: '2026-04-16 09:18',
+        summary: '图片中型号与标题不一致，同时详情缺少质保信息，当前校验不通过。',
+        issues: [
+          { level: '红色阻断', type: '图片一致性校验', field: '主图', desc: '主图识别型号为 S1850-26P，与标题型号 S1850-24P 不一致。', advice: '请更换正确主图或修正商品标题与参数表。' },
+          { level: '红色阻断', type: '基础完整性校验', field: '详情', desc: '网络设备类目缺少质保期限与售后方式说明。', advice: '补充质保年限、服务响应时间与售后联系人。' }
+        ]
+      },
+      {
+        id: 'SPU-202604-004',
+        name: '震旦办公转椅 A7-人体工学版',
+        category: '办公家具',
+        spec: '黑色 / 网布 / 带扶手',
+        status: 'offline',
+        result: 'warn',
+        submittedAt: '2026-04-13 14:30',
+        summary: '商品已主动下架，最近一次校验通过，但当前库存标签未更新，重新上架前建议同步库存。',
+        issues: [
+          { level: '提示', type: '运营提醒', field: '库存', desc: '当前库存显示 0 件，若重新上架需先补齐库存。', advice: '同步库存后再发起重新上架。' }
+        ]
+      },
+      {
+        id: 'SPU-202604-005',
+        name: '惠普LaserJet Pro MFP 428fdw',
+        category: '办公设备',
+        spec: '黑白激光 / 双面打印 / 网络传真',
+        status: 'reviewing',
+        result: 'pass',
+        submittedAt: '2026-04-16 11:10',
+        summary: '已完成基础信息与参数校验，正在进行 AI 图片与语义复核，预计 20 分钟内出结论。',
+        issues: [
+          { level: '处理中', type: '流程状态', field: 'AI复核', desc: '当前处于图片 OCR 与文本一致性复核阶段。', advice: '无需操作，等待系统输出最终结果。' }
+        ]
+      },
+      {
+        id: 'SPU-202604-006',
+        name: '罗技K580无线键鼠套装',
+        category: '办公设备',
+        spec: '蓝牙 / 2.4G / 静音键帽',
+        status: 'rejected',
+        result: 'warn',
+        submittedAt: '2026-04-14 15:46',
+        summary: '主图和标题一致，但详情缺少接收器规格，且宣传语“全场景零延迟”需整改。',
+        issues: [
+          { level: '黄色预警', type: 'AI语义校验', field: '详情', desc: '命中“全场景零延迟”表达，不建议在办公外设类目中使用。', advice: '建议替换为“支持多设备稳定连接”。' },
+          { level: '黄色预警', type: '参数智能校验', field: '参数表', desc: '无线接收器接口类型缺失。', advice: '补充 USB 接收器规格与兼容系统。' }
+        ]
+      }
+    ];
+
+    const statusMeta = {
+      all: { label: '全部商品' },
+      published: { label: '已上架商品', className: 'status-badge status-published', icon: 'fa-circle-check' },
+      reviewing: { label: '审核中商品', className: 'status-badge status-reviewing', icon: 'fa-spinner' },
+      offline: { label: '已下架商品', className: 'status-badge status-offline', icon: 'fa-box-archive' },
+      rejected: { label: '审核未通过', className: 'status-badge status-rejected', icon: 'fa-triangle-exclamation' }
+    };
+
+    const resultMeta = {
+      pass: { label: '通过', className: 'result-badge result-pass', icon: 'fa-circle-check' },
+      warn: { label: '待整改', className: 'result-badge result-warn', icon: 'fa-triangle-exclamation' },
+      fail: { label: '不通过', className: 'result-badge result-fail', icon: 'fa-circle-xmark' }
+    };
+
+    let currentStatus = 'all';
+
+    function getQueryStatus() {
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      return statusMeta[status] ? status : 'all';
+    }
+
+    function updateQuery() {
+      const url = new URL(window.location.href);
+      if (currentStatus === 'all') {
+        url.searchParams.delete('status');
+      } else {
+        url.searchParams.set('status', currentStatus);
+      }
+      window.history.replaceState({}, '', url);
+    }
+
+    function renderSummary() {
+      const summary = {
+        published: products.filter(item => item.status === 'published').length,
+        reviewing: products.filter(item => item.status === 'reviewing').length,
+        offline: products.filter(item => item.status === 'offline').length,
+        rejected: products.filter(item => item.status === 'rejected').length
+      };
+
+      document.getElementById('summaryPublished').textContent = summary.published;
+      document.getElementById('summaryReviewing').textContent = summary.reviewing;
+      document.getElementById('summaryOffline').textContent = summary.offline;
+      document.getElementById('summaryRejected').textContent = summary.rejected;
+    }
+
+    function getFilteredProducts() {
+      const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+
+      return products.filter(item => {
+        const matchStatus = currentStatus === 'all' || item.status === currentStatus;
+        const matchCategory = !category || item.category === category;
+        const haystack = `${item.name} ${item.spec} ${item.id}`.toLowerCase();
+        const matchKeyword = !keyword || haystack.includes(keyword);
+        return matchStatus && matchCategory && matchKeyword;
+      });
+    }
+
+    function renderTabs() {
+      document.querySelectorAll('#statusTabs .tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.status === currentStatus);
+      });
+    }
+
+    function getStatusBadge(status) {
+      const meta = statusMeta[status];
+      return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+    }
+
+    function getResultBadge(result) {
+      const meta = resultMeta[result];
+      return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+    }
+
+    function renderTable() {
+      const rows = getFilteredProducts();
+      const tbody = document.getElementById('productTableBody');
+      const summary = document.getElementById('tableSummary');
+
+      summary.textContent = `${statusMeta[currentStatus].label} · 共 ${rows.length} 条商品记录`;
+
+      if (!rows.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="px-5 py-12 text-center text-slate-400">
+              <i class="fas fa-box-open text-2xl mb-3"></i>
+              <div>暂无符合条件的商品</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(item => `
+        <tr class="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+          <td class="px-5 py-4">
+            <div class="font-semibold text-slate-900">${item.name}</div>
+            <div class="text-xs text-slate-400 mt-1">${item.id}</div>
+          </td>
+          <td class="px-5 py-4">
+            <div>${item.category}</div>
+            <div class="text-xs text-slate-400 mt-1">${item.spec}</div>
+          </td>
+          <td class="px-5 py-4">${getStatusBadge(item.status)}</td>
+          <td class="px-5 py-4">
+            <div>${getResultBadge(item.result)}</div>
+            <div class="text-xs text-slate-400 mt-2 line-clamp-2">${item.summary}</div>
+          </td>
+          <td class="px-5 py-4 text-slate-500">${item.submittedAt}</td>
+          <td class="px-5 py-4">
+            <div class="flex flex-wrap gap-2">
+              <button class="action-btn action-btn-secondary" onclick="openDrawer('${item.id}')">
+                <i class="fas fa-file-lines"></i>
+                <span>查看结果</span>
+              </button>
+              ${item.status === 'rejected' || item.result === 'warn' ? `
+                <button class="action-btn action-btn-primary" onclick="window.location.href='./product_upload.html?source=rectify&id=${item.id}'">
+                  <i class="fas fa-wrench"></i>
+                  <span>整改重提</span>
+                </button>
+              ` : `
+                <button class="action-btn action-btn-secondary" onclick="window.location.href='./product_upload.html?id=${item.id}'">
+                  <i class="fas fa-pen"></i>
+                  <span>继续编辑</span>
+                </button>
+              `}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function setStatusFilter(status) {
+      currentStatus = status;
+      renderTabs();
+      updateQuery();
+      renderTable();
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('categoryFilter').value = '';
+      currentStatus = 'all';
+      renderTabs();
+      updateQuery();
+      renderTable();
+    }
+
+    function openDrawer(id) {
+      const item = products.find(product => product.id === id);
+      if (!item) return;
+
+      document.getElementById('drawerTitle').textContent = item.name;
+      document.getElementById('drawerStatus').innerHTML = getStatusBadge(item.status);
+      document.getElementById('drawerResult').innerHTML = getResultBadge(item.result);
+      document.getElementById('drawerIssuesCount').textContent = item.issues.length;
+      document.getElementById('drawerSummary').textContent = item.summary;
+      document.getElementById('drawerIssues').innerHTML = item.issues.map(issue => `
+        <div class="issue-item">
+          <div class="flex items-center justify-between gap-3 mb-2">
+            <span class="text-sm font-semibold text-slate-900">${issue.type}</span>
+            <span class="text-xs px-2 py-1 rounded-full bg-white border border-slate-200 text-slate-500">${issue.level}</span>
+          </div>
+          <div class="text-sm text-slate-600 mb-2">命中字段：${issue.field}</div>
+          <div class="text-sm text-slate-800 leading-6 mb-3">${issue.desc}</div>
+          <div class="text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+            整改建议：${issue.advice}
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('drawerMask').classList.add('show');
+      document.getElementById('detailDrawer').classList.add('show');
+    }
+
+    function closeDrawer() {
+      document.getElementById('drawerMask').classList.remove('show');
+      document.getElementById('detailDrawer').classList.remove('show');
+    }
+
+    document.getElementById('searchInput').addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        renderTable();
+      }
+    });
+
+    document.getElementById('categoryFilter').addEventListener('change', renderTable);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      currentStatus = getQueryStatus();
+      renderSummary();
+      renderTabs();
+      renderTable();
+    });
+  </script>
+</body>
+</html>

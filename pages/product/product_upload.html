@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>上架商品 | 阳光甄选</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities {
+      .text-primary { color: #E2231A; }
+      .bg-primary { background-color: #E2231A; }
+      .border-primary { border-color: #E2231A; }
+    }
+
+    :root {
+      --primary: #E2231A;
+      --primary-dark: #c01e16;
+      --success: #16a34a;
+      --warn: #d97706;
+      --info: #2563eb;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+    }
+
+    body {
+      background: linear-gradient(180deg, #fff7f7 0%, #f8fafc 18%, #f1f5f9 100%);
+      color: #0f172a;
+    }
+
+    .page-card {
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .action-btn-primary {
+      color: #ffffff;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.22);
+    }
+
+    .action-btn-secondary {
+      color: #475569;
+      background: #ffffff;
+      border: 1px solid #dbe2ea;
+    }
+
+    .rule-card {
+      border: 1px solid #f1f5f9;
+      border-radius: 16px;
+      padding: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .rule-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .mini-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-neutral { background: #e2e8f0; color: #475569; }
+    .badge-progress { background: #dbeafe; color: #1d4ed8; }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warn { background: #fef3c7; color: #b45309; }
+    .badge-fail { background: #fee2e2; color: #b91c1c; }
+
+    .result-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .table-shell {
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+    }
+
+    .empty-state {
+      padding: 48px 20px;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .empty-state .icon-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      margin: 0 auto 16px;
+      background: #fff1f2;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .status-pass {
+      background: #ecfdf5;
+      color: var(--success);
+    }
+
+    .status-warn {
+      background: #fff7ed;
+      color: var(--warn);
+    }
+
+    .status-run {
+      background: #eff6ff;
+      color: var(--info);
+    }
+
+    .status-block {
+      background: #fef2f2;
+      color: var(--danger);
+    }
+
+    .compliance-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.56);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 80;
+    }
+
+    .compliance-overlay.show {
+      display: flex;
+    }
+
+    .compliance-modal {
+      width: min(1180px, 96vw);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 30px 60px rgba(15, 23, 42, 0.24);
+      overflow: hidden;
+    }
+
+    .compliance-head {
+      padding: 22px 24px 18px;
+      background: linear-gradient(135deg, #fff7f7 0%, #ffffff 60%);
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .ai-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .compliance-progress {
+      margin-top: 14px;
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #fee2e2;
+      overflow: hidden;
+    }
+
+    .compliance-progress-bar {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f97316 0%, #ef4444 55%, #dc2626 100%);
+      transition: width 0.35s ease;
+    }
+
+    .head-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-ghost {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #374151;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-ghost:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+
+    .batch-progress {
+      padding: 18px 24px 0;
+      background: linear-gradient(135deg, #fff7f7 0%, #ffffff 60%);
+    }
+
+    .batch-progress-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .batch-progress-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .batch-progress-text {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .batch-progress-metrics {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .metric-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .queue-scroll {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .compliance-body {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+      gap: 20px;
+      padding: 22px 24px 24px;
+      overflow-y: auto;
+    }
+
+    .detail-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.05);
+      padding: 18px;
+    }
+
+    .detail-card h3 {
+      margin: 0 0 14px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .subcheck-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .subcheck-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      background: #f8fafc;
+      transition: all 0.2s ease;
+    }
+
+    .subcheck-item.active {
+      border-color: #93c5fd;
+      background: #eff6ff;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.12);
+    }
+
+    .subcheck-item.done {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .subcheck-item.block {
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    .subcheck-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subcheck-desc {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.7;
+    }
+
+    .audit-log {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .audit-log-item {
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+    }
+
+    .audit-log-item strong {
+      display: block;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .summary-card {
+      background: linear-gradient(180deg, #fff7ed 0%, #ffffff 100%);
+      border-color: #fed7aa;
+    }
+
+    .summary-text {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #475569;
+    }
+
+    .product-queue {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .queue-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .queue-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    }
+
+    .queue-item.active {
+      border-color: #fca5a5;
+      background: #fff7f7;
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.12);
+    }
+
+    .queue-item.done {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .queue-item.rejected {
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    .queue-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .queue-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    @media (max-width: 1100px) {
+      .compliance-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .compliance-head {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800">
+  <div class="max-w-[1680px] mx-auto p-5">
+    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
+      <div>
+        <div class="text-sm text-slate-500 mb-2">
+          <a href="../workbench/workbench_home.html" class="hover:text-primary transition-colors">工作台</a>
+          <span class="mx-2">/</span>
+          <a href="./my_products.html" class="hover:text-primary transition-colors">我的商品</a>
+          <span class="mx-2">/</span>
+          <span>上架商品</span>
+        </div>
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 text-white flex items-center justify-center shadow-lg">
+            <i class="fas fa-cloud-arrow-up text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-slate-900">上架商品</h1>
+            <p class="text-sm text-slate-500 mt-1">支持批量上传商品、下载模板、提交审核，AI 将对每个商品逐条校验并输出结果。</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button class="action-btn action-btn-secondary" onclick="window.location.href='./my_products.html'">
+          <i class="fas fa-list"></i>
+          <span>返回列表页</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="sourceBanner" class="page-card p-4 mb-5 hidden">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+          <i class="fas fa-wrench"></i>
+        </div>
+        <div>
+          <div class="text-sm font-semibold text-slate-900">当前为整改重提模式</div>
+          <p class="text-sm text-slate-500 mt-1" id="sourceBannerText">系统已为您定位待整改商品，请修正后重新提交审核。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-card p-5 mb-5">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
+          <i class="fas fa-shield-halved"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">审核规则说明</h2>
+          <p class="text-sm text-slate-500 mt-1">上传前无需填写过多信息，系统会在提交审核后按以下规则对每件商品逐项校验。</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="rule-card">
+          <div class="rule-icon bg-blue-50 text-blue-600"><i class="fas fa-list-check"></i></div>
+          <div class="font-semibold text-slate-900 mb-2">基础信息完整性</div>
+          <div class="text-sm text-slate-500 leading-6">检查类目、标题、详情、图片、型号和关键参数是否齐全，缺项会直接标记为待整改。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon bg-amber-50 text-amber-600"><i class="fas fa-comment-dots"></i></div>
+          <div class="font-semibold text-slate-900 mb-2">AI语义校验</div>
+          <div class="text-sm text-slate-500 leading-6">识别绝对化表述、隐性夸大宣传和无依据背书，定位标题或详情中的高风险语句。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon bg-emerald-50 text-emerald-600"><i class="fas fa-sliders"></i></div>
+          <div class="font-semibold text-slate-900 mb-2">参数智能校验</div>
+          <div class="text-sm text-slate-500 leading-6">自动比对类目模板和标准字段，发现参数缺失、格式不规范或与标题冲突的情况。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-icon bg-purple-50 text-purple-600"><i class="fas fa-image"></i></div>
+          <div class="font-semibold text-slate-900 mb-2">图片一致性校验</div>
+          <div class="text-sm text-slate-500 leading-6">提取图片中的型号和文案，与标题、详情和参数表做一致性比对，识别错图和营销风险。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-card p-5 mb-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">待提交商品</h2>
+          <p class="text-sm text-slate-500 mt-1">页面初始为空，点击“批量上传商品”后生成待提交商品列表，再发起逐件审核。</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button class="action-btn action-btn-secondary" onclick="downloadTemplate()">
+            <i class="fas fa-download"></i>
+            <span>下载模板</span>
+          </button>
+          <button class="action-btn action-btn-secondary" onclick="mockUploadProducts()">
+            <i class="fas fa-file-arrow-up"></i>
+            <span>批量上传商品</span>
+          </button>
+          <button class="action-btn action-btn-secondary" id="aiCheckBtn" onclick="submitAudit()">
+            <i class="fas fa-shield-halved"></i>
+            <span>AI合规校验</span>
+          </button>
+          <button class="action-btn action-btn-primary" id="submitReviewBtn" onclick="submitReview()">
+            <i class="fas fa-paper-plane"></i>
+            <span>提交审核</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-sm text-slate-500 mb-4" id="pendingSummary">当前暂无待提交商品，请先批量上传。</div>
+
+      <div class="table-shell">
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-slate-50 text-slate-500 text-sm">
+              <tr>
+                <th class="text-left px-5 py-4 font-semibold">商品名称</th>
+                <th class="text-left px-5 py-4 font-semibold">类目</th>
+                <th class="text-left px-5 py-4 font-semibold">标题摘要</th>
+                <th class="text-left px-5 py-4 font-semibold">图片</th>
+                <th class="text-left px-5 py-4 font-semibold">参数完整度</th>
+                <th class="text-left px-5 py-4 font-semibold">当前状态</th>
+                <th class="text-left px-5 py-4 font-semibold">校验结果</th>
+              </tr>
+            </thead>
+            <tbody id="pendingTableBody" class="text-sm text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultSection" class="page-card p-5 hidden">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">AI 校验结果</h2>
+          <p class="text-sm text-slate-500 mt-1">系统已对本批次商品逐条校验，以下为汇总结果与单商品问题说明。</p>
+        </div>
+        <div class="text-sm text-slate-500" id="resultSummaryText">本次共提交 0 个商品</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+        <div class="result-card">
+          <div class="text-sm text-slate-500">本次提交商品</div>
+          <div class="text-3xl font-bold text-slate-900 mt-3" id="resultTotal">0</div>
+        </div>
+        <div class="result-card">
+          <div class="text-sm text-slate-500">校验通过</div>
+          <div class="text-3xl font-bold text-green-600 mt-3" id="resultPass">0</div>
+        </div>
+        <div class="result-card">
+          <div class="text-sm text-slate-500">待整改</div>
+          <div class="text-3xl font-bold text-amber-600 mt-3" id="resultWarn">0</div>
+        </div>
+        <div class="result-card">
+          <div class="text-sm text-slate-500">校验不通过</div>
+          <div class="text-3xl font-bold text-red-600 mt-3" id="resultFail">0</div>
+        </div>
+      </div>
+
+      <div id="resultCards" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <div class="compliance-overlay" id="complianceOverlay">
+    <div class="compliance-modal">
+      <div class="compliance-head">
+        <div style="min-width:0; flex:1;">
+          <div class="ai-title"><i class="fa-solid fa-shield-halved text-red-500"></i>商品合规性校验</div>
+          <div class="compliance-progress">
+            <div class="compliance-progress-bar" id="complianceProgressBar"></div>
+          </div>
+        </div>
+        <div class="head-actions">
+          <span class="status-tag status-run" id="modalStatusTag"><i class="fa-solid fa-spinner fa-spin"></i>校验中</span>
+          <button class="btn-ghost" type="button" onclick="closeComplianceModal()"><i class="fa-solid fa-xmark"></i>关闭</button>
+        </div>
+      </div>
+
+      <div class="batch-progress">
+        <div class="batch-progress-head">
+          <div>
+            <div class="batch-progress-title">本批次商品队列</div>
+            <div class="batch-progress-text" id="batchProgressText">系统将按提交顺序逐件完成审核。</div>
+          </div>
+          <div class="batch-progress-metrics">
+            <span class="metric-pill"><i class="fa-solid fa-layer-group text-slate-400"></i>总数 <span id="queueTotalCount">0</span></span>
+            <span class="metric-pill"><i class="fa-solid fa-spinner text-blue-500"></i>完成 <span id="queueDoneCount">0</span></span>
+            <span class="metric-pill"><i class="fa-solid fa-circle-check text-green-600"></i>通过 <span id="queuePassCount">0</span></span>
+            <span class="metric-pill"><i class="fa-solid fa-triangle-exclamation text-amber-600"></i>整改 <span id="queueWarnCount">0</span></span>
+            <span class="metric-pill"><i class="fa-solid fa-circle-xmark text-red-600"></i>拦截 <span id="queueFailCount">0</span></span>
+          </div>
+        </div>
+        <div class="queue-scroll product-queue" id="productQueue"></div>
+      </div>
+
+      <div class="compliance-body">
+        <div class="space-y-4">
+          <div class="detail-card">
+            <h3>审核项目</h3>
+            <div class="subcheck-grid" id="subcheckGrid"></div>
+          </div>
+
+          <div class="detail-card summary-card">
+            <h3>AI 合规总结</h3>
+            <div class="summary-text" id="auditSummaryText">系统正在逐项校验商品信息，请稍候。</div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>审核日志</h3>
+          <div class="audit-log" id="auditLog"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let pendingProducts = [];
+    let auditTimers = [];
+    let isAuditRunning = false;
+    let activeAuditIndex = -1;
+    let selectedQueueIndex = -1;
+    let manualQueueSelection = false;
+
+    const uploadTemplateProducts = [
+      {
+        id: 'UP-001',
+        name: '联想启天M550商用台式机',
+        category: '办公设备',
+        title: '联想启天M550 12代i5商用办公电脑',
+        imageCount: 4,
+        parameterScore: 86,
+        stage: '待提交',
+        result: '',
+        summary: '',
+        issues: [],
+        checks: [
+          { title: '基础信息完整性', desc: '类目、标题、详情、图片齐全，可进入下一步校验。', runtimeStatus: 'pass' },
+          { title: 'AI语义校验', desc: '详情中存在“旗舰级体验”表述，存在隐性夸大宣传风险。', runtimeStatus: 'warn' },
+          { title: '参数智能校验', desc: '参数表缺少显卡接口和电源功率字段。', runtimeStatus: 'warn' },
+          { title: '图片一致性校验', desc: '主图与标题型号一致，未发现图片冲突。', runtimeStatus: 'pass' }
+        ],
+        finalResult: 'warn',
+        finalStage: '待整改',
+        finalSummary: '发现 2 项需整改问题，建议修改详情文案并补充参数字段后重新提交审核。',
+        finalIssues: [
+          'AI语义校验：命中“旗舰级体验”，存在隐性夸大宣传风险。',
+          '参数智能校验：缺少显卡接口与电源功率字段。'
+        ]
+      },
+      {
+        id: 'UP-002',
+        name: '华三千兆交换机 S1850-24P',
+        category: '网络设备',
+        title: '华三24口千兆交换机 企业专用款',
+        imageCount: 3,
+        parameterScore: 78,
+        stage: '待提交',
+        result: '',
+        summary: '',
+        issues: [],
+        checks: [
+          { title: '基础信息完整性', desc: '缺少质保期限与售后方式说明。', runtimeStatus: 'block' },
+          { title: 'AI语义校验', desc: '宣传语较克制，未命中明显语义风险。', runtimeStatus: 'pass' },
+          { title: '参数智能校验', desc: '交换容量等字段已登记，但质保信息仍缺失。', runtimeStatus: 'warn' },
+          { title: '图片一致性校验', desc: '主图识别型号与标题型号不一致。', runtimeStatus: 'block' }
+        ],
+        finalResult: 'fail',
+        finalStage: '校验不通过',
+        finalSummary: '存在 2 项阻断问题，当前不建议上架，请先修正图片型号和质保信息。',
+        finalIssues: [
+          '基础完整性校验：网络设备类目缺少质保期限与售后方式说明。',
+          '图片一致性校验：主图识别型号与标题型号不一致。'
+        ]
+      },
+      {
+        id: 'UP-003',
+        name: '得力A4复印纸 70g 8包/箱',
+        category: '办公耗材',
+        title: '得力A4复印纸 70g 500张*8包',
+        imageCount: 5,
+        parameterScore: 96,
+        stage: '待提交',
+        result: '',
+        summary: '',
+        issues: [],
+        checks: [
+          { title: '基础信息完整性', desc: '类目、标题、详情、图片和关键参数齐全。', runtimeStatus: 'pass' },
+          { title: 'AI语义校验', desc: '标题和详情表述客观，无夸大宣传风险。', runtimeStatus: 'pass' },
+          { title: '参数智能校验', desc: '克重、包装规格和单箱数量与类目模板一致。', runtimeStatus: 'pass' },
+          { title: '图片一致性校验', desc: '包装图片与标题规格完全一致。', runtimeStatus: 'pass' }
+        ],
+        finalResult: 'pass',
+        finalStage: '校验通过',
+        finalSummary: '四项审核全部通过，商品可进入上架队列。',
+        finalIssues: []
+      }
+    ];
+
+    function getStageBadge(stage) {
+      if (stage === '待提交') return `<span class="mini-badge badge-neutral"><i class="fas fa-file-lines"></i>${stage}</span>`;
+      if (stage === '校验中') return `<span class="mini-badge badge-progress"><i class="fas fa-spinner fa-spin"></i>${stage}</span>`;
+      if (stage === '待整改') return `<span class="mini-badge badge-warn"><i class="fas fa-wrench"></i>${stage}</span>`;
+      if (stage === '校验通过') return `<span class="mini-badge badge-success"><i class="fas fa-circle-check"></i>${stage}</span>`;
+      return `<span class="mini-badge badge-fail"><i class="fas fa-circle-xmark"></i>${stage}</span>`;
+    }
+
+    function getResultBadge(result) {
+      if (!result) return `<span class="text-slate-400">待审核</span>`;
+      if (result === 'pass') return `<span class="mini-badge badge-success"><i class="fas fa-circle-check"></i>通过</span>`;
+      if (result === 'warn') return `<span class="mini-badge badge-warn"><i class="fas fa-triangle-exclamation"></i>待整改</span>`;
+      return `<span class="mini-badge badge-fail"><i class="fas fa-circle-xmark"></i>不通过</span>`;
+    }
+
+    function getDisplayBadge(item) {
+      return item.result ? getResultBadge(item.result) : getStageBadge(item.stage);
+    }
+
+    function cloneTemplateProducts() {
+      return uploadTemplateProducts.map(item => ({
+        ...item,
+        issues: [],
+        summary: '',
+        result: '',
+        stage: '待提交',
+        logs: [],
+        checks: item.checks.map(check => ({
+          title: check.title,
+          desc: check.desc,
+          finalStatus: check.runtimeStatus,
+          runtimeStatus: 'pending'
+        }))
+      }));
+    }
+
+    function renderPendingTable() {
+      const tbody = document.getElementById('pendingTableBody');
+      const summary = document.getElementById('pendingSummary');
+
+      if (!pendingProducts.length) {
+        summary.textContent = '当前暂无待提交商品，请先批量上传。';
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty-state">
+              <div class="icon-wrap"><i class="fas fa-inbox"></i></div>
+              <div class="text-base font-semibold text-slate-700 mb-2">暂无待提交商品</div>
+              <div class="text-sm">点击上方“批量上传商品”，系统将按模板生成一批待审核商品。</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      summary.textContent = `已载入 ${pendingProducts.length} 个待提交商品，可直接提交审核。`;
+      tbody.innerHTML = pendingProducts.map(item => `
+        <tr class="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+          <td class="px-5 py-4">
+            <div class="font-semibold text-slate-900">${item.name}</div>
+            <div class="text-xs text-slate-400 mt-1">${item.id}</div>
+          </td>
+          <td class="px-5 py-4">${item.category}</td>
+          <td class="px-5 py-4"><div class="max-w-[280px] text-slate-700">${item.title}</div></td>
+          <td class="px-5 py-4">${item.imageCount} 张</td>
+          <td class="px-5 py-4">${item.parameterScore}%</td>
+          <td class="px-5 py-4">${getStageBadge(item.stage)}</td>
+          <td class="px-5 py-4">${getResultBadge(item.result)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderResultSection() {
+      const passCount = pendingProducts.filter(item => item.result === 'pass').length;
+      const warnCount = pendingProducts.filter(item => item.result === 'warn').length;
+      const failCount = pendingProducts.filter(item => item.result === 'fail').length;
+
+      document.getElementById('resultSection').classList.remove('hidden');
+      document.getElementById('resultTotal').textContent = pendingProducts.length;
+      document.getElementById('resultPass').textContent = passCount;
+      document.getElementById('resultWarn').textContent = warnCount;
+      document.getElementById('resultFail').textContent = failCount;
+      document.getElementById('resultSummaryText').textContent = `提交通过校验商品 ${passCount} 个，待整改 ${warnCount} 个，不通过 ${failCount} 个`;
+
+      document.getElementById('resultCards').innerHTML = pendingProducts.map(item => `
+        <div class="result-card">
+          <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 mb-3">
+            <div>
+              <div class="text-base font-semibold text-slate-900">${item.name}</div>
+              <div class="text-xs text-slate-400 mt-1">${item.id} · ${item.category}</div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              ${getDisplayBadge(item)}
+            </div>
+          </div>
+          <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 mb-3 text-sm text-slate-700 leading-6">
+            ${item.summary || '审核尚未开始。'}
+          </div>
+          <div class="space-y-2">
+            ${item.issues.length ? item.issues.map(issue => `
+              <div class="text-sm text-slate-600 bg-white border border-slate-200 rounded-xl px-4 py-3">${issue}</div>
+            `).join('') : `
+              <div class="text-sm text-green-700 bg-green-50 border border-green-100 rounded-xl px-4 py-3">未发现异常，已进入可上架队列。</div>
+            `}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateButtonState(running) {
+      const aiButton = document.getElementById('aiCheckBtn');
+      const submitButton = document.getElementById('submitReviewBtn');
+      aiButton.disabled = running;
+      submitButton.disabled = running;
+      if (running) {
+        aiButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>校验进行中...</span>';
+      } else {
+        aiButton.innerHTML = '<i class="fas fa-shield-halved"></i><span>AI合规校验</span>';
+      }
+    }
+
+    function downloadTemplate() {
+      const csv = [
+        '商品名称,类目,标题,详情,图片链接,型号,关键参数,备注',
+        '联想启天M550商用台式机,办公设备,联想启天M550 12代i5商用办公电脑,适用于日常办公与数据处理,https://example.com/image1.jpg,M550,"CPU:i5;内存:16G;硬盘:512G",'
+      ].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = '商品上架模板.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function mockUploadProducts() {
+      pendingProducts = cloneTemplateProducts();
+      activeAuditIndex = -1;
+      selectedQueueIndex = -1;
+      manualQueueSelection = false;
+      document.getElementById('resultSection').classList.add('hidden');
+      renderPendingTable();
+    }
+
+    function closeComplianceModal() {
+      if (isAuditRunning) return;
+      document.getElementById('complianceOverlay').classList.remove('show');
+    }
+
+    function renderQueue(activeIndex = -1) {
+      const queue = document.getElementById('productQueue');
+      const total = pendingProducts.length;
+      const done = pendingProducts.filter(item => ['校验通过', '待整改', '校验不通过'].includes(item.stage)).length;
+      const pass = pendingProducts.filter(item => item.result === 'pass').length;
+      const warn = pendingProducts.filter(item => item.result === 'warn').length;
+      const fail = pendingProducts.filter(item => item.result === 'fail').length;
+
+      document.getElementById('queueTotalCount').textContent = total;
+      document.getElementById('queueDoneCount').textContent = done;
+      document.getElementById('queuePassCount').textContent = pass;
+      document.getElementById('queueWarnCount').textContent = warn;
+      document.getElementById('queueFailCount').textContent = fail;
+      document.getElementById('batchProgressText').textContent = total
+        ? `当前按顺序审核第 ${Math.min(activeIndex + 1, total)} 件商品，已完成 ${done}/${total} 件。`
+        : '系统将按提交顺序逐件完成审核。';
+
+      queue.innerHTML = pendingProducts.map((item, index) => {
+        const queueClass = index === selectedQueueIndex
+          ? 'queue-item active'
+          : index === activeIndex
+          ? 'queue-item active'
+          : item.result === 'fail'
+            ? 'queue-item rejected'
+            : item.result
+              ? 'queue-item done'
+              : 'queue-item';
+        return `
+          <div class="${queueClass}" onclick="selectQueueItem(${index})">
+            <div class="queue-top">
+              <div>
+                <div class="queue-name">${item.name}</div>
+                <div class="text-xs text-slate-400 mt-1">${item.id} · ${item.category}</div>
+              </div>
+              <div>${getStageBadge(item.stage)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getRunningCheckIndex(product) {
+      return product.checks.findIndex(check => check.runtimeStatus === 'running');
+    }
+
+    function renderCurrentChecks(product, activeCheckIndex) {
+      const grid = document.getElementById('subcheckGrid');
+      grid.innerHTML = product.checks.map((check, index) => {
+        const className = check.runtimeStatus === 'running'
+          ? 'subcheck-item active'
+          : check.runtimeStatus === 'pass' || check.runtimeStatus === 'warn'
+            ? 'subcheck-item done'
+            : check.runtimeStatus === 'block'
+              ? 'subcheck-item block'
+              : 'subcheck-item';
+
+        const icon = check.runtimeStatus === 'running'
+          ? '<i class="fas fa-spinner fa-spin text-blue-500"></i>'
+          : check.runtimeStatus === 'pass'
+            ? '<i class="fas fa-circle-check text-green-600"></i>'
+            : check.runtimeStatus === 'warn'
+              ? '<i class="fas fa-triangle-exclamation text-amber-600"></i>'
+              : check.runtimeStatus === 'block'
+                ? '<i class="fas fa-circle-xmark text-red-600"></i>'
+                : '<i class="fas fa-circle text-slate-300"></i>';
+
+        return `
+          <div class="${className}">
+            <div class="subcheck-title">${icon}${check.title}</div>
+            <div class="subcheck-desc">${index === activeCheckIndex || ['pass', 'warn', 'block'].includes(check.runtimeStatus) ? check.desc : '等待系统开始校验...'}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAuditLog(productIndex) {
+      const log = document.getElementById('auditLog');
+      if (productIndex < 0 || !pendingProducts[productIndex]) {
+        log.innerHTML = `
+          <div class="audit-log-item">
+            <strong>等待选择商品</strong>
+            <div class="text-sm text-slate-500 leading-6">点击顶部商品队列中的任意商品，可查看对应的详细审核日志。</div>
+          </div>
+        `;
+        return;
+      }
+
+      const product = pendingProducts[productIndex];
+      if (!product.logs.length) {
+        log.innerHTML = `
+          <div class="audit-log-item">
+            <strong>${product.name}</strong>
+            <div class="text-sm text-slate-500 leading-6">该商品尚未生成审核日志，请等待系统开始审核或切换到其他商品查看。</div>
+          </div>
+        `;
+        return;
+      }
+
+      log.innerHTML = product.logs.map(item => `
+        <div class="audit-log-item">
+          <strong>${item.title}</strong>
+          <div class="text-sm text-slate-500 leading-6">${item.detail}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderSelectedProduct(index, activeCheckIndex = -1) {
+      const product = pendingProducts[index];
+      if (!product) {
+        document.getElementById('subcheckGrid').innerHTML = '';
+        document.getElementById('auditSummaryText').textContent = '系统正在逐项校验商品信息，请稍候。';
+        renderAuditLog(-1);
+        return;
+      }
+
+      renderCurrentChecks(product, activeCheckIndex);
+
+      if (product.summary) {
+        document.getElementById('auditSummaryText').textContent = `${product.name}：${product.summary}`;
+      } else if (product.stage === '校验中') {
+        document.getElementById('auditSummaryText').textContent = `${product.name} 正在逐项校验中，请查看右侧对应审核日志。`;
+      } else {
+        document.getElementById('auditSummaryText').textContent = `${product.name} 尚未开始审核，点击提交审核后系统将按顺序逐件处理。`;
+      }
+
+      renderAuditLog(index);
+    }
+
+    function appendAuditLog(productIndex, title, detail) {
+      const product = pendingProducts[productIndex];
+      if (!product) return;
+      product.logs.unshift({ title, detail });
+      if (selectedQueueIndex === productIndex) {
+        renderAuditLog(productIndex);
+      }
+    }
+
+    function selectQueueItem(index) {
+      if (!pendingProducts[index]) return;
+      manualQueueSelection = true;
+      selectedQueueIndex = index;
+      renderQueue(activeAuditIndex);
+      renderSelectedProduct(index, activeAuditIndex === index ? getRunningCheckIndex(pendingProducts[index]) : -1);
+    }
+
+    function resetModalContent() {
+      activeAuditIndex = -1;
+      selectedQueueIndex = -1;
+      manualQueueSelection = false;
+      document.getElementById('complianceProgressBar').style.width = '0%';
+      document.getElementById('modalStatusTag').className = 'status-tag status-run';
+      document.getElementById('modalStatusTag').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>校验中';
+      document.getElementById('auditSummaryText').textContent = '系统正在逐项校验商品信息，请稍候。';
+      document.getElementById('subcheckGrid').innerHTML = '';
+      renderAuditLog(-1);
+    }
+
+    function setModalFinishedStatus() {
+      const passCount = pendingProducts.filter(item => item.result === 'pass').length;
+      const warnCount = pendingProducts.filter(item => item.result === 'warn').length;
+      const failCount = pendingProducts.filter(item => item.result === 'fail').length;
+      const tag = document.getElementById('modalStatusTag');
+
+      if (failCount) {
+        tag.className = 'status-tag status-block';
+        tag.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>存在阻断项';
+      } else if (warnCount) {
+        tag.className = 'status-tag status-warn';
+        tag.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>需整改';
+      } else {
+        tag.className = 'status-tag status-pass';
+        tag.innerHTML = '<i class="fa-solid fa-circle-check"></i>全部通过';
+      }
+
+      document.getElementById('batchProgressText').textContent = `本批次共审核 ${pendingProducts.length} 件商品，${passCount} 件通过，${warnCount} 件待整改，${failCount} 件不通过。`;
+      document.getElementById('auditSummaryText').textContent = failCount
+        ? '本批次商品已完成逐件审核，存在阻断项，请优先处理图片型号不一致、质保缺失等关键问题。'
+        : warnCount
+          ? '本批次商品已完成逐件审核，整体可继续处理，但仍有待整改项需要修改后重提。'
+          : '本批次商品已全部通过审核，可进入上架队列。';
+    }
+
+    function submitAudit() {
+      if (!pendingProducts.length) {
+        alert('请先点击“批量上传商品”，生成待提交商品列表。');
+        return;
+      }
+      if (isAuditRunning) return;
+
+      isAuditRunning = true;
+      updateButtonState(true);
+      resetModalContent();
+      document.getElementById('complianceOverlay').classList.add('show');
+
+      pendingProducts.forEach(item => {
+        item.stage = '校验中';
+        item.result = '';
+        item.summary = '';
+        item.issues = [];
+        item.logs = [];
+        item.checks.forEach(check => {
+          check.runtimeStatus = 'pending';
+        });
+      });
+
+      renderPendingTable();
+      renderQueue();
+
+      const totalChecks = pendingProducts.reduce((sum, item) => sum + item.checks.length, 0);
+      let completedChecks = 0;
+      let delay = 0;
+
+      pendingProducts.forEach((product, productIndex) => {
+        const startDelay = delay;
+        const activateTimer = window.setTimeout(() => {
+          activeAuditIndex = productIndex;
+          if (!manualQueueSelection || selectedQueueIndex === -1) {
+            selectedQueueIndex = productIndex;
+          }
+          renderQueue(productIndex);
+          if (selectedQueueIndex === productIndex) {
+            renderSelectedProduct(productIndex, -1);
+          }
+          appendAuditLog(productIndex, `开始审核：${product.name}`, '系统已拉取标题、详情、图片和参数信息，准备逐项校验。');
+        }, startDelay);
+        auditTimers.push(activateTimer);
+
+        product.checks.forEach((check, checkIndex) => {
+          delay += 800;
+          const timer = window.setTimeout(() => {
+            product.checks.forEach((item, idx) => {
+              if (idx === checkIndex) {
+                item.runtimeStatus = 'running';
+              }
+            });
+            if (selectedQueueIndex === productIndex) {
+              renderSelectedProduct(productIndex, checkIndex);
+            }
+            appendAuditLog(productIndex, `${product.name} - ${check.title}`, '系统正在比对规则与商品信息，请稍候。');
+          }, delay - 420);
+          auditTimers.push(timer);
+
+          const finishTimer = window.setTimeout(() => {
+            check.runtimeStatus = check.finalStatus;
+            completedChecks += 1;
+            if (selectedQueueIndex === productIndex) {
+              renderSelectedProduct(productIndex, checkIndex);
+            }
+            document.getElementById('complianceProgressBar').style.width = `${Math.round(completedChecks / totalChecks * 100)}%`;
+            appendAuditLog(productIndex, `${product.name} - ${check.title}完成`, check.desc);
+          }, delay);
+          auditTimers.push(finishTimer);
+        });
+
+        delay += 260;
+        const finalizeTimer = window.setTimeout(() => {
+          product.result = product.finalResult;
+          product.stage = product.finalStage;
+          product.summary = product.finalSummary;
+          product.issues = [...product.finalIssues];
+          renderPendingTable();
+          renderQueue(productIndex);
+          if (selectedQueueIndex === productIndex) {
+            renderSelectedProduct(productIndex, -1);
+          }
+        }, delay);
+        auditTimers.push(finalizeTimer);
+      });
+
+      const finishAllTimer = window.setTimeout(() => {
+        isAuditRunning = false;
+        activeAuditIndex = -1;
+        updateButtonState(false);
+        renderResultSection();
+        renderQueue(-1);
+        setModalFinishedStatus();
+      }, delay + 300);
+      auditTimers.push(finishAllTimer);
+    }
+
+    function submitReview() {
+      if (!pendingProducts.length) {
+        alert('请先点击“批量上传商品”，生成待提交商品列表。');
+        return;
+      }
+
+      const passCount = pendingProducts.filter(item => item.result === 'pass').length;
+      const warnCount = pendingProducts.filter(item => item.result === 'warn').length;
+      const failCount = pendingProducts.filter(item => item.result === 'fail').length;
+      const checkedCount = passCount + warnCount + failCount;
+
+      if (!checkedCount) {
+        alert('请先完成 AI 合规校验，再提交审核。');
+        return;
+      }
+
+      let message = `当前有 ${passCount} 件商品通过校验，${warnCount} 件商品建议整改，是否提交？`;
+      if (failCount > 0) {
+        message += `\n另有 ${failCount} 件商品未通过校验，提交后建议优先处理异常项。`;
+      }
+
+      if (confirm(message)) {
+        alert(`已提交审核申请。\n通过校验：${passCount} 件\n建议整改：${warnCount} 件${failCount > 0 ? `\n未通过：${failCount} 件` : ''}`);
+      }
+    }
+
+    function initSourceBanner() {
+      const params = new URLSearchParams(window.location.search);
+      const source = params.get('source');
+      const id = params.get('id');
+      if (!source) return;
+
+      const banner = document.getElementById('sourceBanner');
+      const text = document.getElementById('sourceBannerText');
+      banner.classList.remove('hidden');
+
+      if (source === 'rectify' && id) {
+        text.textContent = `系统已为您定位商品 ${id} 的待整改问题，请修正后重新提交审核。`;
+      } else if (id) {
+        text.textContent = `当前正在继续编辑商品 ${id}，可补充资料后统一提交 AI 审核。`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSourceBanner();
+      renderPendingTable();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>比质比价整体分析 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+  <style>
+    :root {
+      --primary: #E2231A;
+      --text-main: #111827;
+      --text-sub: #64748b;
+      --border: #e5e7eb;
+      --bg: #f5f7fb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(14, 165, 233, 0.18);
+    }
+
+    .topbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .page-wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px 20px 40px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .hero {
+      padding: 20px 22px;
+      background: linear-gradient(135deg, #ecfeff 0%, #ffffff 100%);
+    }
+
+    .hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .hero-sub {
+      margin-top: 8px;
+      color: var(--text-sub);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .hero-kpis {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .hero-kpi {
+      border: 1px solid #dbeafe;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.82);
+      padding: 14px;
+    }
+
+    .hero-kpi-label {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .hero-kpi-value {
+      margin-top: 6px;
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      color: #0f766e;
+    }
+
+    .recommend-banner {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px solid #bbf7d0;
+      background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    }
+
+    .recommend-banner-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #166534;
+    }
+
+    .recommend-banner-reason {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #166534;
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .radar-card,
+    .analysis-card {
+      padding: 18px;
+    }
+
+    .radar-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .radar-meta {
+      margin-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .meta-box {
+      border-radius: 12px;
+      background: #f8fafc;
+      padding: 12px 14px;
+    }
+
+    .meta-box-label {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .meta-box-value {
+      margin-top: 4px;
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .analysis-cards {
+      display: grid;
+      gap: 14px;
+    }
+
+    .analysis-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #0f172a;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .score-chip {
+      border-radius: 12px;
+      background: #f8fafc;
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    .score-chip-label {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .score-chip-value {
+      margin-top: 6px;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+      color: #0f766e;
+    }
+
+    .basis-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .basis-item {
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .basis-item.positive {
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+
+    .basis-item.risk {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .tab-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #475569;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #0ea5e9;
+      border-color: #0ea5e9;
+      color: #fff;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1180px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 13px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: left;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tag-current {
+      background: #fff1f0;
+      color: var(--primary);
+    }
+
+    .tag-same {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .tag-similar {
+      background: #f5f3ff;
+      color: #7c3aed;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 960px) {
+      .hero-kpis,
+      .analysis-grid,
+      .score-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="font-extrabold text-lg">国采e购 · 比质比价整体分析</div>
+      <button class="bg-white/15 hover:bg-white/20 transition rounded-full px-4 py-2 text-sm font-bold" type="button" onclick="window.history.back()">
+        <i class="fa-solid fa-arrow-left mr-1"></i>返回商品详情
+      </button>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="card hero" id="analysisHero">
+      <div class="hero-title" id="heroTitle">AI 比质比价整体分析</div>
+      <div class="hero-sub" id="heroSub"></div>
+      <div class="hero-kpis">
+        <div class="hero-kpi">
+          <div class="hero-kpi-label">当前对照商品</div>
+          <div class="hero-kpi-value" id="heroCurrentPrice"></div>
+        </div>
+        <div class="hero-kpi">
+          <div class="hero-kpi-label">最优推荐商品综合分</div>
+          <div class="hero-kpi-value" id="heroBestScore"></div>
+        </div>
+        <div class="hero-kpi">
+          <div class="hero-kpi-label">参与分析候选数</div>
+          <div class="hero-kpi-value" id="heroCandidateCount"></div>
+        </div>
+        <div class="hero-kpi">
+          <div class="hero-kpi-label">推荐来源</div>
+          <div class="hero-kpi-value" id="heroSourceType"></div>
+        </div>
+      </div>
+
+      <div class="recommend-banner">
+        <div class="recommend-banner-title" id="recommendTitle"></div>
+        <div class="recommend-banner-reason" id="recommendReason"></div>
+      </div>
+    </section>
+
+    <section class="section analysis-grid">
+      <div class="card radar-card">
+        <div class="radar-wrap">
+          <canvas id="analysisRadar" width="300" height="250" aria-label="整体分析五维雷达图"></canvas>
+        </div>
+        <div class="radar-meta">
+          <div class="meta-box">
+            <div class="meta-box-label">综合推荐指数</div>
+            <div class="meta-box-value" id="radarScore"></div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-box-label">最终推荐排序</div>
+            <div class="meta-box-value" id="radarRank"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-cards">
+        <div class="card analysis-card">
+          <div class="analysis-title">推荐商品信息</div>
+          <div class="grid gap-2 text-sm text-slate-600 leading-7" id="analysisMeta"></div>
+        </div>
+
+        <div class="card analysis-card">
+          <div class="analysis-title">五维评分</div>
+          <div class="score-grid" id="analysisScoreGrid"></div>
+        </div>
+
+        <div class="card analysis-card">
+          <div class="analysis-title">推荐依据</div>
+          <div class="basis-list" id="analysisBasisList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card" id="candidateSection">
+      <div class="p-5">
+        <div class="analysis-title mb-4">候选商品明细</div>
+        <div class="tab-row">
+          <button class="tab-btn active" type="button" data-tab="same">同品同规</button>
+          <button class="tab-btn" type="button" data-tab="similar">相近品规</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>商品名称</th>
+                <th>来源</th>
+                <th>供应商</th>
+                <th>价格</th>
+                <th>平台建议区间</th>
+                <th>价格排名</th>
+                <th>风控</th>
+                <th>质量</th>
+                <th>售后响应</th>
+                <th>履约稳定性</th>
+                <th>综合评分</th>
+              </tr>
+            </thead>
+            <tbody id="candidateTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let analysisPayload = null;
+    let analysisResult = null;
+    let currentTab = 'same';
+
+    function avg(values) {
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    }
+
+    function normalizeSourceProduct(product) {
+      const totalScore = Math.round(avg([
+        product.priceScore,
+        product.riskScore,
+        product.qualityScore,
+        product.afterSalesScore,
+        product.fulfillmentScore
+      ]));
+
+      return {
+        ...product,
+        id: product.id || 'current_product',
+        productName: product.name,
+        type: 'current',
+        totalScore,
+        rankText: '当前商品',
+        tagClass: 'tag-current'
+      };
+    }
+
+    function getRiskText(item) {
+      if (item.priceChangeDirection === '加价') {
+        return `近期报价上调 ${item.priceChangePercent}%`;
+      }
+      if (item.inspectionStatus === '即将到期') {
+        return '质检资料临近到期';
+      }
+      if (item.riskLevel === '中') {
+        return '供应商风控处于中等水平';
+      }
+      return '';
+    }
+
+    function buildAnalysis(payload) {
+      const current = normalizeSourceProduct(payload.sourceProduct);
+      const sameRows = payload.selectedRows.same || [];
+      const similarRows = payload.selectedRows.similar || [];
+      const samePool = [current, ...sameRows];
+      const rankedSame = [...samePool].sort((a, b) => b.totalScore - a.totalScore || a.price - b.price);
+      const rankedSimilar = [...similarRows].sort((a, b) => b.totalScore - a.totalScore || a.price - b.price);
+      const best = rankedSame.length ? rankedSame[0] : rankedSimilar[0];
+      const sourceType = best.type === 'similar' ? '相近品规补充' : '同品同规优先';
+      const overallPool = [...samePool, ...similarRows];
+      const globalRank = [...overallPool].sort((a, b) => b.totalScore - a.totalScore || a.price - b.price)
+        .findIndex(item => item.id === best.id) + 1;
+      const riskText = getRiskText(best);
+      const reason = `推荐 ${best.supplier} ${best.productName}，原因是其在候选商品中综合评分最高，价格处于平台建议区间内，供应商风控较低，质量与售后表现稳定${riskText ? `，但需注意${riskText}` : '。'}`;
+
+      return {
+        current,
+        best,
+        globalRank,
+        totalCandidates: overallPool.length,
+        sourceType,
+        reason,
+        scoreItems: [
+          { label: '价格竞争力', value: best.priceScore },
+          { label: '供应商风控', value: best.riskScore },
+          { label: '商品质量', value: best.qualityScore },
+          { label: '售后响应', value: best.afterSalesScore },
+          { label: '履约稳定性', value: best.fulfillmentScore }
+        ],
+        basisItems: buildBasisItems(best, sourceType),
+        sameRows,
+        similarRows
+      };
+    }
+
+    function buildBasisItems(best, sourceType) {
+      const items = [
+        { tone: 'positive', text: `${sourceType}策略下，该商品综合评分最高，价格位于平台建议采购区间内。` },
+        { tone: 'positive', text: `供应商风控评分 ${best.riskScore} 分，风险等级为${best.riskLevel}，认证与履约情况较稳定。` },
+        { tone: 'positive', text: `商品质量评分 ${best.qualityScore} 分，质量等级为${best.qualityLevel}，资料与评价反馈表现较优。` },
+        { tone: 'positive', text: `售后响应评分 ${best.afterSalesScore} 分，预计${best.afterSalesLabel}响应；履约稳定性 ${best.fulfillmentScore} 分。` }
+      ];
+
+      const riskText = getRiskText(best);
+      if (riskText) {
+        items.push({ tone: 'risk', text: `风险提示：${riskText}。` });
+      }
+
+      return items;
+    }
+
+    function renderAnalysis() {
+      document.getElementById('heroSub').textContent = `当前对照商品为“${analysisResult.current.productName}”，系统已基于你勾选的候选商品进行五维等权分析，并在同品同规优先、相近品规补充的规则下输出最终推荐结果。`;
+      document.getElementById('heroCurrentPrice').textContent = `￥${analysisResult.current.price.toFixed(2)}`;
+      document.getElementById('heroBestScore').textContent = analysisResult.best.totalScore;
+      document.getElementById('heroCandidateCount').textContent = analysisResult.totalCandidates;
+      document.getElementById('heroSourceType').textContent = analysisResult.sourceType;
+      document.getElementById('recommendTitle').textContent = `最优推荐商品：${analysisResult.best.supplier} ${analysisResult.best.productName}`;
+      document.getElementById('recommendReason').textContent = analysisResult.reason;
+      document.getElementById('radarScore').textContent = analysisResult.best.totalScore;
+      document.getElementById('radarRank').textContent = `${analysisResult.globalRank}/${analysisResult.totalCandidates}`;
+
+      document.getElementById('analysisMeta').innerHTML = [
+        `商品名称：<strong>${analysisResult.best.productName}</strong>`,
+        `供应商：<strong>${analysisResult.best.supplier}</strong>`,
+        `当前报价：<strong>￥${analysisResult.best.price.toFixed(2)}</strong>`,
+        `平台建议区间：<strong>￥${analysisResult.best.floor.toFixed(2)} - ￥${analysisResult.best.ceiling.toFixed(2)}</strong>`,
+        `推荐来源：<strong>${analysisResult.best.type === 'current' ? '当前商品' : analysisResult.best.type === 'same' ? '同品同规' : '相近品规'}</strong>`
+      ].map(item => `<div>${item}</div>`).join('');
+
+      document.getElementById('analysisScoreGrid').innerHTML = analysisResult.scoreItems.map(item => `
+        <div class="score-chip">
+          <div class="score-chip-label">${item.label}</div>
+          <div class="score-chip-value">${item.value}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('analysisBasisList').innerHTML = analysisResult.basisItems.map(item => `
+        <div class="basis-item ${item.tone}">${item.text}</div>
+      `).join('');
+
+      drawRadar(document.getElementById('analysisRadar'), analysisResult.scoreItems.map(item => item.value));
+      renderCandidateTable();
+    }
+
+    function renderCandidateTable() {
+      const rows = currentTab === 'same'
+        ? [analysisResult.current, ...analysisResult.sameRows]
+        : analysisResult.similarRows;
+
+      const tbody = document.getElementById('candidateTableBody');
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="11"><div class="empty-state">当前未勾选该类候选商品。</div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(row => `
+        <tr>
+          <td>
+            <div class="font-semibold text-gray-900">${row.productName}</div>
+          </td>
+          <td>
+            <span class="tag ${row.type === 'current' ? 'tag-current' : row.type === 'same' ? 'tag-same' : 'tag-similar'}">
+              ${row.type === 'current' ? '当前商品' : row.type === 'same' ? '同品同规' : '相近品规'}
+            </span>
+          </td>
+          <td>${row.supplier}</td>
+          <td class="font-bold text-red-600">￥${row.price.toFixed(2)}</td>
+          <td>￥${row.floor.toFixed(2)} - ￥${row.ceiling.toFixed(2)}</td>
+          <td>${row.rankText}</td>
+          <td>${row.riskLevel}</td>
+          <td>${row.qualityLevel || row.qualityLevel === '' ? row.qualityLevel : '优'}</td>
+          <td>${row.afterSalesLabel}</td>
+          <td>${row.fulfillmentLabel}</td>
+          <td class="font-semibold text-sky-600">${row.totalScore}</td>
+        </tr>
+      `).join('');
+    }
+
+    function drawRadar(canvas, values) {
+      const labels = ['价格竞争力', '供应商风控', '商品质量', '售后响应', '履约稳定性'];
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      const centerX = width / 2;
+      const centerY = height / 2 + 8;
+      const radius = 78;
+      const total = labels.length;
+      const angleOf = index => -Math.PI / 2 + (index * Math.PI * 2 / total);
+
+      ctx.clearRect(0, 0, width, height);
+
+      for (let level = 1; level <= 4; level++) {
+        const levelRadius = radius * (level / 4);
+        ctx.beginPath();
+        for (let i = 0; i < total; i++) {
+          const angle = angleOf(i);
+          const x = centerX + Math.cos(angle) * levelRadius;
+          const y = centerY + Math.sin(angle) * levelRadius;
+          ctx[i ? 'lineTo' : 'moveTo'](x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = level === 4 ? '#cbd5e1' : '#e2e8f0';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      for (let i = 0; i < total; i++) {
+        const angle = angleOf(i);
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+      values.forEach((value, index) => {
+        const ratio = Math.max(0, Math.min(100, value)) / 100;
+        const angle = angleOf(index);
+        const x = centerX + Math.cos(angle) * radius * ratio;
+        const y = centerY + Math.sin(angle) * radius * ratio;
+        ctx[index ? 'lineTo' : 'moveTo'](x, y);
+      });
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.16)';
+      ctx.fill();
+      ctx.strokeStyle = '#0ea5e9';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      values.forEach((value, index) => {
+        const ratio = Math.max(0, Math.min(100, value)) / 100;
+        const angle = angleOf(index);
+        const x = centerX + Math.cos(angle) * radius * ratio;
+        const y = centerY + Math.sin(angle) * radius * ratio;
+        ctx.beginPath();
+        ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#14b8a6';
+        ctx.fill();
+      });
+
+      ctx.font = '12px "Microsoft YaHei", sans-serif';
+      ctx.fillStyle = '#475569';
+      values.forEach((value, index) => {
+        const angle = angleOf(index);
+        const labelRadius = radius + 24;
+        const x = centerX + Math.cos(angle) * labelRadius;
+        const y = centerY + Math.sin(angle) * labelRadius;
+        const text = `${labels[index]} ${value}`;
+        const metrics = ctx.measureText(text);
+        let drawX = x - metrics.width / 2;
+        if (index === 1 || index === 2) drawX = x;
+        if (index === 3 || index === 4) drawX = x - metrics.width;
+        ctx.fillText(text, drawX, y);
+      });
+    }
+
+    function bindTabs() {
+      document.querySelectorAll('[data-tab]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          currentTab = this.dataset.tab;
+          document.querySelectorAll('[data-tab]').forEach(item => item.classList.remove('active'));
+          this.classList.add('active');
+          renderCandidateTable();
+        });
+      });
+    }
+
+    function bootstrap() {
+      const raw = sessionStorage.getItem('compareAnalysisPayload');
+      if (!raw) {
+        document.getElementById('analysisHero').innerHTML = `
+          <div class="empty-state">
+            未找到比质比价分析数据，请先从商品详情页点击“比质比价”并勾选候选商品。
+          </div>
+        `;
+        document.getElementById('candidateSection').style.display = 'none';
+        return;
+      }
+
+      analysisPayload = JSON.parse(raw);
+      analysisResult = buildAnalysis(analysisPayload);
+      renderAnalysis();
+      bindTabs();
+    }
+
+    document.addEventListener('DOMContentLoaded', bootstrap);
+  </script>
+</body>
+</html>
