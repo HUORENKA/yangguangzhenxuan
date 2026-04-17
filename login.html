@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>国采e购 | 登录</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --brand-blue: #2088ff;
+      --brand-blue-dark: #0f6fe2;
+      --text-main: #111827;
+      --text-soft: #6b7280;
+      --line: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: var(--text-main);
+      background: #f4f8ff;
+    }
+
+    .login-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .visual-area {
+      position: relative;
+      flex: 0 0 64%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 75% 40%, rgba(31, 139, 255, 0.24) 0%, transparent 38%),
+        radial-gradient(circle at 20% 76%, rgba(92, 174, 255, 0.2) 0%, transparent 34%),
+        linear-gradient(140deg, #f4fbff 0%, #e5f3ff 62%, #dceeff 100%);
+    }
+
+    .visual-area::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(32, 136, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(32, 136, 255, 0.05) 1px, transparent 1px);
+      background-size: 56px 56px;
+      opacity: 0.35;
+    }
+
+    .brand-logo {
+      position: absolute;
+      left: 38px;
+      top: 26px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--brand-blue);
+      z-index: 2;
+      font-weight: 800;
+      font-size: 42px;
+    }
+
+    .brand-logo span {
+      font-size: 44px;
+      letter-spacing: 2px;
+    }
+
+    .cart-showcase {
+      position: absolute;
+      left: 15%;
+      bottom: 70px;
+      width: min(620px, 68%);
+      aspect-ratio: 1.1 / 1;
+      z-index: 1;
+    }
+
+    .platform {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 0;
+      height: 25%;
+      border-radius: 24px;
+      background: linear-gradient(180deg, #3ab4ff 0%, #1d89ff 70%, #1163ca 100%);
+      box-shadow: 0 28px 40px rgba(26, 116, 219, 0.28);
+    }
+
+    .platform::after {
+      content: "";
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      bottom: -8%;
+      height: 26%;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.55);
+      filter: blur(10px);
+    }
+
+    .cart-box {
+      position: absolute;
+      left: 22%;
+      bottom: 20%;
+      width: 56%;
+      height: 50%;
+      border-radius: 30px 30px 26px 26px;
+      background: linear-gradient(180deg, #e8f7ff 0%, #cdeeff 100%);
+      border: 3px solid rgba(44, 140, 255, 0.46);
+      box-shadow: 0 20px 36px rgba(26, 116, 219, 0.25);
+    }
+
+    .cart-box::before {
+      content: "";
+      position: absolute;
+      left: 12%;
+      top: -18%;
+      width: 72%;
+      height: 34%;
+      border: 5px solid #2e9bff;
+      border-bottom: none;
+      border-radius: 40px 40px 0 0;
+    }
+
+    .wheel {
+      position: absolute;
+      bottom: 10%;
+      width: 11%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: #2093ff;
+      border: 6px solid #bce6ff;
+      box-shadow: 0 8px 14px rgba(16, 104, 196, 0.3);
+    }
+
+    .wheel.left {
+      left: 24%;
+    }
+
+    .wheel.right {
+      right: 24%;
+    }
+
+    .floating-cube {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #68ccff 0%, #1f98ff 100%);
+      box-shadow: 0 10px 20px rgba(20, 120, 219, 0.18);
+      z-index: 2;
+    }
+
+    .cube-1 { top: 26%; left: 18%; }
+    .cube-2 { top: 20%; right: 22%; }
+    .cube-3 { top: 52%; right: 14%; }
+    .cube-4 { top: 64%; left: 7%; }
+
+    .form-area {
+      flex: 0 0 36%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      padding: 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+      padding: 14px 8px;
+    }
+
+    .login-title {
+      margin: 0;
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .login-subtitle {
+      margin: 10px 0 30px;
+      color: var(--text-soft);
+      font-size: 19px;
+      font-weight: 600;
+    }
+
+    .tab-label {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 18px;
+      font-size: 16px;
+      color: var(--brand-blue);
+      font-weight: 700;
+      padding-bottom: 8px;
+    }
+
+    .tab-label::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--brand-blue);
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .input-box {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      padding: 0 12px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-box:focus-within {
+      border-color: #7cb8ff;
+      box-shadow: 0 0 0 3px rgba(32, 136, 255, 0.12);
+    }
+
+    .input-box i {
+      color: #9ca3af;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+
+    .input-box select {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      color: #374151;
+      background: transparent;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .role-tip {
+      min-height: 20px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 46px;
+      border: none;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--brand-blue) 0%, #2494ff 100%);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: transform 0.16s, box-shadow 0.16s;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(32, 136, 255, 0.32);
+      background: linear-gradient(90deg, var(--brand-blue-dark) 0%, #1f89ec 100%);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1200px) {
+      .brand-logo {
+        font-size: 36px;
+      }
+
+      .brand-logo span {
+        font-size: 38px;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .login-layout {
+        flex-direction: column;
+      }
+
+      .visual-area {
+        flex: none;
+        height: 34vh;
+        min-height: 280px;
+      }
+
+      .brand-logo {
+        left: 20px;
+        top: 18px;
+      }
+
+      .brand-logo span {
+        font-size: 32px;
+      }
+
+      .cart-showcase {
+        left: 50%;
+        bottom: 8px;
+        transform: translateX(-50%) scale(0.86);
+        width: 82%;
+      }
+
+      .form-area {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="login-layout">
+    <section class="visual-area" aria-hidden="true">
+      <div class="brand-logo">
+        <i class="fa-solid fa-gem"></i>
+        <span>国采e购</span>
+      </div>
+      <div class="cart-showcase">
+        <div class="platform"></div>
+        <div class="cart-box"></div>
+        <div class="wheel left"></div>
+        <div class="wheel right"></div>
+      </div>
+      <div class="floating-cube cube-1"></div>
+      <div class="floating-cube cube-2"></div>
+      <div class="floating-cube cube-3"></div>
+      <div class="floating-cube cube-4"></div>
+    </section>
+
+    <section class="form-area">
+      <div class="login-card">
+        <h1 class="login-title">登录</h1>
+        <p class="login-subtitle">欢迎来到国采e购平台！</p>
+
+        <div class="tab-label">用户角色登录</div>
+
+        <div class="field">
+          <div class="input-box">
+            <i class="fa-regular fa-user"></i>
+            <select id="roleSelect" aria-label="选择登录角色">
+              <option value="">请选择登录角色</option>
+              <option value="buyer">采购方</option>
+              <option value="supplier">供应商</option>
+              <option value="operator">运营商</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="role-tip" id="roleTip">请选择角色后登录</div>
+
+        <button class="login-btn" type="button" onclick="handleLogin()">登 录</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const roleSelect = document.getElementById('roleSelect');
+    const roleTip = document.getElementById('roleTip');
+
+    const roleMap = {
+      buyer: {
+        label: '采购方',
+        localRole: 'buyer',
+        target: './pages/home.html'
+      },
+      supplier: {
+        label: '供应商',
+        localRole: 'supplier',
+        target: './pages/workbench/workbench_home.html'
+      },
+      operator: {
+        label: '运营商',
+        localRole: 'admin',
+        target: './pages/admin/admin_dashboard.html'
+      }
+    };
+
+    roleSelect.addEventListener('change', function () {
+      const selected = roleMap[this.value];
+      if (!selected) {
+        roleTip.textContent = '请选择角色后登录';
+        return;
+      }
+      roleTip.textContent = '当前将以“' + selected.label + '”身份进入演示系统';
+    });
+
+    function handleLogin() {
+      const selected = roleMap[roleSelect.value];
+      if (!selected) {
+        window.alert('请先选择登录角色');
+        return;
+      }
+
+      localStorage.setItem('role', selected.localRole);
+      localStorage.setItem('loginRoleLabel', selected.label);
+      window.location.href = selected.target;
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        handleLogin();
+      }
+    });
+  </script>
+</body>
+</html>

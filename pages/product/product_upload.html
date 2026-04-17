@@ -456,6 +456,152 @@
       color: #111827;
     }
 
+    .table-op-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+      user-select: none;
+    }
+
+    .table-op-check input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #16a34a;
+      cursor: pointer;
+    }
+
+    .table-op-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      border: 1px solid #dbe2ea;
+      background: #fff;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .table-op-btn:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.48);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 120;
+    }
+
+    .dialog-overlay.show {
+      display: flex;
+    }
+
+    .dialog-card {
+      width: min(480px, 92vw);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      box-shadow: 0 26px 48px rgba(15, 23, 42, 0.24);
+      overflow: hidden;
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      background: linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
+    }
+
+    .dialog-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .dialog-icon.info { background: #eff6ff; color: #2563eb; }
+    .dialog-icon.success { background: #ecfdf5; color: #16a34a; }
+    .dialog-icon.warn { background: #fffbeb; color: #d97706; }
+    .dialog-icon.error { background: #fef2f2; color: #dc2626; }
+
+    .dialog-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .dialog-body {
+      padding: 16px 20px;
+      font-size: 14px;
+      line-height: 1.9;
+      color: #475569;
+      white-space: pre-line;
+    }
+
+    .dialog-actions {
+      padding: 0 20px 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .dialog-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .dialog-btn-cancel {
+      border-color: #dbe2ea;
+      background: #ffffff;
+      color: #475569;
+    }
+
+    .dialog-btn-cancel:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .dialog-btn-confirm {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+    }
+
+    .dialog-btn-confirm:hover {
+      filter: brightness(0.95);
+    }
+
     @media (max-width: 1100px) {
       .compliance-body {
         grid-template-columns: 1fr;
@@ -466,6 +612,301 @@
       .compliance-head {
         flex-direction: column;
       }
+    }
+
+    /* ==================== AI 合规助手面板 ==================== */
+    .assistant-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      z-index: 140;
+    }
+    .assistant-overlay.show { display: flex; }
+
+    .assistant-panel {
+      width: min(1240px, 96vw);
+      max-height: 92vh;
+      background: #ffffff;
+      border-radius: 22px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 32px 60px rgba(15, 23, 42, 0.28);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .assistant-head {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #fff1f1 0%, #ffffff 60%, #eff6ff 100%);
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .assistant-head-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .assistant-head-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+      color: #ffffff; font-size: 20px;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.26);
+      flex-shrink: 0;
+    }
+    .assistant-head-title { font-size: 18px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; }
+    .assistant-head-sub { font-size: 13px; color: #64748b; margin-top: 4px; }
+    .assistant-head-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .assistant-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 28px; padding: 0 12px;
+      border-radius: 999px; font-size: 12px; font-weight: 700;
+    }
+    .assistant-badge.warn { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+    .assistant-badge.fail { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .assistant-badge.pass { background: #ecfdf5; color: #047857; border: 1px solid #bbf7d0; }
+
+    .assistant-close {
+      width: 36px; height: 36px; border-radius: 10px;
+      border: 1px solid #e2e8f0; background: #ffffff; color: #475569;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .assistant-close:hover { background: #f8fafc; color: #0f172a; }
+
+    .assistant-body {
+      flex: 1; overflow-y: auto;
+      display: grid; grid-template-columns: 420px 1fr;
+      gap: 0;
+    }
+
+    .assistant-left {
+      padding: 20px 20px 24px;
+      background: #f8fafc;
+      border-right: 1px solid #e2e8f0;
+      overflow-y: auto;
+    }
+    .assistant-right {
+      padding: 20px 24px 24px;
+      overflow-y: auto;
+      background: #ffffff;
+    }
+
+    .assistant-section-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 800; color: #0f172a;
+      margin-bottom: 12px;
+    }
+    .assistant-section-title i { color: #ef4444; }
+
+    .info-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .info-card-title {
+      font-size: 12px; font-weight: 700; color: #64748b;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .info-card-title i { color: #2563eb; }
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px;
+    }
+    .info-item { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .info-item-label { font-size: 11px; color: #94a3b8; }
+    .info-item-value { font-size: 13px; color: #0f172a; font-weight: 600; word-break: break-all; }
+    .info-item-value.placeholder { color: #cbd5e1; font-weight: 500; font-style: italic; }
+
+    .info-block {
+      font-size: 13px; color: #334155; line-height: 1.75;
+      background: #f8fafc; border: 1px dashed #cbd5e1;
+      border-radius: 10px; padding: 10px 12px;
+    }
+
+    .param-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .param-table th, .param-table td {
+      padding: 8px 10px; text-align: left;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .param-table th {
+      font-size: 11px; font-weight: 700; color: #64748b;
+      background: #f8fafc; letter-spacing: 0.04em;
+    }
+    .param-table td { color: #0f172a; }
+    .param-table tr:last-child td { border-bottom: none; }
+    .param-table td.missing { color: #b91c1c; font-weight: 600; }
+    .param-table td.updated { color: #047857; font-weight: 700; }
+
+    .image-placeholder-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    }
+    .image-placeholder {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      border: 1px dashed #cbd5e1;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      color: #94a3b8;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    /* 不合规项卡片 */
+    .issue-list-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .issue-list-head-text {
+      font-size: 14px; font-weight: 800; color: #0f172a;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .issue-list-head-text i { color: #f97316; }
+    .issue-list-hint {
+      font-size: 12px; color: #64748b;
+    }
+
+    .issue-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      background: #ffffff;
+      transition: all 0.2s ease;
+    }
+    .issue-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    }
+    .issue-card.level-warn { border-left: 4px solid #f59e0b; }
+    .issue-card.level-fail { border-left: 4px solid #ef4444; }
+
+    .issue-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 10px; flex-wrap: wrap;
+    }
+    .issue-head-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .issue-field {
+      font-size: 14px; font-weight: 800; color: #0f172a;
+    }
+    .issue-level {
+      display: inline-flex; align-items: center; gap: 4px;
+      height: 22px; padding: 0 10px;
+      border-radius: 999px; font-size: 11px; font-weight: 700;
+    }
+    .issue-level.warn { background: #fffbeb; color: #b45309; }
+    .issue-level.fail { background: #fef2f2; color: #b91c1c; }
+
+    .issue-adopt {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: #475569; cursor: pointer;
+      user-select: none;
+    }
+    .issue-adopt input { accent-color: #dc2626; width: 14px; height: 14px; }
+
+    .issue-problem {
+      font-size: 13px; color: #475569; line-height: 1.7;
+      margin-bottom: 6px;
+    }
+    .issue-rule {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; color: #64748b;
+      padding: 2px 8px; border-radius: 6px;
+      background: #f1f5f9; margin-bottom: 12px;
+    }
+
+    .diff-box {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    @media (max-width: 900px) {
+      .diff-box { grid-template-columns: 1fr; }
+    }
+    .diff-col {
+      border-radius: 10px; padding: 10px 12px;
+      font-size: 13px; line-height: 1.7;
+      min-height: 72px;
+    }
+    .diff-col-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+    }
+    .diff-col.original {
+      background: #fef2f2; border: 1px solid #fecaca;
+      color: #7f1d1d;
+    }
+    .diff-col.original .diff-col-label { color: #b91c1c; }
+    .diff-col.suggested {
+      background: #ecfdf5; border: 1px solid #bbf7d0;
+      color: #064e3b;
+    }
+    .diff-col.suggested .diff-col-label { color: #047857; }
+
+    .issue-empty {
+      text-align: center; padding: 40px 12px;
+      color: #64748b; font-size: 13px;
+    }
+    .issue-empty .big-icon {
+      width: 56px; height: 56px; border-radius: 16px;
+      background: #ecfdf5; color: #16a34a;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 12px;
+    }
+
+    /* 底部操作栏 */
+    .assistant-foot {
+      border-top: 1px solid #f1f5f9;
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+      background: #ffffff;
+    }
+    .assistant-foot-status {
+      font-size: 13px; color: #475569;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .assistant-foot-status i { color: #2563eb; }
+
+    .assistant-foot-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .assistant-btn {
+      height: 40px; padding: 0 18px;
+      border-radius: 12px; font-size: 13px; font-weight: 700;
+      border: 1px solid transparent; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px; transition: all 0.2s ease;
+    }
+    .assistant-btn:hover { transform: translateY(-1px); }
+    .assistant-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .assistant-btn-cancel {
+      border-color: #dbe2ea; background: #ffffff; color: #475569;
+    }
+    .assistant-btn-cancel:hover { background: #f8fafc; }
+    .assistant-btn-regenerate {
+      border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8;
+    }
+    .assistant-btn-regenerate:hover { background: #dbeafe; }
+    .assistant-btn-apply {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.22);
+    }
+    .assistant-btn-apply:hover { filter: brightness(0.96); }
+
+    .regenerating .assistant-btn-regenerate i { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 1000px) {
+      .assistant-body { grid-template-columns: 1fr; }
+      .assistant-left { border-right: none; border-bottom: 1px solid #e2e8f0; }
     }
   </style>
 </head>
@@ -585,6 +1026,7 @@
                 <th class="text-left px-5 py-4 font-semibold">参数完整度</th>
                 <th class="text-left px-5 py-4 font-semibold">当前状态</th>
                 <th class="text-left px-5 py-4 font-semibold">校验结果</th>
+                <th class="text-left px-5 py-4 font-semibold">操作</th>
               </tr>
             </thead>
             <tbody id="pendingTableBody" class="text-sm text-slate-700"></tbody>
@@ -622,6 +1064,109 @@
       </div>
 
       <div id="resultCards" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- ==================== AI 合规助手面板 ==================== -->
+  <div class="assistant-overlay" id="assistantOverlay">
+    <div class="assistant-panel">
+      <div class="assistant-head">
+        <div class="assistant-head-left">
+          <div class="assistant-head-icon"><i class="fa-solid fa-robot"></i></div>
+          <div style="min-width:0;">
+            <div class="assistant-head-title">
+              <span>AI 合规助手</span>
+              <span class="assistant-badge" id="assistantLevelBadge">待校验</span>
+            </div>
+            <div class="assistant-head-sub" id="assistantSubText">系统已识别当前商品的不合规项，并为每一项生成改写建议。</div>
+          </div>
+        </div>
+        <div class="assistant-head-right">
+          <button class="assistant-close" type="button" onclick="closeAiAssistant()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+
+      <div class="assistant-body">
+        <div class="assistant-left">
+          <div class="assistant-section-title"><i class="fa-solid fa-file-lines"></i>供应商上传的商品信息</div>
+
+          <div class="info-card">
+            <div class="info-card-title"><i class="fa-solid fa-circle-info"></i>基础信息</div>
+            <div class="info-grid" id="assistantInfoGrid"></div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title"><i class="fa-solid fa-tag"></i>商品标题</div>
+            <div class="info-block" id="assistantInfoTitle">-</div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title"><i class="fa-solid fa-align-left"></i>商品详情</div>
+            <div class="info-block" id="assistantInfoDesc">-</div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title"><i class="fa-solid fa-sliders"></i>商品参数</div>
+            <div style="overflow-x:auto;">
+              <table class="param-table">
+                <thead>
+                  <tr><th style="width:45%;">参数名</th><th>参数值</th></tr>
+                </thead>
+                <tbody id="assistantInfoParams"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title"><i class="fa-solid fa-image"></i>商品图片（<span id="assistantInfoImageCount">0</span> 张）</div>
+            <div class="image-placeholder-grid" id="assistantInfoImages"></div>
+          </div>
+        </div>
+
+        <div class="assistant-right">
+          <div class="issue-list-head">
+            <div class="issue-list-head-text">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>AI 识别不合规项</span>
+              <span class="assistant-badge warn" id="assistantIssueCountBadge">0 项</span>
+            </div>
+            <div class="issue-list-hint" id="assistantRegenerateHint">可勾选「采纳此建议」，也可点击「重新生成」让 AI 换一版。</div>
+          </div>
+          <div id="assistantIssueList"></div>
+        </div>
+      </div>
+
+      <div class="assistant-foot">
+        <div class="assistant-foot-status" id="assistantFootStatus">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>已采纳 <strong id="assistantAdoptCount">0</strong> / <span id="assistantTotalCount">0</span> 项 AI 建议</span>
+        </div>
+        <div class="assistant-foot-actions">
+          <button class="assistant-btn assistant-btn-cancel" type="button" onclick="cancelAiFix()">
+            <i class="fa-solid fa-xmark"></i>取消修改
+          </button>
+          <button class="assistant-btn assistant-btn-regenerate" id="assistantRegenerateBtn" type="button" onclick="regenerateAiSuggestion()">
+            <i class="fa-solid fa-arrows-rotate"></i>重新生成
+          </button>
+          <button class="assistant-btn assistant-btn-apply" id="assistantApplyBtn" type="button" onclick="applyAiFix()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>执行修改
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-overlay" id="globalDialogOverlay">
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <div class="dialog-icon info" id="globalDialogIcon"><i class="fas fa-circle-info"></i></div>
+        <div class="dialog-title" id="globalDialogTitle">提示</div>
+      </div>
+      <div class="dialog-body" id="globalDialogBody">-</div>
+      <div class="dialog-actions">
+        <button class="dialog-btn dialog-btn-cancel" id="globalDialogCancelBtn" type="button">取消</button>
+        <button class="dialog-btn dialog-btn-confirm" id="globalDialogConfirmBtn" type="button">确定</button>
+      </div>
     </div>
   </div>
 
@@ -685,6 +1230,8 @@
     let activeAuditIndex = -1;
     let selectedQueueIndex = -1;
     let manualQueueSelection = false;
+    let globalDialogOnConfirm = null;
+    let globalDialogOnCancel = null;
 
     const uploadTemplateProducts = [
       {
@@ -698,9 +1245,85 @@
         result: '',
         summary: '',
         issues: [],
+        originalInfo: {
+          title: '联想启天M550 12代i5商用办公电脑（旗舰级体验 · 办公首选）',
+          category: '办公设备 / 商用台式机',
+          brand: '联想 (Lenovo)',
+          model: '启天 M550',
+          price: '5,299.00 元 / 台',
+          images: 4,
+          description: '联想启天M550 商用台式机，搭载12代i5处理器，带来旗舰级体验，性能领先同级，轻松应对所有办公场景，是最好的办公选择。',
+          parameters: [
+            { name: 'CPU', value: '英特尔 i5-12400' },
+            { name: '内存', value: '16GB DDR4' },
+            { name: '硬盘', value: '512GB SSD' },
+            { name: '显示器', value: '21.5 英寸' },
+            { name: '显卡接口', value: '未填写' },
+            { name: '电源功率', value: '未填写' },
+            { name: '质保期限', value: '3 年' }
+          ]
+        },
+        aiIssuesTemplate: [
+          {
+            id: 'ISS-1-1',
+            field: '商品标题',
+            fieldKey: 'title',
+            level: 'warn',
+            problem: '命中"旗舰级体验""办公首选"等极限用语，存在隐性夸大宣传风险。',
+            rule: '《广告法》第九条 · 平台禁用词库 #2031',
+            originalValue: '联想启天M550 12代i5商用办公电脑（旗舰级体验 · 办公首选）',
+            suggestedVariants: [
+              '联想启天M550 12代 i5 商用办公台式机（16G+512G SSD · 三年质保）',
+              '联想启天 M550 商用办公台式机 i5-12400 16G+512G',
+              '联想 (Lenovo) 启天 M550 12 代 i5 商用台式电脑 16G+512G SSD'
+            ]
+          },
+          {
+            id: 'ISS-1-2',
+            field: '商品详情',
+            fieldKey: 'description',
+            level: 'warn',
+            problem: '详情文案包含"旗舰级体验""性能领先同级""最好的办公选择"等夸大性表述。',
+            rule: 'AI 语义校验 · 极限用语识别',
+            originalValue: '联想启天M550 商用台式机，搭载12代i5处理器，带来旗舰级体验，性能领先同级，轻松应对所有办公场景，是最好的办公选择。',
+            suggestedVariants: [
+              '联想启天 M550 商用台式机，搭载英特尔 12 代 i5-12400 处理器，16GB 内存 + 512GB SSD，满足日常办公、多任务处理与文档协同需求，适用于政企、教育、金融等办公场景。',
+              '联想启天 M550 商用台式机采用 12 代 i5-12400 处理器，标配 16GB 内存与 512GB SSD，整机三年质保，适配主流办公软件及远程协同场景。',
+              '本机采用 i5-12400 六核处理器，16GB DDR4 内存，512GB SSD 固态硬盘，支持双屏输出，可满足政企、财务、设计初稿等多种办公需求。'
+            ]
+          },
+          {
+            id: 'ISS-1-3',
+            field: '商品参数 · 显卡接口',
+            fieldKey: 'param.显卡接口',
+            level: 'warn',
+            problem: '类目模板要求填写"显卡接口"字段，当前为空。',
+            rule: '类目必填项 · 商用台式机模板',
+            originalValue: '未填写',
+            suggestedVariants: [
+              'HDMI × 1 + VGA × 1 + DisplayPort × 1',
+              'HDMI × 1 + VGA × 1（支持双屏输出）',
+              'HDMI × 2 + DisplayPort × 1'
+            ]
+          },
+          {
+            id: 'ISS-1-4',
+            field: '商品参数 · 电源功率',
+            fieldKey: 'param.电源功率',
+            level: 'warn',
+            problem: '类目模板要求填写"电源功率"字段，当前为空。',
+            rule: '类目必填项 · 商用台式机模板',
+            originalValue: '未填写',
+            suggestedVariants: [
+              '260W 主动式电源（80PLUS 铜牌认证）',
+              '300W 主动式电源（80PLUS 白牌认证）',
+              '260W 主动式电源'
+            ]
+          }
+        ],
         checks: [
           { title: '基础信息完整性', desc: '类目、标题、详情、图片齐全，可进入下一步校验。', runtimeStatus: 'pass' },
-          { title: 'AI语义校验', desc: '详情中存在“旗舰级体验”表述，存在隐性夸大宣传风险。', runtimeStatus: 'warn' },
+          { title: 'AI语义校验', desc: '详情中存在"旗舰级体验"表述，存在隐性夸大宣传风险。', runtimeStatus: 'warn' },
           { title: '参数智能校验', desc: '参数表缺少显卡接口和电源功率字段。', runtimeStatus: 'warn' },
           { title: '图片一致性校验', desc: '主图与标题型号一致，未发现图片冲突。', runtimeStatus: 'pass' }
         ],
@@ -708,7 +1331,7 @@
         finalStage: '待整改',
         finalSummary: '发现 2 项需整改问题，建议修改详情文案并补充参数字段后重新提交审核。',
         finalIssues: [
-          'AI语义校验：命中“旗舰级体验”，存在隐性夸大宣传风险。',
+          'AI语义校验：命中"旗舰级体验"，存在隐性夸大宣传风险。',
           '参数智能校验：缺少显卡接口与电源功率字段。'
         ]
       },
@@ -723,6 +1346,81 @@
         result: '',
         summary: '',
         issues: [],
+        originalInfo: {
+          title: '华三 24 口千兆交换机 企业专用款 S1850-48P',
+          category: '网络设备 / 以太网交换机',
+          brand: '新华三 (H3C)',
+          model: 'S1850-24P（标题标注：S1850-48P）',
+          price: '1,299.00 元 / 台',
+          images: 3,
+          description: '华三 S1850 系列 24 口千兆交换机，即插即用，适合企业办公场景。',
+          parameters: [
+            { name: '端口数', value: '24 口' },
+            { name: '速率', value: '千兆' },
+            { name: '交换容量', value: '56 Gbps' },
+            { name: '质保期限', value: '未填写' },
+            { name: '售后方式', value: '未填写' },
+            { name: '主图识别型号', value: 'S1850-48P' }
+          ]
+        },
+        aiIssuesTemplate: [
+          {
+            id: 'ISS-2-1',
+            field: '商品标题',
+            fieldKey: 'title',
+            level: 'fail',
+            problem: '标题标注型号 "S1850-48P" 与实际商品型号 "S1850-24P" 不一致，属于关键字段冲突。',
+            rule: '商品一致性校验 · 型号匹配规则',
+            originalValue: '华三 24 口千兆交换机 企业专用款 S1850-48P',
+            suggestedVariants: [
+              '新华三 H3C S1850-24P 24 口千兆企业级以太网交换机',
+              'H3C 华三 S1850-24P 24 口千兆非网管交换机（企业办公）',
+              '新华三 S1850-24P 千兆 24 口交换机 即插即用'
+            ]
+          },
+          {
+            id: 'ISS-2-2',
+            field: '商品参数 · 质保期限',
+            fieldKey: 'param.质保期限',
+            level: 'fail',
+            problem: '网络设备类目必填项：缺少"质保期限"字段，系统已拦截。',
+            rule: '类目必填项 · 网络设备模板',
+            originalValue: '未填写',
+            suggestedVariants: [
+              '3 年整机免费质保（7 × 24 小时技术响应）',
+              '5 年整机免费质保',
+              '3 年整机质保（国内联保）'
+            ]
+          },
+          {
+            id: 'ISS-2-3',
+            field: '商品参数 · 售后方式',
+            fieldKey: 'param.售后方式',
+            level: 'fail',
+            problem: '网络设备类目必填项：缺少"售后方式"字段，系统已拦截。',
+            rule: '类目必填项 · 网络设备模板',
+            originalValue: '未填写',
+            suggestedVariants: [
+              '全国联保 · 上门安装 · 故障 48 小时内返修',
+              '全国联保 · 远程技术支持 · 7×24 小时响应',
+              '官方售后 · 本地网点维修 · 24 小时响应'
+            ]
+          },
+          {
+            id: 'ISS-2-4',
+            field: '主图一致性',
+            fieldKey: 'image',
+            level: 'fail',
+            problem: '主图识别到型号 "S1850-48P"，与商品型号 "S1850-24P" 不一致，存在错图风险。',
+            rule: '图片一致性校验 · 主图型号比对',
+            originalValue: '当前主图识别型号：S1850-48P',
+            suggestedVariants: [
+              '替换为 S1850-24P 正面产品图（建议使用官方白底渲染图）',
+              '重新上传 S1850-24P 24 口面板正面图',
+              '替换为 S1850-24P 官方产品图（分辨率 ≥ 800×800）'
+            ]
+          }
+        ],
         checks: [
           { title: '基础信息完整性', desc: '缺少质保期限与售后方式说明。', runtimeStatus: 'block' },
           { title: 'AI语义校验', desc: '宣传语较克制，未命中明显语义风险。', runtimeStatus: 'pass' },
@@ -748,6 +1446,23 @@
         result: '',
         summary: '',
         issues: [],
+        originalInfo: {
+          title: '得力 A4 复印纸 70g 500 张 × 8 包 / 箱',
+          category: '办公耗材 / 复印纸',
+          brand: '得力 (deli)',
+          model: 'A4-70g-8 包装',
+          price: '158.00 元 / 箱',
+          images: 5,
+          description: '得力 A4 复印纸，70g 轻型纸，500 张/包，8 包/箱，白度适中，适合日常办公打印、复印。',
+          parameters: [
+            { name: '规格', value: 'A4 / 210×297mm' },
+            { name: '克重', value: '70g/m²' },
+            { name: '包装', value: '500 张/包' },
+            { name: '整箱数量', value: '8 包/箱' },
+            { name: '白度', value: '100% CIE' }
+          ]
+        },
+        aiIssuesTemplate: [],
         checks: [
           { title: '基础信息完整性', desc: '类目、标题、详情、图片和关键参数齐全。', runtimeStatus: 'pass' },
           { title: 'AI语义校验', desc: '标题和详情表述客观，无夸大宣传风险。', runtimeStatus: 'pass' },
@@ -787,13 +1502,39 @@
         summary: '',
         result: '',
         stage: '待提交',
+        selectedForReview: false,
         logs: [],
+        originalInfo: cloneOriginalInfo(item.originalInfo),
+        baselineInfo: cloneOriginalInfo(item.originalInfo),
+        aiIssues: [],
+        aiIssuesTemplate: (item.aiIssuesTemplate || []).map(issue => ({ ...issue, suggestedVariants: [...issue.suggestedVariants] })),
+        regenerateCount: 0,
         checks: item.checks.map(check => ({
           title: check.title,
           desc: check.desc,
           finalStatus: check.runtimeStatus,
           runtimeStatus: 'pending'
         }))
+      }));
+    }
+
+    function cloneOriginalInfo(info) {
+      if (!info) return null;
+      return {
+        ...info,
+        parameters: (info.parameters || []).map(param => ({ ...param }))
+      };
+    }
+
+    function buildAiIssuesForProduct(product) {
+      if (!product.aiIssuesTemplate || !product.aiIssuesTemplate.length) return [];
+      return product.aiIssuesTemplate.map(issue => ({
+        ...issue,
+        suggestedVariants: [...issue.suggestedVariants],
+        variantIndex: 0,
+        suggestedValue: issue.suggestedVariants[0],
+        adopted: true,
+        applied: false
       }));
     }
 
@@ -805,7 +1546,7 @@
         summary.textContent = '当前暂无待提交商品，请先批量上传。';
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="empty-state">
+            <td colspan="8" class="empty-state">
               <div class="icon-wrap"><i class="fas fa-inbox"></i></div>
               <div class="text-base font-semibold text-slate-700 mb-2">暂无待提交商品</div>
               <div class="text-sm">点击上方“批量上传商品”，系统将按模板生成一批待审核商品。</div>
@@ -828,8 +1569,409 @@
           <td class="px-5 py-4">${item.parameterScore}%</td>
           <td class="px-5 py-4">${getStageBadge(item.stage)}</td>
           <td class="px-5 py-4">${getResultBadge(item.result)}</td>
+          <td class="px-5 py-4">${getOperationCell(item)}</td>
         </tr>
       `).join('');
+    }
+
+    function getOperationCell(item) {
+      if (item.result === 'pass') {
+        const checkedAttr = item.selectedForReview ? 'checked' : '';
+        return `
+          <label class="table-op-check">
+            <input type="checkbox" ${checkedAttr} onchange="toggleReviewSelection('${item.id}', this.checked)" />
+            <span>本次审核</span>
+          </label>
+        `;
+      }
+      if (item.result === 'warn' || item.result === 'fail') {
+        return `
+          <button class="table-op-btn" type="button" onclick="openAiAssistant('${item.id}')">
+            <i class="fas fa-robot"></i>
+            <span>AI合规助手</span>
+          </button>
+        `;
+      }
+      return `<span class="text-slate-300">--</span>`;
+    }
+
+    function toggleReviewSelection(id, checked) {
+      const product = pendingProducts.find(item => item.id === id);
+      if (!product) return;
+      product.selectedForReview = checked;
+    }
+
+    function getDialogIcon(type) {
+      if (type === 'success') return { cls: 'success', icon: 'fa-circle-check' };
+      if (type === 'warn') return { cls: 'warn', icon: 'fa-triangle-exclamation' };
+      if (type === 'error') return { cls: 'error', icon: 'fa-circle-xmark' };
+      return { cls: 'info', icon: 'fa-circle-info' };
+    }
+
+    function showDialog(options) {
+      const {
+        title = '提示',
+        message = '',
+        type = 'info',
+        confirmText = '确定',
+        cancelText = '',
+        onConfirm = null,
+        onCancel = null,
+        allowHtml = false
+      } = options || {};
+
+      const overlay = document.getElementById('globalDialogOverlay');
+      const iconEl = document.getElementById('globalDialogIcon');
+      const titleEl = document.getElementById('globalDialogTitle');
+      const bodyEl = document.getElementById('globalDialogBody');
+      const confirmBtn = document.getElementById('globalDialogConfirmBtn');
+      const cancelBtn = document.getElementById('globalDialogCancelBtn');
+      const iconConfig = getDialogIcon(type);
+
+      iconEl.className = `dialog-icon ${iconConfig.cls}`;
+      iconEl.innerHTML = `<i class="fas ${iconConfig.icon}"></i>`;
+      titleEl.textContent = title;
+      if (allowHtml) {
+        bodyEl.innerHTML = message;
+      } else {
+        bodyEl.textContent = message;
+      }
+      confirmBtn.textContent = confirmText || '确定';
+      if (cancelText) {
+        cancelBtn.style.display = 'inline-flex';
+        cancelBtn.textContent = cancelText;
+      } else {
+        cancelBtn.style.display = 'none';
+      }
+
+      globalDialogOnConfirm = onConfirm;
+      globalDialogOnCancel = onCancel;
+      overlay.classList.add('show');
+    }
+
+    function closeDialog(action) {
+      const overlay = document.getElementById('globalDialogOverlay');
+      overlay.classList.remove('show');
+
+      const onConfirm = globalDialogOnConfirm;
+      const onCancel = globalDialogOnCancel;
+      globalDialogOnConfirm = null;
+      globalDialogOnCancel = null;
+
+      if (action === 'confirm' && typeof onConfirm === 'function') {
+        onConfirm();
+      }
+      if (action === 'cancel' && typeof onCancel === 'function') {
+        onCancel();
+      }
+    }
+
+    let activeAssistantProductId = null;
+    let assistantRegenerating = false;
+
+    function openAiAssistant(id) {
+      const product = pendingProducts.find(item => item.id === id);
+      if (!product) return;
+
+      if (!product.aiIssues || !product.aiIssues.length) {
+        showDialog({
+          title: 'AI 合规助手',
+          message: '当前商品暂未识别到不合规项，或尚未完成 AI 合规校验，请先点击"AI合规校验"。',
+          type: 'info',
+          confirmText: '知道了'
+        });
+        return;
+      }
+
+      activeAssistantProductId = id;
+      assistantRegenerating = false;
+      document.querySelector('#assistantOverlay .assistant-panel').classList.remove('regenerating');
+      renderAiAssistant();
+      document.getElementById('assistantOverlay').classList.add('show');
+    }
+
+    function closeAiAssistant() {
+      document.getElementById('assistantOverlay').classList.remove('show');
+      activeAssistantProductId = null;
+      assistantRegenerating = false;
+    }
+
+    function getAssistantProduct() {
+      return pendingProducts.find(item => item.id === activeAssistantProductId);
+    }
+
+    function renderAiAssistant() {
+      const product = getAssistantProduct();
+      if (!product) return;
+
+      const level = product.result === 'fail' ? 'fail' : product.result === 'warn' ? 'warn' : 'pass';
+      const levelBadge = document.getElementById('assistantLevelBadge');
+      levelBadge.className = `assistant-badge ${level}`;
+      levelBadge.textContent = level === 'fail' ? '校验不通过' : level === 'warn' ? '待整改' : '已通过';
+
+      document.getElementById('assistantSubText').textContent = `${product.name} · ${product.id} · 系统已识别 ${product.aiIssues.length} 项不合规内容，并为每一项生成改写建议。`;
+
+      renderAssistantProductInfo(product);
+      renderAssistantIssues(product);
+      updateAssistantFootStatus();
+    }
+
+    function renderAssistantProductInfo(product) {
+      const info = product.originalInfo || {};
+      const grid = document.getElementById('assistantInfoGrid');
+      const baseItems = [
+        { label: '商品名称', value: product.name },
+        { label: '商品编号', value: product.id },
+        { label: '类目', value: info.category || '--' },
+        { label: '品牌', value: info.brand || '--' },
+        { label: '型号', value: info.model || '--' },
+        { label: '售价', value: info.price || '--' }
+      ];
+      grid.innerHTML = baseItems.map(item => `
+        <div class="info-item">
+          <div class="info-item-label">${item.label}</div>
+          <div class="info-item-value">${item.value}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('assistantInfoTitle').textContent = info.title || '--';
+      document.getElementById('assistantInfoDesc').textContent = info.description || '--';
+
+      const paramsBody = document.getElementById('assistantInfoParams');
+      paramsBody.innerHTML = (info.parameters || []).map(param => {
+        const missing = !param.value || param.value === '未填写';
+        const updated = param.updated;
+        const cls = updated ? 'updated' : missing ? 'missing' : '';
+        const display = missing ? '未填写' : param.value;
+        const suffix = updated ? ' <i class="fa-solid fa-wand-magic-sparkles" style="margin-left:4px; color:#16a34a;"></i>' : '';
+        return `
+          <tr>
+            <td style="color:#64748b;">${param.name}</td>
+            <td class="${cls}">${display}${suffix}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const count = info.images || 0;
+      document.getElementById('assistantInfoImageCount').textContent = count;
+      const imagesWrap = document.getElementById('assistantInfoImages');
+      if (!count) {
+        imagesWrap.innerHTML = '<div class="info-block" style="grid-column:1/-1;">暂无图片</div>';
+      } else {
+        imagesWrap.innerHTML = Array.from({ length: count }).map((_, i) => `
+          <div class="image-placeholder" title="图${i + 1}"><i class="fa-regular fa-image"></i></div>
+        `).join('');
+      }
+    }
+
+    function renderAssistantIssues(product) {
+      const list = document.getElementById('assistantIssueList');
+      const countBadge = document.getElementById('assistantIssueCountBadge');
+
+      if (!product.aiIssues.length) {
+        countBadge.textContent = '0 项';
+        countBadge.className = 'assistant-badge pass';
+        list.innerHTML = `
+          <div class="issue-empty">
+            <div class="big-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div style="font-size:14px; color:#0f172a; font-weight:700; margin-bottom:6px;">未发现不合规项</div>
+            <div>当前商品信息全部符合平台规则，可直接提交审核。</div>
+          </div>
+        `;
+        return;
+      }
+
+      const failCount = product.aiIssues.filter(i => i.level === 'fail').length;
+      countBadge.className = `assistant-badge ${failCount ? 'fail' : 'warn'}`;
+      countBadge.textContent = `${product.aiIssues.length} 项`;
+
+      list.innerHTML = product.aiIssues.map((issue, index) => `
+        <div class="issue-card level-${issue.level}">
+          <div class="issue-head">
+            <div class="issue-head-left">
+              <span class="issue-level ${issue.level}">
+                <i class="fa-solid ${issue.level === 'fail' ? 'fa-circle-xmark' : 'fa-triangle-exclamation'}"></i>
+                ${issue.level === 'fail' ? '阻断' : '待整改'}
+              </span>
+              <span class="issue-field">${issue.field}</span>
+            </div>
+            <label class="issue-adopt">
+              <input type="checkbox" ${issue.adopted ? 'checked' : ''}
+                onchange="toggleIssueAdopt('${issue.id}', this.checked)" />
+              <span>采纳此建议</span>
+            </label>
+          </div>
+          <div class="issue-problem">${index + 1}. ${issue.problem}</div>
+          <div class="issue-rule"><i class="fa-solid fa-gavel"></i>${issue.rule}</div>
+          <div class="diff-box">
+            <div class="diff-col original">
+              <div class="diff-col-label"><i class="fa-solid fa-circle-xmark"></i>原内容</div>
+              <div>${escapeHtml(issue.originalValue)}</div>
+            </div>
+            <div class="diff-col suggested">
+              <div class="diff-col-label"><i class="fa-solid fa-wand-magic-sparkles"></i>AI 建议内容</div>
+              <div>${escapeHtml(issue.suggestedValue)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toggleIssueAdopt(issueId, checked) {
+      const product = getAssistantProduct();
+      if (!product) return;
+      const issue = product.aiIssues.find(i => i.id === issueId);
+      if (!issue) return;
+      issue.adopted = checked;
+      updateAssistantFootStatus();
+    }
+
+    function updateAssistantFootStatus() {
+      const product = getAssistantProduct();
+      if (!product) return;
+      const total = product.aiIssues.length;
+      const adopted = product.aiIssues.filter(i => i.adopted).length;
+      document.getElementById('assistantAdoptCount').textContent = adopted;
+      document.getElementById('assistantTotalCount').textContent = total;
+      const applyBtn = document.getElementById('assistantApplyBtn');
+      applyBtn.disabled = total === 0 || adopted === 0;
+    }
+
+    function regenerateAiSuggestion() {
+      const product = getAssistantProduct();
+      if (!product || !product.aiIssues.length || assistantRegenerating) return;
+
+      assistantRegenerating = true;
+      product.regenerateCount = (product.regenerateCount || 0) + 1;
+      const panel = document.querySelector('#assistantOverlay .assistant-panel');
+      panel.classList.add('regenerating');
+
+      const regenBtn = document.getElementById('assistantRegenerateBtn');
+      regenBtn.disabled = true;
+      document.getElementById('assistantRegenerateHint').textContent = 'AI 正在重新生成建议文案，请稍候...';
+
+      window.setTimeout(() => {
+        product.aiIssues.forEach(issue => {
+          if (!issue.suggestedVariants || issue.suggestedVariants.length === 0) return;
+          issue.variantIndex = ((issue.variantIndex ?? 0) + 1) % issue.suggestedVariants.length;
+          issue.suggestedValue = issue.suggestedVariants[issue.variantIndex];
+        });
+
+        assistantRegenerating = false;
+        panel.classList.remove('regenerating');
+        regenBtn.disabled = false;
+        document.getElementById('assistantRegenerateHint').textContent = `已生成第 ${product.regenerateCount + 1} 版建议，可继续调整或执行修改。`;
+        renderAssistantIssues(product);
+      }, 1100);
+    }
+
+    function applyAiFix() {
+      const product = getAssistantProduct();
+      if (!product) return;
+      const adoptedIssues = product.aiIssues.filter(i => i.adopted);
+      if (!adoptedIssues.length) {
+        showDialog({
+          title: '提示',
+          message: '请至少勾选 1 项 AI 建议，再执行修改。',
+          type: 'warn',
+          confirmText: '确定'
+        });
+        return;
+      }
+
+      adoptedIssues.forEach(issue => {
+        applyIssueToProduct(product, issue);
+        issue.applied = true;
+      });
+
+      const remaining = product.aiIssues.filter(i => !i.applied);
+      product.aiIssues = remaining;
+      product.issues = remaining.map(i => `${i.field}：${i.problem}`);
+
+      if (!remaining.length) {
+        product.result = 'pass';
+        product.stage = '校验通过';
+        product.summary = '已根据 AI 建议完成整改，全部不合规项已修正，商品可进入上架队列。';
+        product.selectedForReview = true;
+        product.checks.forEach(check => {
+          if (check.runtimeStatus === 'warn' || check.runtimeStatus === 'block') {
+            check.runtimeStatus = 'pass';
+          }
+        });
+      } else {
+        const remainingFail = remaining.some(i => i.level === 'fail');
+        product.result = remainingFail ? 'fail' : 'warn';
+        product.stage = remainingFail ? '校验不通过' : '待整改';
+        product.summary = `已采纳 ${adoptedIssues.length} 条 AI 建议，仍有 ${remaining.length} 项待处理，建议继续整改后再提交审核。`;
+      }
+
+      renderPendingTable();
+
+      closeAiAssistant();
+
+      const extra = remaining.length
+        ? `仍有 ${remaining.length} 项未处理，建议再次打开 AI 合规助手继续整改。`
+        : '该商品已自动标记为"校验通过"，并已勾选进入本次审核。';
+
+      showDialog({
+        title: '修改已执行',
+        message: `已为 ${product.name} 应用 ${adoptedIssues.length} 条 AI 建议。\n${extra}`,
+        type: 'success',
+        confirmText: '我知道了'
+      });
+    }
+
+    function applyIssueToProduct(product, issue) {
+      const info = product.originalInfo;
+      if (!info) return;
+
+      if (issue.fieldKey === 'title') {
+        info.title = issue.suggestedValue;
+        product.title = issue.suggestedValue;
+      } else if (issue.fieldKey === 'description') {
+        info.description = issue.suggestedValue;
+      } else if (issue.fieldKey === 'image') {
+        const note = info.parameters.find(p => p.name === '主图识别型号');
+        if (note) {
+          note.value = issue.suggestedValue;
+          note.updated = true;
+        }
+      } else if (issue.fieldKey && issue.fieldKey.startsWith('param.')) {
+        const paramName = issue.fieldKey.slice('param.'.length);
+        const target = info.parameters.find(p => p.name === paramName);
+        if (target) {
+          target.value = issue.suggestedValue;
+          target.updated = true;
+        } else {
+          info.parameters.push({ name: paramName, value: issue.suggestedValue, updated: true });
+        }
+      }
+    }
+
+    function cancelAiFix() {
+      const product = getAssistantProduct();
+      const hasPending = product && product.aiIssues.some(i => i.adopted);
+      if (!hasPending) {
+        closeAiAssistant();
+        return;
+      }
+      showDialog({
+        title: '取消修改',
+        message: '当前勾选的 AI 建议尚未执行，确定要取消并关闭 AI 合规助手吗？',
+        type: 'warn',
+        confirmText: '确定取消',
+        cancelText: '继续编辑',
+        onConfirm: () => closeAiAssistant()
+      });
     }
 
     function renderResultSection() {
@@ -1092,7 +2234,12 @@
 
     function submitAudit() {
       if (!pendingProducts.length) {
-        alert('请先点击“批量上传商品”，生成待提交商品列表。');
+        showDialog({
+          title: '提示',
+          message: '请先点击“批量上传商品”，生成待提交商品列表。',
+          type: 'warn',
+          confirmText: '确定'
+        });
         return;
       }
       if (isAuditRunning) return;
@@ -1107,7 +2254,11 @@
         item.result = '';
         item.summary = '';
         item.issues = [];
+        item.aiIssues = [];
+        item.selectedForReview = false;
         item.logs = [];
+        item.regenerateCount = 0;
+        item.originalInfo = cloneOriginalInfo(item.baselineInfo);
         item.checks.forEach(check => {
           check.runtimeStatus = 'pending';
         });
@@ -1168,6 +2319,8 @@
           product.stage = product.finalStage;
           product.summary = product.finalSummary;
           product.issues = [...product.finalIssues];
+          product.aiIssues = buildAiIssuesForProduct(product);
+          product.selectedForReview = product.finalResult === 'pass';
           renderPendingTable();
           renderQueue(productIndex);
           if (selectedQueueIndex === productIndex) {
@@ -1190,7 +2343,12 @@
 
     function submitReview() {
       if (!pendingProducts.length) {
-        alert('请先点击“批量上传商品”，生成待提交商品列表。');
+        showDialog({
+          title: '提示',
+          message: '请先点击“批量上传商品”，生成待提交商品列表。',
+          type: 'warn',
+          confirmText: '确定'
+        });
         return;
       }
 
@@ -1198,9 +2356,25 @@
       const warnCount = pendingProducts.filter(item => item.result === 'warn').length;
       const failCount = pendingProducts.filter(item => item.result === 'fail').length;
       const checkedCount = passCount + warnCount + failCount;
+      const selectedPassCount = pendingProducts.filter(item => item.result === 'pass' && item.selectedForReview).length;
 
       if (!checkedCount) {
-        alert('请先完成 AI 合规校验，再提交审核。');
+        showDialog({
+          title: '提示',
+          message: '请先完成 AI 合规校验，再提交审核。',
+          type: 'warn',
+          confirmText: '确定'
+        });
+        return;
+      }
+
+      if (!selectedPassCount) {
+        showDialog({
+          title: '提示',
+          message: '请至少勾选 1 件“通过校验”的商品后再提交审核。',
+          type: 'warn',
+          confirmText: '确定'
+        });
         return;
       }
 
@@ -1209,9 +2383,21 @@
         message += `\n另有 ${failCount} 件商品未通过校验，提交后建议优先处理异常项。`;
       }
 
-      if (confirm(message)) {
-        alert(`已提交审核申请。\n通过校验：${passCount} 件\n建议整改：${warnCount} 件${failCount > 0 ? `\n未通过：${failCount} 件` : ''}`);
-      }
+      showDialog({
+        title: '提交审核确认',
+        message,
+        type: 'info',
+        confirmText: '确认提交',
+        cancelText: '取消',
+        onConfirm: () => {
+          showDialog({
+            title: '提交成功',
+            message: `已提交审核申请。\n本次提交通过校验商品：${selectedPassCount} 件\n建议整改：${warnCount} 件${failCount > 0 ? `\n未通过：${failCount} 件` : ''}`,
+            type: 'success',
+            confirmText: '完成'
+          });
+        }
+      });
     }
 
     function initSourceBanner() {
@@ -1232,6 +2418,18 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('globalDialogConfirmBtn').addEventListener('click', () => closeDialog('confirm'));
+      document.getElementById('globalDialogCancelBtn').addEventListener('click', () => closeDialog('cancel'));
+      document.getElementById('globalDialogOverlay').addEventListener('click', event => {
+        if (event.target.id === 'globalDialogOverlay') {
+          closeDialog('cancel');
+        }
+      });
+      document.getElementById('assistantOverlay').addEventListener('click', event => {
+        if (event.target.id === 'assistantOverlay') {
+          cancelAiFix();
+        }
+      });
       initSourceBanner();
       renderPendingTable();
     });

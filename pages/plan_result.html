@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购方案生成 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #16a34a;
+      --primary-dark: #15803d;
+      --primary-light: #f0fdf4;
+      --primary-border: #bbf7d0;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border: #e2e8f0;
+      --bg: #f5f7fb;
+      --warn: #d97706;
+      --warn-bg: #fffbeb;
+      --warn-border: #fde68a;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding-bottom: 88px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── Topbar ─── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      box-shadow: 0 2px 16px rgba(22,163,74,0.22);
+    }
+    .topbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 20px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 17px;
+    }
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.24);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .top-chip {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.14);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .top-link {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* ─── Tab bar ─── */
+    .tab-bar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      position: sticky;
+      top: 64px;
+      z-index: 80;
+      box-shadow: 0 2px 8px rgba(15,23,42,0.04);
+    }
+    .tab-item {
+      height: 54px;
+      padding: 0 26px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-sub);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+    .tab-item:hover { color: var(--text-main); }
+    .tab-item.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ─── Layout ─── */
+    .page-wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 20px 24px;
+    }
+
+    /* ─── Card ─── */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.05);
+    }
+
+    /* ─── Summary card ─── */
+    .summary-card {
+      margin-top: 20px;
+      padding: 22px 26px;
+      background: linear-gradient(135deg, var(--primary-light) 0%, #fff 100%);
+      border-color: var(--primary-border);
+    }
+    .summary-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .summary-left { display: flex; gap: 14px; align-items: flex-start; }
+    .summary-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 10px 20px rgba(22,163,74,0.2);
+      flex: none;
+    }
+    .summary-title { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+    .summary-meta {
+      margin-top: 8px;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: var(--text-sub);
+      font-size: 13px;
+    }
+    .summary-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .status-badge {
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+    .summary-divider { margin: 16px 0; border: none; border-top: 1px solid rgba(187,247,208,0.7); }
+    .ai-row { display: flex; gap: 12px; align-items: flex-start; }
+    .ai-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex: none;
+    }
+    .ai-text { font-size: 14px; line-height: 1.8; color: #166534; }
+    .summary-body {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: 24px;
+      align-items: center;
+    }
+    .summary-stats {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .summary-stat {
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(187,247,208,0.9);
+    }
+    .stat-label { font-size: 12px; color: var(--text-sub); }
+    .stat-value { margin-top: 4px; font-size: 22px; font-weight: 800; line-height: 1; color: var(--primary); }
+
+    .req-overview {
+      border-radius: 16px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(187,247,208,0.88);
+      padding: 16px 18px;
+    }
+    .req-overview-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+    }
+    .req-overview-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(187,247,208,0.5);
+      font-size: 13px;
+    }
+    .req-overview-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .req-overview-label {
+      color: var(--text-sub);
+      white-space: nowrap;
+      flex: none;
+      min-width: 72px;
+    }
+    .req-overview-value { font-weight: 700; color: var(--text-main); line-height: 1.6; }
+
+    @media (max-width: 960px) {
+      .summary-body { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Section ─── */
+    .section { margin-top: 18px; }
+    .section-head {
+      padding: 18px 20px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .section-title { margin: 0; font-size: 17px; font-weight: 800; }
+    .section-subtitle { margin-top: 4px; font-size: 13px; color: var(--text-sub); }
+
+    /* ─── Table ─── */
+    .table-outer { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+    th {
+      padding: 11px 14px;
+      text-align: left;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 13px 14px;
+      text-align: left;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+      vertical-align: top;
+    }
+    tbody tr:hover { background: #fafcff; }
+    .req-name { font-weight: 800; }
+    .req-spec { margin-top: 4px; color: var(--text-sub); font-size: 12px; }
+    .match-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(22,163,74,0.1);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .match-none {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--warn-bg);
+      color: var(--warn);
+      border: 1px solid var(--warn-border);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .view-file-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(22,163,74,0.3);
+      background: rgba(22,163,74,0.07);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.18s;
+      margin-left: 12px;
+      vertical-align: middle;
+    }
+    .view-file-link:hover { background: rgba(22,163,74,0.14); border-color: var(--primary); }
+    .product-cell { display: flex; gap: 12px; align-items: flex-start; }
+    .product-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+      flex: none;
+      background: #f8fafc;
+      display: block;
+    }
+    .product-info { min-width: 0; }
+    .product-name { font-weight: 700; }
+    .product-supplier { margin-top: 3px; color: var(--text-sub); font-size: 12px; }
+    .price { font-size: 16px; font-weight: 800; color: var(--danger); white-space: nowrap; }
+    .unmatched-cell { color: #9ca3af; }
+    .qty-input {
+      width: 74px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+    }
+    .qty-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+    .subtotal { font-weight: 800; white-space: nowrap; }
+    .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .action-link:hover { border-color: rgba(22,163,74,0.35); color: var(--primary); }
+    input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+
+    /* ─── Scene management ─── */
+    .scene-wrap { margin-top: 20px; }
+    .scene-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 20px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px 18px 0 0;
+      border-bottom: none;
+    }
+    .scene-tag {
+      height: 36px;
+      padding: 0 12px 0 16px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .scene-tag:hover { border-color: rgba(22,163,74,0.3); color: var(--primary); }
+    .scene-tag.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .scene-tag-del {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(15,23,42,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+      flex: none;
+      transition: background 0.2s;
+    }
+    .scene-tag.active .scene-tag-del { background: rgba(22,163,74,0.18); color: var(--primary); }
+    .add-scene-btn {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px dashed #cbd5e1;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .add-scene-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+    /* ─── Scene body ─── */
+    .scene-body {
+      padding: 20px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 0 0 18px 18px;
+    }
+    .scene-body-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .scene-body-title { font-size: 16px; font-weight: 800; margin: 0 0 4px; }
+    .scene-body-sub { font-size: 13px; color: var(--text-sub); }
+
+    /* ─── Config table ─── */
+    .config-outer { overflow: auto; }
+    .config-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .config-table th {
+      padding: 10px 12px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .config-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    .config-input {
+      width: 100%;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0 10px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+    .config-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
+    .config-select {
+      width: 100%;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0 8px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .config-select:focus { border-color: var(--primary); }
+    .del-row-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid #fee2e2;
+      background: #fef2f2;
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.18s;
+    }
+    .del-row-btn:hover { background: var(--danger); color: #fff; }
+    .add-row-btn {
+      margin-top: 12px;
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px dashed #cbd5e1;
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .add-row-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .gen-rec-btn {
+      margin-top: 16px;
+      height: 46px;
+      padding: 0 28px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 12px 24px rgba(22,163,74,0.2);
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .gen-rec-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 28px rgba(22,163,74,0.25); }
+    .gen-rec-btn.loading { opacity: 0.7; pointer-events: none; }
+
+    /* ─── Empty state ─── */
+    .empty-state {
+      padding: 40px;
+      text-align: center;
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+
+    /* ─── Bottom bar ─── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -4px 20px rgba(15,23,42,0.08);
+    }
+    .bottom-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 20px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .bottom-left { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .bottom-count { font-size: 14px; color: var(--text-sub); }
+    .bottom-count strong { font-size: 18px; color: var(--text-main); font-weight: 800; }
+    .bottom-total { font-size: 14px; color: var(--text-sub); }
+    .bottom-total strong { font-size: 22px; color: var(--danger); font-weight: 800; }
+    .submit-btn {
+      height: 50px;
+      padding: 0 36px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 12px 24px rgba(22,163,74,0.22);
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .submit-btn:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+    .submit-btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 16px 28px rgba(22,163,74,0.28); }
+
+    /* ─── Drawer ─── */
+    .drawer-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.4);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    .drawer-mask.open { opacity: 1; pointer-events: auto; }
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 480px;
+      max-width: calc(100vw - 20px);
+      background: #fff;
+      box-shadow: -8px 0 48px rgba(15,23,42,0.14);
+      z-index: 210;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-head {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .drawer-title { margin: 0; font-size: 18px; font-weight: 800; }
+    .drawer-subtitle { margin-top: 6px; font-size: 13px; color: var(--text-sub); }
+    .drawer-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-sub);
+      flex: none;
+      transition: all 0.18s;
+    }
+    .drawer-close:hover { background: #f8fafc; }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 18px 20px; }
+    .current-box {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .current-label { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
+    .current-name { font-size: 15px; font-weight: 800; }
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .search-field {
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+    .search-go {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .search-results { display: flex; flex-direction: column; gap: 12px; }
+    .result-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+    .result-card:hover { border-color: rgba(22,163,74,0.3); }
+    .result-name { font-size: 14px; font-weight: 800; }
+    .result-meta { margin-top: 4px; font-size: 12px; color: var(--text-sub); }
+    .result-card { cursor: default; }
+    .result-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+      flex: none;
+      background: #f8fafc;
+    }
+    .result-card-body { display: flex; gap: 12px; align-items: flex-start; }
+    .result-card-info { flex: 1; min-width: 0; }
+    .result-right { text-align: right; flex: none; }
+    .result-price { font-size: 16px; font-weight: 800; color: var(--danger); }
+    .replace-btn {
+      margin-top: 8px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .replace-btn:hover { background: var(--primary); color: #fff; }
+
+    /* ─── Modal ─── */
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.5);
+      backdrop-filter: blur(6px);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-mask.open { display: flex; }
+    .modal-box {
+      width: min(480px, 100%);
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 30px 60px rgba(15,23,42,0.2);
+    }
+    .modal-head {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title { margin: 0; font-size: 18px; font-weight: 800; }
+    .modal-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; }
+    .field-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-sub); margin-bottom: 8px; }
+    .field-input {
+      width: 100%;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+    .field-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+    .modal-footer { padding: 14px 22px 22px; display: flex; justify-content: flex-end; gap: 10px; }
+    .btn-cancel {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-sub);
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-confirm {
+      height: 44px;
+      padding: 0 26px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* ─── Loading pulse ─── */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .loading-pulse { animation: pulse 1s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo"><i class="fa-solid fa-file-lines"></i></div>
+      <span>国采e购 · 采购方案生成</span>
+    </div>
+    <div class="top-actions">
+      <span class="top-chip" id="sourceChip"><i class="fa-solid fa-file-waveform"></i> 演示样例</span>
+      <a class="top-link" href="./home.html"><i class="fa-solid fa-arrow-left"></i> 返回首页</a>
+    </div>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <div class="tab-item active" id="tabFileBtn" onclick="switchTab('file')">
+    <i class="fa-solid fa-file-waveform"></i> 采购文件分析
+  </div>
+  <div class="tab-item" id="tabSceneBtn" onclick="switchTab('scene')">
+    <i class="fa-solid fa-layer-group"></i> 采购场景分析
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div id="tab-file" class="tab-content active"></div>
+  <div id="tab-scene" class="tab-content"></div>
+</div>
+
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <div class="bottom-left">
+      <div class="bottom-count">已选商品 <strong id="bottomCount">0</strong> 件</div>
+      <div class="bottom-total">合计 <strong id="bottomTotal">¥ 0.00</strong></div>
+    </div>
+    <button class="submit-btn" id="submitBtn" disabled onclick="submitOrder()">
+      提交订单 <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Drawer mask -->
+<div class="drawer-mask" id="drawerMask" onclick="closeDrawer()"></div>
+
+<!-- Drawer -->
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div>
+      <h3 class="drawer-title">换品搜索</h3>
+      <div class="drawer-subtitle" id="drawerSubtitle">当前商品：—</div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="drawer-body">
+    <div class="current-box">
+      <div class="current-label">当前推荐商品</div>
+      <div class="current-name" id="drawerCurrent">—</div>
+    </div>
+    <div class="search-row">
+      <input class="search-field" id="drawerSearchInput" placeholder="输入商品名称或规格关键词…" onkeydown="if(event.key==='Enter') performSearch()">
+      <button class="search-go" onclick="performSearch()"><i class="fa-solid fa-magnifying-glass"></i> 搜索</button>
+    </div>
+    <div class="search-results" id="searchResults">
+      <div style="color:var(--text-sub);font-size:14px;padding:16px 0;text-align:center">输入关键词搜索平台商品</div>
+    </div>
+  </div>
+</div>
+
+<!-- New scene modal -->
+<div class="modal-mask" id="sceneMask" onclick="handleMaskClick(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 class="modal-title">新增采购场景</h3>
+      <button class="drawer-close" onclick="closeSceneModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label class="field-label">场景名称 *</label>
+        <input class="field-input" id="sceneNameInput" placeholder="如：季度劳保用品采购、信息化设备更新">
+      </div>
+      <div>
+        <label class="field-label">场景说明（选填）</label>
+        <input class="field-input" id="sceneDescInput" placeholder="简短说明本场景的采购背景或目标">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeSceneModal()">取消</button>
+      <button class="btn-confirm" onclick="confirmAddScene()">确认新增</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ═══════════════ DATA ═══════════════ */
+
+  const FILE_META = {
+    fileName: '采购计划2025.xlsx',
+    generatedAt: '2026-04-16 14:03',
+    totalItems: 12,
+    matchedItems: 9,
+    unmatchedItems: 3,
+  };
+
+  const FILE_REQS = [
+    { id: 1,  name: 'A4复印纸',     reqQty: 100, unit: '箱', spec: 'A4 / 70g / 500张×8包',    matched: true,
+      product: { name: '晨鸣A4复印纸 70g', supplier: '晨鸣办公旗舰店', price: 138,
+        img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=120&h=120&fit=crop' }, qty: 100,
+      alts: [
+        { name: '亚太森博A4复印纸 75g', supplier: '森博纸品专区', spec: 'A4/75g/8包', price: 142, img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=120&h=120&fit=crop&sat=-40' },
+        { name: '得力A4复印纸 70g 标准装', supplier: '得力旗舰店', spec: 'A4/70g/8包', price: 135, img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=120&h=120&fit=crop&hue=40' },
+        { name: '晨鸣A4复印纸 80g 高亮版', supplier: '晨鸣旗舰店', spec: 'A4/80g/8包', price: 158, img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=120&h=120&fit=crop&bri=20' },
+      ]},
+    { id: 2,  name: '中性笔',       reqQty: 200, unit: '盒', spec: '0.5mm / 黑色 / 20支装',   matched: true,
+      product: { name: '晨光黑色中性笔', supplier: '晨光文具旗舰', price: 12,
+        img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=120&h=120&fit=crop' }, qty: 200,
+      alts: [
+        { name: '派通中性笔 0.5mm黑', supplier: '派通官方旗舰', spec: '0.5mm/黑/20支', price: 15, img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=120&h=120&fit=crop&sat=-30' },
+        { name: '百乐中性笔 G2', supplier: '百乐旗舰店', spec: '0.5mm/黑/12支', price: 18, img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=120&h=120&fit=crop&hue=60' },
+        { name: '斑马中性笔 JJ15', supplier: '斑马旗舰店', spec: '0.5mm/黑/20支', price: 16, img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=120&h=120&fit=crop&bri=10' },
+      ]},
+    { id: 3,  name: '打印机硒鼓',   reqQty: 10,  unit: '个', spec: 'HP 85A / 黑色',           matched: true,
+      product: { name: 'HP 85A 原装硒鼓', supplier: 'HP官方旗舰店', price: 285,
+        img: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=120&h=120&fit=crop' }, qty: 10,
+      alts: [
+        { name: '惠普HP原装硒鼓 CF280A', supplier: 'HP官方旗舰店', spec: 'HP 80A/黑色', price: 320, img: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=120&h=120&fit=crop&sat=-20' },
+        { name: '兼容硒鼓 CF285A 高容', supplier: '某打印耗材旗舰', spec: 'HP 85A兼容/高容', price: 89, img: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=120&h=120&fit=crop&hue=20' },
+        { name: '天威 HP85A 兼容硒鼓', supplier: '天威旗舰店', spec: 'HP 85A/黑色', price: 79, img: 'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=120&h=120&fit=crop&bri=15' },
+      ]},
+    { id: 4,  name: '办公椅',       reqQty: 20,  unit: '把', spec: '可升降 / 带腰托',         matched: true,
+      product: { name: '永艺人体工学办公椅', supplier: '永艺政企旗舰', price: 768,
+        img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=120&h=120&fit=crop' }, qty: 20,
+      alts: [
+        { name: '永艺电竞椅 商务版', supplier: '永艺政企旗舰', spec: '可升降/腰托/头枕', price: 899, img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=120&h=120&fit=crop&sat=-30' },
+        { name: '西昊人体工学椅 H1', supplier: '西昊旗舰店', spec: '网布/升降/腰托', price: 980, img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=120&h=120&fit=crop&hue=30' },
+        { name: '得力办公椅 可调节', supplier: '得力旗舰店', spec: '升降/旋转/带滚轮', price: 599, img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=120&h=120&fit=crop&bri=10' },
+      ]},
+    { id: 5,  name: '投影仪',       reqQty: 3,   unit: '台', spec: '1080P / 商务会议',        matched: true,
+      product: { name: '极米商务会议投影仪', supplier: '极米政企旗舰', price: 2999,
+        img: 'https://images.unsplash.com/photo-1536240478700-b869ad10e2cc?w=120&h=120&fit=crop' }, qty: 3,
+      alts: [
+        { name: '极米NEW Z7X 投影仪', supplier: '极米官方旗舰', spec: '1080P/商务/HDMI', price: 3299, img: 'https://images.unsplash.com/photo-1536240478700-b869ad10e2cc?w=120&h=120&fit=crop&sat=-20' },
+        { name: '爱普生CB-X06 投影机', supplier: '爱普生旗舰', spec: '3600流明/XGA', price: 2680, img: 'https://images.unsplash.com/photo-1536240478700-b869ad10e2cc?w=120&h=120&fit=crop&hue=20' },
+        { name: '明基商务投影仪 MS560', supplier: '明基旗舰店', spec: '4000流明/SVGA', price: 2499, img: 'https://images.unsplash.com/photo-1536240478700-b869ad10e2cc?w=120&h=120&fit=crop&bri=20' },
+      ]},
+    { id: 6,  name: '白板',         reqQty: 5,   unit: '块', spec: '120×90cm / 磁性白板',     matched: true,
+      product: { name: '得力磁性白板 120×90', supplier: '得力旗舰店', price: 89,
+        img: 'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=120&h=120&fit=crop' }, qty: 5,
+      alts: [
+        { name: '得力12864 磁性白板', supplier: '得力旗舰店', spec: '120×90cm/铝框', price: 110, img: 'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=120&h=120&fit=crop&sat=-20' },
+        { name: '晨光磁性白板 L号', supplier: '晨光旗舰店', spec: '150×90cm/磁性', price: 128, img: 'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=120&h=120&fit=crop&hue=30' },
+        { name: '卡西欧电子白板', supplier: '卡西欧旗舰', spec: '120×90cm/数字化', price: 399, img: 'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?w=120&h=120&fit=crop&bri=10' },
+      ]},
+    { id: 7,  name: '碎纸机',       reqQty: 2,   unit: '台', spec: '4级保密 / 15张/次',       matched: true,
+      product: { name: '震旦碎纸机 4级保密', supplier: '震旦旗舰店', price: 880,
+        img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=120&h=120&fit=crop' }, qty: 2,
+      alts: [
+        { name: '得力碎纸机 4级 高保密', supplier: '得力旗舰店', spec: '4级/15张/次', price: 760, img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=120&h=120&fit=crop&sat=-20' },
+        { name: '亚速旺碎纸机 P-4', supplier: '亚速旺旗舰', spec: '4级/12张/次', price: 980, img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=120&h=120&fit=crop&hue=20' },
+        { name: '晨光碎纸机 办公款', supplier: '晨光旗舰店', spec: '3级/10张/次', price: 420, img: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=120&h=120&fit=crop&bri=10' },
+      ]},
+    { id: 8,  name: '扫描仪',       reqQty: 5,   unit: '台', spec: 'A4 / 双面高速',           matched: true,
+      product: { name: '爱普生A4高速扫描仪', supplier: '爱普生旗舰店', price: 1680,
+        img: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?w=120&h=120&fit=crop' }, qty: 5,
+      alts: [
+        { name: '爱普生DS-870 高速扫描仪', supplier: '爱普生旗舰', spec: 'A4/双面/高速', price: 1980, img: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?w=120&h=120&fit=crop&sat=-20' },
+        { name: '富士通Fi-7140 扫描仪', supplier: '富士通旗舰', spec: 'A4/双面/高速', price: 3299, img: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?w=120&h=120&fit=crop&hue=20' },
+        { name: '佳能DR-C240 文档扫描仪', supplier: '佳能旗舰店', spec: 'A4/双面/45ppm', price: 2100, img: 'https://images.unsplash.com/photo-1541199249251-f713e6145474?w=120&h=120&fit=crop&bri=10' },
+      ]},
+    { id: 9,  name: '订书机',       reqQty: 30,  unit: '个', spec: '24/6 标准型',             matched: true,
+      product: { name: '得力标准订书机', supplier: '得力旗舰店', price: 15.8,
+        img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=120&h=120&fit=crop' }, qty: 30,
+      alts: [
+        { name: '晨光金属订书机 24/6', supplier: '晨光旗舰', spec: '24/6/金属壳', price: 18.9, img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=120&h=120&fit=crop&sat=-20' },
+        { name: '史泰博订书机 标准款', supplier: '史泰博旗舰', spec: '26/6/标准型', price: 12.5, img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=120&h=120&fit=crop&hue=30' },
+        { name: '美克司订书机 HD-10', supplier: '美克司旗舰', spec: '26/6/自动校准', price: 22, img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=120&h=120&fit=crop&bri=10' },
+      ]},
+    { id: 10, name: '特种防磁文件柜', reqQty: 5,  unit: '个', spec: '防磁/密码锁/钢制',       matched: false, qty: 5,
+      alts: [
+        { name: '得力钢制文件柜 带锁', supplier: '得力旗舰店', spec: '钢制/密码锁/A4', price: 1280, img: 'https://images.unsplash.com/photo-1586208958839-06c17cacdf08?w=120&h=120&fit=crop' },
+        { name: '震旦文件柜 高安全型', supplier: '震旦旗舰店', spec: '钢制/四层/带锁', price: 1580, img: 'https://images.unsplash.com/photo-1586208958839-06c17cacdf08?w=120&h=120&fit=crop&sat=-20' },
+      ]},
+    { id: 11, name: '会议长桌',     reqQty: 2,   unit: '张', spec: '10人位/实木贴皮/3.6m',   matched: false, qty: 2,
+      alts: [
+        { name: '某品牌会议桌 10人位', supplier: '办公家具旗舰', spec: '3.6m/板木/10座', price: 3800, img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=120&h=120&fit=crop' },
+        { name: '雷蒙会议长桌 豪华版', supplier: '雷蒙家具旗舰', spec: '4.0m/实木贴皮/10座', price: 5200, img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=120&h=120&fit=crop&sat=-20' },
+      ]},
+    { id: 12, name: '商务净水器',   reqQty: 10,  unit: '台', spec: '直饮/即热/4级过滤',      matched: false, qty: 10,
+      alts: [
+        { name: '美的商务净水器 直饮款', supplier: '美的官方旗舰', spec: '直饮/即热/5级过滤', price: 1280, img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=120&h=120&fit=crop' },
+        { name: '沁园净水器 办公版', supplier: '沁园旗舰店', spec: '直饮/冷热/4级过滤', price: 988, img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=120&h=120&fit=crop&sat=-20' },
+        { name: '史密斯净水机 Q400', supplier: '史密斯旗舰', spec: '直饮/即热/RO过滤', price: 1680, img: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=120&h=120&fit=crop&hue=20' },
+      ]},
+  ];
+
+  const FREQ_MULT = { '一次性': 1, '每月': 12, '每季度': 4, '每年': 1 };
+
+  let scenes = [
+    {
+      id: 1, name: '年货采购',
+      items: [
+        { id: 1, name: '食用油礼盒',   spec: '5L×4瓶/套',   qty: 200, freq: '一次性', budget: 300, delivery: '7日内',  priority: '重要' },
+        { id: 2, name: '坚果礼盒',     spec: '混合装/1.5kg', qty: 200, freq: '一次性', budget: 150, delivery: '7日内',  priority: '重要' },
+        { id: 3, name: '茶叶礼品套装', spec: '500g/精装盒',  qty: 100, freq: '一次性', budget: 200, delivery: '7日内',  priority: '普通' },
+      ],
+      recommendations: [
+        { id: 1, name: '金龙鱼食用油礼盒 5L×4', supplier: '益海嘉里官方店',  spec: '5L×4瓶/套',   price: 289, qty: 200 },
+        { id: 2, name: '三只松鼠坚果大礼包',    supplier: '三只松鼠旗舰店', spec: '混合装/1.5kg', price: 138, qty: 200 },
+        { id: 3, name: '西湖龙井茶礼盒',        supplier: '某茶叶旗舰店',   spec: '500g/精装礼盒', price: 188, qty: 100 },
+      ],
+      generated: true,
+    },
+    {
+      id: 2, name: '日常办公用品',
+      items: [
+        { id: 1, name: 'A4复印纸',   spec: '70g/8包/箱',       qty: 50,  freq: '每月',   budget: 150, delivery: '3日内',  priority: '普通' },
+        { id: 2, name: '中性笔',     spec: '0.5mm黑色/20支盒', qty: 100, freq: '每季度', budget: 15,  delivery: '3日内',  priority: '普通' },
+        { id: 3, name: '打印机墨盒', spec: '通用型/HP兼容',    qty: 10,  freq: '每月',   budget: 50,  delivery: '3日内',  priority: '重要' },
+        { id: 4, name: '档案夹',     spec: 'A4/40mm背宽',      qty: 200, freq: '每季度', budget: 5,   delivery: '无要求', priority: '普通' },
+      ],
+      recommendations: [
+        { id: 1, name: '晨鸣A4复印纸 70g',  supplier: '晨鸣旗舰店',    spec: '70g/8包',      price: 138, qty: 50  },
+        { id: 2, name: '晨光黑色中性笔',    supplier: '晨光文具旗舰',  spec: '0.5mm/20支',   price: 12,  qty: 100 },
+        { id: 3, name: 'HP兼容墨盒套装',   supplier: 'HP旗舰店',      spec: '黑彩套装',     price: 45,  qty: 10  },
+        { id: 4, name: '得力A4档案夹',      supplier: '得力旗舰店',    spec: 'A4/40mm',      price: 4.5, qty: 200 },
+      ],
+      generated: true,
+    },
+    {
+      id: 3, name: '会议物资',
+      items: [],
+      recommendations: [],
+      generated: false,
+    },
+  ];
+
+  let activeSceneId = 1;
+  let nextSceneId = 4;
+  let nextItemId = { 1: 4, 2: 5, 3: 1 };
+
+  const checkedMap = {};  // key → { price, qty }
+  let drawerRowKey = null;
+
+  const SEARCH_POOL = [
+    { name: '晨鸣A4复印纸 80g 高亮版', supplier: '晨鸣旗舰店',         spec: 'A4/80g/8包',        price: 158 },
+    { name: '亚太森博A4复印纸 75g',    supplier: '森博纸品专区',       spec: 'A4/75g/8包',        price: 142 },
+    { name: '得力A4复印纸 70g 标准装', supplier: '得力旗舰店',         spec: 'A4/70g/8包',        price: 135 },
+    { name: '惠普HP原装硒鼓 CF280A',  supplier: 'HP官方旗舰店',       spec: 'HP 80A / 黑色',     price: 320 },
+    { name: '兼容硒鼓 CF285A 高容',   supplier: '某打印耗材旗舰',     spec: 'HP 85A兼容 高容',   price: 89  },
+    { name: '永艺电竞电脑椅 商务款',  supplier: '永艺政企旗舰',       spec: '可升降/腰托/头枕',  price: 899 },
+    { name: '西昊人体工学椅 H1',      supplier: '西昊旗舰店',         spec: '网布/升降/腰托',    price: 980 },
+    { name: '极米NEW Z7X 投影仪',    supplier: '极米官方旗舰',       spec: '1080P/商务/HDMI',   price: 3299},
+    { name: '爱普生CB-X06 投影机',   supplier: '爱普生旗舰',         spec: '3600流明/XGA',      price: 2680},
+    { name: '得力12864 磁性白板',    supplier: '得力旗舰店',         spec: '120×90cm/铝框',     price: 110 },
+  ];
+
+  /* ═══════════════ INIT ═══════════════ */
+
+  (function init() {
+    const stored = safeGetStorage('planDemo');
+    if (stored) {
+      const chip = document.getElementById('sourceChip');
+      if (stored.scene) chip.innerHTML = `<i class="fa-solid fa-layer-group"></i> 场景：${stored.scene}`;
+      else if (stored.file) chip.innerHTML = `<i class="fa-solid fa-file-excel"></i> ${stored.file}`;
+      if (stored.scene) {
+        const existing = scenes.find(s => s.name === stored.scene);
+        if (!existing && stored.scene) {
+          scenes.push({ id: nextSceneId, name: stored.scene, items: [], recommendations: [], generated: false });
+          nextItemId[nextSceneId] = 1;
+          activeSceneId = nextSceneId;
+          nextSceneId++;
+        } else if (existing) {
+          activeSceneId = existing.id;
+        }
+      }
+    }
+    renderFileTab();
+    renderSceneTab();
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { closeDrawer(); closeSceneModal(); }
+    });
+  })();
+
+  /* ═══════════════ TAB ═══════════════ */
+
+  function switchTab(tab) {
+    document.getElementById('tab-file').classList.toggle('active', tab === 'file');
+    document.getElementById('tab-scene').classList.toggle('active', tab === 'scene');
+    document.getElementById('tabFileBtn').classList.toggle('active', tab === 'file');
+    document.getElementById('tabSceneBtn').classList.toggle('active', tab === 'scene');
+  }
+
+  /* ═══════════════ TAB 1 ═══════════════ */
+
+  function renderFileTab() {
+    const matched = FILE_REQS.filter(r => r.matched).length;
+    const unmatched = FILE_REQS.length - matched;
+
+    const summary = `
+      <div class="card summary-card">
+        <div class="summary-top">
+          <div class="summary-left">
+            <div class="summary-icon"><i class="fa-solid fa-file-waveform"></i></div>
+            <div>
+              <h2 class="summary-title">
+                AI 采购方案分析结果
+                <a class="view-file-link" href="#" onclick="return false" title="查看源文件"><i class="fa-solid fa-file-excel"></i> 查看源文件</a>
+              </h2>
+              <div class="summary-meta">
+                <span><i class="fa-solid fa-file-excel"></i> ${FILE_META.fileName}</span>
+                <span><i class="fa-solid fa-clock"></i> ${FILE_META.generatedAt}</span>
+                <span><i class="fa-solid fa-list-check"></i> 识别需求 ${FILE_META.totalItems} 项</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="summary-divider">
+        <div class="summary-body">
+          <div class="ai-row">
+            <div class="ai-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="ai-text">本次采购文件涵盖<strong>办公耗材、打印设备、家具及会议设施</strong>三大品类，共识别出 <strong>${FILE_META.totalItems}</strong> 项采购需求。重点品类包括 A4 复印纸、中性笔等日常耗材，投影仪、扫描仪等办公设备，以及办公椅等家具配置。其中 <strong style="color:var(--primary)">${matched}</strong> 项已在平台匹配推荐商品，<strong style="color:var(--warn)">${unmatched}</strong> 项暂无对应商品可供选择。</div>
+          </div>
+          <div class="summary-stats" style="margin-top:0">
+            <div class="summary-stat"><div class="stat-label">识别需求总数</div><div class="stat-value">${FILE_META.totalItems}</div></div>
+            <div class="summary-stat"><div class="stat-label">已匹配商品</div><div class="stat-value" style="color:var(--primary)">${matched}</div></div>
+            <div class="summary-stat"><div class="stat-label">暂无匹配</div><div class="stat-value" style="color:var(--warn)">${unmatched}</div></div>
+          </div>
+        </div>
+      </div>`;
+
+    const rows = FILE_REQS.map(function (r) {
+      const key = 'file-' + r.id;
+      const chk = checkedMap[key];
+      const currentQty = chk ? chk.qty : r.qty;
+      if (r.matched && r.product) {
+        const sub = fmt(r.product.price * currentQty);
+        return `<tr data-key="${key}">
+          <td><input type="checkbox" ${chk ? 'checked' : ''} onchange="handleCheck(this,'${key}',${r.product.price})"></td>
+          <td><div class="req-name">${r.name}</div><div class="req-spec">文件需求：${r.reqQty} ${r.unit}</div></td>
+          <td><span style="font-size:13px;color:var(--text-sub)">${r.spec}</span></td>
+          <td><span class="match-ok"><i class="fa-solid fa-circle-check"></i> 已匹配</span></td>
+          <td>
+            <div class="product-cell">
+              <img class="product-thumb" id="pimg-${key}" src="${r.product.img}" alt="${r.product.name}" onerror="this.style.display='none'">
+              <div class="product-info">
+                <div class="product-name" id="pname-${key}"><a href="./product.html" target="_blank">${r.product.name}</a></div>
+                <div class="product-supplier" id="psup-${key}">${r.product.supplier}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="price" id="pprice-${key}">¥${r.product.price.toFixed(2)}</span></td>
+          <td><input class="qty-input" type="number" min="1" value="${currentQty}" onchange="handleQtyChange('${key}',this.value)"></td>
+          <td><span class="subtotal" id="sub-${key}">¥${sub}</span></td>
+          <td><div class="action-group">
+            <button class="action-link" onclick="openDrawer('${key}','${r.product.name}',${r.id})"><i class="fa-solid fa-arrows-rotate"></i> 换品</button>
+            <a class="action-link" href="./product.html" target="_blank"><i class="fa-solid fa-eye"></i> 详情</a>
+          </div></td>
+        </tr>`;
+      } else {
+        return `<tr style="background:var(--warn-bg)">
+          <td><input type="checkbox" disabled></td>
+          <td><div class="req-name">${r.name}</div><div class="req-spec">文件需求：${r.reqQty} ${r.unit}</div></td>
+          <td><span style="font-size:13px;color:var(--text-sub)">${r.spec}</span></td>
+          <td><span class="match-none"><i class="fa-solid fa-triangle-exclamation"></i> 暂无匹配</span></td>
+          <td class="unmatched-cell">暂无平台商品</td>
+          <td class="unmatched-cell">—</td>
+          <td class="unmatched-cell">${r.qty} ${r.unit}</td>
+          <td class="unmatched-cell">—</td>
+          <td>
+            <button class="action-link" onclick="openDrawer('unmatched-${r.id}','${r.name}',${r.id})">
+              <i class="fa-solid fa-magnifying-glass"></i> 搜索
+            </button>
+          </td>
+        </tr>`;
+      }
+    }).join('');
+
+    const table = `
+      <div class="card section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">商品采购推荐表</h2>
+            <div class="section-subtitle">逐项匹配平台推荐商品，勾选后可在底部一键提交订单；不匹配项仅展示提示。</div>
+          </div>
+        </div>
+        <div class="table-outer">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox" id="fileAllChk" onchange="toggleAll('file',this.checked)"></th>
+                <th>采购需求</th><th>需求规格</th><th style="width:110px">匹配状态</th>
+                <th>推荐商品</th><th style="width:100px">单价</th>
+                <th style="width:88px">采购数量</th><th style="width:100px">小计</th>
+                <th style="width:150px">操作</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>`;
+
+    document.getElementById('tab-file').innerHTML = summary + table;
+  }
+
+  /* ═══════════════ TAB 2 ═══════════════ */
+
+  function renderSceneTab() {
+    const scene = scenes.find(s => s.id === activeSceneId);
+    const tags = scenes.map(s => `
+      <div class="scene-tag ${s.id === activeSceneId ? 'active' : ''}" onclick="selectScene(${s.id})">
+        <span>${s.name}</span>
+        <span class="scene-tag-del" onclick="event.stopPropagation();deleteScene(${s.id})"><i class="fa-solid fa-xmark"></i></span>
+      </div>`).join('');
+
+    const configRows = scene.items.map(function (item, idx) {
+      const annualQty = item.qty * (FREQ_MULT[item.freq] || 1);
+      return `<tr>
+        <td style="color:var(--text-sub);font-size:13px;text-align:center">${idx + 1}</td>
+        <td><input class="config-input" value="${esc(item.name)}" placeholder="输入采购商品名称" onchange="updateItem(${scene.id},${item.id},'name',this.value)"></td>
+        <td><input class="config-input" value="${esc(item.spec)}" placeholder="如：A4/70g/8包" onchange="updateItem(${scene.id},${item.id},'spec',this.value)"></td>
+        <td><input class="config-input" type="number" min="1" value="${item.qty}" style="width:72px;text-align:center" onchange="updateItem(${scene.id},${item.id},'qty',+this.value)"></td>
+        <td><select class="config-select" onchange="updateItem(${scene.id},${item.id},'freq',this.value)">
+          ${['一次性','每月','每季度','每年'].map(f => `<option ${item.freq===f?'selected':''}>${f}</option>`).join('')}
+        </select></td>
+        <td><input class="config-input" type="number" min="0" value="${item.budget}" placeholder="元" onchange="updateItem(${scene.id},${item.id},'budget',+this.value)"></td>
+        <td><select class="config-select" onchange="updateItem(${scene.id},${item.id},'delivery',this.value)">
+          ${['无要求','3日内','7日内','15日内'].map(d => `<option ${item.delivery===d?'selected':''}>${d}</option>`).join('')}
+        </select></td>
+        <td><select class="config-select" onchange="updateItem(${scene.id},${item.id},'priority',this.value)">
+          ${['普通','重要','紧急'].map(p => `<option ${item.priority===p?'selected':''}>${p}</option>`).join('')}
+        </select></td>
+        <td style="text-align:center"><span style="font-size:13px;color:var(--text-sub)">${annualQty}</span></td>
+        <td><button class="del-row-btn" onclick="deleteItem(${scene.id},${item.id})" title="删除"><i class="fa-solid fa-trash-can"></i></button></td>
+      </tr>`;
+    }).join('');
+
+    const emptyRow = scene.items.length === 0
+      ? `<tr><td colspan="10" class="empty-state">暂无商品，点击「添加商品」开始配置</td></tr>`
+      : '';
+
+    let recHtml = '';
+    if (scene.generated && scene.recommendations.length > 0) {
+      const recRows = scene.recommendations.map(function (r) {
+        const key = 'scene-' + scene.id + '-' + r.id;
+        const chk = checkedMap[key];
+        const currentQty = chk ? chk.qty : r.qty;
+        return `<tr>
+          <td><input type="checkbox" ${chk ? 'checked' : ''} onchange="handleCheck(this,'${key}',${r.price})"></td>
+          <td><div class="product-name" id="pname-${key}"><a href="./product.html" target="_blank">${r.name}</a></div></td>
+          <td><span style="font-size:13px;color:var(--text-sub)">${r.spec}</span></td>
+          <td style="font-size:13px;color:var(--text-sub)" id="psup-${key}">${r.supplier}</td>
+          <td><span class="price" id="pprice-${key}">¥${r.price.toFixed(2)}</span></td>
+          <td><input class="qty-input" type="number" min="1" value="${currentQty}" onchange="handleQtyChange('${key}',this.value)"></td>
+          <td><span class="subtotal" id="sub-${key}">¥${fmt(r.price * currentQty)}</span></td>
+          <td><div class="action-group">
+            <button class="action-link" onclick="openDrawer('${key}','${r.name}')"><i class="fa-solid fa-arrows-rotate"></i> 换品</button>
+            <a class="action-link" href="./product.html" target="_blank"><i class="fa-solid fa-eye"></i> 详情</a>
+          </div></td>
+        </tr>`;
+      }).join('');
+
+      recHtml = `
+        <div class="card section" style="margin-top:18px">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">推荐商品列表</h2>
+              <div class="section-subtitle">基于「${scene.name}」场景配置，AI 已为您匹配平台推荐商品。</div>
+            </div>
+          </div>
+          <div class="table-outer">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:40px"><input type="checkbox" onchange="toggleAll('scene-${scene.id}',this.checked)"></th>
+                  <th>推荐商品</th><th>规格</th><th>供应商</th>
+                  <th style="width:100px">单价</th><th style="width:88px">采购数量</th>
+                  <th style="width:100px">小计</th><th style="width:150px">操作</th>
+                </tr>
+              </thead>
+              <tbody>${recRows}</tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+
+    document.getElementById('tab-scene').innerHTML = `
+      <div class="scene-wrap">
+        <div class="scene-bar">
+          ${tags}
+          <button class="add-scene-btn" onclick="openSceneModal()"><i class="fa-solid fa-plus"></i> 新增场景</button>
+        </div>
+        <div class="scene-body">
+          <div class="scene-body-head">
+            <div>
+              <h3 class="scene-body-title">场景配置：${scene.name}</h3>
+              <div class="scene-body-sub">配置本场景涉及的采购商品及各项指标，完成后点击「生成推荐商品」。</div>
+            </div>
+          </div>
+          <div class="config-outer">
+            <table class="config-table">
+              <thead>
+                <tr>
+                  <th style="width:36px">序</th>
+                  <th style="min-width:130px">采购商品 *</th>
+                  <th style="min-width:120px">规格要求</th>
+                  <th style="width:80px">采购数量 *</th>
+                  <th style="width:100px">采购频次</th>
+                  <th style="width:110px">预算上限（元）</th>
+                  <th style="width:100px">交付要求</th>
+                  <th style="width:80px">优先级</th>
+                  <th style="width:96px">预计年采购量</th>
+                  <th style="width:42px"></th>
+                </tr>
+              </thead>
+              <tbody>${configRows || emptyRow}</tbody>
+            </table>
+          </div>
+          <button class="add-row-btn" onclick="addItem(${scene.id})"><i class="fa-solid fa-plus"></i> 添加商品</button>
+          <br>
+          <button class="gen-rec-btn" id="genBtn" onclick="generateRec(${scene.id})">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            ${scene.generated ? '重新生成推荐商品' : '生成推荐商品'}
+          </button>
+        </div>
+      </div>
+      ${recHtml}`;
+  }
+
+  /* ═══════════════ SCENE ACTIONS ═══════════════ */
+
+  function selectScene(id) {
+    activeSceneId = id;
+    renderSceneTab();
+  }
+
+  function deleteScene(id) {
+    if (scenes.length <= 1) { alert('至少保留一个采购场景。'); return; }
+    if (!confirm('确定删除该场景及其配置？')) return;
+    scenes = scenes.filter(s => s.id !== id);
+    if (activeSceneId === id) activeSceneId = scenes[0].id;
+    renderSceneTab();
+  }
+
+  function openSceneModal() {
+    document.getElementById('sceneNameInput').value = '';
+    document.getElementById('sceneDescInput').value = '';
+    document.getElementById('sceneMask').classList.add('open');
+  }
+  function closeSceneModal() { document.getElementById('sceneMask').classList.remove('open'); }
+  function handleMaskClick(e) { if (e.target === document.getElementById('sceneMask')) closeSceneModal(); }
+
+  function confirmAddScene() {
+    const name = document.getElementById('sceneNameInput').value.trim();
+    if (!name) { alert('请输入场景名称。'); return; }
+    const id = nextSceneId++;
+    scenes.push({ id, name, items: [], recommendations: [], generated: false });
+    nextItemId[id] = 1;
+    activeSceneId = id;
+    closeSceneModal();
+    renderSceneTab();
+  }
+
+  function addItem(sceneId) {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+    if (!nextItemId[sceneId]) nextItemId[sceneId] = 1;
+    scene.items.push({ id: nextItemId[sceneId]++, name: '', spec: '', qty: 1, freq: '一次性', budget: 0, delivery: '无要求', priority: '普通' });
+    renderSceneTab();
+  }
+
+  function deleteItem(sceneId, itemId) {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+    scene.items = scene.items.filter(i => i.id !== itemId);
+    renderSceneTab();
+  }
+
+  function updateItem(sceneId, itemId, field, value) {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+    const item = scene.items.find(i => i.id === itemId);
+    if (!item) return;
+    item[field] = value;
+  }
+
+  function generateRec(sceneId) {
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+    if (scene.items.length === 0) { alert('请先在配置表中添加至少一项采购商品。'); return; }
+    const btn = document.getElementById('genBtn');
+    if (btn) { btn.classList.add('loading'); btn.innerHTML = '<i class="fa-solid fa-spinner loading-pulse"></i> 正在生成推荐…'; }
+
+    setTimeout(function () {
+      if (!scene.generated || scene.recommendations.length === 0) {
+        scene.recommendations = scene.items
+          .filter(i => i.name.trim())
+          .map(function (item, idx) {
+            return { id: idx + 1, name: '（示例）' + item.name, supplier: '平台优选供应商', spec: item.spec || '—', price: item.budget > 0 ? item.budget * 0.9 : 99, qty: item.qty };
+          });
+      }
+      scene.generated = true;
+      nextItemId[sceneId] = (nextItemId[sceneId] || 1);
+      renderSceneTab();
+    }, 900);
+  }
+
+  /* ═══════════════ CHECKBOX & QUANTITY ═══════════════ */
+
+  function handleCheck(el, key, price) {
+    const row = el.closest('tr');
+    const qtyInput = row.querySelector('.qty-input');
+    const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+    if (el.checked) {
+      checkedMap[key] = { price: price, qty: qty };
+    } else {
+      delete checkedMap[key];
+    }
+    updateBottomBar();
+  }
+
+  function handleQtyChange(key, qtyStr) {
+    const qty = Math.max(1, parseInt(qtyStr) || 1);
+    const sub = document.getElementById('sub-' + key);
+    const priceEl = document.getElementById('pprice-' + key);
+    if (!priceEl) return;
+    const price = parseFloat(priceEl.textContent.replace('¥', '')) || 0;
+    if (sub) sub.textContent = '¥' + fmt(price * qty);
+    if (checkedMap[key]) {
+      checkedMap[key].qty = qty;
+      checkedMap[key].price = price;
+      updateBottomBar();
+    }
+  }
+
+  function toggleAll(prefix, checked) {
+    document.querySelectorAll('input[type="checkbox"]:not(:disabled)').forEach(function (chk) {
+      const row = chk.closest('tr');
+      if (!row) return;
+      const key = row.getAttribute('data-key');
+      if (key && key.startsWith(prefix)) {
+        chk.checked = checked;
+        const priceEl = document.getElementById('pprice-' + key);
+        const qtyInput = row.querySelector('.qty-input');
+        if (!priceEl) return;
+        const price = parseFloat(priceEl.textContent.replace('¥', '')) || 0;
+        const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+        if (checked) checkedMap[key] = { price, qty };
+        else delete checkedMap[key];
+      }
+    });
+    updateBottomBar();
+  }
+
+  function updateBottomBar() {
+    const keys = Object.keys(checkedMap);
+    const total = keys.reduce(function (acc, k) { const v = checkedMap[k]; return acc + v.price * v.qty; }, 0);
+    document.getElementById('bottomCount').textContent = keys.length;
+    document.getElementById('bottomTotal').textContent = '¥ ' + fmt(total);
+    document.getElementById('submitBtn').disabled = keys.length === 0;
+  }
+
+  /* ═══════════════ DRAWER ═══════════════ */
+
+  function openDrawer(key, productName, reqId) {
+    drawerRowKey = key;
+    document.getElementById('drawerCurrent').textContent = productName;
+    document.getElementById('drawerSubtitle').textContent = '当前商品：' + productName;
+    document.getElementById('drawerSearchInput').value = '';
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('drawerMask').classList.add('open');
+
+    // 自动展示相近推荐商品
+    const req = FILE_REQS.find(r => r.id === reqId);
+    const alts = req && req.alts ? req.alts : [];
+    if (alts.length > 0) {
+      renderDrawerResults(alts, '平台相近商品推荐');
+    } else {
+      document.getElementById('searchResults').innerHTML =
+        '<div style="color:var(--text-sub);font-size:14px;padding:16px 0;text-align:center">输入关键词搜索平台商品</div>';
+    }
+    setTimeout(function () { document.getElementById('drawerSearchInput').focus(); }, 320);
+  }
+
+  function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('drawerMask').classList.remove('open');
+    drawerRowKey = null;
+  }
+
+  function buildSearchPool() {
+    const pool = [];
+    FILE_REQS.forEach(function (r) {
+      if (r.alts) r.alts.forEach(function (a) { pool.push(a); });
+    });
+    return pool;
+  }
+
+  function renderDrawerResults(results, label) {
+    const container = document.getElementById('searchResults');
+    const header = label ? `<div style="font-size:12px;font-weight:800;color:var(--text-sub);margin-bottom:10px;letter-spacing:0.2px">${label}</div>` : '';
+    container.innerHTML = header + results.map(function (p, i) {
+      const img = p.img ? `<img class="result-thumb" src="${p.img}" alt="${p.name}" onerror="this.style.display='none'">` : '';
+      return `<div class="result-card">
+        <div class="result-card-body">
+          ${img}
+          <div class="result-card-info">
+            <div class="result-name">${p.name}</div>
+            <div class="result-meta">${p.supplier}</div>
+            <div class="result-meta">${p.spec}</div>
+          </div>
+        </div>
+        <div class="result-right">
+          <div class="result-price">¥${Number(p.price).toFixed(2)}</div>
+          <button class="replace-btn" onclick="replaceProduct(${i},'${escAttr(p.name)}','${escAttr(p.supplier)}',${p.price},'${escAttr(p.img || '')}')"><i class="fa-solid fa-arrows-rotate"></i> 替换</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function performSearch() {
+    const keyword = document.getElementById('drawerSearchInput').value.trim().toLowerCase();
+    const container = document.getElementById('searchResults');
+    if (!keyword) {
+      container.innerHTML = '<div style="color:var(--text-sub);font-size:14px;padding:16px 0;text-align:center">请输入关键词</div>';
+      return;
+    }
+    const pool = buildSearchPool();
+    const results = pool.filter(p =>
+      p.name.toLowerCase().includes(keyword) ||
+      (p.spec && p.spec.toLowerCase().includes(keyword)) ||
+      (p.supplier && p.supplier.toLowerCase().includes(keyword))
+    ).slice(0, 6);
+    if (results.length === 0) {
+      container.innerHTML = '<div style="color:var(--text-sub);font-size:14px;padding:16px 0;text-align:center">未找到相关商品，请尝试其他关键词</div>';
+      return;
+    }
+    renderDrawerResults(results, '搜索结果');
+  }
+
+  function replaceProduct(idx, name, supplier, price, img) {
+    if (!drawerRowKey) return;
+    const nameEl = document.getElementById('pname-' + drawerRowKey);
+    const supEl = document.getElementById('psup-' + drawerRowKey);
+    const priceEl = document.getElementById('pprice-' + drawerRowKey);
+    const subEl = document.getElementById('sub-' + drawerRowKey);
+    const imgEl = document.getElementById('pimg-' + drawerRowKey);
+    if (nameEl) nameEl.innerHTML = `<a href="./product.html" target="_blank">${name}</a>`;
+    if (supEl) supEl.textContent = supplier;
+    if (priceEl) priceEl.textContent = '¥' + Number(price).toFixed(2);
+    if (imgEl && img) { imgEl.src = img; imgEl.style.display = ''; }
+    if (subEl) {
+      const row = document.querySelector(`tr[data-key="${drawerRowKey}"]`);
+      const qtyInput = row ? row.querySelector('.qty-input') : null;
+      const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+      subEl.textContent = '¥' + fmt(price * qty);
+    }
+    if (checkedMap[drawerRowKey]) {
+      checkedMap[drawerRowKey].price = price;
+      updateBottomBar();
+    }
+    document.getElementById('drawerCurrent').textContent = name;
+    document.getElementById('drawerSubtitle').textContent = '已替换为：' + name;
+    document.getElementById('searchResults').innerHTML = `<div style="background:var(--primary-light);border:1px solid var(--primary-border);border-radius:14px;padding:16px;color:var(--primary);font-weight:700;font-size:14px;text-align:center"><i class="fa-solid fa-circle-check"></i> 已替换为「${name}」</div>`;
+  }
+
+  /* ═══════════════ SUBMIT ═══════════════ */
+
+  function submitOrder() {
+    const keys = Object.keys(checkedMap);
+    if (keys.length === 0) return;
+    sessionStorage.setItem('planOrderItems', JSON.stringify(keys.map(k => checkedMap[k])));
+    window.location.href = './order_confirm.html';
+  }
+
+  /* ═══════════════ UTILS ═══════════════ */
+
+  function fmt(n) {
+    return Number(n).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function escAttr(s) {
+    return String(s || '').replace(/'/g, '\\\'');
+  }
+
+  function safeGetStorage(key) {
+    try { return JSON.parse(sessionStorage.getItem(key)); } catch (e) { return null; }
+  }
+</script>
+</body>
+</html>

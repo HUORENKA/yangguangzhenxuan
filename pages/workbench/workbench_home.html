@@ -355,32 +355,56 @@
     }
 
     .status-overview-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 104px;
+      background: #ffffff;
+      border: 2px solid #dbeafe;
+      border-radius: 18px;
+      padding: 18px 20px;
       cursor: pointer;
       transition: all 0.25s ease;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
     }
 
     .status-overview-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-      border-color: rgba(226, 35, 26, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.10);
+      border-color: #93c5fd;
+    }
+
+    .status-overview-left {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 24px;
+    }
+
+    .status-overview-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .status-overview-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: #334155;
+      line-height: 1.4;
     }
 
     .status-overview-number {
-      font-size: 32px;
+      font-size: 40px;
       font-weight: 700;
       line-height: 1;
-      margin-top: 12px;
-      margin-bottom: 8px;
-    }
-
-    .status-overview-desc {
-      color: #64748b;
-      font-size: 13px;
-      line-height: 1.5;
+      flex-shrink: 0;
+      min-width: 30px;
+      text-align: right;
     }
 
     .goods-action-btn {
@@ -1197,44 +1221,40 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
         <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=published'">
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-semibold text-gray-700">已上架商品</span>
-            <span class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center">
-              <i class="fas fa-circle-check"></i>
-            </span>
+          <div class="status-overview-left bg-green-100 text-green-600">
+            <i class="fas fa-circle-check"></i>
+          </div>
+          <div class="status-overview-content">
+            <div class="status-overview-label">已上架商品</div>
           </div>
           <div class="status-overview-number text-green-600" id="productPublishedCount">128</div>
-          <p class="status-overview-desc">已审核通过并在商城展示，可进入列表页继续维护库存、价格和类目。</p>
         </div>
         <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=reviewing'">
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-semibold text-gray-700">审核中商品</span>
-            <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
-              <i class="fas fa-robot"></i>
-            </span>
+          <div class="status-overview-left bg-blue-100 text-blue-600">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="status-overview-content">
+            <div class="status-overview-label">审核中商品</div>
           </div>
           <div class="status-overview-number text-blue-600" id="productReviewingCount">16</div>
-          <p class="status-overview-desc">已提交审核，正在进行 AI 信息校验、风险识别或复核，点击查看进度明细。</p>
         </div>
         <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=offline'">
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-semibold text-gray-700">已下架商品</span>
-            <span class="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center">
-              <i class="fas fa-box-archive"></i>
-            </span>
+          <div class="status-overview-left bg-slate-100 text-slate-600">
+            <i class="fas fa-box-archive"></i>
           </div>
-          <div class="status-overview-number text-gray-700" id="productOfflineCount">9</div>
-          <p class="status-overview-desc">已停止对外展示，可前往列表页查看原因、补充资料并重新发起上架申请。</p>
+          <div class="status-overview-content">
+            <div class="status-overview-label">已下架商品</div>
+          </div>
+          <div class="status-overview-number text-slate-700" id="productOfflineCount">9</div>
         </div>
         <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=rejected'">
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-semibold text-gray-700">审核未通过</span>
-            <span class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
-              <i class="fas fa-triangle-exclamation"></i>
-            </span>
+          <div class="status-overview-left bg-red-100 text-red-600">
+            <i class="fas fa-triangle-exclamation"></i>
+          </div>
+          <div class="status-overview-content">
+            <div class="status-overview-label">审核未通过</div>
           </div>
           <div class="status-overview-number text-red-600" id="productRejectedCount">4</div>
-          <p class="status-overview-desc">存在语义风险、参数冲突或图片问题，需进入列表页查看 AI 结论并整改后重提。</p>
         </div>
       </div>
 
