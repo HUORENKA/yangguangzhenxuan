@@ -96,22 +96,124 @@
     .topbar-actions {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 8px;
       color: #334155;
       font-size: 14px;
     }
 
-    .topbar-link {
-      display: inline-flex;
+    .topbar-icon-btn {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
       align-items: center;
-      gap: 8px;
-      font-weight: 600;
+      justify-content: center;
+      color: #334155;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease;
+      text-decoration: none;
+      flex: none;
+    }
+
+    .topbar-icon-btn:hover {
+      background: rgba(47, 107, 255, 0.08);
+      color: var(--brand);
+    }
+
+    .topbar-icon-btn .tip {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      background: #1e293b;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 8px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.16s ease, transform 0.16s ease;
+      transform: translateX(-50%) translateY(-4px);
+      z-index: 200;
+    }
+
+    .topbar-icon-btn:hover .tip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .topbar-icon-btn .tip::before {
+      content: "";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-bottom-color: #1e293b;
+    }
+
+    .topbar-icon-btn .badge-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid #fff;
+    }
+
+    .topbar-divider {
+      width: 1px;
+      height: 22px;
+      background: rgba(203, 213, 225, 0.7);
+      margin: 0 4px;
+      flex: none;
     }
 
     .topbar-user {
       display: flex;
       align-items: center;
       gap: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .topbar-user .tip {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      left: auto;
+      transform: translateY(-4px);
+      white-space: nowrap;
+      background: #1e293b;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 8px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.16s ease, transform 0.16s ease;
+      z-index: 200;
+    }
+
+    .topbar-user:hover .tip {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .topbar-user .tip::before {
+      content: "";
+      position: absolute;
+      bottom: 100%;
+      right: 14px;
+      border: 5px solid transparent;
+      border-bottom-color: #1e293b;
     }
 
     .avatar {
@@ -125,6 +227,7 @@
       justify-content: center;
       font-weight: 700;
       box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+      flex: none;
     }
 
     .hero {
@@ -1450,14 +1553,24 @@
           <span>国采e购</span>
         </a>
         <div class="topbar-actions">
-          <a class="topbar-link" href="./sourcing_inquiry.html"><i class="fa-regular fa-file-lines"></i> 我的订单</a>
-          <a class="topbar-link" href="./ai_assistant.html"><i class="fa-regular fa-bell"></i> 消息通知</a>
+          <a class="topbar-icon-btn" href="./workbench/workbench_home.html" title="">
+            <i class="fa-solid fa-briefcase"></i>
+            <span class="tip">工作台</span>
+          </a>
+          <a class="topbar-icon-btn" href="#" onclick="return false" title="">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="badge-dot"></span>
+            <span class="tip">购物车</span>
+          </a>
+          <div class="topbar-divider"></div>
+          <a class="topbar-icon-btn" href="./ai_assistant.html" title="">
+            <i class="fa-regular fa-bell"></i>
+            <span class="badge-dot"></span>
+            <span class="tip">消息通知</span>
+          </a>
           <div class="topbar-user">
             <span class="avatar">张</span>
-            <div>
-              <div style="font-weight: 700;">张三</div>
-              <div style="font-size: 12px; color: #64748b;">采购专员</div>
-            </div>
+            <span class="tip">张三 · 采购专员</span>
           </div>
         </div>
       </div>
