@@ -887,6 +887,208 @@
       color: #64748b;
     }
 
+    .order-basis-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 190;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+    }
+
+    .order-basis-overlay.show {
+      display: flex;
+    }
+
+    .order-basis-modal {
+      width: min(1020px, 98vw);
+      max-height: 92vh;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .order-basis-head {
+      padding: 24px 28px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .order-basis-head .ai-title {
+      font-size: 24px;
+    }
+
+    .order-basis-head .text-sm {
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .order-basis-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .order-basis-content {
+      padding: 22px 28px 16px;
+      background: #fafafa;
+      overflow: auto;
+      flex: 1;
+    }
+
+    .order-basis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .basis-panel {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .basis-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .basis-panel-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .basis-add-btn {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid #dbeafe;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .basis-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .basis-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px 16px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .basis-item:hover {
+      border-color: #bfdbfe;
+      background: #f8fbff;
+    }
+
+    .basis-item.active {
+      border-color: #ef4444;
+      background: #fff5f5;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.12);
+    }
+
+    .basis-item-none {
+      border-style: dashed;
+    }
+
+    .basis-item-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .basis-item-meta {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    .basis-selected-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border: 1px solid #d1d5db;
+      color: transparent;
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .basis-item.active .basis-selected-dot {
+      border-color: #ef4444;
+      color: #fff;
+      background: #ef4444;
+    }
+
+    .basis-summary-tip {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .order-basis-foot {
+      padding: 18px 28px;
+      border-top: 1px solid #e5e7eb;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .order-basis-foot-note {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .order-basis-foot .btn-ghost,
+    .order-basis-foot .btn-main {
+      height: 44px;
+      padding: 0 20px;
+      font-size: 14px;
+    }
+
     .ai-section {
       margin-top: 18px;
       overflow: hidden;
@@ -1456,6 +1658,37 @@
     }
 
     @media (max-width: 900px) {
+      .order-basis-overlay {
+        padding: 12px;
+      }
+
+      .order-basis-modal {
+        width: 100%;
+        max-height: 94vh;
+      }
+
+      .order-basis-head,
+      .order-basis-content,
+      .order-basis-foot {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .order-basis-head {
+        padding-top: 18px;
+        padding-bottom: 14px;
+      }
+
+      .order-basis-content {
+        padding-top: 14px;
+        padding-bottom: 12px;
+      }
+
+      .order-basis-foot {
+        padding-top: 12px;
+        padding-bottom: 14px;
+      }
+
       .hero-grid {
         grid-template-columns: 1fr;
       }
@@ -1477,8 +1710,13 @@
       .param-row {
         grid-template-columns: 110px 1fr;
       }
+
+      .order-basis-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
+  <script src="../assets/mode_switcher.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -1789,6 +2027,46 @@
     </div>
   </div>
 
+  <div class="order-basis-overlay" id="orderBasisOverlay" onclick="if(event.target===this) closeOrderBasisModal()">
+    <div class="order-basis-modal" onclick="event.stopPropagation()">
+      <div class="order-basis-head">
+        <div>
+          <div class="ai-title"><i class="fa-solid fa-link text-indigo-500"></i>关联采购依据</div>
+          <div class="text-sm text-gray-500 mt-1">下单前请关联本单位已上传的采购计划和采购预算，便于后续审计追溯。</div>
+        </div>
+        <button class="order-basis-close" type="button" onclick="closeOrderBasisModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="order-basis-content">
+        <div class="order-basis-grid">
+          <section class="basis-panel">
+            <div class="basis-panel-head">
+              <div class="basis-panel-title"><i class="fa-regular fa-file-lines text-red-500"></i>采购计划</div>
+              <button class="basis-add-btn" type="button" onclick="addProcurementPlan()"><i class="fa-solid fa-plus mr-1"></i>新增计划</button>
+            </div>
+            <div class="basis-list" id="orderPlanList"></div>
+          </section>
+          <section class="basis-panel">
+            <div class="basis-panel-head">
+              <div class="basis-panel-title"><i class="fa-solid fa-wallet text-emerald-500"></i>采购预算</div>
+              <button class="basis-add-btn" type="button" onclick="addProcurementBudget()"><i class="fa-solid fa-plus mr-1"></i>新增预算</button>
+            </div>
+            <div class="basis-list" id="orderBudgetList"></div>
+          </section>
+        </div>
+        <div class="basis-summary-tip" id="basisSelectedSummary"></div>
+      </div>
+      <div class="order-basis-foot">
+        <div class="order-basis-foot-note">如未关联计划和预算，系统会提示确认是否继续采购。</div>
+        <div class="flex items-center gap-3">
+          <button class="btn-ghost" type="button" onclick="closeOrderBasisModal()">取消</button>
+          <button class="btn-main" type="button" onclick="confirmOrderBasisAndProceed()">确认并下单</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="sticky-bar" id="stickyBar">
     <div class="sticky-inner">
       <div class="sticky-meta">
@@ -1815,6 +2093,20 @@
     let currentQty = 1;
     let comparePickerSelections = { same: [], similar: [] };
     let portraitLoadingTimer = null;
+    let procurementPlanOptions = [];
+    let procurementBudgetOptions = [];
+    let selectedPlanId = '';
+    let selectedBudgetId = '';
+
+    const defaultProcurementPlans = [
+      { id: 'plan-2026-q2-office', name: '2026年二季度办公耗材集中采购计划', period: '2026Q2', owner: '采购中心' },
+      { id: 'plan-2026-special-it', name: '2026年信息化设备专项采购计划', period: '2026全年', owner: '信息化部' }
+    ];
+
+    const defaultProcurementBudgets = [
+      { id: 'budget-2026-q2-office', name: '办公耗材预算包', period: '2026Q2', amount: 280000 },
+      { id: 'budget-2026-special-it', name: '信息化设备预算包', period: '2026全年', amount: 1200000 }
+    ];
 
     const productPool = [
       {
@@ -2365,12 +2657,18 @@
       resetComparePicker();
       renderComparePickerTable();
       document.getElementById('comparePickerOverlay').classList.add('show');
-      document.body.style.overflow = 'hidden';
+      updateBodyScrollLock();
     }
 
     function closeComparePicker() {
       document.getElementById('comparePickerOverlay').classList.remove('show');
-      document.body.style.overflow = '';
+      updateBodyScrollLock();
+    }
+
+    function updateBodyScrollLock() {
+      const compareOpen = document.getElementById('comparePickerOverlay').classList.contains('show');
+      const basisOpen = document.getElementById('orderBasisOverlay').classList.contains('show');
+      document.body.style.overflow = compareOpen || basisOpen ? 'hidden' : '';
     }
 
     function updateComparePickerSummary() {
@@ -2575,6 +2873,154 @@
       document.getElementById('qtyInputSticky').value = currentQty;
     }
 
+    function cloneList(list) {
+      return (list || []).map(item => ({ ...item }));
+    }
+
+    function loadProcurementBasisOptions() {
+      let plans = [];
+      let budgets = [];
+      try {
+        plans = JSON.parse(sessionStorage.getItem('gcProcurementPlans') || '[]');
+      } catch (error) {
+        plans = [];
+      }
+      try {
+        budgets = JSON.parse(sessionStorage.getItem('gcProcurementBudgets') || '[]');
+      } catch (error) {
+        budgets = [];
+      }
+      procurementPlanOptions = Array.isArray(plans) && plans.length ? plans : cloneList(defaultProcurementPlans);
+      procurementBudgetOptions = Array.isArray(budgets) && budgets.length ? budgets : cloneList(defaultProcurementBudgets);
+    }
+
+    function saveProcurementBasisOptions() {
+      sessionStorage.setItem('gcProcurementPlans', JSON.stringify(procurementPlanOptions));
+      sessionStorage.setItem('gcProcurementBudgets', JSON.stringify(procurementBudgetOptions));
+    }
+
+    function escapeBasisText(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderBasisItems(type, list, selectedId) {
+      const selectHandler = type === 'plan' ? 'selectOrderPlan' : 'selectOrderBudget';
+      const noneTitle = type === 'plan' ? '本次不关联采购计划' : '本次不关联采购预算';
+      const noneMeta = type === 'plan' ? '可先下单，后续在订单里补充关联计划。' : '可先下单，后续在订单里补充关联预算。';
+      const noneRow = `
+        <button class="basis-item basis-item-none ${selectedId ? '' : 'active'}" type="button" onclick="${selectHandler}('')">
+          <div class="basis-item-title">
+            <span>${noneTitle}</span>
+            <span class="basis-selected-dot"><i class="fa-solid fa-check"></i></span>
+          </div>
+          <div class="basis-item-meta">${noneMeta}</div>
+        </button>
+      `;
+      const rows = list.map(item => {
+        const isSelected = selectedId === item.id;
+        const meta = type === 'plan'
+          ? `计划周期：${escapeBasisText(item.period || '未填写')} · 提报部门：${escapeBasisText(item.owner || '未填写')}`
+          : `预算周期：${escapeBasisText(item.period || '未填写')} · 预算金额：¥${Number(item.amount || 0).toLocaleString('zh-CN')}`;
+        return `
+          <button class="basis-item ${isSelected ? 'active' : ''}" type="button" onclick="${selectHandler}('${escapeBasisText(item.id)}')">
+            <div class="basis-item-title">
+              <span>${escapeBasisText(item.name)}</span>
+              <span class="basis-selected-dot"><i class="fa-solid fa-check"></i></span>
+            </div>
+            <div class="basis-item-meta">${meta}</div>
+          </button>
+        `;
+      }).join('');
+      return noneRow + rows;
+    }
+
+    function getBasisById(type, id) {
+      const list = type === 'plan' ? procurementPlanOptions : procurementBudgetOptions;
+      return (list || []).find(item => item.id === id) || null;
+    }
+
+    function renderOrderBasisModal() {
+      if (!getBasisById('plan', selectedPlanId)) selectedPlanId = '';
+      if (!getBasisById('budget', selectedBudgetId)) selectedBudgetId = '';
+      document.getElementById('orderPlanList').innerHTML = renderBasisItems('plan', procurementPlanOptions, selectedPlanId);
+      document.getElementById('orderBudgetList').innerHTML = renderBasisItems('budget', procurementBudgetOptions, selectedBudgetId);
+      const selectedPlan = getBasisById('plan', selectedPlanId);
+      const selectedBudget = getBasisById('budget', selectedBudgetId);
+      document.getElementById('basisSelectedSummary').textContent = `当前关联：采购计划【${selectedPlan ? selectedPlan.name : '未关联'}】；采购预算【${selectedBudget ? selectedBudget.name : '未关联'}】`;
+    }
+
+    function openOrderBasisModal() {
+      renderOrderBasisModal();
+      document.getElementById('orderBasisOverlay').classList.add('show');
+      updateBodyScrollLock();
+    }
+
+    function closeOrderBasisModal() {
+      document.getElementById('orderBasisOverlay').classList.remove('show');
+      updateBodyScrollLock();
+    }
+
+    function selectOrderPlan(id) {
+      selectedPlanId = id || '';
+      renderOrderBasisModal();
+    }
+
+    function selectOrderBudget(id) {
+      selectedBudgetId = id || '';
+      renderOrderBasisModal();
+    }
+
+    function addProcurementPlan() {
+      const name = window.prompt('请输入采购计划名称');
+      if (!name || !name.trim()) return;
+      const period = window.prompt('请输入计划周期（如：2026Q3）', '2026Q3') || '未填写';
+      const owner = window.prompt('请输入提报部门', '采购中心') || '采购中心';
+      const item = {
+        id: `plan-${Date.now()}`,
+        name: name.trim(),
+        period: period.trim(),
+        owner: owner.trim()
+      };
+      procurementPlanOptions.unshift(item);
+      selectedPlanId = item.id;
+      saveProcurementBasisOptions();
+      renderOrderBasisModal();
+      showToast('已新增采购计划并完成选择');
+    }
+
+    function addProcurementBudget() {
+      const name = window.prompt('请输入采购预算名称');
+      if (!name || !name.trim()) return;
+      const period = window.prompt('请输入预算周期（如：2026Q3）', '2026Q3') || '未填写';
+      const amountInput = window.prompt('请输入预算金额（数字）', '100000');
+      const amount = Number((amountInput || '').replace(/,/g, '').trim());
+      const item = {
+        id: `budget-${Date.now()}`,
+        name: name.trim(),
+        period: period.trim(),
+        amount: Number.isFinite(amount) && amount > 0 ? amount : 0
+      };
+      procurementBudgetOptions.unshift(item);
+      selectedBudgetId = item.id;
+      saveProcurementBasisOptions();
+      renderOrderBasisModal();
+      showToast('已新增采购预算并完成选择');
+    }
+
+    function confirmOrderBasisAndProceed() {
+      if (!selectedPlanId && !selectedBudgetId) {
+        const proceed = window.confirm('未关联采购依据（采购计划、采购预算），是否继续采购？');
+        if (!proceed) return;
+      }
+      closeOrderBasisModal();
+      proceedToOrderConfirm();
+    }
+
     function showToast(message) {
       const toast = document.createElement('div');
       toast.textContent = message;
@@ -2593,6 +3039,8 @@
     }
 
     function buildOrderConfirmPayload() {
+      const selectedPlan = getBasisById('plan', selectedPlanId);
+      const selectedBudget = getBasisById('budget', selectedBudgetId);
       return {
         orderNo: `ORD${Date.now().toString().slice(-8)}`,
         productId: currentProduct.id,
@@ -2629,16 +3077,26 @@
             detail: '创业大厦17楼',
             receiver: '小庄'
           }
-        ]
+        ],
+        procurementBasis: {
+          plan: selectedPlan,
+          budget: selectedBudget,
+          hasBasis: Boolean(selectedPlan || selectedBudget)
+        }
       };
     }
 
     function goToOrderConfirm() {
+      openOrderBasisModal();
+    }
+
+    function proceedToOrderConfirm() {
       sessionStorage.setItem('gcOrderConfirmPayload', JSON.stringify(buildOrderConfirmPayload()));
       window.location.href = './order_confirm.html';
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      loadProcurementBasisOptions();
       renderPage();
       bindTabs();
       bindStickyBar();

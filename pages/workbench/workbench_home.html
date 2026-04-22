@@ -452,7 +452,149 @@
       background: #f8fafc;
       border: 1px solid #e2e8f0;
     }
+
+    /* 核心运营数据 KPI 卡片 */
+    .kpi-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 18px 20px 16px;
+      border: 2px solid #eef2ff;
+      transition: all 0.25s ease;
+      cursor: default;
+      min-height: 132px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .kpi-card:hover {
+      border-color: rgba(226, 35, 26, 0.25);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+    .kpi-card-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .kpi-card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      border: 2px solid currentColor;
+      background: #ffffff !important;
+    }
+    .kpi-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.2;
+    }
+    .kpi-card-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .kpi-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+    .kpi-card-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+    .kpi-card-value.is-amount {
+      font-size: 24px;
+    }
+    .kpi-card-trend {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      min-width: 64px;
+      flex-shrink: 0;
+    }
+    .kpi-card-meta {
+      font-size: 12px;
+      color: #111827;
+      line-height: 1.2;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+    .kpi-card-delta {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .kpi-card-delta.up { color: #16a34a; }
+    .kpi-card-delta.down { color: #dc2626; }
+
+    .mode-switch-fab {
+      position: fixed;
+      right: 26px;
+      bottom: 26px;
+      z-index: 220;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      background: rgba(15, 23, 42, 0.92);
+      box-shadow: 0 14px 26px rgba(15, 23, 42, 0.28);
+    }
+
+    .mode-switch-item {
+      min-width: 110px;
+      height: 40px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-switch-item:hover {
+      color: #ffffff;
+    }
+
+    .mode-switch-item.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+      cursor: default;
+    }
+
+    @media (max-width: 900px) {
+      .mode-switch-fab {
+        right: 14px;
+        bottom: 14px;
+        width: calc(100vw - 28px);
+      }
+
+      .mode-switch-item {
+        min-width: 0;
+        flex: 1;
+      }
+    }
   </style>
+  <script src="../../assets/mode_switcher.js"></script>
 </head>
 <body class="bg-gray-100">
   
@@ -497,121 +639,195 @@
     
     <!-- 内容区域 -->
     
-    <!-- ==================== 重要待办行 ==================== -->
-    <div class="module-card rounded-xl shadow-sm p-5 mb-5">
-          <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <div class="module-icon bg-gradient-to-br from-yellow-500 to-orange-500 text-white shadow-sm">
-            <i class="fas fa-tasks"></i>
+    <!-- ==================== 核心运营数据（供应商） ==================== -->
+    <div class="module-card rounded-xl shadow-sm p-5 mb-5" data-role="supplier" style="display: none;">
+      <div class="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4 mb-4">
+        <div class="flex items-start gap-3">
+          <div class="module-icon bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-sm">
+            <i class="fas fa-chart-line"></i>
           </div>
-          <h2 class="text-xl font-bold text-gray-800">重要待办</h2>
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">核心运营数据</h2>
+            <p class="text-sm text-gray-500 mt-0.5">掌握交易与商品表现，辅助运营决策</p>
+            <p class="text-xs text-gray-400 mt-1">以下数据为示例；已确认订单金额口径以结算为准</p>
+          </div>
         </div>
-          </div>
-          
-      <!-- 供应商角色待办（6个指标） -->
-      <div id="supplierTodos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" style="display: none;">
-        <div class="todo-card border-blue-200 text-blue-600" onclick="navigateTo('orders-list?status=pending')">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-blue-100 text-blue-600">
-              <i class="fas fa-hourglass-half"></i>
-              </div>
-            <div class="todo-card-label">待确认订单</div>
-            </div>
-          <div class="todo-card-number text-blue-600" id="supplierTodo1">8</div>
-              </div>
-        <div class="todo-card border-orange-200 text-orange-600" onclick="navigateTo('orders-list?status=shipping')">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-orange-100 text-orange-600">
-              <i class="fas fa-truck-loading"></i>
-            </div>
-            <div class="todo-card-label">待发货订单</div>
-              </div>
-          <div class="todo-card-number text-orange-600" id="supplierTodo2">12</div>
-            </div>
-        <div class="todo-card border-yellow-200 text-yellow-600" onclick="window.location.href='after_sales/after_sales_supplier.html?tab=pending'">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-yellow-100 text-yellow-600">
-              <i class="fas fa-question-circle"></i>
-              </div>
-            <div class="todo-card-label">退货待确认</div>
-            </div>
-          <div class="todo-card-number text-yellow-600" id="supplierTodo3">3</div>
-              </div>
-        <div class="todo-card border-gray-200 text-gray-600" onclick="navigateTo('contract-list?status=pending')">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-gray-100 text-gray-600">
-              <i class="fas fa-file-signature"></i>
-            </div>
-            <div class="todo-card-label">待提交合同</div>
-          </div>
-          <div class="todo-card-number text-gray-600" id="supplierTodo4">6</div>
-        </div>
-        <div class="todo-card border-orange-200 text-orange-600" onclick="navigateTo('settlement-list?status=invoice')">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-orange-100 text-orange-600">
-              <i class="fas fa-receipt"></i>
-            </div>
-            <div class="todo-card-label">待开票</div>
-          </div>
-          <div class="todo-card-number text-orange-600" id="supplierTodo5">8</div>
-        </div>
-        <div class="todo-card border-purple-200 text-purple-600" onclick="window.location.href='../product/my_products.html?status=reviewing'">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-purple-100 text-purple-600">
-              <i class="fas fa-boxes-stacked"></i>
-            </div>
-            <div class="todo-card-label">上架中</div>
-          </div>
-          <div class="todo-card-number text-purple-600" id="supplierTodo6">16</div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="kpiPeriodToday" class="chart-toggle-btn active" onclick="switchKpiPeriod('today')">今日</button>
+          <button type="button" id="kpiPeriodWeek7" class="chart-toggle-btn inactive" onclick="switchKpiPeriod('week7')">近7天</button>
+          <button type="button" id="kpiPeriodMonth30" class="chart-toggle-btn inactive" onclick="switchKpiPeriod('month30')">近30天</button>
+          <button type="button" id="kpiPeriodMonth" class="chart-toggle-btn inactive" onclick="switchKpiPeriod('month')">本月</button>
         </div>
       </div>
-      
-      <!-- 采购专员角色待办（5个指标） -->
-      <div id="buyerTodos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        <div class="todo-card border-blue-200 text-blue-600" onclick="navigateTo('po-list?tab=my-audit')">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-blue-100 text-blue-600">
-              <i class="fas fa-user-check"></i>
-            </div>
-            <div class="todo-card-label">待我审核采购单</div>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="kpi-card border-red-100">
+          <div class="kpi-card-top">
+            <div class="kpi-card-icon text-red-600"><i class="fas fa-yen-sign"></i></div>
+            <div class="kpi-card-title">成交金额</div>
           </div>
-          <div class="todo-card-number text-blue-600" id="buyerTodo1">10</div>
+          <div class="kpi-card-bottom">
+            <div class="kpi-card-body">
+              <div class="kpi-card-value is-amount text-red-700" id="kpiAmount">¥12.8万</div>
+            </div>
+            <div class="kpi-card-trend">
+              <span class="kpi-card-delta up" id="kpiDeltaAmount">+2.1%</span>
+              <div class="kpi-card-meta">较上周期</div>
+            </div>
+          </div>
         </div>
-        <div class="todo-card border-green-200 text-green-600" onclick="navigateTo('orders-list?status=receiving')">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-green-100 text-green-600">
-              <i class="fas fa-truck"></i>
-            </div>
-            <div class="todo-card-label">待收货</div>
+        <div class="kpi-card border-blue-100">
+          <div class="kpi-card-top">
+            <div class="kpi-card-icon text-blue-600"><i class="fas fa-file-invoice"></i></div>
+            <div class="kpi-card-title">成交订单数</div>
           </div>
-          <div class="todo-card-number text-green-600" id="buyerTodo2">15</div>
+          <div class="kpi-card-bottom">
+            <div class="kpi-card-body">
+              <div class="kpi-card-value text-blue-700" id="kpiOrders">21</div>
+            </div>
+            <div class="kpi-card-trend">
+              <span class="kpi-card-delta up" id="kpiDeltaOrders">+5.0%</span>
+              <div class="kpi-card-meta">较上周期</div>
+            </div>
+          </div>
         </div>
-        <div class="todo-card border-orange-200 text-orange-600" onclick="window.location.href='after_sales/after_sales_buyer.html?tab=return'">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-orange-100 text-orange-600">
-              <i class="fas fa-box-open"></i>
-            </div>
-            <div class="todo-card-label">待退货</div>
+        <div class="kpi-card border-indigo-100">
+          <div class="kpi-card-top">
+            <div class="kpi-card-icon text-indigo-600"><i class="fas fa-eye"></i></div>
+            <div class="kpi-card-title">商品访客数</div>
           </div>
-          <div class="todo-card-number text-orange-600" id="buyerTodo3">2</div>
+          <div class="kpi-card-bottom">
+            <div class="kpi-card-body">
+              <div class="kpi-card-value text-indigo-700" id="kpiVisitors">1,842</div>
+            </div>
+            <div class="kpi-card-trend">
+              <span class="kpi-card-delta up" id="kpiDeltaVisitors">+0.8%</span>
+              <div class="kpi-card-meta">较上周期</div>
+            </div>
+          </div>
         </div>
-        <div class="todo-card border-blue-200 text-blue-600" onclick="navigateTo('contract-list?status=approving')">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-blue-100 text-blue-600">
-              <i class="fas fa-file-signature"></i>
-            </div>
-            <div class="todo-card-label">待审核合同</div>
+        <div class="kpi-card border-amber-100">
+          <div class="kpi-card-top">
+            <div class="kpi-card-icon text-amber-600"><i class="fas fa-percent"></i></div>
+            <div class="kpi-card-title">下单转化率</div>
           </div>
-          <div class="todo-card-number text-blue-600" id="buyerTodo4">9</div>
+          <div class="kpi-card-bottom">
+            <div class="kpi-card-body">
+              <div class="kpi-card-value text-amber-800" id="kpiConversion">3.41%</div>
+            </div>
+            <div class="kpi-card-trend">
+              <span class="kpi-card-delta down" id="kpiDeltaConversion">-0.1%</span>
+              <div class="kpi-card-meta">访客→下单</div>
+            </div>
+          </div>
         </div>
-        <div class="todo-card border-purple-200 text-purple-600" onclick="navigateTo('settlement-list?status=payment')">
-          <div class="todo-card-content">
-            <div class="todo-card-icon bg-purple-100 text-purple-600">
-              <i class="fas fa-credit-card"></i>
-            </div>
-            <div class="todo-card-label">待付款</div>
+        <div class="kpi-card border-emerald-100">
+          <div class="kpi-card-top">
+            <div class="kpi-card-icon text-emerald-600"><i class="fas fa-tags"></i></div>
+            <div class="kpi-card-title">客单价</div>
           </div>
-          <div class="todo-card-number text-purple-600" id="buyerTodo5">5</div>
+          <div class="kpi-card-bottom">
+            <div class="kpi-card-body">
+              <div class="kpi-card-value text-emerald-700" id="kpiAov">¥6,095</div>
+            </div>
+            <div class="kpi-card-trend">
+              <span class="kpi-card-delta up" id="kpiDeltaAov">+1.2%</span>
+              <div class="kpi-card-meta">较上周期</div>
+            </div>
+          </div>
+        </div>
+        <div class="kpi-card border-slate-100">
+          <div class="kpi-card-top">
+            <div class="kpi-card-icon text-slate-600"><i class="fas fa-rotate-left"></i></div>
+            <div class="kpi-card-title">退款率</div>
+          </div>
+          <div class="kpi-card-bottom">
+            <div class="kpi-card-body">
+              <div class="kpi-card-value text-slate-800" id="kpiRefund">0.65%</div>
+            </div>
+            <div class="kpi-card-trend">
+              <span class="kpi-card-delta up" id="kpiDeltaRefund">-0.05%</span>
+              <div class="kpi-card-meta">金额占比</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 我的商品（供应商） ==================== -->
+    <div class="module-card rounded-xl shadow-sm p-5 mb-5" data-role="supplier" style="display: none;">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+        <div class="flex items-start gap-3">
+          <div class="module-icon bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-sm">
+            <i class="fas fa-box-open"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">我的商品</h2>
+            <p class="text-sm text-gray-500 mt-1">统一管理商品与销售表现，关注您的库存与动销健康度。</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="goods-action-btn goods-action-btn-secondary" onclick="window.location.href='../product/product_sales_report.html'">
+            <i class="fas fa-chart-pie"></i>
+            <span>查看销售明细</span>
+          </button>
+          <button class="goods-action-btn goods-action-btn-secondary" onclick="window.location.href='../product/my_products.html'">
+            <i class="fas fa-list"></i>
+            <span>查看上架情况</span>
+          </button>
+          <button class="goods-action-btn goods-action-btn-primary" onclick="window.location.href='../product/product_upload.html'">
+            <i class="fas fa-plus"></i>
+            <span>上架商品</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <!-- 动销商品数 -->
+        <div class="status-overview-card" onclick="window.location.href='../product/product_sales_report.html'">
+          <div class="status-overview-left bg-red-50 text-red-600">
+            <i class="fas fa-fire"></i>
+          </div>
+          <div class="status-overview-content">
+            <div class="status-overview-label">动销商品数</div>
+            <div class="text-xs text-gray-400 mt-1">动销率 67.2%</div>
+          </div>
+          <div class="status-overview-number text-red-600">86</div>
+        </div>
+        
+        <!-- 累计销售额 -->
+        <div class="status-overview-card" onclick="window.location.href='../product/product_sales_report.html'">
+          <div class="status-overview-left bg-blue-50 text-blue-600">
+            <i class="fas fa-sack-dollar"></i>
+          </div>
+          <div class="status-overview-content">
+            <div class="status-overview-label">累计销售额</div>
+            <div class="text-xs text-gray-400 mt-1">较上月 <span class="text-green-500 font-medium">+12.5%</span></div>
+          </div>
+          <div class="status-overview-number text-blue-600 text-2xl">¥35.8万</div>
+        </div>
+
+        <!-- 低库存预警 -->
+        <div class="status-overview-card" onclick="window.location.href='../product/product_sales_report.html'">
+          <div class="status-overview-left bg-amber-50 text-amber-500">
+            <i class="fas fa-triangle-exclamation"></i>
+          </div>
+          <div class="status-overview-content">
+            <div class="status-overview-label">低库存预警</div>
+            <div class="text-xs text-gray-400 mt-1">建议尽快补货</div>
+          </div>
+          <div class="status-overview-number text-amber-500">8</div>
+        </div>
+
+        <!-- 滞销商品数 -->
+        <div class="status-overview-card" onclick="window.location.href='../product/product_sales_report.html'">
+          <div class="status-overview-left bg-slate-50 text-slate-500">
+            <i class="fas fa-snowflake"></i>
+          </div>
+          <div class="status-overview-content">
+            <div class="status-overview-label">滞销商品数</div>
+            <div class="text-xs text-gray-400 mt-1">>30天无销量</div>
+          </div>
+          <div class="status-overview-number text-slate-500">24</div>
         </div>
       </div>
     </div>
@@ -692,6 +908,125 @@
         </div>
       </div>
       
+    </div>
+    
+    <!-- ==================== 重要待办行 ==================== -->
+    <div class="module-card rounded-xl shadow-sm p-5 mb-5">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="module-icon bg-gradient-to-br from-yellow-500 to-orange-500 text-white shadow-sm">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <h2 class="text-xl font-bold text-gray-800">重要待办</h2>
+        </div>
+      </div>
+          
+      <!-- 供应商角色待办（6个指标） -->
+      <div id="supplierTodos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3" style="display: none;">
+        <div class="todo-card border-blue-200 text-blue-600" onclick="navigateTo('orders-list?status=pending')">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-blue-100 text-blue-600">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="todo-card-label">待确认订单</div>
+          </div>
+          <div class="todo-card-number text-blue-600" id="supplierTodo1">8</div>
+        </div>
+        <div class="todo-card border-orange-200 text-orange-600" onclick="navigateTo('orders-list?status=shipping')">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-orange-100 text-orange-600">
+              <i class="fas fa-truck-loading"></i>
+            </div>
+            <div class="todo-card-label">待发货订单</div>
+          </div>
+          <div class="todo-card-number text-orange-600" id="supplierTodo2">12</div>
+        </div>
+        <div class="todo-card border-yellow-200 text-yellow-600" onclick="window.location.href='after_sales/after_sales_supplier.html?tab=pending'">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-yellow-100 text-yellow-600">
+              <i class="fas fa-question-circle"></i>
+            </div>
+            <div class="todo-card-label">退货待确认</div>
+          </div>
+          <div class="todo-card-number text-yellow-600" id="supplierTodo3">3</div>
+        </div>
+        <div class="todo-card border-gray-200 text-gray-600" onclick="navigateTo('contract-list?status=pending')">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-gray-100 text-gray-600">
+              <i class="fas fa-file-signature"></i>
+            </div>
+            <div class="todo-card-label">待提交合同</div>
+          </div>
+          <div class="todo-card-number text-gray-600" id="supplierTodo4">6</div>
+        </div>
+        <div class="todo-card border-orange-200 text-orange-600" onclick="navigateTo('settlement-list?status=invoice')">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-orange-100 text-orange-600">
+              <i class="fas fa-receipt"></i>
+            </div>
+            <div class="todo-card-label">待开票</div>
+          </div>
+          <div class="todo-card-number text-orange-600" id="supplierTodo5">8</div>
+        </div>
+        <div class="todo-card border-purple-200 text-purple-600" onclick="window.location.href='../product/my_products.html?status=reviewing'">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-purple-100 text-purple-600">
+              <i class="fas fa-boxes-stacked"></i>
+            </div>
+            <div class="todo-card-label">上架中</div>
+          </div>
+          <div class="todo-card-number text-purple-600" id="supplierTodo6">16</div>
+        </div>
+      </div>
+      
+      <!-- 采购专员角色待办（5个指标） -->
+      <div id="buyerTodos" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div class="todo-card border-blue-200 text-blue-600" onclick="navigateTo('po-list?tab=my-audit')">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-blue-100 text-blue-600">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <div class="todo-card-label">待我审核采购单</div>
+          </div>
+          <div class="todo-card-number text-blue-600" id="buyerTodo1">10</div>
+        </div>
+        <div class="todo-card border-green-200 text-green-600" onclick="navigateTo('orders-list?status=receiving')">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-green-100 text-green-600">
+              <i class="fas fa-truck"></i>
+            </div>
+            <div class="todo-card-label">待收货</div>
+          </div>
+          <div class="todo-card-number text-green-600" id="buyerTodo2">15</div>
+        </div>
+        <div class="todo-card border-orange-200 text-orange-600" onclick="window.location.href='after_sales/after_sales_buyer.html?tab=return'">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-orange-100 text-orange-600">
+              <i class="fas fa-box-open"></i>
+            </div>
+            <div class="todo-card-label">待退货</div>
+          </div>
+          <div class="todo-card-number text-orange-600" id="buyerTodo3">2</div>
+        </div>
+        <div class="todo-card border-blue-200 text-blue-600" onclick="navigateTo('contract-list?status=approving')">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-blue-100 text-blue-600">
+              <i class="fas fa-file-signature"></i>
+            </div>
+            <div class="todo-card-label">待审核合同</div>
+          </div>
+          <div class="todo-card-number text-blue-600" id="buyerTodo4">9</div>
+        </div>
+        <div class="todo-card border-purple-200 text-purple-600" onclick="navigateTo('settlement-list?status=payment')">
+          <div class="todo-card-content">
+            <div class="todo-card-icon bg-purple-100 text-purple-600">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="todo-card-label">待付款</div>
+          </div>
+          <div class="todo-card-number text-purple-600" id="buyerTodo5">5</div>
+        </div>
+      </div>
     </div>
     
     <!-- ==================== 第一行：我的消息 + 采购单 + 订单管理 ==================== -->
@@ -1280,6 +1615,11 @@
     </div>
     
   </div>
+
+  <div class="mode-switch-fab" aria-label="模式切换">
+    <button class="mode-switch-item" type="button" onclick="goToProcurementMode()">采购模式</button>
+    <button class="mode-switch-item active" type="button">管理模式</button>
+  </div>
   
   <!-- ==================== JavaScript ==================== -->
   <script>
@@ -1417,6 +1757,11 @@
       // 同步重要待办数据
       updateTodosData(role);
       
+      // 供应商：刷新核心运营数据 KPI
+      if (role === 'supplier') {
+        switchKpiPeriod(kpiPeriod);
+      }
+      
       // 重新渲染折线图（因为角色变化会影响数据）
       renderLineChart();
     }
@@ -1454,6 +1799,91 @@
         if (buyerTodo4) buyerTodo4.textContent = document.getElementById('contractApproving')?.textContent || '9';
         if (buyerTodo5) buyerTodo5.textContent = document.getElementById('settlementPayment')?.textContent || '5';
       }
+    }
+    
+    // ========== 核心运营数据（供应商 KPI） ==========
+    let kpiPeriod = 'today';
+
+    const kpiMockData = {
+      today: {
+        amount: '¥12.8万', orders: '21', visitors: '1,842', conversion: '3.41%', aov: '¥6,095', refund: '0.65%',
+        deltas: {
+          amount: { t: '+2.1%', good: true },
+          orders: { t: '+5.0%', good: true },
+          visitors: { t: '+0.8%', good: true },
+          conversion: { t: '-0.1%', good: false },
+          aov: { t: '+1.2%', good: true },
+          refund: { t: '-0.05%', good: true }
+        }
+      },
+      week7: {
+        amount: '¥86.2万', orders: '124', visitors: '8,960', conversion: '3.18%', aov: '¥6,952', refund: '0.78%',
+        deltas: {
+          amount: { t: '+8.2%', good: true },
+          orders: { t: '+5.1%', good: true },
+          visitors: { t: '+12.4%', good: true },
+          conversion: { t: '-0.3%', good: false },
+          aov: { t: '+2.0%', good: true },
+          refund: { t: '-0.1%', good: true }
+        }
+      },
+      month30: {
+        amount: '¥358.4万', orders: '518', visitors: '38,200', conversion: '3.22%', aov: '¥6,916', refund: '0.82%',
+        deltas: {
+          amount: { t: '+11.5%', good: true },
+          orders: { t: '+6.8%', good: true },
+          visitors: { t: '+9.2%', good: true },
+          conversion: { t: '+0.2%', good: true },
+          aov: { t: '+1.2%', good: true },
+          refund: { t: '-0.2%', good: true }
+        }
+      },
+      month: {
+        amount: '¥128.6万', orders: '186', visitors: '12,480', conversion: '3.28%', aov: '¥6,916', refund: '0.82%',
+        deltas: {
+          amount: { t: '+8.2%', good: true },
+          orders: { t: '+5.1%', good: true },
+          visitors: { t: '+12.4%', good: true },
+          conversion: { t: '-0.3%', good: false },
+          aov: { t: '+2.0%', good: true },
+          refund: { t: '-0.1%', good: true }
+        }
+      }
+    };
+
+    function setKpiDeltaEl(elId, deltaText, good) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.textContent = deltaText;
+      el.className = 'kpi-card-delta ' + (good ? 'up' : 'down');
+    }
+
+    function switchKpiPeriod(period) {
+      kpiPeriod = period;
+      const btnMap = { today: 'kpiPeriodToday', week7: 'kpiPeriodWeek7', month30: 'kpiPeriodMonth30', month: 'kpiPeriodMonth' };
+      Object.keys(btnMap).forEach((key) => {
+        const btn = document.getElementById(btnMap[key]);
+        if (btn) btn.className = key === period ? 'chart-toggle-btn active' : 'chart-toggle-btn inactive';
+      });
+      const d = kpiMockData[period];
+      if (!d) return;
+      const set = (id, v) => {
+        const n = document.getElementById(id);
+        if (n) n.textContent = v;
+      };
+      set('kpiAmount', d.amount);
+      set('kpiOrders', d.orders);
+      set('kpiVisitors', d.visitors);
+      set('kpiConversion', d.conversion);
+      set('kpiAov', d.aov);
+      set('kpiRefund', d.refund);
+      const z = d.deltas;
+      setKpiDeltaEl('kpiDeltaAmount', z.amount.t, z.amount.good);
+      setKpiDeltaEl('kpiDeltaOrders', z.orders.t, z.orders.good);
+      setKpiDeltaEl('kpiDeltaVisitors', z.visitors.t, z.visitors.good);
+      setKpiDeltaEl('kpiDeltaConversion', z.conversion.t, z.conversion.good);
+      setKpiDeltaEl('kpiDeltaAov', z.aov.t, z.aov.good);
+      setKpiDeltaEl('kpiDeltaRefund', z.refund.t, z.refund.good);
     }
     
     // ========== 图表相关变量 ==========
@@ -1911,6 +2341,10 @@
       }
       console.log('Navigate to:', page);
       alert(`跳转到：${page}（演示中，真实环境会跳转到对应页面）`);
+    }
+
+    function goToProcurementMode() {
+      window.location.href = '../home.html';
     }
     
     // ========== 页面加载时初始化 ==========

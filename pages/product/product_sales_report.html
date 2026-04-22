@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商品销售明细 | 阳光甄选</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="../../assets/custom.css">
+  
+  <style>
+    /* Tailwind 配置扩展 */
+    @layer utilities {
+      .text-primary { color: #E2231A; }
+      .bg-primary { background-color: #E2231A; }
+      .border-primary { border-color: #E2231A; }
+    }
+    
+    /* 模块卡片样式 */
+    .module-card {
+      background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: all 0.3s ease;
+    }
+
+    /* 表格样式优化 */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    
+    th {
+      background-color: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    th .sort-icon {
+      color: #cbd5e1;
+      margin-left: 4px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    th .sort-icon:hover { color: #3b82f6; }
+    
+    td {
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #334155;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    
+    tbody tr {
+      transition: background-color 0.2s;
+    }
+    
+    tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+    
+    /* 商品信息列的特殊样式 */
+    .product-info-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+    }
+    
+    .product-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .btn-outline {
+      border: 1px solid #d1d5db;
+      background: white;
+      color: #374151;
+    }
+    .btn-outline:hover {
+      background: #f3f4f6;
+    }
+
+    .btn-primary {
+      background: #E2231A;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #c81e16;
+    }
+
+    .btn-text {
+      color: #3b82f6;
+      background: transparent;
+      padding: 0;
+      font-size: 13px;
+    }
+    .btn-text:hover {
+      text-decoration: underline;
+    }
+
+    /* 抽屉(Drawer)样式 */
+    .drawer-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .drawer-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .drawer-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 100%;
+      max-width: 800px;
+      background: white;
+      z-index: 1001;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .drawer-panel.active {
+      transform: translateX(0);
+    }
+    
+    .drawer-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      background: #f8fafc;
+    }
+    
+    /* 抽屉内指标卡片 */
+    .mini-kpi-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    /* 抽屉内趋势图容器 */
+    .trend-chart-container {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      height: 320px;
+    }
+
+    /* Chart.js CDN */
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-100">
+  
+  <div class="min-h-screen p-5 max-w-[1920px] mx-auto">
+    
+    <!-- 页面面包屑与标题 -->
+    <div class="mb-5 flex items-center justify-between">
+      <div>
+        <div class="text-sm text-gray-500 mb-1">
+          <a href="#" class="hover:text-primary transition-colors">首页</a>
+          <span class="mx-1">/</span>
+          <a href="#" class="hover:text-primary transition-colors">商品管理</a>
+          <span class="mx-1">/</span>
+          <span class="text-gray-800 font-medium">商品销售明细</span>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900">商品销售明细</h1>
+      </div>
+    </div>
+
+    <!-- 搜索与筛选区域 -->
+    <div class="module-card rounded-xl shadow-sm p-5 mb-5 bg-white">
+      <form class="flex flex-wrap items-end gap-4" onsubmit="event.preventDefault();">
+        <div class="flex-1 min-w-[240px] max-w-sm">
+          <label class="block text-sm font-medium text-gray-700 mb-1">商品检索</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-search text-gray-400"></i>
+            </div>
+            <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm" placeholder="输入商品名称或 SKU 编码">
+          </div>
+        </div>
+
+        <div class="w-48">
+          <label class="block text-sm font-medium text-gray-700 mb-1">商品分类</label>
+          <select class="block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm">
+            <option value="">全部分类</option>
+            <option value="1">办公耗材</option>
+            <option value="2">办公文具</option>
+            <option value="3">电脑办公</option>
+            <option value="4">电脑外设</option>
+          </select>
+        </div>
+
+        <div class="w-64">
+          <label class="block text-sm font-medium text-gray-700 mb-1">销售时间范围</label>
+          <div class="flex items-center space-x-2">
+            <input type="date" class="block w-full pl-3 pr-2 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm" value="2026-01-01">
+            <span class="text-gray-400">-</span>
+            <input type="date" class="block w-full pl-3 pr-2 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm" value="2026-01-30">
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="button" class="btn-primary px-4 py-2 rounded-md text-sm font-medium transition-colors" onclick="alert('执行查询')">
+            <i class="fas fa-search mr-1.5"></i>查询
+          </button>
+          <button type="reset" class="btn-outline px-4 py-2 rounded-md text-sm font-medium transition-colors">
+            <i class="fas fa-undo mr-1.5"></i>重置
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 数据表格区域 -->
+    <div class="module-card rounded-xl shadow-sm p-5 bg-white">
+      
+      <!-- 表格操作栏 -->
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-800">销售数据列表</h2>
+        <button class="btn-outline px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 flex items-center gap-2" onclick="alert('报表已生成，开始下载...')">
+          <i class="fas fa-download text-primary"></i>
+          导出当前数据
+        </button>
+      </div>
+
+      <!-- 表格主体 -->
+      <div class="table-container mb-4">
+        <table>
+          <thead>
+            <tr>
+              <th>商品信息</th>
+              <th>所属分类</th>
+              <th>访客数 <i class="fas fa-sort sort-icon" title="点击排序"></i></th>
+              <th>转化率 <i class="fas fa-sort sort-icon" title="点击排序"></i></th>
+              <th>销售量 <i class="fas fa-sort sort-icon" title="点击排序"></i></th>
+              <th>销售额 <i class="fas fa-sort sort-icon" title="点击排序"></i></th>
+              <th>当前库存 <i class="fas fa-sort sort-icon" title="点击排序"></i></th>
+              <th class="text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="product-info-cell">
+                  <img src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=100&h=100&fit=crop" class="product-img" alt="A4纸">
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium text-gray-800 line-clamp-1" title="得力(deli) A4复印纸 70g 500张/包">得力(deli) A4复印纸 70g 500张/包</div>
+                    <div class="text-xs text-gray-500 mt-0.5">SKU: DELI-A4-70G</div>
+                  </div>
+                </div>
+              </td>
+              <td>办公耗材</td>
+              <td>1,240</td>
+              <td>12.5%</td>
+              <td>840</td>
+              <td class="font-medium text-red-600">¥23,940.00</td>
+              <td>4,500</td>
+              <td class="text-center">
+                <button class="btn-text mx-1" onclick="openAnalysisDrawer()">分析</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="product-info-cell">
+                  <img src="https://images.unsplash.com/photo-1583623025817-d180a2221d05?w=100&h=100&fit=crop" class="product-img" alt="中性笔">
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium text-gray-800 line-clamp-1" title="晨光(M&G)按动中性笔黑色 0.5mm 12支装">晨光(M&G)按动中性笔黑色 0.5mm 12支装</div>
+                    <div class="text-xs text-gray-500 mt-0.5">SKU: MG-PEN-05B</div>
+                  </div>
+                </div>
+              </td>
+              <td>办公文具</td>
+              <td>980</td>
+              <td>10.2%</td>
+              <td>520</td>
+              <td class="font-medium text-red-600">¥5,200.00</td>
+              <td>1,200</td>
+              <td class="text-center">
+                <button class="btn-text mx-1" onclick="openAnalysisDrawer()">分析</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="product-info-cell">
+                  <img src="https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=100&h=100&fit=crop" class="product-img" alt="打印机">
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium text-gray-800 line-clamp-1" title="惠普(HP) M132nw 激光多功能一体机">惠普(HP) M132nw 激光多功能一体机</div>
+                    <div class="text-xs text-gray-500 mt-0.5">SKU: HP-M132NW</div>
+                  </div>
+                </div>
+              </td>
+              <td>电脑办公</td>
+              <td>650</td>
+              <td>3.1%</td>
+              <td>45</td>
+              <td class="font-medium text-red-600">¥58,455.00</td>
+              <td class="text-red-500 font-bold"><i class="fas fa-triangle-exclamation mr-1"></i>8</td>
+              <td class="text-center">
+                <button class="btn-text mx-1 text-orange-500" onclick="alert('跳转至商品补货/修改库存页')">补货</button>
+                <button class="btn-text mx-1" onclick="openAnalysisDrawer()">分析</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="product-info-cell">
+                  <img src="https://images.unsplash.com/photo-1544396821-4dd40b938ad3?w=100&h=100&fit=crop" class="product-img" alt="文件夹">
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium text-gray-800 line-clamp-1" title="得力(deli) 抽杆夹 50个/包 蓝色">得力(deli) 抽杆夹 50个/包 蓝色</div>
+                    <div class="text-xs text-gray-500 mt-0.5">SKU: DELI-FILE-B50</div>
+                  </div>
+                </div>
+              </td>
+              <td>办公文具</td>
+              <td>420</td>
+              <td>8.4%</td>
+              <td>120</td>
+              <td class="font-medium text-red-600">¥1,560.00</td>
+              <td>3,400</td>
+              <td class="text-center">
+                <button class="btn-text mx-1" onclick="openAnalysisDrawer()">分析</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="product-info-cell">
+                  <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=100&h=100&fit=crop" class="product-img" alt="鼠标">
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium text-gray-800 line-clamp-1" title="罗技(Logitech) M185无线鼠标 灰色">罗技(Logitech) M185无线鼠标 灰色</div>
+                    <div class="text-xs text-gray-500 mt-0.5">SKU: LOGI-M185-GRY</div>
+                  </div>
+                </div>
+              </td>
+              <td>电脑外设</td>
+              <td>380</td>
+              <td>5.5%</td>
+              <td>86</td>
+              <td class="font-medium text-red-600">¥4,214.00</td>
+              <td class="text-red-500 font-bold"><i class="fas fa-triangle-exclamation mr-1"></i>12</td>
+              <td class="text-center">
+                <button class="btn-text mx-1 text-orange-500" onclick="alert('跳转至商品补货/修改库存页')">补货</button>
+                <button class="btn-text mx-1" onclick="openAnalysisDrawer()">分析</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 分页区域 -->
+      <div class="flex items-center justify-between border-t border-gray-200 pt-4">
+        <div class="text-sm text-gray-500">
+          共 <span class="font-medium text-gray-900">128</span> 条记录，当前显示 1-5 条
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-400 cursor-not-allowed" disabled>
+            <i class="fas fa-chevron-left text-xs"></i>
+          </button>
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-primary bg-primary text-white">1</button>
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">2</button>
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">3</button>
+          <span class="px-1 text-gray-500">...</span>
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">26</button>
+          <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+            <i class="fas fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 页脚版权信息 -->
+    <div class="mt-8 text-center text-sm text-gray-400">
+      <p>© 2026 阳光甄选采购平台 | 供应商工作台原型演示</p>
+    </div>
+    
+  </div>
+
+  <!-- 分析抽屉 (Drawer) -->
+  <div id="analysisDrawerOverlay" class="drawer-overlay" onclick="closeAnalysisDrawer()"></div>
+  <div id="analysisDrawer" class="drawer-panel">
+    <!-- 抽屉头部 -->
+    <div class="drawer-header">
+      <div class="flex items-start gap-4">
+        <img id="drawerProductImg" src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=100&h=100&fit=crop" class="w-16 h-16 rounded-md object-cover border border-gray-200" alt="商品图片">
+        <div>
+          <h2 id="drawerProductName" class="text-lg font-bold text-gray-900 leading-snug line-clamp-2">得力(deli) A4复印纸 70g 500张/包</h2>
+          <p id="drawerProductSku" class="text-sm text-gray-500 mt-1">SKU: DELI-A4-70G</p>
+          <div class="flex flex-wrap items-center gap-4 mt-2">
+            <span class="text-sm"><span class="text-gray-500">当前售价：</span><span class="font-semibold text-red-600">¥28.50</span></span>
+            <span class="text-sm"><span class="text-gray-500">当前库存：</span><span class="font-semibold text-gray-800">4,500</span></span>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="text-gray-400 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center transition-colors" onclick="closeAnalysisDrawer()">
+        <i class="fas fa-times text-lg"></i>
+      </button>
+    </div>
+
+    <!-- 抽屉主体内容 -->
+    <div class="drawer-body">
+      
+      <!-- 周期筛选与概览指标 -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-gray-800">商品销售表现</h3>
+        <select class="block w-32 pl-3 pr-8 py-1.5 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+          <option value="7">近 7 天</option>
+          <option selected value="30">近 30 天</option>
+        </select>
+      </div>
+
+      <!-- 核心指标卡片 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div class="mini-kpi-card">
+          <span class="text-xs text-gray-500 font-medium">访客数(UV)</span>
+          <span class="text-lg font-bold text-gray-900">1,240</span>
+          <span class="text-xs text-green-600 font-medium"><i class="fas fa-arrow-up mr-1"></i>2.1%</span>
+        </div>
+        <div class="mini-kpi-card">
+          <span class="text-xs text-gray-500 font-medium">转化率(CVR)</span>
+          <span class="text-lg font-bold text-gray-900">12.5%</span>
+          <span class="text-xs text-red-500 font-medium"><i class="fas fa-arrow-down mr-1"></i>0.5%</span>
+        </div>
+        <div class="mini-kpi-card">
+          <span class="text-xs text-gray-500 font-medium">成交订单数</span>
+          <span class="text-lg font-bold text-gray-900">356</span>
+          <span class="text-xs text-green-600 font-medium"><i class="fas fa-arrow-up mr-1"></i>5.2%</span>
+        </div>
+        <div class="mini-kpi-card">
+          <span class="text-xs text-gray-500 font-medium">成交金额</span>
+          <span class="text-lg font-bold text-red-600">¥23,940</span>
+          <span class="text-xs text-green-600 font-medium"><i class="fas fa-arrow-up mr-1"></i>8.2%</span>
+        </div>
+      </div>
+
+      <!-- 趋势图表 -->
+      <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-800 mb-3">流量与交易趋势</h3>
+        <div class="trend-chart-container">
+          <canvas id="productTrendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- 下方两列布局：采购排行 & 近期订单 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-6">
+        
+        <!-- 左列：采购单位排行 -->
+        <div>
+          <h3 class="text-sm font-bold text-gray-800 mb-3">采购单位排行榜 (Top 5)</h3>
+          <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <ul class="divide-y divide-gray-100 text-sm">
+              <li class="flex items-center justify-between p-3 hover:bg-gray-50">
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="w-5 text-center text-xs font-bold text-yellow-500">1</span>
+                  <span class="truncate text-gray-700">北京市某某局采购中心</span>
+                </div>
+                <span class="font-medium text-gray-900 ml-2">¥8,500</span>
+              </li>
+              <li class="flex items-center justify-between p-3 hover:bg-gray-50">
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="w-5 text-center text-xs font-bold text-gray-400">2</span>
+                  <span class="truncate text-gray-700">某某公立医院设备科</span>
+                </div>
+                <span class="font-medium text-gray-900 ml-2">¥4,200</span>
+              </li>
+              <li class="flex items-center justify-between p-3 hover:bg-gray-50">
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="w-5 text-center text-xs font-bold text-orange-400">3</span>
+                  <span class="truncate text-gray-700">海淀区某某高级中学</span>
+                </div>
+                <span class="font-medium text-gray-900 ml-2">¥2,850</span>
+              </li>
+              <li class="flex items-center justify-between p-3 hover:bg-gray-50">
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="w-5 text-center text-xs text-gray-400">4</span>
+                  <span class="truncate text-gray-700">某某研究院后勤处</span>
+                </div>
+                <span class="font-medium text-gray-900 ml-2">¥1,600</span>
+              </li>
+              <li class="flex items-center justify-between p-3 hover:bg-gray-50">
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="w-5 text-center text-xs text-gray-400">5</span>
+                  <span class="truncate text-gray-700">某某区政务服务局</span>
+                </div>
+                <span class="font-medium text-gray-900 ml-2">¥950</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 右列：近期订单明细 -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-gray-800">近期成交订单</h3>
+            <a href="#" class="text-xs text-primary hover:underline">查看更多</a>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-gray-50 text-gray-500">
+                <tr>
+                  <th class="py-2 px-3 font-medium">日期</th>
+                  <th class="py-2 px-3 font-medium">数量</th>
+                  <th class="py-2 px-3 font-medium">金额</th>
+                  <th class="py-2 px-3 font-medium">状态</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 text-gray-700">
+                <tr class="hover:bg-gray-50 cursor-pointer">
+                  <td class="py-2.5 px-3">10-24 14:30</td>
+                  <td class="py-2.5 px-3">100</td>
+                  <td class="py-2.5 px-3 font-medium">¥2,850</td>
+                  <td class="py-2.5 px-3 text-green-600">已完成</td>
+                </tr>
+                <tr class="hover:bg-gray-50 cursor-pointer">
+                  <td class="py-2.5 px-3">10-22 09:15</td>
+                  <td class="py-2.5 px-3">50</td>
+                  <td class="py-2.5 px-3 font-medium">¥1,425</td>
+                  <td class="py-2.5 px-3 text-orange-500">待发货</td>
+                </tr>
+                <tr class="hover:bg-gray-50 cursor-pointer">
+                  <td class="py-2.5 px-3">10-20 16:45</td>
+                  <td class="py-2.5 px-3">200</td>
+                  <td class="py-2.5 px-3 font-medium">¥5,700</td>
+                  <td class="py-2.5 px-3 text-blue-500">待付款</td>
+                </tr>
+                <tr class="hover:bg-gray-50 cursor-pointer">
+                  <td class="py-2.5 px-3">10-18 11:20</td>
+                  <td class="py-2.5 px-3">30</td>
+                  <td class="py-2.5 px-3 font-medium">¥855</td>
+                  <td class="py-2.5 px-3 text-green-600">已完成</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let trendChartInstance = null;
+
+    // 打开分析抽屉并渲染图表
+    function openAnalysisDrawer() {
+      const overlay = document.getElementById('analysisDrawerOverlay');
+      const drawer = document.getElementById('analysisDrawer');
+      
+      // 显示抽屉
+      overlay.classList.add('active');
+      drawer.classList.add('active');
+      
+      // 防止背景滚动
+      document.body.style.overflow = 'hidden';
+
+      // 延迟初始化图表，确保 canvas 已变为可见状态
+      setTimeout(() => {
+        renderTrendChart();
+      }, 300);
+    }
+
+    // 关闭抽屉
+    function closeAnalysisDrawer() {
+      const overlay = document.getElementById('analysisDrawerOverlay');
+      const drawer = document.getElementById('analysisDrawer');
+      
+      overlay.classList.remove('active');
+      drawer.classList.remove('active');
+      
+      // 恢复背景滚动
+      document.body.style.overflow = '';
+    }
+
+    // 渲染双 Y 轴折线+柱状图
+    function renderTrendChart() {
+      const ctx = document.getElementById('productTrendChart');
+      if (!ctx) return;
+
+      // 如果已存在实例，先销毁
+      if (trendChartInstance) {
+        trendChartInstance.destroy();
+      }
+
+      // 生成近 30 天示例日期标签
+      const labels = [];
+      const visitorsData = [];
+      const amountData = [];
+      
+      for (let i = 30; i >= 1; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        labels.push(`${d.getMonth() + 1}-${d.getDate()}`);
+        
+        // 随机生成一些具有波动性的数据
+        visitorsData.push(Math.floor(Math.random() * 150) + 50);
+        amountData.push(Math.floor(Math.random() * 3000) + 500);
+      }
+
+      trendChartInstance = new Chart(ctx, {
+        type: 'bar', // 主类型为柱状图
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              type: 'line',
+              label: '成交金额(¥)',
+              data: amountData,
+              borderColor: '#E2231A',
+              backgroundColor: '#E2231A',
+              borderWidth: 2,
+              tension: 0.4,
+              yAxisID: 'y1',
+              pointRadius: 0,
+              pointHoverRadius: 4
+            },
+            {
+              type: 'bar',
+              label: '访客数(UV)',
+              data: visitorsData,
+              backgroundColor: 'rgba(59, 130, 246, 0.4)',
+              borderColor: 'rgba(59, 130, 246, 1)',
+              borderWidth: 1,
+              borderRadius: 4,
+              yAxisID: 'y'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+              align: 'end',
+              labels: {
+                usePointStyle: true,
+                boxWidth: 8,
+                font: { size: 12 }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              titleColor: '#1f2937',
+              bodyColor: '#4b5563',
+              borderColor: '#e5e7eb',
+              borderWidth: 1,
+              padding: 10,
+              boxPadding: 4,
+              usePointStyle: true
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { maxTicksLimit: 10, font: { size: 11 } }
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: { display: true, text: '访客数', font: { size: 11 } },
+              grid: { color: '#f1f5f9' },
+              border: { dash: [4, 4] }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: { display: true, text: '金额(¥)', font: { size: 11 } },
+              grid: { drawOnChartArea: false } // 不重复画网格线
+            }
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
