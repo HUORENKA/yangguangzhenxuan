@@ -441,18 +441,6 @@
       border-color: #cbd5e1;
     }
 
-    .goods-process-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: #475569;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-    }
-
     /* 核心运营数据 KPI 卡片 */
     .kpi-card {
       background: #ffffff;
@@ -540,6 +528,116 @@
     .kpi-card-delta.up { color: #16a34a; }
     .kpi-card-delta.down { color: #dc2626; }
 
+    /* ========== 工作台左侧菜单（样式对齐管理后台侧栏） ========== */
+    .admin-sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 240px;
+      height: 100vh;
+      background: #1e293b;
+      color: white;
+      transition: width 0.3s ease;
+      z-index: 100;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .admin-sidebar.collapsed {
+      width: 64px;
+    }
+    .admin-sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      white-space: nowrap;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    .admin-sidebar.collapsed .admin-sidebar-logo span {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+    .admin-sidebar-logo i {
+      color: #E2231A;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .admin-sidebar-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .admin-sidebar-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .admin-menu {
+      padding: 10px 0;
+    }
+    .admin-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .admin-menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    .admin-menu-item.active {
+      background: rgba(226, 35, 26, 0.2);
+      color: white;
+      border-left: 3px solid #E2231A;
+    }
+    .admin-menu-item i {
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .admin-menu-item span {
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    .admin-sidebar.collapsed .admin-menu-item span {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+    .admin-content {
+      margin-left: 240px;
+      transition: margin-left 0.3s ease;
+      min-height: 100vh;
+    }
+    .admin-sidebar.collapsed ~ .admin-content {
+      margin-left: 64px;
+    }
+    .wb-section-anchor {
+      scroll-margin-top: 16px;
+    }
+
     .mode-switch-fab {
       position: fixed;
       right: 26px;
@@ -597,7 +695,77 @@
   <script src="../../assets/mode_switcher.js"></script>
 </head>
 <body class="bg-gray-100">
-  
+
+  <!-- 工作台左侧菜单（样式对齐管理后台） -->
+  <div class="admin-sidebar" id="workbenchSidebar">
+    <div class="admin-sidebar-header">
+      <div class="admin-sidebar-logo">
+        <i class="fas fa-briefcase" id="workbenchSidebarIcon"></i>
+        <span id="workbenchSidebarBrand">采购工作台</span>
+      </div>
+      <button type="button" class="admin-sidebar-toggle" onclick="toggleWorkbenchSidebar()" title="收起/展开">
+        <i class="fas fa-chevron-left" id="sidebarToggleIcon"></i>
+      </button>
+    </div>
+    <nav class="admin-menu">
+      <!-- 采购方 -->
+      <div id="wbMenuBuyer" style="display: block;">
+        <a href="workbench_home.html" class="admin-menu-item active">
+          <i class="fas fa-home"></i><span>首页</span>
+        </a>
+        <a href="#wb-section-messages" class="admin-menu-item">
+          <i class="fas fa-envelope"></i><span>我的消息</span>
+        </a>
+        <a href="#poModule" class="admin-menu-item">
+          <i class="fas fa-file-invoice"></i><span>采购单</span>
+        </a>
+        <a href="#wb-section-orders" class="admin-menu-item">
+          <i class="fas fa-shopping-bag"></i><span>订单管理</span>
+        </a>
+        <a href="../after_sales/after_sales_buyer.html" class="admin-menu-item">
+          <i class="fas fa-undo"></i><span>售后管理</span>
+        </a>
+        <a href="#wb-section-contract" class="admin-menu-item">
+          <i class="fas fa-file-signature"></i><span>合同签署</span>
+        </a>
+        <a href="#wb-section-settlement" class="admin-menu-item">
+          <i class="fas fa-calculator"></i><span>结算订单</span>
+        </a>
+        <a href="#wb-section-favorites" class="admin-menu-item">
+          <i class="fas fa-heart"></i><span>我的收藏</span>
+        </a>
+      </div>
+      <!-- 供应商 -->
+      <div id="wbMenuSupplier" style="display: none;">
+        <a href="workbench_home.html" class="admin-menu-item active">
+          <i class="fas fa-home"></i><span>首页</span>
+        </a>
+        <a href="#wb-section-messages" class="admin-menu-item">
+          <i class="fas fa-envelope"></i><span>我的消息</span>
+        </a>
+        <a href="../product/my_products.html" class="admin-menu-item">
+          <i class="fas fa-boxes-stacked"></i><span>我的商品</span>
+        </a>
+        <a href="#poModule" class="admin-menu-item">
+          <i class="fas fa-file-invoice"></i><span>采购单</span>
+        </a>
+        <a href="#wb-section-orders" class="admin-menu-item">
+          <i class="fas fa-shopping-bag"></i><span>订单管理</span>
+        </a>
+        <a href="../after_sales/after_sales_supplier.html" class="admin-menu-item">
+          <i class="fas fa-undo"></i><span>售后管理</span>
+        </a>
+        <a href="#wb-section-contract" class="admin-menu-item">
+          <i class="fas fa-file-signature"></i><span>合同签署</span>
+        </a>
+        <a href="#wb-section-settlement" class="admin-menu-item">
+          <i class="fas fa-calculator"></i><span>结算订单</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="admin-content">
   <!-- 主容器 -->
   <div class="min-h-screen p-5 max-w-[1920px] mx-auto">
     
@@ -941,7 +1109,7 @@
           </div>
           <div class="todo-card-number text-orange-600" id="supplierTodo2">12</div>
         </div>
-        <div class="todo-card border-yellow-200 text-yellow-600" onclick="window.location.href='after_sales/after_sales_supplier.html?tab=pending'">
+        <div class="todo-card border-yellow-200 text-yellow-600" onclick="window.location.href='../after_sales/after_sales_supplier.html?tab=pending'">
           <div class="todo-card-content">
             <div class="todo-card-icon bg-yellow-100 text-yellow-600">
               <i class="fas fa-question-circle"></i>
@@ -999,7 +1167,7 @@
           </div>
           <div class="todo-card-number text-green-600" id="buyerTodo2">15</div>
         </div>
-        <div class="todo-card border-orange-200 text-orange-600" onclick="window.location.href='after_sales/after_sales_buyer.html?tab=return'">
+        <div class="todo-card border-orange-200 text-orange-600" onclick="window.location.href='../after_sales/after_sales_buyer.html?tab=return'">
           <div class="todo-card-content">
             <div class="todo-card-icon bg-orange-100 text-orange-600">
               <i class="fas fa-box-open"></i>
@@ -1033,7 +1201,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
       
       <!-- 我的消息 -->
-      <div class="module-card rounded-xl shadow-sm p-5 flex flex-col" style="min-height: 260px;">
+      <div id="wb-section-messages" class="module-card rounded-xl shadow-sm p-5 flex flex-col wb-section-anchor" style="min-height: 260px;">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <div class="module-icon bg-gradient-to-br from-red-500 to-red-600 text-white shadow-sm">
@@ -1120,7 +1288,7 @@
       </div>
         
         <!-- 采购单 -->
-      <div id="poModule" class="module-card rounded-xl shadow-sm p-5 cursor-pointer flex flex-col" style="min-height: 260px;" onclick="navigateTo('po-list')">
+      <div id="poModule" class="module-card rounded-xl shadow-sm p-5 cursor-pointer flex flex-col wb-section-anchor" style="min-height: 260px;" onclick="navigateTo('po-list')">
           <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <div class="module-icon bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-sm">
@@ -1163,7 +1331,7 @@
         </div>
         
         <!-- 订单管理 -->
-      <div class="module-card rounded-xl shadow-sm p-5 flex flex-col" style="min-height: 260px;">
+      <div id="wb-section-orders" class="module-card rounded-xl shadow-sm p-5 flex flex-col wb-section-anchor" style="min-height: 260px;">
           <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <div class="module-icon bg-gradient-to-br from-green-500 to-green-600 text-white shadow-sm">
@@ -1221,7 +1389,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
       
       <!-- 售后管理 -->
-      <div class="module-card rounded-xl shadow-sm p-5 cursor-pointer" onclick="window.location.href='after_sales/after_sales_buyer.html'">
+      <div id="wb-section-after-sales" class="module-card rounded-xl shadow-sm p-5 cursor-pointer wb-section-anchor" onclick="window.location.href='../after_sales/after_sales_buyer.html'">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <div class="module-icon bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-sm">
@@ -1229,24 +1397,24 @@
         </div>
             <h3 class="text-lg font-bold text-gray-800">售后管理</h3>
           </div>
-          <a href="after_sales/after_sales_buyer.html" class="view-all-link text-sm text-primary font-medium" onclick="event.stopPropagation()">查看全部 <i class="fas fa-chevron-right text-xs ml-1"></i></a>
+          <a href="../after_sales/after_sales_buyer.html" class="view-all-link text-sm text-primary font-medium" onclick="event.stopPropagation()">查看全部 <i class="fas fa-chevron-right text-xs ml-1"></i></a>
           </div>
         <div class="space-y-2.5">
-          <div class="data-row flex items-center justify-between py-2.5 px-4 bg-yellow-50 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='after_sales/after_sales_buyer.html?tab=pending'">
+          <div class="data-row flex items-center justify-between py-2.5 px-4 bg-yellow-50 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='../after_sales/after_sales_buyer.html?tab=pending'">
             <div class="flex items-center gap-2">
               <i class="fas fa-question-circle text-yellow-500 text-sm"></i>
               <span class="text-sm font-medium text-gray-700">待确认</span>
           </div>
             <span class="data-number text-lg font-bold text-yellow-600" id="afterSaleConfirm">3</span>
           </div>
-          <div class="data-row flex items-center justify-between py-2.5 px-4 bg-orange-50 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='after_sales/after_sales_buyer.html?tab=return'">
+          <div class="data-row flex items-center justify-between py-2.5 px-4 bg-orange-50 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='../after_sales/after_sales_buyer.html?tab=return'">
             <div class="flex items-center gap-2">
               <i class="fas fa-box-open text-orange-500 text-sm"></i>
               <span class="text-sm font-medium text-gray-700">待退货</span>
             </div>
             <span class="data-number text-lg font-bold text-orange-600" id="afterSaleReturn">2</span>
           </div>
-          <div class="data-row flex items-center justify-between py-2.5 px-4 bg-blue-50 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='after_sales/after_sales_buyer.html?tab=shipping'">
+          <div class="data-row flex items-center justify-between py-2.5 px-4 bg-blue-50 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='../after_sales/after_sales_buyer.html?tab=shipping'">
             <div class="flex items-center gap-2">
               <i class="fas fa-shipping-fast text-blue-500 text-sm"></i>
               <span class="text-sm font-medium text-gray-700">退货中</span>
@@ -1255,14 +1423,14 @@
           </div>
           <!-- 最后一行：退货完成 | 已取消 -->
           <div class="grid grid-cols-2 gap-2">
-            <div class="data-row flex items-center justify-between py-2.5 px-3 bg-green-50 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='after_sales/after_sales_buyer.html?tab=completed'">
+            <div class="data-row flex items-center justify-between py-2.5 px-3 bg-green-50 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='../after_sales/after_sales_buyer.html?tab=completed'">
               <div class="flex items-center gap-2">
                 <i class="fas fa-check-double text-green-500 text-xs"></i>
                 <span class="text-sm font-medium text-gray-700">退货完成</span>
               </div>
               <span class="data-number text-lg font-bold text-green-600" id="afterSaleCompleted">18</span>
             </div>
-            <div class="data-row flex items-center justify-between py-2.5 px-3 bg-gray-100 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='after_sales/after_sales_buyer.html?tab=cancelled'">
+            <div class="data-row flex items-center justify-between py-2.5 px-3 bg-gray-100 rounded-lg cursor-pointer" onclick="event.stopPropagation(); window.location.href='../after_sales/after_sales_buyer.html?tab=cancelled'">
               <div class="flex items-center gap-2">
                 <i class="fas fa-ban text-gray-400 text-xs"></i>
                 <span class="text-sm font-medium text-gray-600">已取消</span>
@@ -1274,7 +1442,7 @@
       </div>
       
       <!-- 合同签署 -->
-      <div class="module-card rounded-xl shadow-sm p-5">
+      <div id="wb-section-contract" class="module-card rounded-xl shadow-sm p-5 wb-section-anchor">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <div class="module-icon bg-gradient-to-br from-indigo-500 to-indigo-600 text-white shadow-sm">
@@ -1317,7 +1485,7 @@
       </div>
       
       <!-- 结算订单 -->
-      <div class="module-card rounded-xl shadow-sm p-5">
+      <div id="wb-section-settlement" class="module-card rounded-xl shadow-sm p-5 wb-section-anchor">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <div class="module-icon bg-gradient-to-br from-teal-500 to-teal-600 text-white shadow-sm">
@@ -1393,7 +1561,7 @@
     </div>
     
     <!-- ==================== 第三行：我的收藏（采购视角） ==================== -->
-    <div class="module-card rounded-xl shadow-sm p-4 mb-5" data-role="buyer">
+    <div id="wb-section-favorites" class="module-card rounded-xl shadow-sm p-4 mb-5 wb-section-anchor" data-role="buyer">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-3">
           <div class="module-icon bg-gradient-to-br from-red-500 to-pink-500 text-white shadow-sm">
@@ -1529,85 +1697,6 @@
           
       </div>
     </div>
-
-    <!-- ==================== 第三行：我的商品（供应商视角） ==================== -->
-    <div class="module-card rounded-xl shadow-sm p-5 mb-5" data-role="supplier" style="display: none;">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
-        <div class="flex items-start gap-3">
-          <div class="module-icon bg-gradient-to-br from-rose-500 to-orange-500 text-white shadow-sm">
-            <i class="fas fa-box-open"></i>
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-gray-800">我的商品</h2>
-            <p class="text-sm text-gray-500 mt-1">统一管理商品上架、审核、下架与整改状态，首页仅展示汇总入口。</p>
-          </div>
-        </div>
-        <div class="flex flex-wrap items-center gap-3">
-          <button class="goods-action-btn goods-action-btn-secondary" onclick="window.location.href='../product/my_products.html'">
-            <i class="fas fa-list"></i>
-            <span>查看全部</span>
-          </button>
-          <button class="goods-action-btn goods-action-btn-primary" onclick="window.location.href='../product/product_upload.html'">
-            <i class="fas fa-plus"></i>
-            <span>上架商品</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
-        <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=published'">
-          <div class="status-overview-left bg-green-100 text-green-600">
-            <i class="fas fa-circle-check"></i>
-          </div>
-          <div class="status-overview-content">
-            <div class="status-overview-label">已上架商品</div>
-          </div>
-          <div class="status-overview-number text-green-600" id="productPublishedCount">128</div>
-        </div>
-        <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=reviewing'">
-          <div class="status-overview-left bg-blue-100 text-blue-600">
-            <i class="fas fa-robot"></i>
-          </div>
-          <div class="status-overview-content">
-            <div class="status-overview-label">审核中商品</div>
-          </div>
-          <div class="status-overview-number text-blue-600" id="productReviewingCount">16</div>
-        </div>
-        <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=offline'">
-          <div class="status-overview-left bg-slate-100 text-slate-600">
-            <i class="fas fa-box-archive"></i>
-          </div>
-          <div class="status-overview-content">
-            <div class="status-overview-label">已下架商品</div>
-          </div>
-          <div class="status-overview-number text-slate-700" id="productOfflineCount">9</div>
-        </div>
-        <div class="status-overview-card" onclick="window.location.href='../product/my_products.html?status=rejected'">
-          <div class="status-overview-left bg-red-100 text-red-600">
-            <i class="fas fa-triangle-exclamation"></i>
-          </div>
-          <div class="status-overview-content">
-            <div class="status-overview-label">审核未通过</div>
-          </div>
-          <div class="status-overview-number text-red-600" id="productRejectedCount">4</div>
-        </div>
-      </div>
-
-      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-          <div>
-            <h3 class="text-sm font-semibold text-slate-800 mb-2">上架流程</h3>
-            <div class="flex flex-wrap gap-2">
-              <span class="goods-process-pill"><i class="fas fa-download text-blue-500"></i>下载模板</span>
-              <span class="goods-process-pill"><i class="fas fa-file-arrow-up text-orange-500"></i>批量上传商品</span>
-              <span class="goods-process-pill"><i class="fas fa-robot text-purple-500"></i>AI自动校验</span>
-              <span class="goods-process-pill"><i class="fas fa-square-check text-green-500"></i>输出校验结果</span>
-            </div>
-          </div>
-          <p class="text-sm text-slate-500">首页不展示商品详情，点击任一状态卡即可跳转至对应列表页查看明细。</p>
-        </div>
-      </div>
-    </div>
     
     <!-- 页脚版权信息 -->
     <div class="mt-5 text-center text-sm text-gray-400">
@@ -1616,10 +1705,12 @@
     
   </div>
 
-  <div class="mode-switch-fab" aria-label="模式切换">
+  <div id="modeSwitchFab" class="mode-switch-fab" aria-label="模式切换">
     <button class="mode-switch-item" type="button" onclick="goToProcurementMode()">采购模式</button>
     <button class="mode-switch-item active" type="button">管理模式</button>
   </div>
+
+  </div><!-- /.admin-content -->
   
   <!-- ==================== JavaScript ==================== -->
   <script>
@@ -1764,6 +1855,49 @@
       
       // 重新渲染折线图（因为角色变化会影响数据）
       renderLineChart();
+
+      // 左侧菜单：按角色切换采购方 / 供应商菜单项
+      updateWorkbenchMenus(role);
+      updateWorkbenchSidebarBrand(role);
+
+      // 供应商视角不展示「采购模式 / 管理模式」切换（仅采购方需要）
+      const modeFab = document.getElementById('modeSwitchFab');
+      if (modeFab) {
+        modeFab.style.display = role === 'supplier' ? 'none' : 'inline-flex';
+      }
+    }
+
+    function updateWorkbenchMenus(role) {
+      const buyerNav = document.getElementById('wbMenuBuyer');
+      const supplierNav = document.getElementById('wbMenuSupplier');
+      if (buyerNav) buyerNav.style.display = role === 'buyer' ? 'block' : 'none';
+      if (supplierNav) supplierNav.style.display = role === 'supplier' ? 'block' : 'none';
+    }
+
+    function updateWorkbenchSidebarBrand(role) {
+      const brand = document.getElementById('workbenchSidebarBrand');
+      const icon = document.getElementById('workbenchSidebarIcon');
+      if (brand) {
+        brand.textContent = role === 'supplier' ? '供应商工作台' : '采购工作台';
+      }
+      if (icon) {
+        icon.className = role === 'supplier' ? 'fas fa-store' : 'fas fa-briefcase';
+      }
+    }
+
+    function toggleWorkbenchSidebar() {
+      const sidebar = document.getElementById('workbenchSidebar');
+      const icon = document.getElementById('sidebarToggleIcon');
+      if (!sidebar || !icon) return;
+      sidebar.classList.toggle('collapsed');
+      if (sidebar.classList.contains('collapsed')) {
+        icon.classList.remove('fa-chevron-left');
+        icon.classList.add('fa-chevron-right');
+      } else {
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-left');
+      }
+      localStorage.setItem('workbenchSidebarCollapsed', sidebar.classList.contains('collapsed'));
     }
     
     // ========== 同步重要待办数据 ==========
@@ -2360,6 +2494,17 @@
         updateRoleHint(savedRole);
         updateUserName(savedRole);
         updatePageByRole(savedRole);
+      }
+
+      const savedSidebar = localStorage.getItem('workbenchSidebarCollapsed');
+      if (savedSidebar === 'true') {
+        const sidebar = document.getElementById('workbenchSidebar');
+        const icon = document.getElementById('sidebarToggleIcon');
+        if (sidebar && icon) {
+          sidebar.classList.add('collapsed');
+          icon.classList.remove('fa-chevron-left');
+          icon.classList.add('fa-chevron-right');
+        }
       }
       
       // 初始化图表

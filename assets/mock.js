@@ -723,20 +723,14 @@ function initHomePageData() {
     { id: 'c4', image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=675&fit=crop', title: '个人防护专场', subTitle: '20+高危场景防护指南', tag: '防护', link: '#', sortOrder: 4 }
   ];
 
-  // ---------- 入驻供应商（两行每行 6 个：名称 + 主营业务 + 图片） ----------
+  // ---------- 入驻供应商（与 home.html 卡片数据保持一致） ----------
   homePageData.settledSuppliers = [
-    { id: 's1', name: '华信办公物资有限公司', business: '办公耗材+办公设备', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=250&fit=crop', link: '#', sortOrder: 1 },
-    { id: 's2', name: '安盾劳保安防科技有限公司', business: '个人防护装备+消防器材', image: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&h=250&fit=crop', link: '#', sortOrder: 2 },
-    { id: 's3', name: '恒信工业零部件有限公司', business: '紧固件+传动件', image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=250&fit=crop', link: '#', sortOrder: 3 },
-    { id: 's4', name: '康泰医疗设备有限公司', business: '医疗设备+护理器械', image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=400&h=250&fit=crop', link: '#', sortOrder: 4 },
-    { id: 's5', name: '创科电子科技有限公司', business: 'IT 数码+网络设备', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop', link: '#', sortOrder: 5 },
-    { id: 's6', name: '绿源食品供应链有限公司', business: '员工福利食品+商务礼品', image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=250&fit=crop', link: '#', sortOrder: 6 },
-    { id: 's7', name: '鑫盛办公家具有限公司', business: '办公桌椅+文件存储', image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=250&fit=crop', link: '#', sortOrder: 7 },
-    { id: 's8', name: '恒达物流包装有限公司', business: '通用包装+定制包装', image: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=400&h=250&fit=crop', link: '#', sortOrder: 8 },
-    { id: 's9', name: '博瑞印刷文创有限公司', business: '企业印刷品+仓储印刷品', image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=250&fit=crop', link: '#', sortOrder: 9 },
-    { id: 's10', name: '锦程化工原料有限公司', business: '工业化工原料+实验室试剂', image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&h=250&fit=crop', link: '#', sortOrder: 10 },
-    { id: 's11', name: '锐科五金工具有限公司', business: '手动工具+电动工具', image: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400&h=250&fit=crop', link: '#', sortOrder: 11 },
-    { id: 's12', name: '悦礼企业礼品有限公司', business: '定制商务礼品+员工福利礼品', image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&h=250&fit=crop', link: '#', sortOrder: 12 }
+    { id: 'store_001', name: '华为技术有限公司', business: '电子设备', goodsCount: 1280, score: 4.9, coverText: 'HUAWEI', coverClass: 'cover-huawei', link: './store/store_detail.html?id=store_001', sortOrder: 1 },
+    { id: 'store_002', name: '联想集团', business: '办公设备', goodsCount: 956, score: 4.8, coverText: 'LENOVO', coverClass: 'cover-lenovo', link: './store/store_detail.html?id=store_002', sortOrder: 2 },
+    { id: 'store_003', name: '京东物流', business: '物流服务', goodsCount: 2340, score: 4.9, coverText: 'JD LOGISTICS', coverClass: 'cover-jd', link: './store/store_detail.html?id=store_003', sortOrder: 3 },
+    { id: 'store_004', name: '中国电信', business: '通信服务', goodsCount: 676, score: 4.7, coverText: 'CHINA TELECOM', coverClass: 'cover-telecom', link: './store/store_detail.html?id=store_004', sortOrder: 4 },
+    { id: 'store_005', name: '得力集团', business: '办公用品', goodsCount: 3450, score: 4.8, coverText: 'DELI', coverClass: 'cover-deli', link: './store/store_detail.html?id=store_005', sortOrder: 5 },
+    { id: 'store_006', name: '海尔智家', business: '家电设备', goodsCount: 1890, score: 4.9, coverText: 'HAIER', coverClass: 'cover-haier', link: './store/store_detail.html?id=store_006', sortOrder: 6 }
   ];
 
   // ---------- 底部商城信息（服务承诺条） ----------
