@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合规助手 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="../assets/mode_switcher.js"></script>
+  <style>
+    :root {
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border: #e2e8f0;
+      --bg: #fff7ed;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(249,115,22,0.12), transparent 28%),
+        radial-gradient(circle at 88% 18%, rgba(251,146,60,0.12), transparent 30%),
+        #f8fafc;
+      color: var(--text-main);
+    }
+    a { color: inherit; text-decoration: none; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      box-shadow: 0 2px 18px rgba(249,115,22,0.24);
+    }
+    .topbar-inner,
+    .page-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .topbar-inner {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 18px; }
+    .brand-logo {
+      width: 38px; height: 38px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.24);
+      background: rgba(255,255,255,0.16);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .main-tabs {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 5px; border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px; background: rgba(255,255,255,0.14);
+    }
+    .main-tab {
+      height: 34px; padding: 0 14px; border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 7px;
+      color: rgba(255,255,255,0.86); font-size: 13px; font-weight: 800;
+      white-space: nowrap; transition: all .18s ease;
+    }
+    .main-tab:hover { color: #fff; background: rgba(255,255,255,0.14); }
+    .main-tab.active {
+      color: var(--primary-dark); background: #fff;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.16);
+    }
+    .top-link {
+      height: 38px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.12);
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 800;
+    }
+    .topbar-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+    .topbar-icon-btn {
+      position: relative; width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: #334155; font-size: 18px; cursor: pointer;
+      transition: background 0.18s, color 0.18s; text-decoration: none;
+    }
+    .topbar-icon-btn:hover { background: rgba(47,107,255,0.08); color: #2f6bff; }
+    .topbar-icon-btn .tip {
+      position: absolute; top: calc(100% + 10px); left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      white-space: nowrap; background: #1e293b; color: #fff;
+      font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 8px;
+      pointer-events: none; opacity: 0; transition: opacity 0.16s, transform 0.16s; z-index: 200;
+    }
+    .topbar-icon-btn:hover .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .topbar-icon-btn .tip::before {
+      content: ""; position: absolute; bottom: 100%; left: 50%;
+      transform: translateX(-50%); border: 5px solid transparent; border-bottom-color: #1e293b;
+    }
+    .topbar-icon-btn .badge-dot {
+      position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+      border-radius: 50%; background: #ef4444; border: 2px solid #fff;
+    }
+    .topbar-divider { width: 1px; height: 22px; background: rgba(203,213,225,0.7); margin: 0 2px; }
+    .topbar-user {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; position: relative; padding: 0 4px;
+    }
+    .topbar-user .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; box-shadow: 0 6px 14px rgba(37,99,235,0.22);
+    }
+    .topbar-user .username { font-size: 14px; font-weight: 700; color: #334155; }
+    .topbar-user .tip {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      white-space: nowrap; background: #1e293b; color: #fff;
+      font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 8px;
+      pointer-events: none; opacity: 0; transition: opacity 0.16s, transform 0.16s;
+      transform: translateY(-4px); z-index: 200;
+    }
+    .topbar-user:hover .tip { opacity: 1; transform: translateY(0); }
+    .topbar-user .tip::before {
+      content: ""; position: absolute; bottom: 100%; right: 14px;
+      border: 5px solid transparent; border-bottom-color: #1e293b;
+    }
+    .page-wrap { padding-top: 24px; padding-bottom: 48px; }
+    .hero {
+      padding: 28px;
+      border: 1px solid #fed7aa;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #fff7ed 0%, #fff 100%);
+      box-shadow: 0 16px 38px rgba(15,23,42,0.06);
+    }
+    .hero h1 { margin: 0; font-size: 34px; font-weight: 900; letter-spacing: -0.7px; }
+    .hero p { max-width: 760px; margin: 10px 0 0; color: var(--text-sub); font-size: 15px; line-height: 1.8; }
+    .card-grid {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .feature-card {
+      position: relative;
+      min-height: 220px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 14px 32px rgba(15,23,42,0.06);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(249,115,22,0.55);
+      box-shadow: 0 22px 42px rgba(249,115,22,0.12);
+    }
+    .feature-card::after {
+      content: "";
+      position: absolute;
+      right: -42px;
+      bottom: -42px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: rgba(249,115,22,0.08);
+    }
+    .feature-icon {
+      width: 54px; height: 54px; border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 22px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      box-shadow: 0 12px 22px rgba(249,115,22,0.22);
+    }
+    .feature-card h2 { margin: 18px 0 8px; font-size: 24px; font-weight: 900; }
+    .feature-card p { margin: 0; color: var(--text-sub); line-height: 1.75; font-size: 14px; }
+    .card-meta {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #fff7ed;
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .enter-btn {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      z-index: 1;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: none;
+      background: #0f172a;
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.56);
+      backdrop-filter: blur(8px); display: none; align-items: center;
+      justify-content: center; padding: 20px; z-index: 120;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      width: min(900px, calc(100vw - 40px)); height: 680px; max-height: calc(100vh - 40px);
+      border-radius: 26px; overflow: hidden; background: #fff;
+      box-shadow: 0 28px 66px rgba(15,23,42,0.22); display: flex; flex-direction: column;
+    }
+    .modal-head {
+      padding: 20px 22px 16px; border-bottom: 1px solid rgba(226,232,240,0.92);
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    }
+    .modal-title { margin: 0; font-size: 22px; font-weight: 800; }
+    .modal-subtitle { margin: 5px 0 0; color: #64748b; font-size: 13px; }
+    .modal-close { width: 38px; height: 38px; border: none; border-radius: 11px; background: #f8fafc; color: #334155; font-size: 17px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .chat-body {
+      padding: 18px 22px; overflow-y: auto; overflow-x: hidden;
+      background: linear-gradient(180deg,#f8fbff 0%,#fff 100%);
+      display: flex; flex-direction: column; gap: 14px; flex: 1; min-height: 0;
+    }
+    .chat-item { display: flex; gap: 10px; align-items: flex-start; max-width: 86%; }
+    .chat-item.user { margin-left: auto; flex-direction: row-reverse; }
+    .chat-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700; flex: none; }
+    .chat-avatar.ai { background: linear-gradient(135deg,#ff7a18 0%,#ff4d00 100%); }
+    .chat-avatar.user { background: linear-gradient(135deg,#2f6bff 0%,#1d4ed8 100%); }
+    .chat-bubble { padding: 12px 15px; border-radius: 16px; line-height: 1.75; font-size: 14px; box-shadow: 0 10px 20px rgba(15,23,42,0.05); white-space: pre-line; }
+    .chat-item.ai .chat-bubble { background: #fff; color: #0f172a; border: 1px solid rgba(226,232,240,0.96); }
+    .chat-item.user .chat-bubble { background: linear-gradient(135deg,#2f6bff 0%,#1d4ed8 100%); color: #fff; }
+    .quick-asks { padding: 14px 22px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+    .quick-ask {
+      padding: 8px 13px; border-radius: 999px; border: 1px solid rgba(255,122,24,0.18);
+      background: rgba(255,122,24,0.08); color: #c2410c; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .chat-input-wrap { padding: 16px 22px 22px; border-top: 1px solid rgba(226,232,240,0.92); background: #fff; flex: none; }
+    .chat-input-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; }
+    .chat-textarea { min-height: 52px; max-height: 112px; resize: vertical; border-radius: 16px; border: 1px solid rgba(203,213,225,0.9); padding: 12px 14px; font-size: 14px; outline: none; font-family: inherit; }
+    .feature-button {
+      min-width: 142px; height: 44px; border: none; border-radius: 999px;
+      padding: 0 22px; color: #fff; display: inline-flex; align-items: center;
+      justify-content: center; gap: 8px; font-size: 14px; font-weight: 800;
+      box-shadow: 0 14px 24px rgba(37,99,235,0.2); transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .feature-button.orange { background: linear-gradient(135deg,#ff7a18 0%,#ff4d00 100%); }
+    .gm-overlay { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .22s; }
+    .gm-overlay.open { opacity: 1; pointer-events: all; }
+    .gm-box { background: #fff; border-radius: 18px; box-shadow: 0 22px 56px rgba(15,23,42,.17); width: min(94vw,860px); max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; }
+    .gm-box.wide { width: min(96vw,1000px); }
+    .gm-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 13px; border-bottom: 1px solid #f1f5f9; flex: none; }
+    .gm-title { font-size: 16px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+    .gm-close { width: 28px; height: 28px; border-radius: 8px; border: none; background: #f1f5f9; color: #64748b; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .gm-tabs { display: flex; gap: 2px; padding: 8px 20px 0; border-bottom: 1px solid #f1f5f9; flex: none; }
+    .gm-tab { padding: 6px 14px; border-radius: 8px 8px 0 0; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; border: none; background: transparent; border-bottom: 2px solid transparent; transition: all .15s; margin-bottom: -1px; }
+    .gm-tab.active { color: #ff6a00; border-bottom-color: #ff6a00; background: #fff7f3; }
+    .gm-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+    .gm-tab-pane { display: none; }
+    .gm-tab-pane.active { display: block; }
+    .gm-drawer { position: fixed; inset: 0; z-index: 2000; pointer-events: none; }
+    .gm-drawer.open { pointer-events: all; }
+    .gm-drawer-backdrop { position: absolute; inset: 0; background: rgba(15,23,42,.4); opacity: 0; transition: opacity .25s; }
+    .gm-drawer.open .gm-drawer-backdrop { opacity: 1; }
+    .gm-drawer-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(94vw,460px); background: #fff; box-shadow: -8px 0 30px rgba(15,23,42,.14); display: flex; flex-direction: column; transform: translateX(100%); transition: transform .28s cubic-bezier(.16,1,.3,1); }
+    .gm-drawer.open .gm-drawer-panel { transform: translateX(0); }
+    .gm-drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 13px; border-bottom: 1px solid #f1f5f9; flex: none; }
+    .gm-drawer-body { flex: 1; overflow-y: auto; padding: 16px 18px; }
+    .gm-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .gm-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 13px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; white-space: nowrap; }
+    .gm-btn-primary { background: linear-gradient(135deg,#ff7a18,#ff4d00); color: #fff; }
+    .gm-btn-ghost { background: #fff; border: 1px solid #e2e8f0; color: #475569; }
+    .gm-btn-danger { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+    .gm-btn-sm { padding: 3px 8px; font-size: 12px; }
+    .gm-search { flex: 1; min-width: 140px; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; outline: none; }
+    .gm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .gm-table th { padding: 8px 10px; text-align: left; font-size: 12px; font-weight: 600; color: #94a3b8; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+    .gm-table td { padding: 10px 10px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    .filter-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+    .filter-tab { padding: 4px 11px; border-radius: 999px; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+    .filter-tab.active, .filter-tab:hover { background: #fff7f3; border-color: #fb923c; color: #ea580c; }
+    .list-item { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 8px; overflow: hidden; transition: box-shadow .15s; }
+    .list-item-head { padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; background: #fff; }
+    .list-item-title { font-size: 14px; font-weight: 700; color: #0f172a; }
+    .list-item-meta { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+    .prog-bar { height: 7px; background: #f1f5f9; border-radius: 999px; overflow: hidden; margin: 4px 0; }
+    .prog-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg,#fb923c,#ff6a00); transition: width .4s; }
+    .prog-fill.warn { background: linear-gradient(90deg,#fbbf24,#f59e0b); }
+    .prog-fill.danger { background: linear-gradient(90deg,#f87171,#ef4444); }
+    .prog-fill.safe { background: linear-gradient(90deg,#34d399,#10b981); }
+    .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .status-pill.blue { background: #eff6ff; color: #1d4ed8; }
+    .status-pill.green { background: #f0fdf4; color: #15803d; }
+    .status-pill.red { background: #fef2f2; color: #dc2626; }
+    .status-pill.yellow { background: #fffbeb; color: #d97706; }
+    .status-pill.gray { background: #f1f5f9; color: #64748b; }
+    .inline-expand { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; margin: 5px 0 3px; overflow: hidden; }
+    .inline-expand-inner { padding: 11px 13px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 3px; }
+    .form-label { font-size: 12px; font-weight: 600; color: #475569; }
+    .form-input, .form-textarea { padding: 7px 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; color: #0f172a; outline: none; transition: border-color .15s; background: #fff; font-family: inherit; width: 100%; }
+    .form-textarea { resize: vertical; min-height: 66px; }
+    .ai-parse-loading { display: flex; align-items: center; gap: 8px; padding: 10px 13px; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 10px; font-size: 13px; color: #6d28d9; margin-bottom: 9px; }
+    .ai-spin { width: 14px; height: 14px; border: 2px solid #ddd6fe; border-top-color: #7c3aed; border-radius: 50%; animation: spin .8s linear infinite; flex: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .budget-modal-overview { background: linear-gradient(135deg,#fff7f3,#fff); border: 1px solid #fed7aa; border-radius: 12px; padding: 13px 15px; margin-bottom: 13px; display: flex; gap: 0; }
+    .budget-kpi-item { flex: 1; text-align: center; border-right: 1px solid #fde8d8; }
+    .budget-kpi-item:last-child { border-right: none; }
+    .budget-kpi-item .num { font-size: 17px; font-weight: 800; color: #0f172a; }
+    .budget-kpi-item .lbl { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+    .warn-tip { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #c2410c; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 6px 10px; margin-top: 8px; }
+    .budget-adjust-row { display: flex; align-items: center; gap: 7px; padding: 9px 13px; background: #fff7f3; border-top: 1px solid #fed7aa; }
+    .budget-num-input { width: 100px; padding: 5px 8px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 13px; outline: none; }
+    .seal-row { display: flex; align-items: center; gap: 11px; padding: 10px 13px; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 7px; background: #fff; }
+    .seal-row-img { width: 38px; height: 38px; border-radius: 50%; background: #fef9f0; border: 1.5px solid #fed7aa; display: flex; align-items: center; justify-content: center; font-size: 18px; flex: none; }
+    .seal-row-info { flex: 1; min-width: 0; }
+    .seal-row-name { font-size: 13px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 6px; }
+    .seal-row-meta { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .seal-default-badge { font-size: 11px; color: #ff6a00; background: #fff7f0; border: 1px solid #fed7aa; border-radius: 4px; padding: 2px 6px; display: inline-block; }
+    .risk-section { margin-bottom: 8px; }
+    .risk-level { font-size: 12px; font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 3px; }
+    .risk-item { font-size: 12px; color: #475569; padding: 3px 8px; background: #f8fafc; border-radius: 6px; margin-bottom: 2px; border-left: 3px solid #e2e8f0; }
+    .risk-item.high { border-left-color: #ef4444; background: #fef2f2; color: #7f1d1d; }
+    .risk-item.mid { border-left-color: #f59e0b; background: #fffbeb; color: #78350f; }
+    .risk-item.low { border-left-color: #10b981; background: #f0fdf4; color: #14532d; }
+    @media (max-width: 860px) {
+      .topbar-inner { flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+      .main-tabs { order: 3; width: 100%; overflow-x: auto; justify-content: flex-start; }
+      .main-tab { flex: 0 0 auto; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <span>国采e购</span>
+      </div>
+      <nav class="main-tabs" aria-label="采购主功能导航">
+        <a class="main-tab" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
+        <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 竞价询价</a>
+        <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
+        <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
+        <a class="main-tab active" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a>
+      </nav>
+      <div class="topbar-actions">
+        <a class="topbar-icon-btn" href="./workbench/workbench_home.html" title="">
+          <i class="fa-solid fa-briefcase"></i>
+          <span class="tip">工作台</span>
+        </a>
+        <a class="topbar-icon-btn" href="#" title="">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="badge-dot"></span>
+          <span class="tip">购物车</span>
+        </a>
+        <div class="topbar-divider"></div>
+        <a class="topbar-icon-btn" href="./ai_assistant.html" title="">
+          <i class="fa-regular fa-bell"></i>
+          <span class="badge-dot"></span>
+          <span class="tip">消息通知</span>
+        </a>
+        <div class="topbar-user">
+          <div class="avatar">张</div>
+          <span class="username">张三</span>
+          <span class="tip">张三 · 采购专员</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero">
+      <h1>合规助手</h1>
+      <p>围绕采购计划、预算管理、合同管理与 AI 智询，提供全过程合规支持。点击下方卡片可查看对应管理内容。</p>
+    </section>
+
+    <section class="card-grid">
+      <article class="feature-card" onclick="openProcPlanModal()">
+        <div class="feature-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+        <h2>采购计划</h2>
+        <p>查看采购计划额度、执行进度、关联订单与临期提醒，帮助采购任务按依据推进。</p>
+        <div class="card-meta"><i class="fa-solid fa-chart-simple"></i> 3 个进行中计划</div>
+        <button class="enter-btn" type="button">进入</button>
+      </article>
+
+      <article class="feature-card" onclick="openBudgetDrawer()">
+        <div class="feature-icon"><i class="fa-solid fa-wallet"></i></div>
+        <h2>预算管理</h2>
+        <p>查看预算占用、可用额度、预算调整记录和超预算预警，控制采购支出边界。</p>
+        <div class="card-meta"><i class="fa-solid fa-triangle-exclamation"></i> 2 项预算预警</div>
+        <button class="enter-btn" type="button">进入</button>
+      </article>
+
+      <article class="feature-card" onclick="openContractModal()">
+        <div class="feature-icon"><i class="fa-solid fa-file-signature"></i></div>
+        <h2>合同管理</h2>
+        <p>管理合同模板、合同列表和电子签章，辅助识别条款风险与签署进度。</p>
+        <div class="card-meta"><i class="fa-solid fa-file-contract"></i> 4 份合同</div>
+        <button class="enter-btn" type="button">进入</button>
+      </article>
+
+      <article class="feature-card" onclick="openComplianceModal()">
+        <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
+        <h2>AI智询</h2>
+        <p>围绕采购流程、合规风险、预算依据和合同条款提供智能问答与风险提示。</p>
+        <div class="card-meta"><i class="fa-solid fa-headset"></i> 7×24 小时在线</div>
+        <button class="enter-btn" type="button">进入</button>
+      </article>
+    </section>
+  </main>
+
+  <div id="complianceModal" class="modal-overlay" onclick="closeComplianceModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h3 class="modal-title">采购合规助手</h3>
+          <p class="modal-subtitle">针对智选方案、流程节点和合同条款进行 AI 咨询与风险提示。</p>
+        </div>
+        <button class="modal-close" type="button" onclick="closeComplianceModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="quick-asks">
+        <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我检查这份智选方案的合规风险')">检查智选方案</button>
+        <button class="quick-ask" type="button" onclick="fillComplianceQuestion('询价流程需要注意哪些合规节点？')">询价流程节点</button>
+        <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我审阅合同中的付款条款风险')">审阅付款条款</button>
+      </div>
+      <div id="complianceChatBody" class="chat-body">
+        <div class="chat-item ai">
+          <div class="chat-avatar ai">AI</div>
+          <div class="chat-bubble">您好，我是采购合规助手。您可以直接输入智选方案、询价流程或合同条款相关问题，我会给出风险提示和处理建议。</div>
+        </div>
+      </div>
+      <div class="chat-input-wrap">
+        <div class="chat-input-row">
+          <textarea id="complianceInput" class="chat-textarea" placeholder="请输入您的问题，例如：请帮我检查这份智选方案是否存在单一来源采购风险"></textarea>
+          <button class="feature-button orange" type="button" onclick="sendComplianceMessage()">发送咨询 <i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gm-overlay" id="procPlanModal" onclick="closeProcPlanModal(event)">
+    <div class="gm-box" onclick="event.stopPropagation()">
+      <div class="gm-head">
+        <span class="gm-title">📋 采购计划管理</span>
+        <button class="gm-close" onclick="closeProcPlanModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="gm-body">
+        <div class="gm-toolbar">
+          <button class="gm-btn gm-btn-primary" onclick="toggleNewPlanForm()"><i class="fa-solid fa-plus"></i> 新增计划</button>
+          <input class="gm-search" id="planSearch" placeholder="搜索计划名称..." oninput="renderPlans()">
+        </div>
+        <div class="filter-tabs" id="planFilterTabs">
+          <button class="filter-tab active" onclick="setPlanFilter('all',this)">全部</button>
+          <button class="filter-tab" onclick="setPlanFilter('active',this)">进行中</button>
+          <button class="filter-tab" onclick="setPlanFilter('overdue',this)">已逾期</button>
+          <button class="filter-tab" onclick="setPlanFilter('done',this)">已完成</button>
+        </div>
+        <div id="newPlanForm" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:12px;">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">计划名称 *</label><input class="form-input" id="newPlanName" placeholder="如：2026年办公设备采购计划"></div>
+            <div class="form-group"><label class="form-label">计划金额（元）*</label><input class="form-input" id="newPlanAmt" type="number" placeholder="如：200000"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">截止日期 *</label><input class="form-input" id="newPlanDate" type="date"></div>
+            <div class="form-group"><label class="form-label">品类范围</label><input class="form-input" id="newPlanCat" placeholder="如：笔记本电脑、显示器"></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="gm-btn gm-btn-ghost" onclick="toggleNewPlanForm(false)">取消</button>
+            <button class="gm-btn gm-btn-primary" onclick="addNewPlan()"><i class="fa-solid fa-check"></i> 保存计划</button>
+          </div>
+        </div>
+        <div id="planListContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gm-drawer" id="budgetModal">
+    <div class="gm-drawer-backdrop" onclick="closeBudgetDrawer()"></div>
+    <div class="gm-drawer-panel">
+      <div class="gm-drawer-head">
+        <span class="gm-title">💰 预算管理</span>
+        <button class="gm-close" onclick="closeBudgetDrawer()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="gm-drawer-body">
+        <div class="budget-modal-overview" id="budgetOverview"></div>
+        <div class="gm-toolbar">
+          <button class="gm-btn gm-btn-primary" onclick="toggleAddBudgetForm()"><i class="fa-solid fa-plus"></i> 新增品类</button>
+        </div>
+        <div id="addBudgetForm" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin-bottom:10px;">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">品类名称 *</label><input class="form-input" id="newBudgetName" placeholder="如：电子设备"></div>
+            <div class="form-group"><label class="form-label">预算金额（元）*</label><input class="form-input" id="newBudgetAmt" type="number" placeholder="如：100000"></div>
+          </div>
+          <div style="display:flex;gap:7px;justify-content:flex-end;">
+            <button class="gm-btn gm-btn-ghost" onclick="toggleAddBudgetForm(false)">取消</button>
+            <button class="gm-btn gm-btn-primary" onclick="addBudgetItem()">保存</button>
+          </div>
+        </div>
+        <div id="budgetCatList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gm-overlay" id="contractModal" onclick="closeContractModal(event)">
+    <div class="gm-box wide" onclick="event.stopPropagation()">
+      <div class="gm-head">
+        <span class="gm-title">📝 合同管理</span>
+        <button class="gm-close" onclick="closeContractModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="gm-tabs">
+        <button class="gm-tab active" onclick="switchContractTab('templates',this)">合同模板</button>
+        <button class="gm-tab" onclick="switchContractTab('list',this)">合同列表</button>
+        <button class="gm-tab" onclick="switchContractTab('seals',this)">电子签章</button>
+      </div>
+      <div class="gm-body">
+        <div class="gm-tab-pane active" id="contractTab-templates">
+          <div class="gm-toolbar">
+            <button class="gm-btn gm-btn-primary" onclick="document.getElementById('tplFileInput').click()"><i class="fa-solid fa-upload"></i> 上传模板</button>
+            <input type="file" id="tplFileInput" class="hidden-input" accept=".pdf,.doc,.docx" onchange="handleTplFileUpload(this)">
+          </div>
+          <div id="tplGenBox" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin-bottom:12px;">
+            <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:8px;"><i class="fa-solid fa-wand-magic-sparkles" style="color:#7c3aed;margin-right:5px;"></i>AI 生成合同模板</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <select id="tplTypeSelect" class="form-input" style="max-width:180px;">
+                <option value="">选择合同类型</option>
+                <option value="办公用品采购合同">办公用品采购合同</option>
+                <option value="IT设备采购合同">IT设备采购合同</option>
+                <option value="服务类采购合同">服务类采购合同</option>
+              </select>
+              <input class="form-input" id="tplGenInput" placeholder="或输入合同描述..." style="flex:1;">
+              <button class="gm-btn gm-btn-primary" onclick="generateContractTemplate()"><i class="fa-solid fa-sparkles"></i> 生成</button>
+            </div>
+            <div id="tplGenLoading" class="ai-parse-loading" style="display:none;margin-top:8px;"><span class="ai-spin"></span> AI 正在生成模板...</div>
+          </div>
+          <div id="tplListContainer"></div>
+        </div>
+        <div class="gm-tab-pane" id="contractTab-list"><div id="contractListContainer"></div></div>
+        <div class="gm-tab-pane" id="contractTab-seals"><div id="sealListContainer"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var complianceModal = document.getElementById('complianceModal');
+    var complianceInput = document.getElementById('complianceInput');
+    var complianceChatBody = document.getElementById('complianceChatBody');
+
+    function openComplianceModal(){ complianceModal.classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeComplianceModal(event){ if(event&&event.target&&event.target!==complianceModal) return; complianceModal.classList.remove('open'); document.body.style.overflow=''; }
+    function fillComplianceQuestion(text){ complianceInput.value=text; complianceInput.focus(); }
+    function sendComplianceMessage(){
+      var text = complianceInput.value.trim(); if(!text) return;
+      appendChatMessage('user',text); complianceInput.value='';
+      setTimeout(function(){ appendChatMessage('ai',generateComplianceReply(text)); }, 500);
+    }
+    function appendChatMessage(role,text){
+      var item = document.createElement('div'); item.className='chat-item '+role;
+      var avatar = document.createElement('div'); avatar.className='chat-avatar '+role; avatar.textContent=(role==='ai'?'AI':'我');
+      var bubble = document.createElement('div'); bubble.className='chat-bubble'; bubble.textContent=text;
+      item.appendChild(avatar); item.appendChild(bubble);
+      complianceChatBody.appendChild(item); complianceChatBody.scrollTop=complianceChatBody.scrollHeight;
+    }
+    function generateComplianceReply(){
+      var rsp = [
+        '根据当前采购流程，建议重点关注：\n1. 采购需求是否与预算依据一致\n2. 供应商选择是否存在排他性条件\n3. 合同付款和验收条款是否明确。',
+        '询价流程建议保留不少于三家供应商报价记录，并确保评审标准一致、过程留痕完整。',
+        '合同条款风险提示：预付款比例建议控制在合理范围内，验收标准需要量化，违约责任建议双向约定。'
+      ];
+      return rsp[Math.floor(Math.random()*rsp.length)];
+    }
+
+    var currentPlanFilter = 'all';
+    var planIdSeed = 4;
+    var plans = [
+      { id:1, name:'2026年办公设备更新采购计划', amount:200000, used:148900, deadline:'2026-12-31', cat:'笔记本电脑、显示器、打印机', status:'active', orders:[{ no:'PO20260401', goods:'华为显示器×5', amt:16495, status:'已收货' }]},
+      { id:2, name:'年货采购计划 2026', amount:30000, used:28450, deadline:'2026-02-01', cat:'食品礼品、节庆物资', status:'done', orders:[{ no:'PO20260110', goods:'坚果礼盒×80', amt:9600, status:'已收货' }]},
+      { id:3, name:'Q2 打印耗材补货计划', amount:50000, used:49000, deadline:'2026-06-10', cat:'碳粉盒、墨盒、A4纸', status:'active', orders:[{ no:'PO20260410', goods:'得力碳粉盒×50', amt:4450, status:'已收货' }]}
+    ];
+    function openProcPlanModal(){ renderPlans(); document.getElementById('procPlanModal').classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeProcPlanModal(e){ if(e&&e.target!==document.getElementById('procPlanModal')) return; document.getElementById('procPlanModal').classList.remove('open'); document.body.style.overflow=''; }
+    function setPlanFilter(f,btn){ currentPlanFilter=f; document.querySelectorAll('#planFilterTabs .filter-tab').forEach(function(b){ b.classList.remove('active'); }); btn.classList.add('active'); renderPlans(); }
+    function renderPlans(){
+      var q=(document.getElementById('planSearch')?.value||'').trim().toLowerCase();
+      var now=new Date();
+      var list=plans.filter(function(p){ if(q&&!p.name.toLowerCase().includes(q)) return false; if(currentPlanFilter==='all') return true; if(currentPlanFilter==='done') return p.status==='done'; if(currentPlanFilter==='active') return p.status==='active'&&new Date(p.deadline)>=now; if(currentPlanFilter==='overdue') return p.status==='active'&&new Date(p.deadline)<now; return true; });
+      var con=document.getElementById('planListContainer');
+      if(!list.length){ con.innerHTML='<div style="text-align:center;color:#94a3b8;padding:28px;font-size:14px;">暂无符合条件的采购计划</div>'; return; }
+      con.innerHTML=list.map(function(p){
+        var pct=Math.min(100,Math.round(p.used/p.amount*100));
+        var isOverdue=p.status==='active'&&new Date(p.deadline)<new Date();
+        var pill=p.status==='done'?'<span class="status-pill green">✅ 已完成</span>':isOverdue?'<span class="status-pill red">⚠ 已逾期</span>':pct>=90?'<span class="status-pill yellow">🟡 预算预警</span>':'<span class="status-pill blue">🔵 进行中</span>';
+        return '<div class="list-item"><div class="list-item-head"><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span class="list-item-title">'+p.name+'</span>'+pill+'</div><div class="list-item-meta">计划金额 ¥'+p.amount.toLocaleString()+' · 已执行 ¥'+p.used.toLocaleString()+' · 截止 '+p.deadline+' · '+p.cat+'</div><div class="prog-bar" style="margin-top:6px;"><div class="prog-fill '+(pct>=90?'danger':pct>=70?'warn':'safe')+'" style="width:'+pct+'%;"></div></div><div style="font-size:11px;color:#94a3b8;margin-top:2px;">执行进度 '+pct+'%</div></div></div><div style="padding:0 14px 11px;display:flex;gap:6px;flex-wrap:wrap;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="togglePlanOrders('+p.id+',this)"><i class="fa-solid fa-link"></i> 关联订单 ('+p.orders.length+')</button><button class="gm-btn gm-btn-danger gm-btn-sm" onclick="deletePlan('+p.id+')"><i class="fa-solid fa-trash"></i> 删除</button></div><div id="planOrders-'+p.id+'" style="display:none;padding:0 14px 11px;"><div class="inline-expand"><div class="inline-expand-inner"><table class="gm-table"><thead><tr><th>订单号</th><th>商品</th><th>金额</th><th>状态</th></tr></thead><tbody>'+p.orders.map(function(o){ return '<tr><td>'+o.no+'</td><td>'+o.goods+'</td><td>¥'+o.amt.toLocaleString()+'</td><td>'+o.status+'</td></tr>'; }).join('')+'</tbody></table></div></div></div></div>';
+      }).join('');
+    }
+    function togglePlanOrders(id,btn){ var el=document.getElementById('planOrders-'+id); var vis=el.style.display!=='none'; el.style.display=vis?'none':'block'; btn.innerHTML=vis?'<i class="fa-solid fa-link"></i> 关联订单 ('+plans.find(function(p){return p.id===id;}).orders.length+')':'<i class="fa-solid fa-chevron-up"></i> 收起订单'; }
+    function deletePlan(id){ if(!confirm('确认删除该采购计划？')) return; var idx=plans.findIndex(function(x){return x.id===id;}); if(idx>=0) plans.splice(idx,1); renderPlans(); }
+    var newPlanFormOpen=false;
+    function toggleNewPlanForm(forceState){ newPlanFormOpen=forceState!==undefined?forceState:!newPlanFormOpen; document.getElementById('newPlanForm').style.display=newPlanFormOpen?'block':'none'; }
+    function addNewPlan(){ var name=document.getElementById('newPlanName').value.trim(); var amt=parseFloat(document.getElementById('newPlanAmt').value); var date=document.getElementById('newPlanDate').value; if(!name||!amt||!date){alert('请填写计划名称、金额和截止日期');return;} plans.unshift({id:++planIdSeed,name,amount:amt,used:0,deadline:date,cat:document.getElementById('newPlanCat').value.trim()||'综合采购',status:'active',orders:[]}); toggleNewPlanForm(false); renderPlans(); }
+
+    var budgetIdSeed=4;
+    var budgetCats=[
+      {id:'office',name:'办公用品',budget:100000,used:72000,adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260301',goods:'晨光文具套装×20',amt:3200,status:'已收货'}]},
+      {id:'device',name:'电子设备',budget:200000,used:148900,adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260401',goods:'华为显示器×5',amt:16495,status:'已收货'}]},
+      {id:'print',name:'打印耗材',budget:50000,used:49000,adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260410',goods:'得力碳粉盒×50',amt:4450,status:'已收货'}]}
+    ];
+    function openBudgetDrawer(){ renderBudgetOverview(); renderBudgetCats(); document.getElementById('budgetModal').classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeBudgetDrawer(){ document.getElementById('budgetModal').classList.remove('open'); document.body.style.overflow=''; }
+    function renderBudgetOverview(){ var total=budgetCats.reduce(function(s,c){return s+c.budget;},0); var used=budgetCats.reduce(function(s,c){return s+c.used;},0); var rest=total-used; var pct=Math.min(100,Math.round(used/total*100)); document.getElementById('budgetOverview').innerHTML='<div class="budget-kpi-item"><div class="num">¥'+(total/10000).toFixed(0)+'万</div><div class="lbl">年度总预算</div></div><div class="budget-kpi-item"><div class="num" style="color:#ff6a00;">¥'+(used/10000).toFixed(1)+'万</div><div class="lbl">已使用</div></div><div class="budget-kpi-item"><div class="num" style="color:#10b981;">¥'+(rest/10000).toFixed(1)+'万</div><div class="lbl">剩余预算</div></div><div class="budget-kpi-item" style="flex:2;padding-left:14px;border-right:none;text-align:left;"><div style="font-size:11px;color:#94a3b8;margin-bottom:3px;">整体执行进度 '+pct+'%</div><div class="prog-bar" style="height:8px;"><div class="prog-fill '+(pct>=90?'danger':pct>=70?'warn':'safe')+'" style="width:'+pct+'%;"></div></div></div>'; }
+    function renderBudgetCats(){ var con=document.getElementById('budgetCatList'); con.innerHTML=budgetCats.map(function(c){ var pct=Math.min(100,Math.round(c.used/c.budget*100)); var warn=pct>=90?'<div class="warn-tip"><i class="fa-solid fa-triangle-exclamation"></i> '+c.name+'已使用'+pct+'%，接近上限</div>':''; return '<div class="list-item"><div class="list-item-head" style="flex-direction:column;align-items:stretch;gap:6px;"><div style="display:flex;align-items:center;justify-content:space-between;"><span class="list-item-title">'+c.name+'</span><span style="font-size:13px;color:'+(pct>=90?'#dc2626':'#ff6a00')+';font-weight:700;">'+pct+'%</span></div><div class="prog-bar"><div class="prog-fill '+(pct>=90?'danger':pct>=70?'warn':'safe')+'" style="width:'+pct+'%;"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;"><span>预算 ¥'+(c.budget/10000).toFixed(0)+'万</span><span>已用 ¥'+(c.used/10000).toFixed(1)+'万</span><span>剩余 ¥'+((c.budget-c.used)/10000).toFixed(1)+'万</span></div>'+warn+'</div><div style="padding:0 12px 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetOrders(\''+c.id+'\')"><i class="fa-solid fa-link"></i> 关联订单 ('+c.orders.length+')</button><button class="gm-btn gm-btn-danger gm-btn-sm" onclick="deleteBudgetItem(\''+c.id+'\')"><i class="fa-solid fa-trash"></i> 删除</button></div>'+(c.ordersOpen?'<div class="inline-expand" style="margin:0 12px 9px;"><div class="inline-expand-inner"><table class="gm-table"><thead><tr><th>订单号</th><th>商品</th><th>金额</th><th>状态</th></tr></thead><tbody>'+c.orders.map(function(o){return '<tr><td>'+o.no+'</td><td>'+o.goods+'</td><td>¥'+o.amt.toLocaleString()+'</td><td>'+o.status+'</td></tr>';}).join('')+'</tbody></table></div></div>':'')+'</div>'; }).join(''); }
+    function toggleBudgetOrders(id){ var c=budgetCats.find(function(x){return x.id===id;}); if(c) c.ordersOpen=!c.ordersOpen; renderBudgetCats(); }
+    function deleteBudgetItem(id){ if(!confirm('确认删除该预算品类？')) return; var idx=budgetCats.findIndex(function(x){return x.id===id;}); if(idx>=0) budgetCats.splice(idx,1); renderBudgetOverview(); renderBudgetCats(); }
+    var addBudgetFormOpen=false;
+    function toggleAddBudgetForm(forceState){ addBudgetFormOpen=forceState!==undefined?forceState:!addBudgetFormOpen; document.getElementById('addBudgetForm').style.display=addBudgetFormOpen?'block':'none'; }
+    function addBudgetItem(){ var name=document.getElementById('newBudgetName').value.trim(); var amt=parseFloat(document.getElementById('newBudgetAmt').value); if(!name||!amt){alert('请填写品类名称和预算金额');return;} budgetCats.push({id:'custom_'+(++budgetIdSeed),name,budget:amt,used:0,ordersOpen:false,orders:[]}); document.getElementById('newBudgetName').value=''; document.getElementById('newBudgetAmt').value=''; toggleAddBudgetForm(false); renderBudgetOverview(); renderBudgetCats(); }
+
+    var contracts=[{name:'IT设备采购框架协议',vendor:'华为技术有限公司',status:'signed',expire:'2027-03-01'},{name:'办公用品采购合同',vendor:'得力文具有限公司',status:'signing',expire:''},{name:'后勤物资供应合同',vendor:'保洁供应链股份',status:'expiring',expire:'2026-05-01'}];
+    var templates=[{id:1,name:'办公耗材采购合同（默认）',date:'2026-01-20',isDefault:true,analysisOpen:false,analysisData:{high:[],mid:[],low:['付款方式约定清晰','交付周期明确']}},{id:2,name:'IT设备采购合同模板',date:'2026-02-08',isDefault:false,analysisOpen:false,analysisData:{high:['预付款比例超30%'],mid:['违约金上限未明确'],low:['甲乙方信息完整']}}];
+    var seals=[{icon:'🔴',name:'公司公章',desc:'适用于对外正式文件',isDefault:true,contracts:[{}]},{icon:'🟠',name:'合同专用章',desc:'专用于合同文件签署',isDefault:false,contracts:[{}]}];
+    function openContractModal(){ renderTemplates(); renderContractList(); renderSealList(); document.getElementById('contractModal').classList.add('open'); document.body.style.overflow='hidden'; }
+    function closeContractModal(e){ if(e&&e.target!==document.getElementById('contractModal')) return; document.getElementById('contractModal').classList.remove('open'); document.body.style.overflow=''; }
+    function switchContractTab(tab,btn){ document.querySelectorAll('.gm-tab').forEach(function(b){b.classList.remove('active');}); document.querySelectorAll('.gm-tab-pane').forEach(function(p){p.classList.remove('active');}); btn.classList.add('active'); document.getElementById('contractTab-'+tab).classList.add('active'); }
+    function renderTemplates(){ var con=document.getElementById('tplListContainer'); con.innerHTML=templates.map(function(t){ var risks=t.analysisOpen?'<div class="inline-expand"><div class="inline-expand-inner">'+(t.analysisData.high.length?'<div class="risk-section"><div class="risk-level" style="color:#dc2626;">🔴 高风险</div>'+t.analysisData.high.map(function(i){return '<div class="risk-item high">· '+i+'</div>';}).join('')+'</div>':'')+(t.analysisData.mid.length?'<div class="risk-section"><div class="risk-level" style="color:#d97706;">🟡 中风险</div>'+t.analysisData.mid.map(function(i){return '<div class="risk-item mid">· '+i+'</div>';}).join('')+'</div>':'')+(t.analysisData.low.length?'<div class="risk-section"><div class="risk-level" style="color:#15803d;">🟢 合规项</div>'+t.analysisData.low.map(function(i){return '<div class="risk-item low">· '+i+'</div>';}).join('')+'</div>':'')+'</div></div>':''; return '<div class="list-item"><div class="list-item-head"><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span>📄</span><span class="list-item-title">'+t.name+'</span>'+(t.isDefault?'<span class="seal-default-badge">★ 默认</span>':'')+'</div><div class="list-item-meta">上传/更新：'+t.date+'</div></div></div><div style="padding:0 13px 11px;display:flex;gap:6px;flex-wrap:wrap;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="alert(\'预览：'+t.name+'\')"><i class="fa-solid fa-eye"></i> 预览</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleContractAnalysis('+t.id+')"><i class="fa-solid fa-robot"></i> '+(t.analysisOpen?'收起分析':'AI 分析')+'</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="alert(\'下载：'+t.name+'\')"><i class="fa-solid fa-download"></i> 下载</button></div>'+risks+'</div>'; }).join(''); }
+    function toggleContractAnalysis(id){ var t=templates.find(function(x){return x.id===id;}); if(t) t.analysisOpen=!t.analysisOpen; renderTemplates(); }
+    function handleTplFileUpload(input){ if(!input.files[0]) return; var name=input.files[0].name.replace(/\.\w+$/,''); templates.unshift({id:Date.now(),name,date:new Date().toISOString().slice(0,10),isDefault:false,analysisOpen:false,analysisData:{high:[],mid:['建议补充合同编号字段'],low:['格式规范']}}); input.value=''; renderTemplates(); }
+    function generateContractTemplate(){ var type=document.getElementById('tplTypeSelect')?.value||''; var txt=document.getElementById('tplGenInput').value.trim(); if(!type&&!txt){alert('请先选择合同类型或输入描述');return;} document.getElementById('tplGenLoading').style.display='flex'; setTimeout(function(){ document.getElementById('tplGenLoading').style.display='none'; templates.unshift({id:Date.now(),name:'AI生成_'+(type||txt).slice(0,14)+'_模板',date:new Date().toISOString().slice(0,10),isDefault:false,analysisOpen:false,analysisData:{high:[],mid:[],low:['AI根据需求生成','建议人工复核']}}); document.getElementById('tplGenInput').value=''; renderTemplates(); },900); }
+    function renderContractList(){ var con=document.getElementById('contractListContainer'); var statusMap={signed:'<span class="status-pill green">✅ 已签署</span>',signing:'<span class="status-pill blue">🔵 签署中</span>',expiring:'<span class="status-pill yellow">⚠ 即将到期</span>'}; con.innerHTML=contracts.map(function(c){ return '<div class="list-item"><div class="list-item-head"><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span>📄</span><span class="list-item-title">'+c.name+'</span>'+(statusMap[c.status]||'')+'</div><div class="list-item-meta">供应商：'+c.vendor+(c.expire?' · 到期：'+c.expire:'')+'</div></div></div><div style="padding:0 13px 10px;display:flex;gap:6px;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="alert(\'预览合同\')"><i class="fa-solid fa-eye"></i> 预览</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="alert(\'下载合同\')"><i class="fa-solid fa-download"></i> 下载</button></div></div>'; }).join(''); }
+    function renderSealList(){ var con=document.getElementById('sealListContainer'); con.innerHTML=seals.map(function(s){ return '<div class="seal-row"><div class="seal-row-img">'+s.icon+'</div><div class="seal-row-info"><div class="seal-row-name">'+s.name+(s.isDefault?'<span class="seal-default-badge">★ 默认</span>':'')+'</div><div class="seal-row-meta">'+s.desc+' · 已用于 '+s.contracts.length+' 份合同</div></div><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="alert(\'查看签章 '+s.name+'\')">查看</button></div>'; }).join(''); }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeComplianceModal();
+        closeProcPlanModal();
+        closeBudgetDrawer();
+        closeContractModal();
+      }
+    });
+  </script>
+</body>
+</html>

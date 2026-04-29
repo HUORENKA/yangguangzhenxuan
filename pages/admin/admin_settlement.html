@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>结算管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:#1e293b;color:#fff}.admin-sidebar-header{height:64px;display:flex;align-items:center;padding:0 16px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}.admin-menu{padding:12px}.admin-menu-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;color:#cbd5e1;margin-bottom:4px}.admin-menu-item:hover,.admin-menu-item.active{background:#E2231A;color:#fff}.admin-menu-item i{width:18px;text-align:center}.admin-content{margin-left:240px;min-height:100vh}.stat-card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:18px}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600;background:#E2231A;color:#fff}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.tag{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:600}.link-btn{color:#2563eb;font-size:13px;margin-right:10px}.danger{color:#dc2626}
+  </style>
+</head>
+<body>
+<aside class="admin-sidebar"><div class="admin-sidebar-header"><i class="fas fa-cog mr-2"></i>管理后台</div><nav class="admin-menu">
+  <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>工作台首页</span></a><a href="admin_station.html" class="admin-menu-item"><i class="fas fa-sitemap"></i><span>分站管理</span></a><a href="admin_supplier_manage.html" class="admin-menu-item"><i class="fas fa-store"></i><span>供应商管理</span></a><a href="admin_buyer_manage.html" class="admin-menu-item"><i class="fas fa-users"></i><span>采购商管理</span></a><a href="admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a><a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a><a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a><a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a><a href="admin_settlement.html" class="admin-menu-item active"><i class="fas fa-calculator"></i><span>结算管理</span></a><a href="admin_cockpit.html" class="admin-menu-item" target="_blank"><i class="fas fa-tachometer-alt"></i><span>数据驾驶舱</span></a>
+</nav></aside>
+<main class="admin-content"><div class="p-6 max-w-[1680px] mx-auto">
+  <div class="mb-6"><div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">结算管理</span></div><h1 class="text-2xl font-bold text-slate-900">结算管理</h1><p class="text-sm text-slate-500 mt-1">管理平台结算单，支持发起、确认和异常处理。</p></div>
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
+    <div class="stat-card"><div class="text-sm text-slate-500">待结算金额</div><div class="text-2xl font-bold text-orange-500 mt-2">¥1,280万</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">待结算单数</div><div class="text-2xl font-bold text-slate-900 mt-2">320</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">已结算金额</div><div class="text-2xl font-bold text-green-600 mt-2">¥5,460万</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">结算异常单</div><div class="text-2xl font-bold text-red-600 mt-2">18</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">本月结算金额</div><div class="text-2xl font-bold text-blue-600 mt-2">¥860万</div></div>
+  </div>
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5"><div class="grid grid-cols-1 md:grid-cols-5 gap-4"><input class="border border-slate-300 rounded-lg px-3 py-2 text-sm md:col-span-2" placeholder="结算单号 / 供应商 / 采购方"><select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部分站</option></select><select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>待结算</option><option>结算中</option><option>异常</option></select><button class="action-btn justify-center"><i class="fas fa-search"></i>查询</button></div></div>
+  <div class="table-wrap"><table class="w-full"><thead><tr><th>结算单号</th><th>所属分站</th><th>供应商</th><th>采购方</th><th>关联订单数</th><th>结算周期</th><th>应结金额</th><th>结算状态</th><th>操作</th></tr></thead><tbody>
+    <tr><td>SET20260427001</td><td>北京分站</td><td>得力办公旗舰店</td><td>北京市某某局采购中心</td><td>16</td><td>2026-04-01 至 2026-04-30</td><td class="text-red-600 font-semibold">¥286,400</td><td><span class="tag bg-orange-100 text-orange-700">待结算</span></td><td><button class="link-btn">查看</button><button class="link-btn">发起结算</button></td></tr>
+    <tr><td>SET20260426012</td><td>医疗卫生专区</td><td>惠普设备专营店</td><td>某某公立医院</td><td>8</td><td>2026-04-01 至 2026-04-30</td><td class="text-red-600 font-semibold">¥158,920</td><td><span class="tag bg-blue-100 text-blue-700">结算中</span></td><td><button class="link-btn">查看</button><button class="link-btn">确认结算</button></td></tr>
+    <tr><td>SET20260424008</td><td>教育装备专区</td><td>晨光文具供应商</td><td>海淀区某某高级中学</td><td>21</td><td>2026-04-01 至 2026-04-30</td><td class="text-red-600 font-semibold">¥74,680</td><td><span class="tag bg-red-100 text-red-700">异常</span></td><td><button class="link-btn">查看</button><button class="link-btn danger">处理异常</button></td></tr>
+  </tbody></table></div>
+</div></main>
+</body>
+</html>

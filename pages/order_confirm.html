@@ -349,6 +349,91 @@
       border-color: #fca5a5;
     }
 
+    .procurement-basis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .procurement-basis-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .procurement-basis-label {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .procurement-basis-value {
+      margin-top: 8px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1.7;
+    }
+
+    .procurement-basis-meta {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .procurement-files-panel {
+      margin-top: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      background: #fff;
+      padding: 16px;
+    }
+
+    .procurement-file-list {
+      margin-top: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .procurement-file-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+    }
+
+    .procurement-file-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.7;
+      word-break: break-all;
+    }
+
+    .procurement-file-meta {
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #64748b;
+    }
+
+    .procurement-basis-empty {
+      margin-top: 12px;
+      border-radius: 12px;
+      border: 1px dashed #d1d5db;
+      background: #fafafa;
+      padding: 14px;
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.8;
+      text-align: center;
+    }
+
     .invoice-table {
       width: 100%;
       border-collapse: collapse;
@@ -894,6 +979,7 @@
     }
 
     @media (max-width: 960px) {
+      .procurement-basis-grid,
       .compliance-body,
       .detail-grid,
       .subcheck-grid,
@@ -988,6 +1074,26 @@
             </tr>
           </tbody>
         </table>
+      </section>
+
+      <section class="card order-section">
+        <div class="section-title">采购依据</div>
+        <div class="procurement-basis-grid">
+          <div class="procurement-basis-card">
+            <div class="procurement-basis-label">采购计划</div>
+            <div class="procurement-basis-value" id="confirmPlanName"></div>
+            <div class="procurement-basis-meta" id="confirmPlanMeta"></div>
+          </div>
+          <div class="procurement-basis-card">
+            <div class="procurement-basis-label">采购预算</div>
+            <div class="procurement-basis-value" id="confirmBudgetName"></div>
+            <div class="procurement-basis-meta" id="confirmBudgetMeta"></div>
+          </div>
+        </div>
+        <div class="procurement-files-panel">
+          <div class="procurement-basis-label">采购依据文件</div>
+          <div class="procurement-file-list" id="confirmBasisFiles"></div>
+        </div>
       </section>
 
       <section class="card order-section">
@@ -1105,6 +1211,8 @@
         <div class="report-print-item"><strong>数量</strong><span id="reportQty"></span></div>
         <div class="report-print-item"><strong>发票抬头</strong><span id="reportInvoiceTitle"></span></div>
         <div class="report-print-item"><strong>收货信息</strong><span id="reportAddress"></span></div>
+        <div class="report-print-item"><strong>采购依据关联</strong><span id="reportBasisSummary"></span></div>
+        <div class="report-print-item"><strong>采购依据文件</strong><span id="reportBasisFiles"></span></div>
       </div>
     </div>
 
@@ -1162,6 +1270,15 @@
       return `￥${Number(value || 0).toFixed(2)}`;
     }
 
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function getStatusMeta(status) {
       const map = {
         pending: { cls: 'status-run', label: '待校验' },
@@ -1214,7 +1331,16 @@
             detail: '创业大厦17楼',
             receiver: '小庄'
           }
-        ]
+        ],
+        procurementBasis: {
+          plan: null,
+          budget: null,
+          files: [],
+          hasPlan: false,
+          hasBudget: false,
+          hasFiles: false,
+          hasBasis: false
+        }
       };
     }
 
@@ -1223,6 +1349,10 @@
       if (!raw) return getFallbackOrder();
       try {
         const parsed = JSON.parse(raw);
+        const parsedBasis = parsed.procurementBasis || {};
+        const parsedFiles = Array.isArray(parsedBasis.files) ? parsedBasis.files.map(item => ({ ...item })) : [];
+        const parsedPlan = parsedBasis.plan ? { ...parsedBasis.plan } : null;
+        const parsedBudget = parsedBasis.budget ? { ...parsedBasis.budget } : null;
         return {
           orderNo: parsed.orderNo || `ORD${Date.now().toString().slice(-8)}`,
           productId: parsed.productId || parsed.id || 'product-order',
@@ -1247,7 +1377,16 @@
           supplierScore: Number(parsed.supplierScore || 4.8),
           goodRate: parsed.goodRate || '98.0%',
           invoice: parsed.invoice || getFallbackOrder().invoice,
-          addresses: (parsed.addresses && parsed.addresses.length ? parsed.addresses : getFallbackOrder().addresses).map(item => ({ ...item }))
+          addresses: (parsed.addresses && parsed.addresses.length ? parsed.addresses : getFallbackOrder().addresses).map(item => ({ ...item })),
+          procurementBasis: {
+            plan: parsedPlan,
+            budget: parsedBudget,
+            files: parsedFiles,
+            hasPlan: Boolean(parsedPlan),
+            hasBudget: Boolean(parsedBudget),
+            hasFiles: parsedFiles.length > 0,
+            hasBasis: Boolean(parsedPlan || parsedBudget || parsedFiles.length)
+          }
         };
       } catch (error) {
         return getFallbackOrder();
@@ -1384,8 +1523,40 @@
       document.getElementById('invoiceTaxNoCell').textContent = orderData.invoice.taxNo;
       document.getElementById('invoiceBankCell').textContent = orderData.invoice.bank;
       document.getElementById('invoiceAccountCell').textContent = orderData.invoice.account;
+      renderProcurementBasisSummary();
       renderAddresses();
       renderReportPrintable();
+    }
+
+    function renderProcurementBasisSummary() {
+      const plan = orderData.procurementBasis && orderData.procurementBasis.plan;
+      const budget = orderData.procurementBasis && orderData.procurementBasis.budget;
+      const files = orderData.procurementBasis && Array.isArray(orderData.procurementBasis.files) ? orderData.procurementBasis.files : [];
+
+      document.getElementById('confirmPlanName').textContent = plan ? plan.name : '未关联采购计划';
+      document.getElementById('confirmPlanMeta').textContent = plan
+        ? `计划周期：${plan.period || '未填写'} · 提报部门：${plan.owner || '未填写'}`
+        : '本次下单未选择采购计划，可在后续审批或订单补录时补充。';
+
+      document.getElementById('confirmBudgetName').textContent = budget ? budget.name : '未关联采购预算';
+      document.getElementById('confirmBudgetMeta').textContent = budget
+        ? `预算周期：${budget.period || '未填写'} · 预算金额：${formatCurrency(budget.amount || 0)}`
+        : '本次下单未选择采购预算，可在后续审批或预算核验时补充。';
+
+      const fileContainer = document.getElementById('confirmBasisFiles');
+      if (!files.length) {
+        fileContainer.innerHTML = '<div class="procurement-basis-empty">暂未上传采购依据文件，本次订单将仅保留计划/预算关联信息。</div>';
+        return;
+      }
+      fileContainer.innerHTML = files.map(item => `
+        <div class="procurement-file-item">
+          <div>
+            <div class="procurement-file-name">${escapeHtml(item.name)}</div>
+            <div class="procurement-file-meta">文件类型：${escapeHtml(String(item.type || '').toUpperCase())} · 文件大小：${escapeHtml(item.sizeText || '--')} · 上传时间：${escapeHtml(item.uploadedAt || '--')}</div>
+          </div>
+          <span class="procurement-basis-label">已留痕</span>
+        </div>
+      `).join('');
     }
 
     function renderAddresses() {
@@ -1874,6 +2045,10 @@
       document.getElementById('reportQty').textContent = `${orderData.qty}${orderData.unit}`;
       document.getElementById('reportInvoiceTitle').textContent = `${orderData.invoice.type} / ${orderData.invoice.title}`;
       document.getElementById('reportAddress').textContent = `${orderData.deliveryArea} / ${orderData.receiver}`;
+      document.getElementById('reportBasisSummary').textContent = `采购计划：${orderData.procurementBasis.plan ? orderData.procurementBasis.plan.name : '未关联'}；采购预算：${orderData.procurementBasis.budget ? orderData.procurementBasis.budget.name : '未关联'}`;
+      document.getElementById('reportBasisFiles').textContent = orderData.procurementBasis.files && orderData.procurementBasis.files.length
+        ? orderData.procurementBasis.files.map(item => item.name).join('；')
+        : '未上传采购依据文件';
       document.getElementById('reportSummaryText').textContent = complianceState.summaryText || '系统正在生成总结。';
       document.getElementById('reportConclusion').textContent = complianceState.overallStatus === 'pass'
         ? '结论：当前订单合规，可提交。'

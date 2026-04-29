@@ -27,7 +27,7 @@
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
       color: var(--text-main);
-      background: #f5f8fe;
+      background: #f8fafc;
     }
     a { color: inherit; text-decoration: none; }
 
@@ -57,6 +57,40 @@
       background: linear-gradient(135deg, var(--brand) 0%, #6d8cff 100%);
       color: #fff; display: flex; align-items: center; justify-content: center;
       box-shadow: 0 10px 20px rgba(47,107,255,0.25);
+    }
+    .main-tabs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 5px;
+      margin: 0 auto;
+      border: 1px solid rgba(226,232,240,0.96);
+      border-radius: 999px;
+      background: #f8fafc;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+    .main-tab {
+      height: 38px;
+      padding: 0 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: all 0.18s ease;
+    }
+    .main-tab:hover {
+      color: var(--brand);
+      background: rgba(47,107,255,0.08);
+    }
+    .main-tab.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+      box-shadow: 0 8px 18px rgba(47,107,255,0.22);
     }
     /* 中间搜索栏 */
     .topbar-search {
@@ -132,8 +166,39 @@
     }
 
     /* ========== MALL ZONE (white bg) ========== */
-    .mall-zone { background: #fff; }
-    .mall-inner { padding: 24px 0 0; }
+    .mall-zone {
+      background:
+        linear-gradient(180deg, #ffffff 0%, #ffffff 72%, #fbfdff 100%);
+      position: relative;
+    }
+    .mall-zone::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(203,213,225,0.72), transparent);
+    }
+    .mall-inner { padding: 24px 0 20px; position: relative; z-index: 1; }
+    .mall-search-panel {
+      display: flex;
+      align-items: center;
+      width: min(720px, 100%);
+      margin: 0 auto 20px;
+      padding: 8px;
+      border: 1px solid rgba(226,232,240,0.96);
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(15,23,42,0.06);
+    }
+    .mall-search-panel .topbar-search-input {
+      height: 44px;
+      background: #f8fafc;
+      border: none;
+      border-radius: 999px 0 0 999px;
+    }
+    .mall-search-panel .topbar-search-input:focus { background: #fff; }
 
     /* 分类左侧 + 轮播 */
     .core-display { display: flex; gap: 16px; margin-bottom: 20px; position: relative; align-items: stretch; }
@@ -290,26 +355,62 @@
     .mall-supplier-meta .score { color: #f59e0b; display: inline-flex; align-items: center; gap: 3px; }
 
     /* ========== TRANSITION ZONE ========== */
+    .zone-transition,
+    .feature-zone,
+    .dark-section {
+      display: none;
+    }
     .zone-transition {
-      background: #f0f4f8; padding: 0;
-      border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;
+      background:
+        radial-gradient(circle at 50% -80%, rgba(47,107,255,0.12), transparent 58%),
+        linear-gradient(180deg, #f6f9fc 0%, #edf3f9 100%);
+      padding: 0;
+      border-top: 1px solid rgba(226,232,240,0.95);
+      border-bottom: 1px solid rgba(203,213,225,0.86);
     }
     .zone-transition-inner {
       display: flex; align-items: center; justify-content: center; gap: 14px;
-      padding: 18px 0;
+      min-height: 64px;
+      padding: 16px 0;
     }
-    .zone-transition-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, #cbd5e1); }
-    .zone-transition-line.rev { background: linear-gradient(90deg, #cbd5e1, transparent); }
+    .zone-transition-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(47,107,255,0.35), rgba(203,213,225,0.72)); }
+    .zone-transition-line.rev { background: linear-gradient(90deg, rgba(203,213,225,0.72), rgba(47,107,255,0.35), transparent); }
     .zone-transition-text {
       display: flex; align-items: center; gap: 8px;
-      font-size: 13px; font-weight: 700; color: #64748b; letter-spacing: 0.4px; white-space: nowrap;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(226,232,240,0.95);
+      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
+      font-size: 13px; font-weight: 800; color: #475569; letter-spacing: 0.4px; white-space: nowrap;
     }
     .zone-transition-dot {
       width: 6px; height: 6px; border-radius: 50%; background: var(--brand);
+      box-shadow: 0 0 0 4px rgba(47,107,255,0.1);
     }
 
     /* ========== FEATURE ZONE (light blue-gray bg) ========== */
-    .feature-zone { background: #f8fafc; padding: 36px 0 28px; }
+    .feature-zone {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(47,107,255,0.12), transparent 30%),
+        radial-gradient(circle at 88% 18%, rgba(14,165,233,0.11), transparent 32%),
+        linear-gradient(180deg, #f8fafc 0%, #eef6ff 46%, #f8fafc 100%);
+      padding: 42px 0 32px;
+    }
+    .feature-zone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(47,107,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(47,107,255,0.045) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.55), transparent 72%);
+    }
+    .feature-zone > .container { position: relative; z-index: 1; }
 
     /* Hero intro */
     .hero-panel {
@@ -714,6 +815,11 @@
     .mode-switch-item { min-width: 110px; height: 40px; padding: 0 14px; border: none; border-radius: 999px; background: transparent; color: rgba(255,255,255,0.82); font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
     .mode-switch-item:hover { color: #fff; }
     .mode-switch-item.active { background: #fff; color: #0f172a; box-shadow: 0 6px 14px rgba(15,23,42,0.12); cursor: default; }
+    .zone-transition,
+    .feature-zone,
+    .dark-section {
+      display: none !important;
+    }
 
     @media (max-width: 1100px) {
       .orange-inner { flex-direction: column; }
@@ -723,7 +829,8 @@
     }
     @media (max-width: 860px) {
       .topbar-inner { grid-template-columns: auto auto; height: auto; padding: 12px 0; }
-      .topbar-search { display: none; }
+      .main-tabs { grid-column: 1 / -1; order: 3; width: 100%; overflow-x: auto; justify-content: flex-start; }
+      .main-tab { flex: 0 0 auto; }
       .mall-supplier-grid, .reco-products-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
       .capability-grid, .advantage-grid, .stats-row { grid-template-columns: 1fr; }
       .hero-intro { grid-template-columns: 1fr; }
@@ -745,11 +852,14 @@
           <span class="brand-badge"><i class="fa-solid fa-sparkles"></i></span>
           <span>国采e购</span>
         </a>
-        <!-- 中：搜索栏 -->
-        <div class="topbar-search">
-          <input type="text" class="topbar-search-input" id="topSearchInput" placeholder="搜索商品、供应商、品牌...">
-          <button class="topbar-search-btn" onclick="handleTopSearch()"><i class="fas fa-search"></i>搜索</button>
-        </div>
+        <!-- 中：主功能 Tab -->
+        <nav class="main-tabs" aria-label="采购主功能导航">
+          <a class="main-tab active" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
+          <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 竞价询价</a>
+          <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
+          <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
+          <a class="main-tab" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a>
+        </nav>
         <!-- 右：操作区 -->
         <div class="topbar-actions">
           <a class="topbar-icon-btn" href="./workbench/workbench_home.html" title="">
@@ -780,6 +890,12 @@
   <!-- ==================== 商城区 ==================== -->
   <div class="mall-zone">
     <div class="container mall-inner">
+
+      <!-- 商城页专属搜索 -->
+      <div class="mall-search-panel">
+        <input type="text" class="topbar-search-input" id="topSearchInput" placeholder="搜索商品、供应商、品牌...">
+        <button class="topbar-search-btn" onclick="handleTopSearch()"><i class="fas fa-search"></i>搜索</button>
+      </div>
 
       <!-- 核心展示区：左侧分类 + 右侧轮播 -->
       <div class="core-display" id="coreDisplay">

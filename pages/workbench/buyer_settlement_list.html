@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>结算订单 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
+    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .b-blue { background:#eff6ff; color:#1d4ed8; } .b-purple { background:#f5f3ff; color:#6d28d9; } .b-green { background:#ecfdf5; color:#047857; } .b-red { background:#fef2f2; color:#b91c1c; } .b-warn { background:#fffbeb; color:#b45309; }
+    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; cursor:pointer; }
+    .btn-primary { background:#7c3aed; border-color:#7c3aed; color:#fff; }
+    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
+    td, th { padding:14px 16px; border-bottom:1px solid #f1f5f9; text-align:left; }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <div class="page-card p-5 mb-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center"><i class="fas fa-calculator text-xl"></i></div>
+        <div><h1 class="text-2xl font-bold">结算订单</h1><p class="text-sm text-slate-500 mt-1">核对结算、确认付款、查看发票与结算凭证。</p></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
+      <div class="stat-card"><div><div class="text-sm text-slate-500">待核对</div><div class="text-3xl font-bold text-blue-600 mt-2">6</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-search"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">待付款</div><div class="text-3xl font-bold text-purple-600 mt-2">5</div></div><div class="stat-icon bg-purple-50 text-purple-600"><i class="fas fa-credit-card"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已付款</div><div class="text-3xl font-bold text-green-600 mt-2">38</div></div><div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-money-check"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已完成</div><div class="text-3xl font-bold text-teal-600 mt-2">42</div></div><div class="stat-icon bg-teal-50 text-teal-600"><i class="fas fa-check-double"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">异常结算</div><div class="text-3xl font-bold text-red-600 mt-2">2</div></div><div class="stat-icon bg-red-50 text-red-600"><i class="fas fa-triangle-exclamation"></i></div></div>
+    </div>
+    <div class="page-card p-4 mb-5 flex flex-wrap gap-3">
+      <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="搜索结算单号 / 供应商">
+      <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>待核对</option><option>待付款</option><option>已完成</option><option>异常</option></select>
+      <button class="btn">查询</button><button class="btn">重置</button>
+    </div>
+    <div class="page-card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead><tr><th>结算单号</th><th>供应商</th><th>关联订单数</th><th>结算金额</th><th>发票状态</th><th>付款状态</th><th>结算状态</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td class="font-semibold">JS20260427001</td><td>北京联想直营科技</td><td>3</td><td class="font-bold text-red-600">¥86,400</td><td><span class="badge b-warn">待核验</span></td><td><span class="badge b-purple">待付款</span></td><td>待核对</td><td><button class="btn btn-primary" onclick="alert('结算核对通过')">核对结算</button> <button class="btn">查看发票</button></td></tr>
+          <tr><td class="font-semibold">JS20260426008</td><td>新华三官方旗舰店</td><td>1</td><td class="font-bold text-red-600">¥6,495</td><td><span class="badge b-green">已核验</span></td><td><span class="badge b-purple">待付款</span></td><td>待付款</td><td><button class="btn btn-primary" onclick="alert('付款已确认')">确认付款</button></td></tr>
+          <tr><td class="font-semibold">JS20260421006</td><td>浙江得力办公用品有限公司</td><td>8</td><td class="font-bold text-red-600">¥126,400</td><td><span class="badge b-green">已核验</span></td><td><span class="badge b-green">已付款</span></td><td>已完成</td><td><button class="btn">导出结算单</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

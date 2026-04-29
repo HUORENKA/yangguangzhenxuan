@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>分站管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities { .text-primary{color:#E2231A}.bg-primary{background-color:#E2231A}.border-primary{border-color:#E2231A} }
+    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}.stat-card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:18px}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600}.action-btn-primary{background:#E2231A;color:white}.action-btn-secondary{background:white;color:#334155;border:1px solid #cbd5e1}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.link-btn{color:#2563eb;font-size:13px;margin-right:10px}.danger{color:#dc2626}
+  </style>
+</head>
+<body>
+  <main class="admin-content">
+    <div class="p-6 max-w-[1680px] mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">分站管理</span></div>
+          <h1 class="text-2xl font-bold text-slate-900">分站管理</h1>
+          <p class="text-sm text-slate-500 mt-1">维护平台分站信息，并查看各分站下入驻供应商与采购方。</p>
+        </div>
+        <div class="flex gap-3">
+          <button class="action-btn action-btn-secondary"><i class="fas fa-download"></i>导出数据</button>
+          <button class="action-btn action-btn-primary"><i class="fas fa-plus"></i>新增分站</button>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="搜索分站名称/编码">
+          <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部区域</option><option>华北</option><option>华东</option><option>行业专区</option></select>
+          <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>启用</option><option>停用</option></select>
+          <button class="action-btn action-btn-primary justify-center"><i class="fas fa-search"></i>查询</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+        <div class="stat-card"><div class="text-sm text-slate-500">分站总数</div><div class="text-3xl font-bold text-slate-900 mt-2">36</div></div>
+        <div class="stat-card"><div class="text-sm text-slate-500">启用分站</div><div class="text-3xl font-bold text-green-600 mt-2">32</div></div>
+        <div class="stat-card"><div class="text-sm text-slate-500">入驻供应商</div><div class="text-3xl font-bold text-blue-600 mt-2">1,286</div></div>
+        <div class="stat-card"><div class="text-sm text-slate-500">入驻采购方</div><div class="text-3xl font-bold text-purple-600 mt-2">3,420</div></div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="w-full">
+          <thead><tr><th>分站名称</th><th>分站编码</th><th>所属区域</th><th>供应商数</th><th>采购方数</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>北京分站</td><td>BJ-STATION</td><td>华北 / 北京</td><td><button class="link-btn">查看 236 家</button></td><td><button class="link-btn">查看 586 家</button></td><td><span class="text-green-600">启用</span></td><td>2026-01-12</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
+            <tr><td>医疗卫生专区</td><td>MED-ZONE</td><td>行业专区</td><td><button class="link-btn">查看 152 家</button></td><td><button class="link-btn">查看 348 家</button></td><td><span class="text-green-600">启用</span></td><td>2026-02-08</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
+            <tr><td>上海分站</td><td>SH-STATION</td><td>华东 / 上海</td><td><button class="link-btn">查看 198 家</button></td><td><button class="link-btn">查看 410 家</button></td><td><span class="text-green-600">启用</span></td><td>2026-02-20</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
+            <tr><td>教育装备专区</td><td>EDU-ZONE</td><td>行业专区</td><td><button class="link-btn">查看 96 家</button></td><td><button class="link-btn">查看 224 家</button></td><td><span class="text-slate-500">停用</span></td><td>2026-03-01</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

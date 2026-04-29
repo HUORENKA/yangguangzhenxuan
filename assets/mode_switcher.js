@@ -18,7 +18,7 @@
   var prefix = "";
   for (var i = 0; i < depth; i++) prefix += "../";
 
-  var procurementHref = prefix + "home.html";
+  var procurementHref = prefix + "merged_home.html";
   var managementHref = prefix + "workbench/workbench_home.html";
   var isManagementMode = afterPages.indexOf("workbench/workbench_home.html") === 0;
 

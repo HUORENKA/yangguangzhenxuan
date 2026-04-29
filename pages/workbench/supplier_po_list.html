@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购单 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
+    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .status-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .status-pending { background:#eff6ff; color:#1d4ed8; }
+    .status-pass { background:#ecfdf5; color:#047857; }
+    .status-reject { background:#fef2f2; color:#b91c1c; }
+    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; }
+    .btn:hover { background:#f8fafc; }
+    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
+    td, th { padding:14px 16px; border-bottom:1px solid #f1f5f9; text-align:left; }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <div class="page-card p-5 mb-5">
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fas fa-file-invoice text-xl"></i></div>
+          <div>
+            <h1 class="text-2xl font-bold">采购单</h1>
+            <p class="text-sm text-slate-500 mt-1">供应商仅支持查看采购单及审批进度，不支持审批操作。</p>
+          </div>
+        </div>
+        <button class="btn" onclick="location.reload()"><i class="fas fa-rotate-right mr-1"></i>刷新</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+      <div class="stat-card"><div><div class="text-sm text-slate-500">总采购单</div><div class="text-3xl font-bold mt-2">36</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-layer-group"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">审批中</div><div class="text-3xl font-bold text-blue-600 mt-2">5</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-spinner"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已通过</div><div class="text-3xl font-bold text-green-600 mt-2">28</div></div><div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-circle-check"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已驳回</div><div class="text-3xl font-bold text-red-600 mt-2">3</div></div><div class="stat-icon bg-red-50 text-red-600"><i class="fas fa-circle-xmark"></i></div></div>
+    </div>
+
+    <div class="page-card p-4 mb-5 flex flex-wrap gap-3">
+      <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="搜索采购单编号 / 采购单位">
+      <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>审批中</option><option>已通过</option><option>已驳回</option></select>
+      <button class="btn">查询</button>
+      <button class="btn">重置</button>
+    </div>
+
+    <div class="page-card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead><tr><th>采购单编号</th><th>采购单位</th><th>商品数量</th><th>采购金额</th><th>提交时间</th><th>审批状态</th><th>最近更新</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td class="font-semibold">PO20260427001</td><td>北京市政务服务中心</td><td>12</td><td class="font-bold text-red-600">¥86,400</td><td>2026-04-27 09:20</td><td><span class="status-badge status-pending">审批中</span></td><td>采购主管审核中</td><td><button class="btn" onclick="openDetail('PO20260427001')">查看详情</button></td></tr>
+          <tr><td class="font-semibold">PO20260426018</td><td>海淀区教育装备中心</td><td>5</td><td class="font-bold text-red-600">¥32,800</td><td>2026-04-26 15:42</td><td><span class="status-badge status-pass">已通过</span></td><td>已生成订单</td><td><button class="btn" onclick="openDetail('PO20260426018')">查看详情</button></td></tr>
+          <tr><td class="font-semibold">PO20260425009</td><td>朝阳区行政服务局</td><td>3</td><td class="font-bold text-red-600">¥18,900</td><td>2026-04-25 11:08</td><td><span class="status-badge status-reject">已驳回</span></td><td>预算额度不足</td><td><button class="btn" onclick="openDetail('PO20260425009')">查看详情</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    function openDetail(id) {
+      alert(`${id}\n\n采购单位：北京市政务服务中心\n商品明细：商用台式机、显示器、办公耗材\n审批进度：采购员提交 -> 部门负责人审核 -> 财务复核\n供应商仅可查看，不可编辑或审批。`);
+    }
+  </script>
+</body>
+</html>

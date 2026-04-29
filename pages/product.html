@@ -511,6 +511,36 @@
       transform: translateY(-1px);
     }
 
+    .portrait-head-actions {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .portrait-section.generated .portrait-head-actions {
+      display: flex;
+    }
+
+    .portrait-generate-btn {
+      height: 42px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(239, 68, 68, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .portrait-generate-btn:hover {
+      filter: brightness(0.98);
+      transform: translateY(-1px);
+    }
+
     .portrait-subtitle {
       margin-top: 4px;
       color: #64748b;
@@ -535,6 +565,23 @@
       align-items: start;
     }
 
+    .portrait-entry {
+      display: none;
+    }
+
+    .portrait-body.idle {
+      grid-template-columns: 1fr;
+    }
+
+    .portrait-body.idle .portrait-entry {
+      display: block;
+    }
+
+    .portrait-body.idle .portrait-loading,
+    .portrait-body.idle .portrait-ready {
+      display: none;
+    }
+
     .portrait-body.loading {
       grid-template-columns: 1fr;
     }
@@ -553,6 +600,92 @@
 
     .portrait-body.loading .portrait-loading {
       display: block;
+    }
+
+    .portrait-entry-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #fee2e2;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(239, 68, 68, 0.12), transparent 28%),
+        radial-gradient(circle at 82% 12%, rgba(14, 165, 233, 0.14), transparent 26%),
+        linear-gradient(135deg, #fff7ed 0%, #ffffff 48%, #f8fbff 100%);
+      padding: 28px;
+      min-height: 230px;
+    }
+
+    .portrait-entry-card::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      bottom: -80px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(14, 165, 233, 0.08);
+    }
+
+    .portrait-entry-content {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+    }
+
+    .portrait-entry-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #fed7d7;
+      color: #b91c1c;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .portrait-entry-title {
+      margin-top: 14px;
+      font-size: 24px;
+      line-height: 1.4;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .portrait-entry-desc {
+      margin-top: 10px;
+      font-size: 14px;
+      line-height: 1.9;
+      color: #475569;
+    }
+
+    .portrait-entry-actions {
+      margin-top: 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .portrait-entry-meta {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .portrait-entry-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid #eef2f7;
     }
 
     .portrait-loading-head {
@@ -575,6 +708,47 @@
       display: inline-flex;
       gap: 5px;
       margin-top: 12px;
+    }
+
+    .portrait-loading-tasks {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .portrait-loading-task {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .portrait-loading-task i {
+      color: #94a3b8;
+    }
+
+    .portrait-loading-task.active {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-weight: 800;
+    }
+
+    .portrait-loading-task.done {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: #166534;
+      font-weight: 800;
+    }
+
+    .portrait-loading-task.done i {
+      color: #16a34a;
     }
 
     .portrait-loading-dots span {
@@ -712,6 +886,28 @@
       background: #fff;
       padding: 16px;
       min-height: 184px;
+    }
+
+    .portrait-section.generated .portrait-left,
+    .portrait-section.generated .portrait-card {
+      animation: portraitReveal 0.5s ease both;
+    }
+
+    .portrait-section.generated .portrait-card:nth-child(2) {
+      animation-delay: 0.08s;
+    }
+
+    .portrait-section.generated .portrait-card:nth-child(3) {
+      animation-delay: 0.16s;
+    }
+
+    .portrait-section.generated .portrait-card:nth-child(4) {
+      animation-delay: 0.24s;
+    }
+
+    @keyframes portraitReveal {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .portrait-card-title {
@@ -944,16 +1140,131 @@
     }
 
     .order-basis-content {
-      padding: 22px 28px 16px;
+      padding: 20px 28px 18px;
       background: #fafafa;
       overflow: auto;
       flex: 1;
     }
 
-    .order-basis-grid {
+    .order-basis-steps {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .order-basis-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+
+    .order-basis-step.active {
+      border-color: #fecaca;
+      background: #fff5f5;
+      color: #991b1b;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.08);
+    }
+
+    .order-basis-step.completed {
+      border-color: #dbeafe;
+      background: #f8fbff;
+      color: #1d4ed8;
+    }
+
+    .order-basis-step-index {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 800;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      color: #475569;
+    }
+
+    .order-basis-step.active .order-basis-step-index {
+      border-color: #ef4444;
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .order-basis-step.completed .order-basis-step-index {
+      border-color: #2563eb;
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .order-basis-step-text {
+      min-width: 0;
+    }
+
+    .order-basis-step-label {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .order-basis-step-desc {
+      margin-top: 2px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #64748b;
+    }
+
+    .basis-step-panel {
+      display: none;
+    }
+
+    .basis-step-panel.active {
+      display: block;
+    }
+
+    .basis-step-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .basis-step-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .basis-step-kicker {
+      font-size: 12px;
+      font-weight: 700;
+      color: #2563eb;
+      letter-spacing: 0.04em;
+    }
+
+    .basis-step-title {
+      margin-top: 4px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .basis-step-desc-text {
+      margin-top: 6px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #64748b;
     }
 
     .basis-panel {
@@ -1064,6 +1375,11 @@
       margin-top: 16px;
       font-size: 14px;
       color: #334155;
+      border-radius: 14px;
+      border: 1px solid #dbeafe;
+      background: #f8fbff;
+      padding: 12px 14px;
+      line-height: 1.8;
     }
 
     .order-basis-foot {
@@ -1080,6 +1396,15 @@
     .order-basis-foot-note {
       font-size: 14px;
       color: #64748b;
+      line-height: 1.8;
+    }
+
+    .order-basis-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .order-basis-foot .btn-ghost,
@@ -1087,6 +1412,132 @@
       height: 44px;
       padding: 0 20px;
       font-size: 14px;
+    }
+
+    .basis-upload-card {
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+      padding: 22px 20px;
+      text-align: center;
+    }
+
+    .basis-upload-icon {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 12px;
+      border-radius: 16px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .basis-upload-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .basis-upload-desc {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #64748b;
+    }
+
+    .basis-upload-actions {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .basis-upload-input {
+      display: none;
+    }
+
+    .basis-upload-hint {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .basis-file-list {
+      margin-top: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .basis-file-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+    }
+
+    .basis-file-main {
+      min-width: 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .basis-file-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .basis-file-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.7;
+      word-break: break-all;
+    }
+
+    .basis-file-meta {
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #64748b;
+    }
+
+    .basis-file-remove {
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #475569;
+      border-radius: 10px;
+      height: 34px;
+      padding: 0 12px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .basis-empty-state {
+      margin-top: 16px;
+      border-radius: 14px;
+      border: 1px dashed #d1d5db;
+      background: #fff;
+      padding: 18px;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #94a3b8;
     }
 
     .ai-section {
@@ -1696,8 +2147,10 @@
       .info-grid,
       .portrait-body,
       .portrait-skeleton-grid,
+      .portrait-loading-tasks,
       .portrait-card-grid,
       .compare-result-body,
+      .order-basis-steps,
       .ai-kpis,
       .param-grid {
         grid-template-columns: 1fr;
@@ -1711,8 +2164,8 @@
         grid-template-columns: 110px 1fr;
       }
 
-      .order-basis-grid {
-        grid-template-columns: 1fr;
+      .order-basis-actions {
+        width: 100%;
       }
     }
   </style>
@@ -1837,27 +2290,60 @@
       </aside>
     </section>
 
-    <section class="card portrait-section">
+    <section class="card portrait-section" id="portraitSection">
       <div class="portrait-head">
         <div class="portrait-head-top">
           <div>
             <div class="ai-title"><i class="fa-solid fa-brain text-red-500"></i>AI商品画像</div>
-            <div class="portrait-subtitle">基于商品信息、合规资料、平台建议采购价格区间和最近一次价格变动生成 AI 结论。</div>
+            <div class="portrait-subtitle">可主动生成 AI 商品画像，也可进入比质比价流程选择候选商品进行整体分析。</div>
           </div>
-          <button class="portrait-action-btn" type="button" onclick="openComparePicker()">
-            <i class="fa-solid fa-scale-balanced mr-1"></i>比质比价
-          </button>
+          <div class="portrait-head-actions">
+            <button class="portrait-generate-btn" type="button" onclick="generatePortrait()">
+              <i class="fa-solid fa-rotate mr-1"></i>重新生成AI画像
+            </button>
+            <button class="portrait-action-btn" type="button" onclick="openComparePicker()">
+              <i class="fa-solid fa-scale-balanced mr-1"></i>比质比价
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="portrait-body loading" id="portraitBody">
+      <div class="portrait-body idle" id="portraitBody">
+        <div class="portrait-entry">
+          <div class="portrait-entry-card">
+            <div class="portrait-entry-content">
+              <div class="portrait-entry-badge"><i class="fa-solid fa-wand-magic-sparkles"></i>AI 决策辅助</div>
+              <div class="portrait-entry-title">生成 AI 商品画像，或直接进入比质比价分析</div>
+              <div class="portrait-entry-desc">系统可基于商品信息、合规资料、平台建议采购价格区间和最近一次价格变动生成当前商品画像；也可以直接选择同品同规、相近品规商品进入整体比质比价分析。</div>
+              <div class="portrait-entry-actions">
+                <button class="portrait-generate-btn" id="generatePortraitBtn" type="button" onclick="generatePortrait()">
+                  <i class="fa-solid fa-brain mr-1"></i>生成AI画像
+                </button>
+                <button class="portrait-action-btn" type="button" onclick="openComparePicker()">
+                  <i class="fa-solid fa-scale-balanced mr-1"></i>比质比价
+                </button>
+              </div>
+              <div class="portrait-entry-meta">
+                <span><i class="fa-solid fa-check"></i>六维画像评分</span>
+                <span><i class="fa-solid fa-check"></i>商品安全与价格分析</span>
+                <span><i class="fa-solid fa-check"></i>同品同规优先比质比价</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="portrait-loading" id="portraitLoading">
           <div class="portrait-loading-head">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
-            <span>AI 正在生成商品画像</span>
+            <span id="portraitLoadingTitle">AI 正在生成商品画像</span>
           </div>
-          <div class="portrait-loading-desc">正在汇总商品信息、合规资料、价格区间与近期波动数据，并生成六维画像与分析结论。</div>
+          <div class="portrait-loading-desc" id="portraitLoadingDesc">正在汇总商品信息、合规资料、价格区间与近期波动数据，并生成六维画像与分析结论。</div>
           <div class="portrait-loading-dots"><span></span><span></span><span></span></div>
+          <div class="portrait-loading-tasks">
+            <div class="portrait-loading-task" id="portraitTask0"><i class="fa-solid fa-database"></i>数据汇聚</div>
+            <div class="portrait-loading-task" id="portraitTask1"><i class="fa-solid fa-chart-simple"></i>AI 分析</div>
+            <div class="portrait-loading-task" id="portraitTask2"><i class="fa-solid fa-file-circle-check"></i>结果生成</div>
+          </div>
 
           <div class="portrait-skeleton-grid">
             <div class="portrait-skeleton-left">
@@ -2032,36 +2518,97 @@
       <div class="order-basis-head">
         <div>
           <div class="ai-title"><i class="fa-solid fa-link text-indigo-500"></i>关联采购依据</div>
-          <div class="text-sm text-gray-500 mt-1">下单前请关联本单位已上传的采购计划和采购预算，便于后续审计追溯。</div>
+          <div class="text-sm text-gray-500 mt-1">请按步骤补充本次下单的采购计划、采购预算和采购依据文件，便于后续审计追溯。</div>
         </div>
         <button class="order-basis-close" type="button" onclick="closeOrderBasisModal()">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div class="order-basis-content">
-        <div class="order-basis-grid">
-          <section class="basis-panel">
-            <div class="basis-panel-head">
-              <div class="basis-panel-title"><i class="fa-regular fa-file-lines text-red-500"></i>采购计划</div>
+        <div class="order-basis-steps">
+          <div class="order-basis-step" id="basisStepNav1">
+            <span class="order-basis-step-index">1</span>
+            <div class="order-basis-step-text">
+              <div class="order-basis-step-label">采购计划</div>
+              <div class="order-basis-step-desc">选择或跳过本次采购计划</div>
+            </div>
+          </div>
+          <div class="order-basis-step" id="basisStepNav2">
+            <span class="order-basis-step-index">2</span>
+            <div class="order-basis-step-text">
+              <div class="order-basis-step-label">采购预算</div>
+              <div class="order-basis-step-desc">选择或跳过本次采购预算</div>
+            </div>
+          </div>
+          <div class="order-basis-step" id="basisStepNav3">
+            <span class="order-basis-step-index">3</span>
+            <div class="order-basis-step-text">
+              <div class="order-basis-step-label">采购依据</div>
+              <div class="order-basis-step-desc">上传依据文件并完成下单前留痕</div>
+            </div>
+          </div>
+        </div>
+
+        <section class="basis-step-panel" id="basisStepPanel1">
+          <div class="basis-step-card">
+            <div class="basis-step-head">
+              <div>
+                <div class="basis-step-kicker">STEP 1</div>
+                <div class="basis-step-title">选择采购计划</div>
+                <div class="basis-step-desc-text">请选择本次下单关联的采购计划；如当前暂无明确计划，可先跳过。</div>
+              </div>
               <button class="basis-add-btn" type="button" onclick="addProcurementPlan()"><i class="fa-solid fa-plus mr-1"></i>新增计划</button>
             </div>
             <div class="basis-list" id="orderPlanList"></div>
-          </section>
-          <section class="basis-panel">
-            <div class="basis-panel-head">
-              <div class="basis-panel-title"><i class="fa-solid fa-wallet text-emerald-500"></i>采购预算</div>
+          </div>
+        </section>
+
+        <section class="basis-step-panel" id="basisStepPanel2">
+          <div class="basis-step-card">
+            <div class="basis-step-head">
+              <div>
+                <div class="basis-step-kicker">STEP 2</div>
+                <div class="basis-step-title">选择采购预算</div>
+                <div class="basis-step-desc-text">请选择本次下单关联的采购预算；如预算信息稍后补充，可先跳过本步。</div>
+              </div>
               <button class="basis-add-btn" type="button" onclick="addProcurementBudget()"><i class="fa-solid fa-plus mr-1"></i>新增预算</button>
             </div>
             <div class="basis-list" id="orderBudgetList"></div>
-          </section>
-        </div>
+          </div>
+        </section>
+
+        <section class="basis-step-panel" id="basisStepPanel3">
+          <div class="basis-step-card">
+            <div class="basis-step-head">
+              <div>
+                <div class="basis-step-kicker">STEP 3</div>
+                <div class="basis-step-title">上传采购依据文件</div>
+                <div class="basis-step-desc-text">支持补充采购申请单、审批单、比价截图、会议纪要等材料，用于订单留痕与后续审计追溯。</div>
+              </div>
+            </div>
+            <div class="basis-upload-card">
+              <div class="basis-upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+              <div class="basis-upload-title">上传采购依据文件</div>
+              <div class="basis-upload-desc">支持 pdf / doc / docx / xls / xlsx / jpg / jpeg / png，单个文件不超过 20MB，最多上传 5 个文件。</div>
+              <div class="basis-upload-actions">
+                <button class="basis-add-btn" type="button" onclick="triggerBasisFileUpload()"><i class="fa-solid fa-paperclip mr-1"></i>上传文件</button>
+                <span class="basis-upload-hint">原型阶段为本地假上传，仅展示文件名称与大小</span>
+              </div>
+              <input class="basis-upload-input" id="basisFileInput" type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" onchange="handleBasisFileUpload(event)">
+            </div>
+            <div class="basis-file-list" id="basisFileList"></div>
+          </div>
+        </section>
+
         <div class="basis-summary-tip" id="basisSelectedSummary"></div>
       </div>
       <div class="order-basis-foot">
         <div class="order-basis-foot-note">如未关联计划和预算，系统会提示确认是否继续采购。</div>
-        <div class="flex items-center gap-3">
+        <div class="order-basis-actions">
           <button class="btn-ghost" type="button" onclick="closeOrderBasisModal()">取消</button>
-          <button class="btn-main" type="button" onclick="confirmOrderBasisAndProceed()">确认并下单</button>
+          <button class="btn-ghost" id="orderBasisPrevBtn" type="button" onclick="goPrevOrderBasisStep()">上一步</button>
+          <button class="btn-ghost" id="orderBasisSkipBtn" type="button" onclick="skipOrderBasisStep()">跳过</button>
+          <button class="btn-main" id="orderBasisNextBtn" type="button" onclick="goNextOrderBasisStep()">下一步</button>
         </div>
       </div>
     </div>
@@ -2093,10 +2640,19 @@
     let currentQty = 1;
     let comparePickerSelections = { same: [], similar: [] };
     let portraitLoadingTimer = null;
+    let portraitStageTimer = null;
+    let portraitGenerated = false;
+    let portraitGenerating = false;
     let procurementPlanOptions = [];
     let procurementBudgetOptions = [];
+    let orderBasisStep = 1;
     let selectedPlanId = '';
     let selectedBudgetId = '';
+    let uploadedBasisFiles = [];
+
+    const BASIS_FILE_LIMIT = 5;
+    const BASIS_FILE_MAX_SIZE = 20 * 1024 * 1024;
+    const BASIS_FILE_ACCEPTS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png'];
 
     const defaultProcurementPlans = [
       { id: 'plan-2026-q2-office', name: '2026年二季度办公耗材集中采购计划', period: '2026Q2', owner: '采购中心' },
@@ -2425,6 +2981,12 @@
         clearTimeout(portraitLoadingTimer);
         portraitLoadingTimer = null;
       }
+      if (portraitStageTimer) {
+        clearInterval(portraitStageTimer);
+        portraitStageTimer = null;
+      }
+      portraitGenerated = false;
+      portraitGenerating = false;
       document.title = `${currentProduct.name} | 国采e购`;
       document.getElementById('roleDisplay').textContent = getRoleName();
       document.getElementById('crumbName').textContent = currentProduct.name;
@@ -2458,7 +3020,7 @@
       renderPriceRange();
       renderTags();
       renderGallery();
-      startPortraitLoading();
+      resetPortraitState();
       renderParams();
       renderIntro();
       renderEvaluations();
@@ -2468,14 +3030,81 @@
       resetComparePicker();
     }
 
-    function startPortraitLoading() {
+    function resetPortraitState() {
+      const portraitSection = document.getElementById('portraitSection');
       const portraitBody = document.getElementById('portraitBody');
+      portraitSection.classList.remove('generated');
+      portraitBody.classList.remove('loading');
+      portraitBody.classList.add('idle');
+      document.getElementById('portraitScore').textContent = '';
+      const canvas = document.getElementById('portraitRadar');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function generatePortrait() {
+      if (portraitGenerating) return;
+      const portraitSection = document.getElementById('portraitSection');
+      const portraitBody = document.getElementById('portraitBody');
+      const generateBtn = document.getElementById('generatePortraitBtn');
+      portraitGenerating = true;
+      portraitSection.classList.remove('generated');
+      portraitBody.classList.remove('idle');
       portraitBody.classList.add('loading');
+      if (generateBtn) generateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>AI画像生成中...';
+      startPortraitStages();
+      portraitSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       portraitLoadingTimer = setTimeout(() => {
         renderPortrait();
         portraitBody.classList.remove('loading');
+        portraitSection.classList.add('generated');
+        portraitGenerated = true;
+        portraitGenerating = false;
         portraitLoadingTimer = null;
-      }, 850);
+        if (portraitStageTimer) {
+          clearInterval(portraitStageTimer);
+          portraitStageTimer = null;
+        }
+        if (generateBtn) generateBtn.innerHTML = '<i class="fa-solid fa-rotate mr-1"></i>重新生成AI画像';
+      }, portraitGenerated ? 950 : 1900);
+    }
+
+    function startPortraitStages() {
+      const stages = [
+        {
+          title: '正在汇聚商品数据',
+          desc: '正在读取商品基础信息、生产资料、质检报告、价格区间与最近一次价格变动。',
+        },
+        {
+          title: '正在执行 AI 多维分析',
+          desc: '正在生成六维画像，并分析商品完整性、安全资料、价格合理性和价格波动。',
+        },
+        {
+          title: '正在生成画像结论',
+          desc: '正在组织一句话结论、综合评分、雷达图和四类分析卡片。',
+        }
+      ];
+      let index = 0;
+      updatePortraitStage(index, stages);
+      if (portraitStageTimer) clearInterval(portraitStageTimer);
+      portraitStageTimer = setInterval(() => {
+        index = Math.min(index + 1, stages.length - 1);
+        updatePortraitStage(index, stages);
+        if (index === stages.length - 1) {
+          clearInterval(portraitStageTimer);
+          portraitStageTimer = null;
+        }
+      }, 620);
+    }
+
+    function updatePortraitStage(activeIndex, stages) {
+      document.getElementById('portraitLoadingTitle').textContent = stages[activeIndex].title;
+      document.getElementById('portraitLoadingDesc').textContent = stages[activeIndex].desc;
+      stages.forEach((stage, index) => {
+        const task = document.getElementById(`portraitTask${index}`);
+        task.classList.toggle('active', index === activeIndex);
+        task.classList.toggle('done', index < activeIndex);
+      });
     }
 
     function renderTags() {
@@ -2516,7 +3145,7 @@
 
     function renderPortrait() {
       document.getElementById('portraitSummary').textContent = currentProduct.portraitSummary;
-      document.getElementById('portraitScore').textContent = currentProduct.portraitScore;
+      document.getElementById('portraitScore').textContent = '0';
 
       document.getElementById('infoConclusion').textContent = currentProduct.infoConclusion;
       document.getElementById('infoList').innerHTML = [
@@ -2548,6 +3177,21 @@
       ].join('');
 
       drawPortraitRadar(document.getElementById('portraitRadar'), currentProduct.portraitScores);
+      animatePortraitScore(currentProduct.portraitScore);
+    }
+
+    function animatePortraitScore(targetScore) {
+      const scoreEl = document.getElementById('portraitScore');
+      const target = Number(targetScore || 0);
+      const duration = 520;
+      const startedAt = performance.now();
+      function tick(now) {
+        const progress = Math.min(1, (now - startedAt) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        scoreEl.textContent = Math.round(target * eased);
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
     }
 
     function renderMetricItem(label, value, tone) {
@@ -2944,17 +3588,73 @@
       return (list || []).find(item => item.id === id) || null;
     }
 
+    function formatBasisFileSize(size) {
+      const value = Number(size || 0);
+      if (value >= 1024 * 1024) return `${(value / (1024 * 1024)).toFixed(1)}MB`;
+      if (value >= 1024) return `${Math.round(value / 1024)}KB`;
+      return `${value}B`;
+    }
+
+    function formatBasisDateTime(date) {
+      return new Date(date).toLocaleString('zh-CN', { hour12: false });
+    }
+
+    function renderBasisFileList() {
+      const list = document.getElementById('basisFileList');
+      if (!uploadedBasisFiles.length) {
+        list.innerHTML = '<div class="basis-empty-state">暂未上传采购依据文件，可点击“上传文件”补充采购申请单、审批单或比价截图等留痕材料。</div>';
+        return;
+      }
+      list.innerHTML = uploadedBasisFiles.map(item => `
+        <div class="basis-file-item">
+          <div class="basis-file-main">
+            <div class="basis-file-badge"><i class="fa-regular fa-file-lines"></i></div>
+            <div>
+              <div class="basis-file-name">${escapeBasisText(item.name)}</div>
+              <div class="basis-file-meta">文件类型：${escapeBasisText(item.type.toUpperCase())} · 文件大小：${escapeBasisText(item.sizeText)} · 上传时间：${escapeBasisText(item.uploadedAt)}</div>
+            </div>
+          </div>
+          <button class="basis-file-remove" type="button" onclick="removeBasisFile('${escapeBasisText(item.id)}')">删除</button>
+        </div>
+      `).join('');
+    }
+
+    function renderOrderBasisFooter() {
+      const prevBtn = document.getElementById('orderBasisPrevBtn');
+      const skipBtn = document.getElementById('orderBasisSkipBtn');
+      const nextBtn = document.getElementById('orderBasisNextBtn');
+      const note = document.querySelector('.order-basis-foot-note');
+      prevBtn.style.display = orderBasisStep === 1 ? 'none' : 'inline-flex';
+      skipBtn.textContent = orderBasisStep === 3 ? '跳过上传' : '跳过';
+      nextBtn.textContent = orderBasisStep === 3 ? '确认并下单' : '下一步';
+      note.textContent = orderBasisStep === 1
+        ? '如当前订单暂无明确采购计划，可点击“跳过”进入下一步。'
+        : orderBasisStep === 2
+          ? '如预算信息暂未确认，可点击“跳过”继续补充采购依据文件。'
+          : '支持补充采购依据文件留痕；若三项依据均为空，系统会在下单前再次确认。';
+    }
+
     function renderOrderBasisModal() {
       if (!getBasisById('plan', selectedPlanId)) selectedPlanId = '';
       if (!getBasisById('budget', selectedBudgetId)) selectedBudgetId = '';
       document.getElementById('orderPlanList').innerHTML = renderBasisItems('plan', procurementPlanOptions, selectedPlanId);
       document.getElementById('orderBudgetList').innerHTML = renderBasisItems('budget', procurementBudgetOptions, selectedBudgetId);
+      renderBasisFileList();
+      [1, 2, 3].forEach(step => {
+        const nav = document.getElementById(`basisStepNav${step}`);
+        const panel = document.getElementById(`basisStepPanel${step}`);
+        nav.classList.toggle('active', step === orderBasisStep);
+        nav.classList.toggle('completed', step < orderBasisStep);
+        panel.classList.toggle('active', step === orderBasisStep);
+      });
       const selectedPlan = getBasisById('plan', selectedPlanId);
       const selectedBudget = getBasisById('budget', selectedBudgetId);
-      document.getElementById('basisSelectedSummary').textContent = `当前关联：采购计划【${selectedPlan ? selectedPlan.name : '未关联'}】；采购预算【${selectedBudget ? selectedBudget.name : '未关联'}】`;
+      document.getElementById('basisSelectedSummary').textContent = `当前关联：采购计划【${selectedPlan ? selectedPlan.name : '未关联'}】；采购预算【${selectedBudget ? selectedBudget.name : '未关联'}】；采购依据文件【${uploadedBasisFiles.length}个】`;
+      renderOrderBasisFooter();
     }
 
     function openOrderBasisModal() {
+      orderBasisStep = 1;
       renderOrderBasisModal();
       document.getElementById('orderBasisOverlay').classList.add('show');
       updateBodyScrollLock();
@@ -2973,6 +3673,54 @@
     function selectOrderBudget(id) {
       selectedBudgetId = id || '';
       renderOrderBasisModal();
+    }
+
+    function triggerBasisFileUpload() {
+      document.getElementById('basisFileInput').click();
+    }
+
+    function handleBasisFileUpload(event) {
+      const files = Array.from((event.target && event.target.files) || []);
+      if (!files.length) return;
+      let addedCount = 0;
+      files.forEach(file => {
+        const extension = (file.name.split('.').pop() || '').toLowerCase();
+        if (!BASIS_FILE_ACCEPTS.includes(extension)) {
+          showToast(`文件“${file.name}”格式不支持`);
+          return;
+        }
+        if (file.size > BASIS_FILE_MAX_SIZE) {
+          showToast(`文件“${file.name}”超过 20MB`);
+          return;
+        }
+        if (uploadedBasisFiles.length >= BASIS_FILE_LIMIT) {
+          showToast(`最多上传 ${BASIS_FILE_LIMIT} 个采购依据文件`);
+          return;
+        }
+        const duplicated = uploadedBasisFiles.some(item => item.name === file.name && item.size === file.size);
+        if (duplicated) {
+          showToast(`文件“${file.name}”已存在`);
+          return;
+        }
+        uploadedBasisFiles.push({
+          id: `basis-file-${Date.now()}-${addedCount}`,
+          name: file.name,
+          size: file.size,
+          sizeText: formatBasisFileSize(file.size),
+          type: extension || 'file',
+          uploadedAt: formatBasisDateTime(new Date())
+        });
+        addedCount += 1;
+      });
+      event.target.value = '';
+      renderOrderBasisModal();
+      if (addedCount) showToast(`已添加 ${addedCount} 个采购依据文件`);
+    }
+
+    function removeBasisFile(id) {
+      uploadedBasisFiles = uploadedBasisFiles.filter(item => item.id !== id);
+      renderOrderBasisModal();
+      showToast('已移除采购依据文件');
     }
 
     function addProcurementPlan() {
@@ -3012,9 +3760,39 @@
       showToast('已新增采购预算并完成选择');
     }
 
+    function goPrevOrderBasisStep() {
+      orderBasisStep = Math.max(1, orderBasisStep - 1);
+      renderOrderBasisModal();
+    }
+
+    function goNextOrderBasisStep() {
+      if (orderBasisStep >= 3) {
+        confirmOrderBasisAndProceed();
+        return;
+      }
+      orderBasisStep += 1;
+      renderOrderBasisModal();
+    }
+
+    function skipOrderBasisStep() {
+      if (orderBasisStep === 1) {
+        selectedPlanId = '';
+        orderBasisStep = 2;
+        renderOrderBasisModal();
+        return;
+      }
+      if (orderBasisStep === 2) {
+        selectedBudgetId = '';
+        orderBasisStep = 3;
+        renderOrderBasisModal();
+        return;
+      }
+      confirmOrderBasisAndProceed();
+    }
+
     function confirmOrderBasisAndProceed() {
-      if (!selectedPlanId && !selectedBudgetId) {
-        const proceed = window.confirm('未关联采购依据（采购计划、采购预算），是否继续采购？');
+      if (!selectedPlanId && !selectedBudgetId && !uploadedBasisFiles.length) {
+        const proceed = window.confirm('当前未关联采购计划、采购预算，也未上传采购依据文件，是否继续采购？');
         if (!proceed) return;
       }
       closeOrderBasisModal();
@@ -3081,7 +3859,11 @@
         procurementBasis: {
           plan: selectedPlan,
           budget: selectedBudget,
-          hasBasis: Boolean(selectedPlan || selectedBudget)
+          files: uploadedBasisFiles.map(item => ({ ...item })),
+          hasPlan: Boolean(selectedPlan),
+          hasBudget: Boolean(selectedBudget),
+          hasFiles: uploadedBasisFiles.length > 0,
+          hasBasis: Boolean(selectedPlan || selectedBudget || uploadedBasisFiles.length)
         }
       };
     }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购单 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
+    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .b-blue { background:#eff6ff; color:#1d4ed8; } .b-amber { background:#fffbeb; color:#b45309; } .b-green { background:#ecfdf5; color:#047857; } .b-red { background:#fef2f2; color:#b91c1c; }
+    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; cursor:pointer; }
+    .btn-primary { background:#2563eb; border-color:#2563eb; color:#fff; }
+    .btn-danger { background:#dc2626; border-color:#dc2626; color:#fff; }
+    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
+    td, th { padding:14px 16px; border-bottom:1px solid #f1f5f9; text-align:left; }
+    .dialog { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,.45); z-index:20; }
+    .dialog.show { display:flex; }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <div class="page-card p-5 mb-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fas fa-file-invoice text-xl"></i></div>
+        <div><h1 class="text-2xl font-bold">采购单</h1><p class="text-sm text-slate-500 mt-1">处理采购单审核、审批进度跟踪与结果查看。</p></div>
+      </div>
+      <button class="btn btn-primary" onclick="alert('进入新建采购单流程')"><i class="fas fa-plus mr-1"></i>新建采购单</button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
+      <div class="stat-card"><div><div class="text-sm text-slate-500">总采购单</div><div class="text-3xl font-bold mt-2">66</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-layer-group"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">待我审核</div><div class="text-3xl font-bold text-blue-600 mt-2">10</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-user-check"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">审批中</div><div class="text-3xl font-bold text-amber-600 mt-2">5</div></div><div class="stat-icon bg-amber-50 text-amber-600"><i class="fas fa-spinner"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已通过</div><div class="text-3xl font-bold text-green-600 mt-2">48</div></div><div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-circle-check"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已驳回</div><div class="text-3xl font-bold text-red-600 mt-2">3</div></div><div class="stat-icon bg-red-50 text-red-600"><i class="fas fa-circle-xmark"></i></div></div>
+    </div>
+
+    <div class="page-card p-4 mb-5 flex flex-wrap gap-3">
+      <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="搜索采购单编号 / 项目名称">
+      <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>待我审核</option><option>审批中</option><option>已通过</option><option>已驳回</option></select>
+      <button class="btn">查询</button><button class="btn">重置</button>
+    </div>
+
+    <div class="page-card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead><tr><th>采购单编号</th><th>采购项目</th><th>供应商</th><th>采购金额</th><th>提交人</th><th>当前节点</th><th>状态</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td class="font-semibold">PO20260427001</td><td>政务大厅办公电脑采购</td><td>北京联想直营科技</td><td class="font-bold text-red-600">¥52,990</td><td>王丽</td><td>部门负责人</td><td><span class="badge b-blue">待我审核</span></td><td><button class="btn btn-primary" onclick="openAuditDialog('pass')">审核通过</button> <button class="btn btn-danger" onclick="openAuditDialog('reject')">驳回</button> <button class="btn">详情</button></td></tr>
+          <tr><td class="font-semibold">PO20260426018</td><td>教育装备网络设备采购</td><td>新华三官方旗舰店</td><td class="font-bold text-red-600">¥6,495</td><td>刘强</td><td>财务复核</td><td><span class="badge b-amber">审批中</span></td><td><button class="btn">查看详情</button></td></tr>
+          <tr><td class="font-semibold">PO20260425009</td><td>办公耗材年度补充采购</td><td>浙江得力办公用品有限公司</td><td class="font-bold text-red-600">¥12,640</td><td>李敏</td><td>已结束</td><td><span class="badge b-green">已通过</span></td><td><button class="btn">生成订单</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="dialog" id="auditDialog">
+    <div class="page-card p-5 w-[480px]">
+      <h3 class="text-lg font-bold mb-3" id="auditTitle">采购单审核</h3>
+      <textarea class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" rows="4" placeholder="填写审核意见"></textarea>
+      <div class="flex justify-end gap-2 mt-5"><button class="btn" onclick="closeAuditDialog()">取消</button><button class="btn btn-primary" onclick="closeAuditDialog(); alert('操作已提交')">确认提交</button></div>
+    </div>
+  </div>
+  <script>
+    function openAuditDialog(type){ document.getElementById('auditTitle').textContent = type === 'pass' ? '审核通过确认' : '驳回采购单'; document.getElementById('auditDialog').classList.add('show'); }
+    function closeAuditDialog(){ document.getElementById('auditDialog').classList.remove('show'); }
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的收藏 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
+    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .b-product { background:#fff1f2; color:#be123c; } .b-supplier { background:#eff6ff; color:#1d4ed8; } .b-warn { background:#fffbeb; color:#b45309; } .b-off { background:#f1f5f9; color:#64748b; }
+    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; cursor:pointer; }
+    .btn-primary { background:#E2231A; border-color:#E2231A; color:#fff; }
+    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
+    td, th { padding:14px 16px; border-bottom:1px solid #f1f5f9; text-align:left; }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <div class="page-card p-5 mb-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center"><i class="fas fa-heart text-xl"></i></div>
+        <div><h1 class="text-2xl font-bold">我的收藏</h1><p class="text-sm text-slate-500 mt-1">集中管理已收藏商品与供应商，支持加入采购单和取消收藏。</p></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+      <div class="stat-card"><div><div class="text-sm text-slate-500">收藏商品数</div><div class="text-3xl font-bold text-rose-600 mt-2">32</div></div><div class="stat-icon bg-rose-50 text-rose-600"><i class="fas fa-box"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">收藏供应商数</div><div class="text-3xl font-bold text-blue-600 mt-2">8</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-store"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">价格变动</div><div class="text-3xl font-bold text-amber-600 mt-2">6</div></div><div class="stat-icon bg-amber-50 text-amber-600"><i class="fas fa-chart-line"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已下架商品</div><div class="text-3xl font-bold text-slate-600 mt-2">3</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-box-archive"></i></div></div>
+    </div>
+    <div class="page-card p-4 mb-5 flex flex-wrap gap-3">
+      <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="搜索商品 / 供应商">
+      <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部类型</option><option>商品</option><option>供应商</option></select>
+      <button class="btn">查询</button><button class="btn">重置</button>
+    </div>
+    <div class="page-card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead><tr><th>收藏对象</th><th>类型</th><th>类目</th><th>当前价格/状态</th><th>收藏时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td class="font-semibold">联想启天M550商用台式机</td><td><span class="badge b-product">商品</span></td><td>办公设备</td><td class="font-bold text-red-600">¥5,299 <span class="text-xs text-green-600 ml-2">降价 ¥120</span></td><td>2026-04-20</td><td><button class="btn btn-primary" onclick="alert('已加入采购单')">加入采购单</button> <button class="btn">取消收藏</button></td></tr>
+          <tr><td class="font-semibold">新华三官方旗舰店</td><td><span class="badge b-supplier">供应商</span></td><td>网络设备</td><td><span class="text-green-600 font-semibold">正常经营</span></td><td>2026-04-18</td><td><button class="btn">查看店铺</button> <button class="btn">取消收藏</button></td></tr>
+          <tr><td class="font-semibold">无线鼠标 M220</td><td><span class="badge b-product">商品</span></td><td>办公耗材</td><td><span class="badge b-off">已下架</span></td><td>2026-04-15</td><td><button class="btn">取消收藏</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

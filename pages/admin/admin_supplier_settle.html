@@ -128,6 +128,49 @@
     .upload-zone.has-warn  { border-color: #fcd34d; background: #fefce8; border-style: solid; }
     .upload-zone.has-fail  { border-color: #fca5a5; background: #fef2f2; border-style: solid; }
 
+    /* 一证登记 */
+    .one-license-upload {
+      border: 2px dashed #bfdbfe;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .one-license-upload:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.10);
+    }
+    .one-license-upload.has-file {
+      border-style: solid;
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+    .recognition-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .recognition-step.active {
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      font-weight: 700;
+    }
+    .recognition-step.done {
+      color: #166534;
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      font-weight: 700;
+    }
+
     /* ===== AI审核模态框（完全仿 compliance-overlay） ===== */
     .compliance-overlay {
       position: fixed; inset: 0;
@@ -417,17 +460,16 @@
     <button class="admin-sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="sidebarToggleIcon"></i></button>
   </div>
   <nav class="admin-menu">
-    <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>首页</span></a>
-    <a href="admin_cockpit.html" class="admin-menu-item" target="_blank"><i class="fas fa-tachometer-alt"></i><span>运营驾驶舱</span></a>
-    <a href="#" class="admin-menu-item"><i class="fas fa-users"></i><span>用户信息管理</span></a>
-    <a href="#" class="admin-menu-item"><i class="fas fa-building"></i><span>用户企业信息认证</span></a>
+    <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>工作台首页</span></a>
+    <a href="admin_station.html" class="admin-menu-item"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
     <a href="admin_supplier_manage.html" class="admin-menu-item active"><i class="fas fa-store"></i><span>供应商管理</span></a>
-    <a href="admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品审核管理</span></a>
-    <a href="#" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
-    <a href="#" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单信息</span></a>
-    <a href="#" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>公告管理</span></a>
-    <a href="admin_reco_manage.html" class="admin-menu-item"><i class="fas fa-layer-group"></i><span>分类推荐管理</span></a>
-    <a href="#" class="admin-menu-item"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
+    <a href="admin_buyer_manage.html" class="admin-menu-item"><i class="fas fa-users"></i><span>采购商管理</span></a>
+    <a href="admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a>
+    <a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a>
+    <a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
+    <a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a>
+    <a href="admin_settlement.html" class="admin-menu-item"><i class="fas fa-calculator"></i><span>结算管理</span></a>
+    <a href="admin_cockpit.html" class="admin-menu-item" target="_blank"><i class="fas fa-tachometer-alt"></i><span>数据驾驶舱</span></a>
   </nav>
 </div>
 
@@ -499,14 +541,19 @@
 
     <!-- 基本信息填写 -->
     <div class="page-card p-5 mb-5 fade-in">
-      <div class="flex items-center gap-3 mb-5">
-        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
-          <i class="fas fa-pen-to-square"></i>
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+            <i class="fas fa-pen-to-square"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">供应商基本信息</h2>
+            <p class="text-sm text-slate-500 mt-0.5">请按营业执照填写，信息将与上传资质进行一致性比对。</p>
+          </div>
         </div>
-        <div>
-          <h2 class="text-lg font-bold text-slate-900">供应商基本信息</h2>
-          <p class="text-sm text-slate-500 mt-0.5">请按营业执照填写，信息将与上传资质进行一致性比对。</p>
-        </div>
+        <button class="action-btn action-btn-blue" onclick="openOneLicenseModal()">
+          <i class="fas fa-id-card"></i><span>一证登记</span>
+        </button>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4">
         <div>
@@ -561,9 +608,6 @@
           </div>
         </div>
         <div class="flex flex-wrap gap-3">
-          <button class="action-btn action-btn-secondary" onclick="mockUploadFiles()">
-            <i class="fas fa-file-arrow-up"></i><span>模拟批量上传</span>
-          </button>
           <button class="action-btn action-btn-blue" id="aiAuditBtn" onclick="startAiAudit()">
             <i class="fas fa-shield-halved"></i><span>AI资质审核</span>
           </button>
@@ -573,7 +617,7 @@
         </div>
       </div>
 
-      <div class="text-sm text-slate-500 mb-4" id="uploadSummary">当前暂未上传任何资质文件，请点击"模拟批量上传"或逐项上传。</div>
+      <div class="text-sm text-slate-500 mb-4" id="uploadSummary">当前暂未上传任何资质文件，请点击"一证登记"上传营业执照，或逐项上传资质文件。</div>
 
       <div class="table-shell">
         <div class="overflow-x-auto">
@@ -746,6 +790,47 @@
   </div>
 </div>
 
+<!-- ===== 一证登记弹窗 ===== -->
+<div class="dialog-overlay" id="oneLicenseOverlay">
+  <div class="dialog-card" style="width:min(640px,92vw);">
+    <div class="dialog-head">
+      <div class="dialog-icon info"><i class="fas fa-id-card"></i></div>
+      <div>
+        <div class="dialog-title">一证登记</div>
+        <div class="text-sm text-slate-500 mt-1">上传营业执照后，系统将识别企业信息并自动回填基本资料。</div>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <div class="one-license-upload" id="oneLicenseUploadZone" onclick="selectLicenseFile()">
+        <input type="file" id="oneLicenseFileInput" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleLicenseFileChange(event)">
+        <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 mx-auto flex items-center justify-center text-2xl mb-3">
+          <i class="fas fa-cloud-arrow-up"></i>
+        </div>
+        <div class="text-base font-bold text-slate-900" id="oneLicenseFileName">拖拽或点击上传营业执照</div>
+        <div class="text-sm text-slate-500 mt-2">支持 JPG / PNG / PDF，单文件 ≤ 5MB</div>
+      </div>
+
+      <div class="rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700 leading-6">
+        <i class="fas fa-wand-magic-sparkles mr-1"></i>
+        系统将识别企业名称、统一社会信用代码、法定代表人、注册地址和经营范围，并自动生成营业执照资质文件记录。
+      </div>
+
+      <div class="space-y-2 hidden" id="oneLicenseProgress">
+        <div class="recognition-step" data-step="0"><i class="fas fa-circle-notch"></i><span>正在识别营业执照版式与关键字段</span></div>
+        <div class="recognition-step" data-step="1"><i class="fas fa-circle-notch"></i><span>正在提取统一社会信用代码与企业名称</span></div>
+        <div class="recognition-step" data-step="2"><i class="fas fa-circle-notch"></i><span>正在匹配主营类目与注册地址</span></div>
+        <div class="recognition-step" data-step="3"><i class="fas fa-circle-notch"></i><span>正在回填供应商基本信息并生成资质文件</span></div>
+      </div>
+    </div>
+
+    <div class="dialog-actions mt-5">
+      <button class="dialog-btn dialog-btn-cancel" onclick="closeOneLicenseModal()">取消</button>
+      <button class="dialog-btn dialog-btn-confirm" id="oneLicenseStartBtn" onclick="startOneLicenseRecognize()">开始识别</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== 对话框 ===== -->
 <div class="dialog-overlay" id="dialogOverlay">
   <div class="dialog-card">
@@ -874,6 +959,7 @@
   let selectedQueueIndex = -1;
   let activeAssistantFileId = null;
   let dialogOnConfirm = null;
+  let oneLicenseSelectedFile = null;
 
   function cloneQualFiles() {
     return qualFilesTemplate.map(f => ({
@@ -932,7 +1018,7 @@
     const uploaded = qualFiles.filter(f => f.uploadStatus !== 'neutral').length;
     summary.textContent = uploaded
       ? `已上传 ${uploaded} / ${qualFiles.length} 份资质文件，${uploaded === qualFiles.length ? '全部上传完成，可点击"AI资质审核"。' : '请继续上传剩余文件。'}`
-      : '当前暂未上传任何资质文件，请点击"模拟批量上传"或逐项上传。';
+      : '当前暂未上传任何资质文件，请点击"一证登记"上传营业执照，或逐项上传资质文件。';
 
     tbody.innerHTML = qualFiles.map(f => `
       <tr class="border-t border-slate-100 hover:bg-slate-50 transition-colors">
@@ -953,23 +1039,128 @@
     `).join('');
   }
 
-  // ===== 模拟批量上传 =====
-  function mockUploadFiles() {
-    qualFiles = cloneQualFiles();
-    qualFiles.forEach(f => { f.uploadStatus = 'uploaded'; });
-    renderQualTable();
-    showDialog({ title: '上传成功', message: `已模拟上传 ${qualFiles.length} 份资质文件，请点击"AI资质审核"进行核验。`, type: 'success', confirmText: '确定' });
-  }
-
   function mockSingleUpload(id) {
     const f = qualFiles.find(x => x.id === id);
     if (f) { f.uploadStatus = 'uploaded'; renderQualTable(); }
   }
 
+  // ===== 一证登记 =====
+  function openOneLicenseModal() {
+    resetOneLicenseModal();
+    document.getElementById('oneLicenseOverlay').classList.add('show');
+  }
+
+  function closeOneLicenseModal() {
+    document.getElementById('oneLicenseOverlay').classList.remove('show');
+  }
+
+  function resetOneLicenseModal() {
+    oneLicenseSelectedFile = null;
+    const input = document.getElementById('oneLicenseFileInput');
+    if (input) input.value = '';
+    document.getElementById('oneLicenseFileName').textContent = '拖拽或点击上传营业执照';
+    document.getElementById('oneLicenseUploadZone').classList.remove('has-file');
+    document.getElementById('oneLicenseProgress').classList.add('hidden');
+    document.querySelectorAll('#oneLicenseProgress .recognition-step').forEach(step => {
+      step.classList.remove('active', 'done');
+      step.querySelector('i').className = 'fas fa-circle-notch';
+    });
+    const btn = document.getElementById('oneLicenseStartBtn');
+    btn.disabled = false;
+    btn.textContent = '开始识别';
+  }
+
+  function selectLicenseFile() {
+    document.getElementById('oneLicenseFileInput').click();
+  }
+
+  function handleLicenseFileChange(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    oneLicenseSelectedFile = file;
+    document.getElementById('oneLicenseFileName').textContent = file.name;
+    document.getElementById('oneLicenseUploadZone').classList.add('has-file');
+  }
+
+  function startOneLicenseRecognize() {
+    if (!oneLicenseSelectedFile) {
+      showDialog({ title: '请先上传营业执照', message: '请上传营业执照文件后再开始识别。', type: 'warn', confirmText: '确定' });
+      return;
+    }
+    const progress = document.getElementById('oneLicenseProgress');
+    const steps = Array.from(progress.querySelectorAll('.recognition-step'));
+    const btn = document.getElementById('oneLicenseStartBtn');
+    progress.classList.remove('hidden');
+    btn.disabled = true;
+    btn.innerHTML = '识别中...';
+
+    steps.forEach((step, idx) => {
+      window.setTimeout(() => {
+        if (idx > 0) {
+          steps[idx - 1].classList.remove('active');
+          steps[idx - 1].classList.add('done');
+          steps[idx - 1].querySelector('i').className = 'fas fa-circle-check';
+        }
+        step.classList.add('active');
+        step.querySelector('i').className = 'fas fa-spinner fa-spin';
+      }, idx * 650);
+    });
+
+    window.setTimeout(() => {
+      const last = steps[steps.length - 1];
+      last.classList.remove('active');
+      last.classList.add('done');
+      last.querySelector('i').className = 'fas fa-circle-check';
+      applyOneLicenseData();
+      closeOneLicenseModal();
+      showDialog({
+        title: '一证登记完成',
+        message: '营业执照识别完成，已自动回填供应商基本信息，并生成全部资质文件上传记录。请继续点击"AI资质审核"完成核验。',
+        type: 'success',
+        confirmText: '确定'
+      });
+    }, steps.length * 650 + 350);
+  }
+
+  function applyOneLicenseData() {
+    const recognized = {
+      companyName: '北京阳光办公科技有限公司',
+      creditCode: '91110108MA01SUN88X',
+      mainCategory: '办公设备',
+      legalPerson: '张三',
+      contactName: '张三',
+      contactPhone: '13800138000',
+      address: '北京市海淀区中关村科技园区阳光路88号'
+    };
+
+    Object.entries(recognized).forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = value;
+    });
+
+    if (!qualFiles.length) qualFiles = cloneQualFiles();
+    qualFiles.forEach(file => {
+      file.uploadStatus = 'uploaded';
+      file.aiResult = '';
+      file.summary = '';
+      file.issues = [];
+      file.logs = [];
+      file.checks.forEach(c => { c.runtimeStatus = 'pending'; });
+    });
+
+    const licenseFile = qualFiles.find(f => f.id === 'QF-001');
+    if (licenseFile) {
+      licenseFile.aiRecognized = '企业名称：北京阳光办公科技有限公司\n信用代码：91110108MA01SUN88X\n法定代表人：张三\n住所：北京市海淀区中关村科技园区阳光路88号\n经营范围：办公设备、办公耗材、计算机软硬件及外围设备销售';
+      licenseFile.finalSummary = '营业执照真实有效，统一社会信用代码与填报信息一致，经营范围涵盖主营类目，审核通过。';
+    }
+
+    renderQualTable();
+  }
+
   // ===== AI 资质审核 =====
   function startAiAudit() {
     if (!qualFiles.length) {
-      showDialog({ title: '提示', message: '请先点击"模拟批量上传"，生成资质文件后再进行审核。', type: 'warn', confirmText: '确定' });
+      showDialog({ title: '提示', message: '请先通过"一证登记"上传营业执照，或逐项上传资质文件后再进行审核。', type: 'warn', confirmText: '确定' });
       return;
     }
     const uploaded = qualFiles.filter(f => f.uploadStatus !== 'neutral');

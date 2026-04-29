@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购商管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities{.text-primary{color:#E2231A}.bg-primary{background-color:#E2231A}}
+    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600}.action-btn-primary{background:#E2231A;color:white}.action-btn-secondary{background:white;color:#334155;border:1px solid #cbd5e1}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.link-btn{color:#2563eb;font-size:13px;margin-right:10px}.danger{color:#dc2626}.tag{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:600}
+  </style>
+</head>
+<body>
+  <main class="admin-content">
+    <div class="p-6 max-w-[1680px] mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <div><div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">采购商管理</span></div><h1 class="text-2xl font-bold text-slate-900">采购商管理</h1><p class="text-sm text-slate-500 mt-1">管理采购单位资料、认证状态和账号启停。</p></div>
+        <div class="flex gap-3"><button class="action-btn action-btn-secondary"><i class="fas fa-download"></i>导出数据</button><button class="action-btn action-btn-primary"><i class="fas fa-plus"></i>新增采购商</button></div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm md:col-span-2" placeholder="采购商名称 / 信用代码 / 联系人">
+          <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部分站</option><option>北京分站</option><option>医疗卫生专区</option></select>
+          <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部类型</option><option>政府机关</option><option>医院</option><option>学校</option></select>
+          <button class="action-btn action-btn-primary justify-center"><i class="fas fa-search"></i>查询</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="w-full">
+          <thead><tr><th>采购商名称</th><th>所属分站</th><th>采购商类型</th><th>统一社会信用代码</th><th>联系人</th><th>累计采购额</th><th>认证状态</th><th>启用状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>北京市某某局采购中心</td><td>北京分站</td><td>政府机关</td><td>91110000MA0012345X</td><td>王主任 138****2334</td><td class="text-red-600 font-semibold">¥286.4万</td><td><span class="tag bg-green-100 text-green-700">已认证</span></td><td><span class="text-green-600">启用</span></td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
+            <tr><td>某某公立医院</td><td>医疗卫生专区</td><td>医院</td><td>52110000MJ1234567A</td><td>李老师 136****1028</td><td class="text-red-600 font-semibold">¥145.8万</td><td><span class="tag bg-green-100 text-green-700">已认证</span></td><td><span class="text-green-600">启用</span></td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
+            <tr><td>海淀区某某高级中学</td><td>教育装备专区</td><td>学校</td><td>12110000MB9876543B</td><td>赵老师 135****8820</td><td class="text-red-600 font-semibold">¥72.3万</td><td><span class="tag bg-yellow-100 text-yellow-700">待认证</span></td><td><span class="text-slate-500">停用</span></td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

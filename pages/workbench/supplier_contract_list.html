@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>合同签署 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
+    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .b-warn { background:#fffbeb; color:#b45309; } .b-blue { background:#eff6ff; color:#1d4ed8; } .b-green { background:#ecfdf5; color:#047857; } .b-red { background:#fef2f2; color:#b91c1c; }
+    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; }
+    .btn-primary { background:#4f46e5; border-color:#4f46e5; color:#fff; }
+    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
+    td, th { padding:14px 16px; border-bottom:1px solid #f1f5f9; text-align:left; }
+    .dialog { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,.45); z-index:20; }
+    .dialog.show { display:flex; }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <div class="page-card p-5 mb-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="fas fa-file-signature text-xl"></i></div>
+        <div><h1 class="text-2xl font-bold">合同签署</h1><p class="text-sm text-slate-500 mt-1">查看合同流转状态，并对待签署合同完成电子签署。</p></div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
+      <div class="stat-card"><div><div class="text-sm text-slate-500">合同总数</div><div class="text-3xl font-bold mt-2">40</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-layer-group"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">待签署</div><div class="text-3xl font-bold text-amber-600 mt-2">6</div></div><div class="stat-icon bg-amber-50 text-amber-600"><i class="fas fa-pen-nib"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">审批中</div><div class="text-3xl font-bold text-blue-600 mt-2">9</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-spinner"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已签署</div><div class="text-3xl font-bold text-green-600 mt-2">24</div></div><div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-circle-check"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已驳回/作废</div><div class="text-3xl font-bold text-red-600 mt-2">1</div></div><div class="stat-icon bg-red-50 text-red-600"><i class="fas fa-ban"></i></div></div>
+    </div>
+    <div class="page-card p-4 mb-5 flex flex-wrap gap-3">
+      <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="搜索合同编号 / 合同名称">
+      <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>待签署</option><option>审批中</option><option>已签署</option></select>
+      <button class="btn">查询</button><button class="btn">重置</button>
+    </div>
+    <div class="page-card overflow-hidden">
+      <table class="w-full text-sm">
+        <thead><tr><th>合同编号</th><th>合同名称</th><th>采购单位</th><th>合同金额</th><th>关联单据</th><th>状态</th><th>发起时间</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr><td class="font-semibold">HT20260427001</td><td>商用台式机采购合同</td><td>北京市政务服务中心</td><td class="font-bold text-red-600">¥52,990</td><td>ORD20260427008</td><td><span class="badge b-warn">待签署</span></td><td>2026-04-27</td><td><button class="btn btn-primary" onclick="openSignDialog()">签署合同</button> <button class="btn">查看合同</button></td></tr>
+          <tr><td class="font-semibold">HT20260426018</td><td>网络设备供货合同</td><td>海淀区教育装备中心</td><td class="font-bold text-red-600">¥6,495</td><td>ORD20260426021</td><td><span class="badge b-blue">审批中</span></td><td>2026-04-26</td><td><button class="btn">查看合同</button></td></tr>
+          <tr><td class="font-semibold">HT20260421006</td><td>办公耗材年度框架合同</td><td>朝阳区行政服务局</td><td class="font-bold text-red-600">¥126,400</td><td>PO20260421006</td><td><span class="badge b-green">已签署</span></td><td>2026-04-21</td><td><button class="btn">下载合同</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="dialog" id="signDialog">
+    <div class="page-card p-5 w-[520px]">
+      <h3 class="text-lg font-bold mb-3">电子签署确认</h3>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-7 mb-4">
+        合同：商用台式机采购合同<br>签署主体：北京联想直营科技<br>签署方式：平台电子签章 + CA认证
+      </div>
+      <label class="flex gap-2 text-sm text-slate-600"><input type="checkbox" id="signConfirm"> 我已阅读合同内容，并确认以当前主体完成电子签署。</label>
+      <div class="flex justify-end gap-2 mt-5"><button class="btn" onclick="closeSignDialog()">取消</button><button class="btn btn-primary" onclick="doSign()">确认签署</button></div>
+    </div>
+  </div>
+  <script>
+    function openSignDialog(){ document.getElementById('signDialog').classList.add('show'); }
+    function closeSignDialog(){ document.getElementById('signDialog').classList.remove('show'); }
+    function doSign(){ if(!document.getElementById('signConfirm').checked){ alert('请先勾选签署声明'); return; } closeSignDialog(); alert('签署成功，合同状态已更新为已签署。'); }
+  </script>
+</body>
+</html>

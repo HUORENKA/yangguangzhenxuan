@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>订单管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}.stat-card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:18px}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600;background:#E2231A;color:#fff}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.tag{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:600}
+  </style>
+</head>
+<body>
+<main class="admin-content"><div class="p-6 max-w-[1680px] mx-auto">
+  <div class="mb-6"><div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">订单管理</span></div><h1 class="text-2xl font-bold text-slate-900">订单管理</h1><p class="text-sm text-slate-500 mt-1">全平台订单履约监管视图，仅支持查看。</p></div>
+  <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-5">
+    <div class="stat-card"><div class="text-sm text-slate-500">订单总数</div><div class="text-2xl font-bold text-slate-900 mt-2">9,680</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">待发货</div><div class="text-2xl font-bold text-orange-500 mt-2">420</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">待收货</div><div class="text-2xl font-bold text-blue-600 mt-2">680</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">已完成</div><div class="text-2xl font-bold text-green-600 mt-2">7,920</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">订单总金额</div><div class="text-2xl font-bold text-red-600 mt-2">¥6,780万</div></div>
+    <div class="stat-card"><div class="text-sm text-slate-500">售后中</div><div class="text-2xl font-bold text-purple-600 mt-2">96</div></div>
+  </div>
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5"><div class="grid grid-cols-1 md:grid-cols-5 gap-4"><input class="border border-slate-300 rounded-lg px-3 py-2 text-sm md:col-span-2" placeholder="订单号 / 采购方 / 供应商"><select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部分站</option></select><select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>待确认</option><option>待发货</option><option>已完成</option></select><button class="action-btn justify-center"><i class="fas fa-search"></i>查询</button></div></div>
+  <div class="table-wrap"><table class="w-full"><thead><tr><th>订单号</th><th>所属分站</th><th>采购方</th><th>供应商</th><th>商品摘要</th><th>订单金额</th><th>订单状态</th><th>下单时间</th></tr></thead><tbody>
+    <tr><td>ORD20260427008</td><td>北京分站</td><td>北京市某某局采购中心</td><td>得力办公旗舰店</td><td>A4复印纸等 12 件</td><td class="text-red-600 font-semibold">¥23,940</td><td><span class="tag bg-orange-100 text-orange-700">待发货</span></td><td>2026-04-27 10:12</td></tr>
+    <tr><td>ORD20260426031</td><td>医疗卫生专区</td><td>某某公立医院</td><td>惠普设备专营店</td><td>激光打印机 3 台</td><td class="text-red-600 font-semibold">¥58,455</td><td><span class="tag bg-blue-100 text-blue-700">待收货</span></td><td>2026-04-26 15:42</td></tr>
+    <tr><td>ORD20260425016</td><td>教育装备专区</td><td>海淀区某某高级中学</td><td>晨光文具供应商</td><td>中性笔等 38 件</td><td class="text-red-600 font-semibold">¥12,680</td><td><span class="tag bg-green-100 text-green-700">已完成</span></td><td>2026-04-25 08:55</td></tr>
+  </tbody></table></div>
+</div></main>
+</body>
+</html>

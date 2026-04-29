@@ -92,6 +92,84 @@
       font-size: 13px;
       font-weight: 700;
     }
+    .top-chip.hidden-source-chip { display: none; }
+    .topbar-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+    .topbar-icon-btn {
+      position: relative; width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: #334155; font-size: 18px; cursor: pointer;
+      transition: background 0.18s, color 0.18s; text-decoration: none;
+    }
+    .topbar-icon-btn:hover { background: rgba(47,107,255,0.08); color: #2f6bff; }
+    .topbar-icon-btn .tip {
+      position: absolute; top: calc(100% + 10px); left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      white-space: nowrap; background: #1e293b; color: #fff;
+      font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 8px;
+      pointer-events: none; opacity: 0; transition: opacity 0.16s, transform 0.16s; z-index: 200;
+    }
+    .topbar-icon-btn:hover .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .topbar-icon-btn .tip::before {
+      content: ""; position: absolute; bottom: 100%; left: 50%;
+      transform: translateX(-50%); border: 5px solid transparent; border-bottom-color: #1e293b;
+    }
+    .topbar-icon-btn .badge-dot {
+      position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+      border-radius: 50%; background: #ef4444; border: 2px solid #fff;
+    }
+    .topbar-divider { width: 1px; height: 22px; background: rgba(203,213,225,0.7); margin: 0 2px; }
+    .topbar-user {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; position: relative; padding: 0 4px;
+    }
+    .topbar-user .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; box-shadow: 0 6px 14px rgba(37,99,235,0.22);
+    }
+    .topbar-user .username { font-size: 14px; font-weight: 700; color: #334155; }
+    .topbar-user .tip {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      white-space: nowrap; background: #1e293b; color: #fff;
+      font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 8px;
+      pointer-events: none; opacity: 0; transition: opacity 0.16s, transform 0.16s;
+      transform: translateY(-4px); z-index: 200;
+    }
+    .topbar-user:hover .tip { opacity: 1; transform: translateY(0); }
+    .topbar-user .tip::before {
+      content: ""; position: absolute; bottom: 100%; right: 14px;
+      border: 5px solid transparent; border-bottom-color: #1e293b;
+    }
+    .main-tabs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 5px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+    }
+    .main-tab {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: rgba(255,255,255,0.86);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: all 0.18s ease;
+    }
+    .main-tab:hover { color: #fff; background: rgba(255,255,255,0.14); }
+    .main-tab.active {
+      color: var(--primary-dark);
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.16);
+    }
 
     /* ─── Tab bar ─── */
     .tab-bar {
@@ -831,6 +909,47 @@
       50% { opacity: 0.5; }
     }
     .loading-pulse { animation: pulse 1s ease-in-out infinite; }
+    .empty-hero {
+      margin: 22px auto 0;
+      max-width: 1120px;
+      padding: 28px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+      border: 1px solid var(--primary-border);
+      border-radius: 24px;
+      box-shadow: 0 14px 34px rgba(15,23,42,0.06);
+    }
+    .empty-title { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -0.6px; }
+    .empty-subtitle { margin: 10px 0 0; color: var(--text-sub); line-height: 1.8; font-size: 15px; }
+    .entry-grid { margin-top: 22px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+    .entry-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .entry-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 18px 34px rgba(22,163,74,0.12); }
+    .entry-icon {
+      width: 46px; height: 46px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff; font-size: 18px;
+    }
+    .entry-card h3 { margin: 14px 0 8px; font-size: 20px; font-weight: 900; }
+    .entry-card p { margin: 0; color: var(--text-sub); line-height: 1.7; font-size: 14px; }
+    .scene-picks { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .scene-pick {
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      color: #15803d;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .hidden-input { display: none; }
   </style>
   <script src="../assets/mode_switcher.js"></script>
 </head>
@@ -840,16 +959,65 @@
   <div class="topbar-inner">
     <div class="brand">
       <div class="brand-logo"><i class="fa-solid fa-file-lines"></i></div>
-      <span>国采e购 · 智选方案生成</span>
+      <span>国采e购</span>
     </div>
-    <div class="top-actions">
-      <span class="top-chip" id="sourceChip"><i class="fa-solid fa-file-waveform"></i> 演示样例</span>
-      <a class="top-link" href="./home.html"><i class="fa-solid fa-arrow-left"></i> 返回首页</a>
+    <nav class="main-tabs" aria-label="采购主功能导航">
+      <a class="main-tab" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
+      <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 竞价询价</a>
+      <a class="main-tab active" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
+      <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
+      <a class="main-tab" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a>
+    </nav>
+    <div class="topbar-actions">
+      <span class="top-chip hidden-source-chip" id="sourceChip"><i class="fa-solid fa-file-waveform"></i> 演示样例</span>
+      <a class="topbar-icon-btn" href="./workbench/workbench_home.html" title="">
+        <i class="fa-solid fa-briefcase"></i>
+        <span class="tip">工作台</span>
+      </a>
+      <a class="topbar-icon-btn" href="#" title="">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="badge-dot"></span>
+        <span class="tip">购物车</span>
+      </a>
+      <div class="topbar-divider"></div>
+      <a class="topbar-icon-btn" href="./ai_assistant.html" title="">
+        <i class="fa-regular fa-bell"></i>
+        <span class="badge-dot"></span>
+        <span class="tip">消息通知</span>
+      </a>
+      <div class="topbar-user">
+        <div class="avatar">张</div>
+        <span class="username">张三</span>
+        <span class="tip">张三 · 采购专员</span>
+      </div>
     </div>
   </div>
 </header>
 
-<div class="tab-bar">
+<section class="empty-hero" id="planEmpty">
+  <h1 class="empty-title">智选方案</h1>
+  <p class="empty-subtitle">默认不加载演示结果。请先上传采购方案文件，或选择一个采购场景，系统将生成采购分析、推荐商品表和可换品的采购清单。</p>
+  <input id="emptyPlanFileInput" class="hidden-input" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
+  <div class="entry-grid">
+    <article class="entry-card" onclick="document.getElementById('emptyPlanFileInput').click()">
+      <div class="entry-icon"><i class="fa-solid fa-upload"></i></div>
+      <h3>上传采购方案</h3>
+      <p>支持采购计划、需求清单、Excel 表格等文件。上传后进入采购文件分析，并保留推荐商品“换品”功能。</p>
+    </article>
+    <article class="entry-card">
+      <div class="entry-icon"><i class="fa-solid fa-layer-group"></i></div>
+      <h3>选择采购场景</h3>
+      <p>从常用场景开始配置采购商品、数量、频次、预算与交付要求，生成场景采购推荐。</p>
+      <div class="scene-picks">
+        <button class="scene-pick" type="button" onclick="startPlanWithScene('日常办公用品')">日常办公用品</button>
+        <button class="scene-pick" type="button" onclick="startPlanWithScene('办公设备更新')">办公设备更新</button>
+        <button class="scene-pick" type="button" onclick="startPlanWithScene('会议物资')">会议物资</button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<div class="tab-bar" id="resultTabBar">
   <div class="tab-item active" id="tabFileBtn" onclick="switchTab('file')">
     <i class="fa-solid fa-file-waveform"></i> 采购文件分析
   </div>
@@ -858,12 +1026,12 @@
   </div>
 </div>
 
-<div class="page-wrap">
+<div class="page-wrap" id="resultWrap">
   <div id="tab-file" class="tab-content active"></div>
   <div id="tab-scene" class="tab-content"></div>
 </div>
 
-<div class="bottom-bar">
+<div class="bottom-bar" id="bottomBar">
   <div class="bottom-inner">
     <div class="bottom-left">
       <div class="bottom-count">已选商品 <strong id="bottomCount">0</strong> 件</div>
@@ -1092,7 +1260,24 @@
   /* ═══════════════ INIT ═══════════════ */
 
   (function init() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('fresh') === '1') {
+      sessionStorage.removeItem('planDemo');
+    }
+    const emptyFileInput = document.getElementById('emptyPlanFileInput');
+    emptyFileInput.addEventListener('change', function () {
+      if (!this.files || !this.files[0]) return;
+      startPlanWithFile(this.files[0].name);
+    });
     const stored = safeGetStorage('planDemo');
+    if (!stored) {
+      showPlanEmpty(true);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { closeDrawer(); closeSceneModal(); }
+      });
+      return;
+    }
+    showPlanEmpty(false);
     if (stored) {
       const chip = document.getElementById('sourceChip');
       if (stored.scene) chip.innerHTML = `<i class="fa-solid fa-layer-group"></i> 场景：${stored.scene}`;
@@ -1115,6 +1300,26 @@
       if (e.key === 'Escape') { closeDrawer(); closeSceneModal(); }
     });
   })();
+
+  function showPlanEmpty(isEmpty) {
+    document.getElementById('planEmpty').style.display = isEmpty ? 'block' : 'none';
+    document.getElementById('resultTabBar').style.display = isEmpty ? 'none' : 'flex';
+    document.getElementById('resultWrap').style.display = isEmpty ? 'none' : 'block';
+    document.getElementById('bottomBar').style.display = isEmpty ? 'none' : 'block';
+    document.getElementById('sourceChip').innerHTML = isEmpty
+      ? '<i class="fa-solid fa-circle-info"></i> 待选择来源'
+      : document.getElementById('sourceChip').innerHTML;
+  }
+
+  function startPlanWithFile(fileName) {
+    sessionStorage.setItem('planDemo', JSON.stringify({ file: fileName, scene: null }));
+    window.location.href = './plan_result.html';
+  }
+
+  function startPlanWithScene(sceneName) {
+    sessionStorage.setItem('planDemo', JSON.stringify({ file: null, scene: sceneName }));
+    window.location.href = './plan_result.html';
+  }
 
   /* ═══════════════ TAB ═══════════════ */
 
@@ -1239,6 +1444,23 @@
 
   /* ═══════════════ TAB 2 ═══════════════ */
 
+  function getSceneProductImage(rec, idx) {
+    const sceneProductImages = [
+      'https://images.unsplash.com/photo-1568667256549-094345857637?w=120&h=120&fit=crop',
+      'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=120&h=120&fit=crop',
+      'https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=120&h=120&fit=crop',
+      'https://images.unsplash.com/photo-1586208958839-06c17cacdf08?w=120&h=120&fit=crop',
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=120&h=120&fit=crop',
+    ];
+    if (rec.img) return rec.img;
+    const text = (rec.name + ' ' + (rec.spec || '')).toLowerCase();
+    if (text.includes('纸') || text.includes('档案') || text.includes('夹')) return sceneProductImages[0];
+    if (text.includes('笔')) return sceneProductImages[1];
+    if (text.includes('墨') || text.includes('硒鼓')) return sceneProductImages[2];
+    if (text.includes('柜') || text.includes('办公')) return sceneProductImages[3];
+    return sceneProductImages[idx % sceneProductImages.length];
+  }
+
   function renderSceneTab() {
     const scene = scenes.find(s => s.id === activeSceneId);
     const tags = scenes.map(s => `
@@ -1275,15 +1497,32 @@
 
     let recHtml = '';
     if (scene.generated && scene.recommendations.length > 0) {
-      const recRows = scene.recommendations.map(function (r) {
+      const recRows = scene.recommendations.map(function (r, idx) {
         const key = 'scene-' + scene.id + '-' + r.id;
         const chk = checkedMap[key];
         const currentQty = chk ? chk.qty : r.qty;
-        return `<tr>
+        const matchedItem = scene.items.find(function(item) {
+          return item.id === r.id || item.name === r.name || r.name.indexOf(item.name) >= 0 || item.name.indexOf(r.name.replace(/^（示例）/, '')) >= 0;
+        }) || scene.items[idx] || {};
+        const reqName = matchedItem.name || r.name.replace(/^（示例）/, '');
+        const reqSpec = matchedItem.spec || r.spec || '—';
+        const reqQty = matchedItem.qty || r.qty || 1;
+        const reqFreq = matchedItem.freq ? ' · ' + matchedItem.freq : '';
+        const img = getSceneProductImage(r, idx);
+        return `<tr data-key="${key}">
           <td><input type="checkbox" ${chk ? 'checked' : ''} onchange="handleCheck(this,'${key}',${r.price})"></td>
-          <td><div class="product-name" id="pname-${key}"><a href="./product.html" target="_blank">${r.name}</a></div></td>
-          <td><span style="font-size:13px;color:var(--text-sub)">${r.spec}</span></td>
-          <td style="font-size:13px;color:var(--text-sub)" id="psup-${key}">${r.supplier}</td>
+          <td><div class="req-name">${esc(reqName)}</div><div class="req-spec">场景需求：${reqQty} ${reqFreq}</div></td>
+          <td><span style="font-size:13px;color:var(--text-sub)">${esc(reqSpec)}</span></td>
+          <td><span class="match-ok"><i class="fa-solid fa-circle-check"></i> 已匹配</span></td>
+          <td>
+            <div class="product-cell">
+              <img class="product-thumb" id="pimg-${key}" src="${img}" alt="${esc(r.name)}" onerror="this.style.display='none'">
+              <div class="product-info">
+                <div class="product-name" id="pname-${key}"><a href="./product.html" target="_blank">${r.name}</a></div>
+                <div class="product-supplier" id="psup-${key}">${r.supplier}</div>
+              </div>
+            </div>
+          </td>
           <td><span class="price" id="pprice-${key}">¥${r.price.toFixed(2)}</span></td>
           <td><input class="qty-input" type="number" min="1" value="${currentQty}" onchange="handleQtyChange('${key}',this.value)"></td>
           <td><span class="subtotal" id="sub-${key}">¥${fmt(r.price * currentQty)}</span></td>
@@ -1298,8 +1537,8 @@
         <div class="card section" style="margin-top:18px">
           <div class="section-head">
             <div>
-              <h2 class="section-title">推荐商品列表</h2>
-              <div class="section-subtitle">基于「${scene.name}」场景配置，AI 已为您匹配平台推荐商品。</div>
+              <h2 class="section-title">商品采购推荐表</h2>
+              <div class="section-subtitle">基于「${scene.name}」场景配置逐项匹配平台推荐商品，勾选后可在底部一键提交订单。</div>
             </div>
           </div>
           <div class="table-outer">
@@ -1307,9 +1546,10 @@
               <thead>
                 <tr>
                   <th style="width:40px"><input type="checkbox" onchange="toggleAll('scene-${scene.id}',this.checked)"></th>
-                  <th>推荐商品</th><th>规格</th><th>供应商</th>
-                  <th style="width:100px">单价</th><th style="width:88px">采购数量</th>
-                  <th style="width:100px">小计</th><th style="width:150px">操作</th>
+                  <th>采购需求</th><th>需求规格</th><th style="width:110px">匹配状态</th>
+                  <th>推荐商品</th><th style="width:100px">单价</th>
+                  <th style="width:88px">采购数量</th><th style="width:100px">小计</th>
+                  <th style="width:150px">操作</th>
                 </tr>
               </thead>
               <tbody>${recRows}</tbody>
