@@ -895,8 +895,11 @@
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="contract" onclick="openWorkbenchSubPage('supplier_contract_list.html', 'contract', '合同签署')">
           <i class="fas fa-file-signature"></i><span>合同签署</span>
         </a>
-        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="settlement" onclick="openWorkbenchSubPage('supplier_settlement_list.html', 'settlement', '结算管理')">
-          <i class="fas fa-calculator"></i><span>结算订单</span>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="settlement" onclick="openWorkbenchSubPage('supplier_settlement_list.html', 'settlement', '采购订单结算')">
+          <i class="fas fa-calculator"></i><span>采购订单结算</span>
+        </a>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="platform-settlement" onclick="openWorkbenchSubPage('supplier_platform_settlement.html', 'platform-settlement', '平台结算管理')">
+          <i class="fas fa-file-invoice-dollar"></i><span>平台结算管理</span>
         </a>
       </div>
     </nav>
@@ -1622,14 +1625,14 @@
         </div>
       </div>
       
-      <!-- 结算订单 -->
+      <!-- 采购订单结算 -->
       <div id="wb-section-settlement" class="module-card rounded-xl shadow-sm p-5 wb-section-anchor cursor-pointer" onclick="openSettlementFeature()">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-3">
             <div class="module-icon bg-gradient-to-br from-teal-500 to-teal-600 text-white shadow-sm">
               <i class="fas fa-calculator"></i>
         </div>
-            <h3 class="text-lg font-bold text-gray-800">结算订单</h3>
+            <h3 class="text-lg font-bold text-gray-800">采购订单结算</h3>
           </div>
           <a href="javascript:void(0)" class="view-all-link text-sm text-primary font-medium" onclick="event.stopPropagation(); openSettlementFeature();">查看全部 <i class="fas fa-chevron-right text-xs ml-1"></i></a>
           </div>
@@ -2189,7 +2192,7 @@
 
     function openSettlementFeature() {
       if (getCurrentRole() === 'supplier') {
-        openWorkbenchSubPage('supplier_settlement_list.html', 'settlement', '结算管理');
+        openWorkbenchSubPage('supplier_settlement_list.html', 'settlement', '采购订单结算');
       } else {
         openWorkbenchSubPage('buyer_settlement_list.html', 'settlement', '结算管理');
       }

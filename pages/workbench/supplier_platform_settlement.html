@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>平台结算管理 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
+    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .b-warn { background:#fffbeb; color:#b45309; } 
+    .b-blue { background:#eff6ff; color:#1d4ed8; } 
+    .b-purple { background:#f5f3ff; color:#6d28d9; } 
+    .b-green { background:#ecfdf5; color:#047857; }
+    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; cursor: pointer; transition: all 0.2s;}
+    .btn:hover { background: #f8fafc; }
+    .btn-primary { background:#0d9488; border-color:#0d9488; color:#fff; }
+    .btn-primary:hover { background:#0f766e; }
+    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
+    td, th { padding:14px 16px; border-bottom:1px solid #f1f5f9; text-align:left; }
+    .dialog { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,.45); z-index:20; }
+    .dialog.show { display:flex; }
+    
+    /* Tabs styles */
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+    .nav-tab { 
+      padding: 8px 20px; 
+      border-radius: 999px; 
+      font-size: 14px; 
+      font-weight: 600;
+      color: #475569;
+      background: #f1f5f9;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-tab:hover { background: #e2e8f0; }
+    .nav-tab.active { 
+      background: #E2231A; 
+      color: white; 
+      box-shadow: 0 4px 12px rgba(226,35,26,0.2); 
+    }
+    
+    /* action link style */
+    .action-link {
+      color: #E2231A;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-right: 12px;
+    }
+    .action-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <div class="page-card p-5 mb-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center"><i class="fas fa-file-invoice-dollar text-xl"></i></div>
+        <div>
+          <h1 class="text-2xl font-bold">平台结算管理</h1>
+          <p class="text-sm text-slate-500 mt-1">确认平台服务费结算、上传付款凭证并跟踪发票开具状态。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="page-card p-5 mb-5">
+      <div class="nav-tabs" id="settlementTabs">
+        <div class="nav-tab active" data-tab="wait_settle" onclick="switchTab('wait_settle')">待结算 (4)</div>
+        <div class="nav-tab" data-tab="wait_confirm" onclick="switchTab('wait_confirm')">待确认 (6)</div>
+        <div class="nav-tab" data-tab="wait_invoice" onclick="switchTab('wait_invoice')">待平台开票 (5)</div>
+        <div class="nav-tab" data-tab="wait_pay" onclick="switchTab('wait_pay')">待付款 (3)</div>
+        <div class="nav-tab" data-tab="completed" onclick="switchTab('completed')">已完成 (18)</div>
+      </div>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-3 mb-4">
+        <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="搜索单号">
+        <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="时间周期">
+        <button class="btn btn-primary" style="background:#E2231A; border-color:#E2231A;">查询</button>
+        <button class="btn">重置</button>
+      </div>
+
+      <!-- Dynamic Table -->
+      <div class="overflow-hidden border border-slate-200 rounded-xl">
+        <table class="w-full text-sm" id="dataTable">
+          <thead>
+            <tr id="tableHeader">
+              <!-- Dynamically rendered header -->
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Dynamically rendered body -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 确认结算单弹窗 -->
+  <div class="dialog" id="confirmDialog">
+    <div class="page-card p-5 w-[520px]">
+      <h3 class="text-lg font-bold mb-3">确认平台结算单</h3>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-7 mb-4">
+        <div class="flex justify-between mb-2">
+          <span class="text-slate-500">平台结算单号：</span>
+          <span class="font-medium" id="dlgConfirmId"></span>
+        </div>
+        <div class="flex justify-between mb-2">
+          <span class="text-slate-500">结算周期：</span>
+          <span class="font-medium" id="dlgConfirmPeriod"></span>
+        </div>
+        <div class="flex justify-between mb-2">
+          <span class="text-slate-500">平台销量金额：</span>
+          <span class="font-medium text-slate-800" id="dlgConfirmSales"></span>
+        </div>
+        <div class="flex justify-between mb-2">
+          <span class="text-slate-500">服务费（不含税）：</span>
+          <span class="font-bold text-red-600" id="dlgConfirmFee"></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">税额：</span>
+          <span class="font-medium" id="dlgConfirmTax"></span>
+        </div>
+      </div>
+      <div class="text-xs text-amber-600 mb-4 bg-amber-50 p-3 rounded-lg">
+        <i class="fas fa-info-circle mr-1"></i> 请核对销量金额及服务费，确认无误后运营商将开具服务费发票。
+      </div>
+      <div class="flex justify-end gap-2 mt-5">
+        <button class="btn" onclick="closeConfirmDialog()">取消</button>
+        <button class="btn btn-primary" style="background:#E2231A; border-color:#E2231A;" onclick="closeConfirmDialog(); alert('已确认，等待运营商上传发票。')">确认无误</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 上传付款凭证弹窗 -->
+  <div class="dialog" id="paymentDialog">
+    <div class="page-card p-5 w-[460px]">
+      <h3 class="text-lg font-bold mb-3">上传付款凭证</h3>
+      <div class="mb-4 text-sm text-slate-600">
+        请向平台指定账户支付服务费 <span class="font-bold text-red-600" id="dlgPaymentFee"></span> ，并上传打款截图或凭证。
+      </div>
+      <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-teal-500 transition-colors mb-4 bg-slate-50">
+        <i class="fas fa-cloud-upload-alt text-3xl text-slate-400 mb-2"></i>
+        <p class="text-sm text-slate-600">点击或拖拽文件到此处</p>
+        <p class="text-xs text-slate-400 mt-1">支持 PNG, JPG, PDF</p>
+      </div>
+      <div class="flex justify-end gap-2 mt-5">
+        <button class="btn" onclick="closePaymentDialog()">取消</button>
+        <button class="btn btn-primary" style="background:#E2231A; border-color:#E2231A;" onclick="closePaymentDialog(); alert('付款凭证上传成功，等待平台核对。')">确认上传</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 查看发票弹窗 -->
+  <div class="dialog" id="invoiceViewDialog">
+    <div class="page-card p-5 w-[460px]">
+      <h3 class="text-lg font-bold mb-3">查看平台发票</h3>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm leading-7 mb-4">
+        <div class="flex justify-between mb-2">
+          <span class="text-slate-500">发票号码：</span>
+          <span class="font-medium" id="dlgInvoiceNo"></span>
+        </div>
+        <div class="flex justify-between mb-2">
+          <span class="text-slate-500">发票金额：</span>
+          <span class="font-bold text-red-600" id="dlgInvoiceAmount"></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">开票日期：</span>
+          <span class="font-medium">2026-04-29</span>
+        </div>
+      </div>
+      <div class="flex justify-center border border-slate-200 p-8 rounded-lg bg-slate-50 text-slate-400 cursor-pointer hover:text-teal-600 transition-colors">
+        <div class="text-center">
+          <i class="fas fa-file-pdf text-4xl mb-2"></i>
+          <div class="text-sm font-medium" id="dlgInvoiceFile">invoice_file.pdf</div>
+          <div class="text-xs mt-1">点击下载文件</div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-5">
+        <button class="btn" onclick="closeInvoiceViewDialog()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mock Data
+    const MOCK_DATA = {
+      wait_settle: [
+        { id: 'JS20260427001', supplier: '华北办公用品有限公司', period: '2026-04-01 ~ 2026-04-30', sales: '¥156,000', fee: '¥4,680', tax: '¥280.8', status: '待结算' },
+        { id: 'JS20260427015', supplier: '华北办公用品有限公司', period: '2026-04-01 ~ 2026-04-30', sales: '¥130,000', fee: '¥3,900', tax: '¥234.0', status: '待结算' },
+        { id: 'JS20260427021', supplier: '华北办公用品有限公司', period: '2026-04-01 ~ 2026-04-30', sales: '¥92,000', fee: '¥2,760', tax: '¥165.6', status: '待结算' },
+        { id: 'JS20260427038', supplier: '华北办公用品有限公司', period: '2026-04-01 ~ 2026-04-30', sales: '¥85,500', fee: '¥2,565', tax: '¥153.9', status: '待结算' }
+      ],
+      wait_confirm: [
+        { ptId: 'PT20260428001', orgId: 'JS20260427021', period: '2026-04-01 ~ 2026-04-30', sales: '¥92,000', fee: '¥2,760', tax: '¥165.6', status: '待确认' },
+        { ptId: 'PT20260428005', orgId: 'JS20260427036', period: '2026-04-01 ~ 2026-04-30', sales: '¥113,000', fee: '¥3,390', tax: '¥203.4', status: '待确认' },
+        { ptId: 'PT20260428008', orgId: 'JS20260427042', period: '2026-04-01 ~ 2026-04-30', sales: '¥45,000', fee: '¥1,350', tax: '¥81.0', status: '待确认' }
+      ],
+      wait_invoice: [
+        { ptId: 'PT20260428011', period: '2026-03-01 ~ 2026-03-31', sales: '¥76,000', fee: '¥2,280', tax: '¥136.8', status: '待平台开票' },
+        { ptId: 'PT20260428015', period: '2026-03-01 ~ 2026-03-31', sales: '¥105,000', fee: '¥3,150', tax: '¥189.0', status: '待平台开票' }
+      ],
+      wait_pay: [
+        { ptId: 'PT20260428016', invoiceNo: 'FP20260418001', invoiceAmount: '¥2,308.99', fee: '¥2,178.3', status: '待付款' },
+        { ptId: 'PT20260428022', invoiceNo: 'FP20260418012', invoiceAmount: '¥3,593.40', fee: '¥3,390.0', status: '待付款' }
+      ],
+      completed: [
+        { ptId: 'PT20260427002', period: '2026-02-01 ~ 2026-02-28', sales: '¥80,000', fee: '¥2,400', tax: '¥144.0', status: '已完成' },
+        { ptId: 'PT20260427011', period: '2026-02-01 ~ 2026-02-28', sales: '¥65,000', fee: '¥1,950', tax: '¥117.0', status: '已完成' },
+        { ptId: 'PT20260427019', period: '2026-02-01 ~ 2026-02-28', sales: '¥120,000', fee: '¥3,600', tax: '¥216.0', status: '已完成' }
+      ]
+    };
+
+    let currentTab = 'wait_settle';
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+      document.querySelector(`.nav-tab[data-tab="${tabId}"]`).classList.add('active');
+      renderTable();
+    }
+
+    function renderTable() {
+      const header = document.getElementById('tableHeader');
+      const body = document.getElementById('tableBody');
+      const data = MOCK_DATA[currentTab] || [];
+      
+      let headerHTML = '';
+      let bodyHTML = '';
+
+      if (currentTab === 'wait_settle') {
+        headerHTML = `<th>结算单号</th><th>时间周期</th><th>平台销量金额</th><th>服务费</th><th>税额</th><th>状态</th><th>操作</th>`;
+        data.forEach(item => {
+          bodyHTML += `<tr>
+            <td class="font-semibold">${item.id}</td>
+            <td>${item.period}</td>
+            <td>${item.sales}</td>
+            <td>${item.fee}</td>
+            <td>${item.tax}</td>
+            <td><span class="text-amber-600 font-semibold">${item.status}</span></td>
+            <td><a class="action-link" onclick="alert('查看明细功能开发中')">查看明细</a></td>
+          </tr>`;
+        });
+      } else if (currentTab === 'wait_confirm') {
+        headerHTML = `<th>平台结算单号</th><th>原结算单号</th><th>时间周期</th><th>平台销量金额</th><th>服务费</th><th>税额</th><th>状态</th><th>操作</th>`;
+        data.forEach(item => {
+          bodyHTML += `<tr>
+            <td class="font-semibold">${item.ptId}</td>
+            <td>${item.orgId}</td>
+            <td>${item.period}</td>
+            <td>${item.sales}</td>
+            <td class="font-bold text-red-600">${item.fee}</td>
+            <td>${item.tax}</td>
+            <td><span class="badge b-blue">${item.status}</span></td>
+            <td><a class="action-link" onclick="openConfirmDialog('${item.ptId}', '${item.period}', '${item.sales}', '${item.fee}', '${item.tax}')">查看并确认</a></td>
+          </tr>`;
+        });
+      } else if (currentTab === 'wait_invoice') {
+        headerHTML = `<th>平台结算单号</th><th>时间周期</th><th>平台销量金额</th><th>服务费</th><th>税额</th><th>状态</th><th>操作</th>`;
+        data.forEach(item => {
+          bodyHTML += `<tr>
+            <td class="font-semibold">${item.ptId}</td>
+            <td>${item.period}</td>
+            <td>${item.sales}</td>
+            <td class="font-bold text-red-600">${item.fee}</td>
+            <td>${item.tax}</td>
+            <td><span class="badge b-warn">${item.status}</span></td>
+            <td>
+              <a class="action-link" onclick="alert('查看明细功能开发中')">查看明细</a>
+              <a class="action-link" onclick="alert('已提醒运营商尽快开具发票。')">催开票</a>
+            </td>
+          </tr>`;
+        });
+      } else if (currentTab === 'wait_pay') {
+        headerHTML = `<th>平台结算单号</th><th>发票号码</th><th>发票金额</th><th>需付服务费</th><th>状态</th><th>操作</th>`;
+        data.forEach(item => {
+          bodyHTML += `<tr>
+            <td class="font-semibold">${item.ptId}</td>
+            <td>${item.invoiceNo}</td>
+            <td class="font-bold text-slate-700">${item.invoiceAmount}</td>
+            <td class="font-bold text-red-600">${item.fee}</td>
+            <td><span class="badge b-purple">${item.status}</span></td>
+            <td>
+              <a class="action-link" onclick="openPaymentDialog('${item.fee}')">上传付款凭证</a>
+              <a class="action-link" onclick="openInvoiceViewDialog('${item.invoiceNo}', '${item.invoiceAmount}')">查看发票</a>
+            </td>
+          </tr>`;
+        });
+      } else if (currentTab === 'completed') {
+        headerHTML = `<th>平台结算单号</th><th>时间周期</th><th>平台销量金额</th><th>服务费</th><th>税额</th><th>状态</th><th>操作</th>`;
+        data.forEach(item => {
+          bodyHTML += `<tr>
+            <td class="font-semibold">${item.ptId}</td>
+            <td>${item.period}</td>
+            <td>${item.sales}</td>
+            <td class="font-bold text-slate-700">${item.fee}</td>
+            <td>${item.tax}</td>
+            <td><span class="badge b-green">${item.status}</span></td>
+            <td>
+              <a class="action-link" onclick="alert('查看详情功能开发中')">查看详情</a>
+              <a class="action-link" onclick="openInvoiceViewDialog('FP20260418001', '¥2,308.99')">查看发票</a>
+              <a class="action-link" onclick="alert('查看付款凭证功能开发中')">查看凭证</a>
+            </td>
+          </tr>`;
+        });
+      }
+
+      header.innerHTML = headerHTML;
+      body.innerHTML = bodyHTML;
+    }
+
+    // Dialog functions
+    function openConfirmDialog(ptId, period, sales, fee, tax){ 
+      document.getElementById('dlgConfirmId').innerText = ptId;
+      document.getElementById('dlgConfirmPeriod').innerText = period;
+      document.getElementById('dlgConfirmSales').innerText = sales;
+      document.getElementById('dlgConfirmFee').innerText = fee;
+      document.getElementById('dlgConfirmTax').innerText = tax;
+      document.getElementById('confirmDialog').classList.add('show'); 
+    }
+    function closeConfirmDialog(){ document.getElementById('confirmDialog').classList.remove('show'); }
+    
+    function openPaymentDialog(fee){ 
+      document.getElementById('dlgPaymentFee').innerText = fee;
+      document.getElementById('paymentDialog').classList.add('show'); 
+    }
+    function closePaymentDialog(){ document.getElementById('paymentDialog').classList.remove('show'); }
+
+    function openInvoiceViewDialog(invoiceNo, amount){ 
+      document.getElementById('dlgInvoiceNo').innerText = invoiceNo;
+      document.getElementById('dlgInvoiceAmount').innerText = amount;
+      document.getElementById('dlgInvoiceFile').innerText = `invoice_${invoiceNo}.pdf`;
+      document.getElementById('invoiceViewDialog').classList.add('show'); 
+    }
+    function closeInvoiceViewDialog(){ document.getElementById('invoiceViewDialog').classList.remove('show'); }
+
+    // Init
+    window.onload = () => {
+      switchTab('wait_settle');
+    };
+  </script>
+</body>
+</html>

@@ -449,9 +449,20 @@
     @keyframes fadeInUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     .fade-in { animation: fadeInUp 0.5s ease-out; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    html.admin-embed-mode .admin-sidebar { display: none !important; }
+    html.admin-embed-mode .admin-content { margin-left: 0 !important; }
+    html.admin-embed-mode .admin-sidebar.collapsed ~ .admin-content { margin-left: 0 !important; }
   </style>
 </head>
 <body class="text-slate-800">
+<script>
+  (function () {
+    if (new URLSearchParams(location.search).get('embed') === '1') {
+      document.documentElement.classList.add('admin-embed-mode');
+    }
+  })();
+</script>
 
 <!-- ===== 侧边栏 ===== -->
 <div class="admin-sidebar" id="adminSidebar">

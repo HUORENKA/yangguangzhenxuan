@@ -2,21 +2,626 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>竞价询价 | 国采e购</title>
+<title>撮合/竞价 | 国采e购</title>
 <script src="https://cdn.tailwindcss.com"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><script src="../assets/mode_switcher.js"></script>
+<style>
+  /* ============ 撮合/竞价 · 入口区增强 ============ */
+  .bi-hero-wrap { max-width: 1200px; margin: 0 auto; padding: 0; }
+  .bi-hero-head { padding: 4px 4px 14px; }
+  .bi-hero-head h1 { margin: 0; font-size: 26px; font-weight: 900; letter-spacing: -0.4px; color:#0f172a; }
+  .bi-hero-head p { margin: 8px 0 0; color: #64748b; font-size: 14px; line-height: 1.7; }
+
+  /* 顶部引导流程条 */
+  .bi-guide-bar {
+    display:flex; align-items:stretch; justify-content:space-between;
+    background:#fff; border:1px solid #e2e8f0; border-radius:18px;
+    padding:14px 18px; box-shadow:0 8px 22px rgba(15,23,42,0.04);
+    margin-bottom:16px;
+  }
+  .bi-step { flex:1; display:flex; align-items:center; gap:10px; min-width:0; }
+  .bi-step-num {
+    width:30px; height:30px; border-radius:999px; flex:none;
+    background:linear-gradient(135deg,#0f766e 0%,#115e59 100%);
+    color:#fff; font-weight:900; font-size:14px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 14px rgba(15,118,110,0.28);
+  }
+  .bi-step-text { display:flex; flex-direction:column; min-width:0; }
+  .bi-step-title { font-size:13px; font-weight:800; color:#0f172a; line-height:1.2; }
+  .bi-step-desc { font-size:11px; color:#64748b; margin-top:2px; line-height:1.4; }
+  .bi-arrow { display:flex; align-items:center; color:#cbd5e1; font-size:14px; padding:0 8px; flex:none; }
+
+  /* 嵌入卡片内的紧凑流程条 */
+  .bi-guide-bar.bi-guide-bar-inline {
+    background:linear-gradient(180deg,#f0fdfa 0%,#ecfeff 100%);
+    border:1px dashed #99f6e4;
+    padding:12px 14px;
+    margin-bottom:14px;
+    box-shadow:none;
+    border-radius:14px;
+  }
+  .bi-guide-bar-inline .bi-step-num { width:26px; height:26px; font-size:12px; box-shadow:0 4px 10px rgba(15,118,110,0.22); }
+  .bi-guide-bar-inline .bi-step-title { font-size:12px; }
+  .bi-guide-bar-inline .bi-step-desc { font-size:10.5px; }
+  .bi-guide-bar-inline .bi-arrow { padding:0 4px; font-size:12px; }
+  .bi-guide-bar-inline .bi-step { gap:8px; }
+
+  /* 横向模块 */
+  .bi-block {
+    display:grid; grid-template-columns:35% 1fr; gap:22px;
+    background:#fff; border:1px solid #e2e8f0; border-radius:18px;
+    padding:20px 22px; box-shadow:0 8px 22px rgba(15,23,42,0.04);
+    margin-bottom:14px;
+  }
+  .bi-block .bib-left { display:flex; flex-direction:column; gap:8px; padding-right:14px; border-right:1px dashed #e2e8f0; }
+  .bi-block .bib-icon { width:42px; height:42px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#0f766e 0%,#115e59 100%); color:#fff; font-size:16px; }
+  .bi-block .bib-title { font-size:18px; font-weight:900; margin:6px 0 0; letter-spacing:-0.2px; color:#0f172a; }
+  .bi-block .bib-desc { font-size:13px; color:#64748b; line-height:1.7; margin:0; }
+  .bi-block .bib-scenes { margin-top:6px; font-size:12px; color:#475569; display:flex; flex-direction:column; gap:5px; }
+  .bi-block .bib-scenes b { display:block; font-size:12px; color:#0f172a; margin-bottom:2px; font-weight:800; }
+  .bi-block .bib-scenes span i { color:#0f766e; margin-right:5px; }
+  .bi-block .bib-right { display:flex; flex-direction:column; gap:14px; min-width:0; }
+
+  /* 主操作按钮 */
+  .bi-primary-btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    height:46px; padding:0 22px; border-radius:12px; cursor:pointer;
+    background:linear-gradient(135deg,#0f766e 0%,#115e59 100%);
+    color:#fff; font-size:14px; font-weight:800; border:none;
+    box-shadow:0 8px 18px rgba(15,118,110,0.24); transition:transform .18s, box-shadow .18s;
+    align-self:flex-start;
+  }
+  .bi-primary-btn:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(15,118,110,0.32); }
+
+  /* 最近记录 */
+  .bi-recent { display:flex; flex-direction:column; gap:8px; }
+  .bi-recent-label { font-size:12px; font-weight:800; color:#475569; letter-spacing:0.3px; }
+  .bi-recent-item {
+    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;
+    background:#f8fafc; border:1px solid #eef2f7; transition:background .18s, border-color .18s;
+  }
+  .bi-recent-item:hover { background:#ecfdf5; border-color:#a7f3d0; }
+  .bi-recent-icon { width:30px; height:30px; border-radius:9px; flex:none;
+    background:#d1fae5; color:#0f766e; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .bi-recent-info { flex:1; min-width:0; }
+  .bi-recent-name { font-size:13px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bi-recent-meta { font-size:11px; color:#64748b; margin-top:2px; }
+  .bi-recent-action {
+    flex:none; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:800;
+    color:#0f766e; background:#d1fae5; border:1px solid #a7f3d0; cursor:pointer;
+  }
+  .bi-recent-action:hover { background:#a7f3d0; }
+
+  /* 关键特征行 */
+  .bi-feature-row {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    padding:10px 14px; border-radius:12px;
+    background:linear-gradient(135deg,#f0fdfa 0%,#fff 100%);
+    border:1px solid #ccfbf1;
+  }
+  .bi-feature-row b { font-size:12px; font-weight:800; color:#0f766e; }
+  .bi-feature-chip {
+    display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:999px;
+    background:#fff; border:1px solid #ccfbf1; color:#115e59; font-size:12px; font-weight:800;
+  }
+  .bi-feature-chip i { font-size:11px; color:#0f766e; }
+
+  /* 底部能力条 */
+  .bi-ability-bar {
+    display:grid; grid-template-columns:repeat(5, minmax(0,1fr));
+    gap:10px; padding:14px 18px; border-radius:16px;
+    background:linear-gradient(135deg,#f0fdfa 0%,#fff 100%);
+    border:1px solid #ccfbf1;
+    margin-top:6px;
+  }
+  .bi-ability-item { display:flex; align-items:center; gap:8px; min-width:0; }
+  .bi-ability-item i { color:#0f766e; font-size:14px; flex:none; }
+  .bi-ability-item span { font-size:12px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* 撮合交易 · 流程时间线 */
+  .bi-flow-timeline {
+    display:flex; flex-wrap:wrap; gap:6px 4px; align-items:stretch;
+    padding:12px 14px; border-radius:12px;
+    background:linear-gradient(135deg,#f0fdfa 0%,#fff 100%);
+    border:1px solid #ccfbf1;
+  }
+  .bi-flow-step {
+    flex:1; min-width:88px; cursor:pointer; user-select:none;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    padding:10px 6px; border-radius:10px; transition:all .18s;
+    position:relative;
+  }
+  .bi-flow-step:hover { background:#ecfdf5; }
+  .bi-flow-step .bf-num {
+    width:28px; height:28px; border-radius:999px; background:#fff;
+    border:2px solid #ccfbf1; color:#0f766e; font-size:12px; font-weight:900;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .18s;
+  }
+  .bi-flow-step .bf-name { font-size:11px; font-weight:800; color:#475569; text-align:center; line-height:1.3; }
+  .bi-flow-step.active .bf-num { background:linear-gradient(135deg,#0f766e 0%,#115e59 100%); border-color:#0f766e; color:#fff; box-shadow:0 6px 14px rgba(15,118,110,0.3); }
+  .bi-flow-step.active .bf-name { color:#0f766e; }
+  .bi-flow-step.done .bf-num { background:#d1fae5; border-color:#0f766e; color:#0f766e; }
+  .bi-flow-step:not(:last-child)::after {
+    content:''; position:absolute; right:-2px; top:24px; width:4px; height:2px; background:transparent;
+  }
+  /* 步骤详情面板 */
+  .bi-flow-detail {
+    margin-top:0; padding:14px 16px; border-radius:12px;
+    background:#f8fafc; border:1px solid #eef2f7;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .bi-flow-detail-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .bi-flow-detail-title { font-size:14px; font-weight:900; color:#0f172a; display:flex; align-items:center; gap:8px; }
+  .bi-flow-detail-title i { color:#0f766e; }
+  .bi-flow-status { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; }
+  .bi-flow-status.in-progress { background:#fef3c7; color:#d97706; }
+  .bi-flow-status.done { background:#d1fae5; color:#0f766e; }
+  .bi-flow-status.pending { background:#f1f5f9; color:#64748b; }
+  .bi-flow-detail-desc { font-size:12px; color:#475569; line-height:1.7; margin:0; }
+  .bi-flow-meta-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:6px 16px; font-size:12px; color:#475569; }
+  .bi-flow-meta-grid b { color:#0f172a; font-weight:800; margin-right:4px; }
+  .bi-flow-actions { display:flex; gap:6px; flex-wrap:wrap; }
+  .bi-flow-action-btn {
+    display:inline-flex; align-items:center; gap:5px; padding:7px 14px; border-radius:999px;
+    font-size:12px; font-weight:800; cursor:pointer; border:1px solid #ccfbf1;
+    background:#fff; color:#0f766e; transition:all .18s;
+  }
+  .bi-flow-action-btn:hover { background:#d1fae5; }
+  .bi-flow-action-btn.primary { background:linear-gradient(135deg,#0f766e 0%,#115e59 100%); color:#fff; border:none; box-shadow:0 4px 10px rgba(15,118,110,0.24); }
+  .bi-flow-action-btn.primary:hover { transform:translateY(-1px); }
+  .bi-flow-controls { display:flex; gap:6px; }
+  .bi-flow-nav-btn {
+    padding:6px 12px; border-radius:999px; border:1px solid #e2e8f0; background:#fff;
+    color:#334155; font-size:12px; font-weight:800; cursor:pointer; transition:all .18s;
+  }
+  .bi-flow-nav-btn:hover { border-color:#0f766e; color:#0f766e; }
+  .bi-flow-nav-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  @media (max-width: 720px) {
+    .bi-flow-step { min-width:70px; }
+    .bi-flow-meta-grid { grid-template-columns:1fr; }
+  }
+
+  /* 结果区返回按钮 */
+  .bi-back-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:7px 14px; border-radius:999px;
+    background:#f8fafc; border:1px solid #e2e8f0;
+    color:#334155; font-size:13px; font-weight:800; cursor:pointer;
+    transition:all 0.18s;
+  }
+  .bi-back-btn:hover { background:#d1fae5; border-color:#a7f3d0; color:#0f766e; }
+  .bi-back-btn i { font-size:12px; }
+
+  @media (max-width: 980px) {
+    .bi-guide-bar { flex-direction:column; gap:12px; }
+    .bi-arrow { display:none; }
+    .bi-ability-bar { grid-template-columns:repeat(2,1fr); }
+  }
+  @media (max-width: 720px) {
+    .bi-block { grid-template-columns:1fr; }
+    .bi-block .bib-left { padding-right:0; border-right:none; padding-bottom:14px; border-bottom:1px dashed #e2e8f0; }
+  }
+</style>
 <style>body{margin:0;font-family:"Microsoft YaHei",sans-serif;background:#f6f8fc;color:#0f172a}a{text-decoration:none;color:inherit}.topbar{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;box-shadow:0 2px 18px rgba(15,118,110,.22)}.topbar-inner{max-width:1440px;margin:0 auto;padding:0 20px;min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:18px}.brand-logo{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center}.main-tabs{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:5px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.14)}.main-tab{height:34px;padding:0 14px;border-radius:999px;display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.86);font-size:13px;font-weight:800;white-space:nowrap}.main-tab:hover{color:#fff;background:rgba(255,255,255,.14)}.main-tab.active{background:#fff;color:#115e59;box-shadow:0 8px 18px rgba(15,23,42,.16)}.topbar-actions{display:flex;align-items:center;gap:6px;flex:none}.topbar-icon-btn{position:relative;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#334155;font-size:18px;cursor:pointer;transition:background .18s,color .18s;text-decoration:none}.topbar-icon-btn:hover{background:rgba(47,107,255,.08);color:#2f6bff}.topbar-icon-btn .tip{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(-4px);white-space:nowrap;background:#1e293b;color:#fff;font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;pointer-events:none;opacity:0;transition:opacity .16s,transform .16s;z-index:200}.topbar-icon-btn:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}.topbar-icon-btn .tip::before{content:"";position:absolute;bottom:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#1e293b}.topbar-icon-btn .badge-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#ef4444;border:2px solid #fff}.topbar-divider{width:1px;height:22px;background:rgba(203,213,225,.7);margin:0 2px}.topbar-user{display:flex;align-items:center;gap:8px;cursor:pointer;position:relative;padding:0 4px}.topbar-user .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2563eb 0%,#3b82f6 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;box-shadow:0 6px 14px rgba(37,99,235,.22)}.topbar-user .username{font-size:14px;font-weight:700;color:#334155}.topbar-user .tip{position:absolute;top:calc(100% + 10px);right:0;white-space:nowrap;background:#1e293b;color:#fff;font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;pointer-events:none;opacity:0;transition:opacity .16s,transform .16s;transform:translateY(-4px);z-index:200}.topbar-user:hover .tip{opacity:1;transform:translateY(0)}.topbar-user .tip::before{content:"";position:absolute;bottom:100%;right:14px;border:5px solid transparent;border-bottom-color:#1e293b}.wrap{max-width:1200px;margin:0 auto;padding:20px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:20px;box-shadow:0 10px 24px rgba(15,23,42,.05);margin-bottom:16px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.title{margin:0 0 8px;font-size:28px;font-weight:900}.sub{color:#64748b;line-height:1.8}.entry{cursor:pointer}.entry:hover{border-color:#0f766e}.icon{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;display:flex;align-items:center;justify-content:center}.btn{height:40px;padding:0 14px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;font-weight:700;cursor:pointer}.btn.primary{background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;border:none}.tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.tag{padding:6px 10px;border-radius:999px;background:#f8fafc;border:1px solid #e2e8f0;font-size:12px;font-weight:700}.kpi{border:1px solid #dbeafe;border-radius:16px;padding:16px}.kpi b{display:block;font-size:24px;margin-top:6px}table{width:100%;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid #eef2f7;text-align:left;font-size:14px}th{background:#f8fafc;font-size:13px}.badge{padding:5px 10px;border-radius:999px;background:#eff6ff;color:#2563eb;font-weight:800;font-size:12px}.ok{background:#f0fdf4;color:#16a34a}.drawer{position:fixed;inset:0;display:none}.mask{position:absolute;inset:0;background:rgba(15,23,42,.4)}.panel{position:absolute;top:0;right:0;width:380px;max-width:92vw;height:100%;background:#fff;padding:20px;overflow:auto}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid #e2e8f0;border-radius:12px}.field textarea{min-height:90px}#result{display:none}.prod-cell{display:flex;align-items:flex-start;gap:10px;min-width:220px}.prod-thumb{width:54px;height:54px;border-radius:12px;object-fit:cover;background:#f1f5f9;border:1px solid #e2e8f0;flex:none}.prod-name{font-weight:800;line-height:1.6}.prod-sub{margin-top:4px;color:#64748b;font-size:12px}.price{color:#dc2626;font-weight:800}.qty-box{display:inline-flex;min-width:52px;justify-content:center;padding:8px 10px;border:1px solid #e2e8f0;border-radius:10px;background:#fff}.op-links{display:flex;flex-direction:column;gap:8px}.op-link{font-size:13px;font-weight:700;color:#334155}.op-link:hover{color:#0f766e}@media(max-width:900px){.grid2,.grid4{grid-template-columns:1fr 1fr}}@media(max-width:680px){.grid2,.grid4{grid-template-columns:1fr}}</style>
 </head>
 <body>
 <div class="topbar"><div class="topbar-inner"><div class="brand"><div class="brand-logo"><i class="fa-solid fa-gavel"></i></div><span>国采e购</span></div><nav class="main-tabs" aria-label="采购主功能导航"><a class="main-tab" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a><a class="main-tab active" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 竞价询价</a><a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a><a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a><a class="main-tab" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a></nav><div class="topbar-actions"><a class="topbar-icon-btn" href="./workbench/workbench_home.html" title=""><i class="fa-solid fa-briefcase"></i><span class="tip">工作台</span></a><a class="topbar-icon-btn" href="#" title=""><i class="fa-solid fa-cart-shopping"></i><span class="badge-dot"></span><span class="tip">购物车</span></a><div class="topbar-divider"></div><a class="topbar-icon-btn" href="./ai_assistant.html" title=""><i class="fa-regular fa-bell"></i><span class="badge-dot"></span><span class="tip">消息通知</span></a><div class="topbar-user"><div class="avatar">张</div><span class="username">张三</span><span class="tip">张三 · 采购专员</span></div></div></div></div>
 <div class="wrap">
-<div class="card" id="empty"><h1 class="title">竞价询价</h1><div class="sub">上传采购文件，AI 自动提取采购需求、识别适配供应商，并给出竞价或询价建议。当前采用单页式简化原型。</div><input id="fileInput" type="file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx"><div class="grid2" style="margin-top:18px"><div class="card entry" onclick="document.getElementById('fileInput').click()"><div class="icon"><i class="fa-solid fa-file-arrow-up"></i></div><h3>上传采购文件</h3><div class="sub">支持采购需求书、技术参数表、询价单等文件。</div></div><div class="card entry" onclick="showResult()"><div class="icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div><h3>使用演示样例</h3><div class="sub">直接查看 AI 分析、供应商推荐及发起流程。</div></div></div></div>
-<div id="result"><div class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><h1 class="title" style="font-size:26px">竞价询价采购分析结果</h1><div class="sub">系统已根据采购文件完成需求提取，并结合履约、类目与区域能力筛选候选供应商。</div></div><div class="tag">AI分析完成</div></div><div class="grid4" style="margin-top:16px"><div class="kpi">识别采购品类<b>办公设备</b></div><div class="kpi">需求条目<b>6项</b></div><div class="kpi">推荐供应商<b>5家</b></div><div class="kpi">推荐方式<b>竞价采购</b></div></div></div>
-<div class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><div><h2 style="margin:0">采购需求摘要</h2><div class="sub">AI 自动提炼核心字段。</div></div><button class="btn" onclick="resetPage()">重新上传</button></div><div class="grid4" style="margin-top:14px"><div class="card"><b>项目名称</b><div class="sub">市级单位办公设备采购项目</div></div><div class="card"><b>预算金额</b><div class="sub">¥186,000</div></div><div class="card"><b>交付地点</b><div class="sub">北京市海淀区</div></div><div class="card"><b>交付时限</b><div class="sub">合同签订后 7 日内</div></div><div class="card"><b>采购内容</b><div class="sub">台式机、显示器、激光打印机</div></div><div class="card"><b>规格要点</b><div class="sub">国产化、三年质保、原厂服务</div></div><div class="card"><b>供应商要求</b><div class="sub">本地履约、具备政采服务经验</div></div><div class="card"><b>AI判断</b><div class="sub">标准化程度高，适合竞价或询价</div></div></div></div>
+<section class="bi-hero-wrap" id="empty">
+  <input id="fileInput" type="file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx">
+
+  <!-- 标题区 -->
+  <div class="bi-hero-head">
+    <h1>撮合/竞价</h1>
+    <p>支持撮合交易全流程电子化操作，并提供采购需求 AI 分析能力，推荐商品与供应商，一键发起竞价或询价。</p>
+  </div>
+
+  <!-- 撮合交易（演示流程） -->
+  <div class="bi-block">
+    <div class="bib-left">
+      <div class="bib-icon"><i class="fa-solid fa-handshake"></i></div>
+      <h3 class="bib-title">撮合交易</h3>
+      <p class="bib-desc">支持采购全流程电子化撮合，从需求发布、供应商报名到投标、开标、评标、公示、签约、履约、验收付款，9 大节点全程留痕可溯源。</p>
+      <div class="bib-scenes">
+        <b>核心能力</b>
+        <span><i class="fa-solid fa-circle-check"></i> 9 大节点全程电子化</span>
+        <span><i class="fa-solid fa-circle-check"></i> 在线投标 + 远程评标</span>
+        <span><i class="fa-solid fa-circle-check"></i> 阳光透明、合规留痕</span>
+      </div>
+    </div>
+    <div class="bib-right">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <div style="font-size:13px; font-weight:800; color:#0f172a;">
+          演示项目：<span style="color:#0f766e;">市级机关国产化办公终端撮合采购</span>
+        </div>
+        <div class="bi-flow-controls">
+          <button class="bi-flow-nav-btn" type="button" onclick="navFlow(-1)"><i class="fa-solid fa-chevron-left"></i> 上一步</button>
+          <button class="bi-flow-nav-btn" type="button" onclick="navFlow(1)">下一步 <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+
+      <!-- 9 步流程时间线 -->
+      <div class="bi-flow-timeline" id="flowTimeline">
+        <div class="bi-flow-step" data-idx="0" onclick="selectFlow(0)"><div class="bf-num">1</div><div class="bf-name">采购需求发布</div></div>
+        <div class="bi-flow-step" data-idx="1" onclick="selectFlow(1)"><div class="bf-num">2</div><div class="bf-name">供应商报名</div></div>
+        <div class="bi-flow-step" data-idx="2" onclick="selectFlow(2)"><div class="bf-num">3</div><div class="bf-name">在线投标</div></div>
+        <div class="bi-flow-step" data-idx="3" onclick="selectFlow(3)"><div class="bf-num">4</div><div class="bf-name">电子开标</div></div>
+        <div class="bi-flow-step" data-idx="4" onclick="selectFlow(4)"><div class="bf-num">5</div><div class="bf-name">远程评标</div></div>
+        <div class="bi-flow-step" data-idx="5" onclick="selectFlow(5)"><div class="bf-num">6</div><div class="bf-name">结果公示</div></div>
+        <div class="bi-flow-step" data-idx="6" onclick="selectFlow(6)"><div class="bf-num">7</div><div class="bf-name">合同签订</div></div>
+        <div class="bi-flow-step" data-idx="7" onclick="selectFlow(7)"><div class="bf-num">8</div><div class="bf-name">履约执行</div></div>
+        <div class="bi-flow-step" data-idx="8" onclick="selectFlow(8)"><div class="bf-num">9</div><div class="bf-name">验收付款</div></div>
+      </div>
+
+      <!-- 步骤详情面板 -->
+      <div class="bi-flow-detail" id="flowDetail">
+        <!-- JS 渲染 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 竞价采购助手（统一入口） -->
+  <div class="bi-block">
+    <div class="bib-left">
+      <div class="bib-icon"><i class="fa-solid fa-file-circle-check"></i></div>
+      <h3 class="bib-title">竞价采购助手</h3>
+      <p class="bib-desc">上传采购需求文件，AI 自动提取品类、规格与预算，结合供应商能力推荐商品并建议竞价或询价采购方式。</p>
+      <div class="bib-scenes">
+        <b>适用场景</b>
+        <span><i class="fa-solid fa-circle-check"></i> 品类标准化、规格清晰的批量采购</span>
+        <span><i class="fa-solid fa-circle-check"></i> 紧急、小批量、定向供应商采购</span>
+        <span><i class="fa-solid fa-circle-check"></i> 由 AI 自动建议竞价 / 询价方式</span>
+      </div>
+    </div>
+    <div class="bib-right">
+      <!-- 4 步流程引导（移自页面顶部） -->
+      <div class="bi-guide-bar bi-guide-bar-inline">
+        <div class="bi-step">
+          <div class="bi-step-num">1</div>
+          <div class="bi-step-text">
+            <div class="bi-step-title">上传采购需求文件</div>
+            <div class="bi-step-desc">支持 PDF / DOC / Excel</div>
+          </div>
+        </div>
+        <div class="bi-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="bi-step">
+          <div class="bi-step-num">2</div>
+          <div class="bi-step-text">
+            <div class="bi-step-title">AI 提取采购需求</div>
+            <div class="bi-step-desc">解析品类、规格与预算</div>
+          </div>
+        </div>
+        <div class="bi-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="bi-step">
+          <div class="bi-step-num">3</div>
+          <div class="bi-step-text">
+            <div class="bi-step-title">推荐商品与供应商</div>
+            <div class="bi-step-desc">智能匹配最优组合</div>
+          </div>
+        </div>
+        <div class="bi-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="bi-step">
+          <div class="bi-step-num">4</div>
+          <div class="bi-step-text">
+            <div class="bi-step-title">发起竞价 / 询价</div>
+            <div class="bi-step-desc">按建议方式一键发起</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="bi-primary-btn" type="button" onclick="startBidding()">
+        <i class="fa-solid fa-cloud-arrow-up"></i> 上传采购需求文件
+      </button>
+      <div class="bi-recent">
+        <div class="bi-recent-label">最近采购记录</div>
+        <div class="bi-recent-item">
+          <div class="bi-recent-icon"><i class="fa-solid fa-file-excel"></i></div>
+          <div class="bi-recent-info">
+            <div class="bi-recent-name">市级单位办公设备采购项目.xlsx</div>
+            <div class="bi-recent-meta">2026-04-22 · 竞价采购 · 邀请 5 家 · 已成交</div>
+          </div>
+          <button class="bi-recent-action" type="button" onclick="reanalyzeBidding('市级单位办公设备采购项目.xlsx')">重新分析</button>
+        </div>
+        <div class="bi-recent-item">
+          <div class="bi-recent-icon"><i class="fa-solid fa-file-pdf"></i></div>
+          <div class="bi-recent-info">
+            <div class="bi-recent-name">机关大楼应急耗材采购询价.pdf</div>
+            <div class="bi-recent-meta">2026-04-25 · 询价采购 · 邀请 4 家 · 已成交</div>
+          </div>
+          <button class="bi-recent-action" type="button" onclick="reanalyzeInquiry('机关大楼应急耗材采购询价.pdf')">重新分析</button>
+        </div>
+        <div class="bi-recent-item">
+          <div class="bi-recent-icon"><i class="fa-solid fa-file-excel"></i></div>
+          <div class="bi-recent-info">
+            <div class="bi-recent-name">区级单位IT终端设备采购需求.xlsx</div>
+            <div class="bi-recent-meta">2026-04-08 · 竞价采购 · 邀请 6 家 · 已成交</div>
+          </div>
+          <button class="bi-recent-action" type="button" onclick="reanalyzeBidding('区级单位IT终端设备采购需求.xlsx')">重新分析</button>
+        </div>
+      </div>
+      <div class="bi-feature-row">
+        <b>支持方式：</b>
+        <span class="bi-feature-chip"><i class="fa-solid fa-gavel"></i> 竞价采购（≥3家 / 最低价 / 1-2天）</span>
+        <span class="bi-feature-chip"><i class="fa-solid fa-comments-dollar"></i> 询价采购（≤5家 / 综合择优 / 当天）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部能力说明条 -->
+  <div class="bi-ability-bar">
+    <div class="bi-ability-item"><i class="fa-solid fa-wand-magic-sparkles"></i><span>需求自动提取</span></div>
+    <div class="bi-ability-item"><i class="fa-solid fa-lightbulb"></i><span>商品智能推荐</span></div>
+    <div class="bi-ability-item"><i class="fa-solid fa-handshake"></i><span>供应商智能匹配</span></div>
+    <div class="bi-ability-item"><i class="fa-solid fa-scale-balanced"></i><span>价格对比分析</span></div>
+    <div class="bi-ability-item"><i class="fa-solid fa-paper-plane"></i><span>一键发起</span></div>
+  </div>
+</section>
+<div id="result"><div class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start"><div><h1 class="title" style="font-size:26px">竞价询价采购分析结果</h1><div class="sub">系统已根据采购文件完成需求提取，并结合履约、类目与区域能力筛选候选供应商。</div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="tag">AI分析完成</div><button class="bi-back-btn" type="button" onclick="backToBiddingEntry()"><i class="fa-solid fa-arrow-left"></i> 返回</button></div></div><div class="grid4" style="margin-top:16px"><div class="kpi">识别采购品类<b>办公设备</b></div><div class="kpi">需求条目<b>6项</b></div><div class="kpi">推荐供应商<b>5家</b></div><div class="kpi">推荐方式<b id="kpiMode">竞价采购</b></div></div></div>
+<div class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><div><h2 style="margin:0">采购需求摘要</h2><div class="sub">AI 自动提炼核心字段。</div></div><button class="btn" onclick="document.getElementById('fileInput').click()"><i class="fa-solid fa-rotate"></i> 重新上传</button></div><div class="grid4" style="margin-top:14px"><div class="card"><b>项目名称</b><div class="sub">市级单位办公设备采购项目</div></div><div class="card"><b>预算金额</b><div class="sub">¥186,000</div></div><div class="card"><b>交付地点</b><div class="sub">北京市海淀区</div></div><div class="card"><b>交付时限</b><div class="sub">合同签订后 7 日内</div></div><div class="card"><b>采购内容</b><div class="sub">台式机、显示器、激光打印机</div></div><div class="card"><b>规格要点</b><div class="sub">国产化、三年质保、原厂服务</div></div><div class="card"><b>供应商要求</b><div class="sub">本地履约、具备政采服务经验</div></div><div class="card"><b>AI判断</b><div class="sub">标准化程度高，适合竞价或询价</div></div></div></div>
 <div class="card"><h2 style="margin:0 0 8px">采购方式建议</h2><div class="grid2"><div class="card"><h3>竞价采购</h3><div class="sub">同类供应商数量充足，价格竞争空间较大。</div><div class="tags"><span class="tag">AI推荐</span><span class="tag">预计邀请 5 家</span><span class="tag">预计周期 1-2 天</span></div></div><div class="card"><h3>询价采购</h3><div class="sub">需求明确且规格统一，适合快速发起。</div><div class="tags"><span class="tag">可直接发起</span><span class="tag">预计邀请 5 家</span><span class="tag">预计周期 当天</span></div></div></div></div>
 <div class="card"><h2 style="margin:0 0 8px">采购商品推荐表</h2><div class="sub" style="margin-bottom:12px">基于采购需求生成推荐商品，勾选后可直接用于竞价或询价邀请，不匹配项仅展示提示。</div><div style="overflow:auto"><table><thead><tr><th style="width:36px"><input type="checkbox"></th><th>采购需求</th><th>需求规格</th><th>匹配状态</th><th>推荐商品</th><th>单价</th><th>采购数量</th><th>小计</th><th>操作</th></tr></thead><tbody><tr><td><input type="checkbox"></td><td><div class="prod-name">A4复印纸</div><div class="prod-sub">文件需求：100 箱</div></td><td>A4 / 70g / 500张×8包</td><td><span class="badge ok">已匹配</span></td><td><div class="prod-cell"><img class="prod-thumb" src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=120&q=80"><div><div class="prod-name">晨鸣A4复印纸 70g</div><div class="prod-sub">晨鸣办公旗舰店</div></div></div></td><td class="price">¥138.00</td><td><span class="qty-box">100</span></td><td>¥13,800.00</td><td><div class="op-links"><a class="op-link" href="javascript:void(0)">详情</a></div></td></tr><tr><td><input type="checkbox"></td><td><div class="prod-name">中性笔</div><div class="prod-sub">文件需求：200 盒</div></td><td>0.5mm / 黑色 / 20支装</td><td><span class="badge ok">已匹配</span></td><td><div class="prod-cell"><img class="prod-thumb" src="https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=120&q=80"><div><div class="prod-name">晨光黑色中性笔</div><div class="prod-sub">晨光文具旗舰店</div></div></div></td><td class="price">¥12.00</td><td><span class="qty-box">200</span></td><td>¥2,400.00</td><td><div class="op-links"><a class="op-link" href="javascript:void(0)">详情</a></div></td></tr><tr><td><input type="checkbox"></td><td><div class="prod-name">打印机硒鼓</div><div class="prod-sub">文件需求：10 个</div></td><td>HP 85A / 黑色</td><td><span class="badge ok">已匹配</span></td><td><div class="prod-cell"><img class="prod-thumb" src="https://images.unsplash.com/photo-1612810806695-30f7a8258391?auto=format&fit=crop&w=120&q=80"><div><div class="prod-name">HP 85A 原装硒鼓</div><div class="prod-sub">HP办公耗材店</div></div></div></td><td class="price">¥285.00</td><td><span class="qty-box">10</span></td><td>¥2,850.00</td><td><div class="op-links"><a class="op-link" href="javascript:void(0)">详情</a></div></td></tr><tr><td><input type="checkbox"></td><td><div class="prod-name">办公椅</div><div class="prod-sub">文件需求：20 把</div></td><td>山升降 / 带腰托</td><td><span class="badge ok">已匹配</span></td><td><div class="prod-cell"><img class="prod-thumb" src="https://images.unsplash.com/photo-1505843490701-5be5d2f4f146?auto=format&fit=crop&w=120&q=80"><div><div class="prod-name">永艺人体工学办公椅</div><div class="prod-sub">永艺办公旗舰店</div></div></div></td><td class="price">¥768.00</td><td><span class="qty-box">20</span></td><td>¥15,360.00</td><td><div class="op-links"><a class="op-link" href="javascript:void(0)">详情</a></div></td></tr><tr><td><input type="checkbox"></td><td><div class="prod-name">投影仪</div><div class="prod-sub">文件需求：3 台</div></td><td>1080P / 商务会议</td><td><span class="badge ok">已匹配</span></td><td><div class="prod-cell"><img class="prod-thumb" src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=120&q=80"><div><div class="prod-name">极米商务会议投影仪</div><div class="prod-sub">极米政企旗舰店</div></div></div></td><td class="price">¥2999.00</td><td><span class="qty-box">3</span></td><td>¥8,997.00</td><td><div class="op-links"><a class="op-link" href="javascript:void(0)">详情</a></div></td></tr></tbody></table></div></div><div class="card"><h2 style="margin:0 0 8px">推荐供应商</h2><div class="sub" style="margin-bottom:12px">AI 根据采购品类、服务区域和履约记录筛选候选供应商。</div><div style="overflow:auto"><table><thead><tr><th>供应商名称</th><th>主营品类</th><th>匹配度</th><th>匹配原因</th><th>履约区域</th><th>近一年成交</th><th>状态</th></tr></thead><tbody><tr><td>北京华政科技有限公司</td><td>办公设备 / 国产终端</td><td><span class="badge">96%</span></td><td>品类一致；本地交付经验丰富</td><td>北京全域</td><td>38次</td><td><span class="badge ok">已入选</span></td></tr><tr><td>中采智联供应链服务商</td><td>整机 / 显示设备</td><td><span class="badge">93%</span></td><td>参数覆盖完整；响应快</td><td>京津冀</td><td>24次</td><td><span class="badge ok">已入选</span></td></tr><tr><td>政采优选数码有限公司</td><td>国产化办公设备</td><td><span class="badge">91%</span></td><td>满足国产化要求；维保匹配</td><td>华北区域</td><td>19次</td><td><span class="badge ok">已入选</span></td></tr><tr><td>国采办公设备服务中心</td><td>打印设备 / 配件</td><td><span class="badge">89%</span></td><td>交付时效优；具备项目经验</td><td>北京 / 天津</td><td>16次</td><td><span class="badge ok">已入选</span></td></tr><tr><td>京采云商贸有限公司</td><td>终端 / 外设</td><td><span class="badge">87%</span></td><td>交付能力满足；报价记录较多</td><td>北京 / 河北</td><td>12次</td><td><span class="badge ok">已入选</span></td></tr></tbody></table></div></div>
 <div class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><div class="sub">采购项目：<b style="color:#0f172a">市级单位办公设备采购项目</b> ｜ 已选供应商：<b style="color:#0f172a">5家</b> ｜ 推荐方式：<b style="color:#0f172a">竞价采购</b></div><div style="display:flex;gap:10px"><button class="btn" onclick="openDrawer('inquiry')">发起询价</button><button class="btn primary" onclick="openDrawer('bidding')">发起竞价</button></div></div></div></div>
 </div>
 <div class="drawer" id="drawer"><div class="mask" onclick="closeDrawer()"></div><div class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><h3 id="drawerTitle">发起竞价</h3><button class="btn" onclick="closeDrawer()">关闭</button></div><div class="field"><label>项目名称</label><input value="市级单位办公设备采购项目"></div><div class="field"><label>采购方式</label><select id="modeSelect"><option value="bidding">竞价采购</option><option value="inquiry">询价采购</option></select></div><div class="field"><label>报价截止时间</label><input value="2026-04-29 18:00"></div><div class="field"><label>邀请供应商</label><input value="已选 5 家推荐供应商"></div><div class="field"><label>联系人</label><input value="张三 / 13800000000"></div><div class="field"><label>补充说明</label><textarea>请按采购文件要求提供完整报价与服务承诺。</textarea></div><div style="display:flex;justify-content:flex-end;gap:10px"><button class="btn" onclick="closeDrawer()">取消</button><button class="btn primary" id="submitBtn" onclick="confirmLaunch()">确认发起竞价</button></div></div></div>
-<script>function showResult(){document.getElementById('empty').style.display='none';document.getElementById('result').style.display='block';window.scrollTo({top:0,behavior:'smooth'})}function resetPage(){closeDrawer();document.getElementById('result').style.display='none';document.getElementById('empty').style.display='block'}function openDrawer(mode){var b=mode!=='inquiry';document.getElementById('drawer').style.display='block';document.getElementById('drawerTitle').textContent=b?'发起竞价':'发起询价';document.getElementById('modeSelect').value=b?'bidding':'inquiry';document.getElementById('submitBtn').textContent=b?'确认发起竞价':'确认发起询价'}function closeDrawer(){document.getElementById('drawer').style.display='none'}function confirmLaunch(){alert('已发起'+(document.getElementById('modeSelect').value==='inquiry'?'询价':'竞价')+'流程');closeDrawer()}document.getElementById('fileInput').addEventListener('change',showResult);document.getElementById('modeSelect').addEventListener('change',function(e){openDrawer(e.target.value)})</script>
+<script>
+/* ============ 撮合交易 · 9 步流程演示数据 ============ */
+var FLOW_STEPS = [
+  {
+    name: '采购需求发布',
+    icon: 'fa-bullhorn',
+    status: 'done',
+    desc: '采购方在平台填写采购品类、规格、预算、交付要求等核心信息，发布公开采购公告，供应商可在线获取并响应。',
+    meta: {
+      '发布时间': '2026-04-22 09:30',
+      '采购方': '市级机关后勤事务管理局',
+      '预算金额': '¥186,000',
+      '公告浏览量': '328 次'
+    },
+    actions: [
+      { label: '上传文件', primary: true, icon: 'fa-cloud-arrow-up' },
+      { label: '查看公告原文', icon: 'fa-eye' },
+      { label: '下载附件', icon: 'fa-download' }
+    ]
+  },
+  {
+    name: '供应商报名',
+    icon: 'fa-user-plus',
+    status: 'done',
+    desc: '符合资质要求的供应商在公告期内在线提交报名材料，平台自动校验营业执照、资质证书、过往业绩等信息。',
+    meta: {
+      '报名截止': '2026-04-25 18:00',
+      '已报名供应商': '12 家',
+      '通过资质审核': '8 家',
+      '驳回原因 TOP1': '资质证书过期'
+    },
+    actions: [
+      { label: '查看报名名单', primary: true, icon: 'fa-list' },
+      { label: '导出报名表', icon: 'fa-file-export' }
+    ]
+  },
+  {
+    name: '在线投标',
+    icon: 'fa-file-signature',
+    status: 'done',
+    desc: '供应商在线编制并加密提交投标文件，包括技术方案、报价、商务承诺，平台时间戳全程留痕。',
+    meta: {
+      '投标时间窗': '2026-04-26 09:00 ~ 04-28 18:00',
+      '已提交投标': '8 家 / 8 家',
+      '加密方式': 'CA 数字签名 + 时间戳',
+      '平均文件大小': '12.6 MB'
+    },
+    actions: [
+      { label: '查看投标记录', primary: true, icon: 'fa-clock-rotate-left' }
+    ]
+  },
+  {
+    name: '电子开标',
+    icon: 'fa-unlock',
+    status: 'done',
+    desc: '到达开标时间，平台自动触发统一开标，所有投标文件按规定流程公开解密、唱标，全过程视频留存。',
+    meta: {
+      '开标时间': '2026-04-29 10:00',
+      '开标方式': '远程视频 + 平台直播',
+      '参会代表': '17 人',
+      '开标记录': '已生成（PDF 留档）'
+    },
+    actions: [
+      { label: '正式开标', primary: true, icon: 'fa-unlock' },
+      { label: '查看开标记录', icon: 'fa-video' },
+      { label: '下载唱标表', icon: 'fa-download' }
+    ]
+  },
+  {
+    name: '远程评标',
+    icon: 'fa-scale-balanced',
+    status: 'in-progress',
+    desc: '专家评委在线远程登录评标系统，按评分细则对投标文件分类评分，平台辅助一致性校验、汇总排名。',
+    meta: {
+      '评标时间': '2026-04-29 14:00 ~ 进行中',
+      '专家评委': '5 人（含技术 3 + 商务 2）',
+      '评分进度': '67%（45 / 67 项）',
+      '当前排名 TOP1': '北京华政科技有限公司'
+    },
+    actions: [
+      { label: '进入评标室', primary: true, icon: 'fa-arrow-right-to-bracket' },
+      { label: '查看评分进度', icon: 'fa-chart-simple' }
+    ]
+  },
+  {
+    name: '结果公示',
+    icon: 'fa-bullhorn',
+    status: 'pending',
+    desc: '评标结束后，中标候选人结果在平台公示 3 个工作日，接受社会监督，公示期内可在线提出质疑。',
+    meta: {
+      '预计公示开始': '2026-04-30',
+      '公示时长': '3 个工作日',
+      '公示渠道': '国采e购平台 + 政府采购网',
+      '质疑通道': '在线一键提交'
+    },
+    actions: [
+      { label: '预览公示模板', primary: true, icon: 'fa-eye' }
+    ]
+  },
+  {
+    name: '合同签订',
+    icon: 'fa-file-contract',
+    status: 'pending',
+    desc: '公示无异议后，采购方与中标供应商在平台在线签订电子合同，支持 CA 签章，自动归档。',
+    meta: {
+      '预计签订时间': '2026-05-06',
+      '签约方式': '电子合同 + CA 签章',
+      '合同模板': '政府采购通用合同 v3.2',
+      '归档位置': '采购合同库 / 自动备份'
+    },
+    actions: [
+      { label: '准备合同草稿', primary: true, icon: 'fa-file-pen' }
+    ]
+  },
+  {
+    name: '履约执行',
+    icon: 'fa-truck',
+    status: 'pending',
+    desc: '供应商按合同要求交付商品或服务，平台跟踪发货、安装、调试、培训等关键履约节点。',
+    meta: {
+      '预计履约期': '2026-05-07 ~ 2026-05-13',
+      '关键节点': '4 个（发货 / 到货 / 安装 / 培训）',
+      '履约监督': '采购方 + 平台双轨追踪',
+      '风险提醒': '逾期、规格不符自动告警'
+    },
+    actions: [
+      { label: '查看履约计划', primary: true, icon: 'fa-list-check' }
+    ]
+  },
+  {
+    name: '验收付款',
+    icon: 'fa-circle-check',
+    status: 'pending',
+    desc: '采购方完成验收后，平台触发自动付款流程，支持分期付款、保函冲抵，全流程对账留痕。',
+    meta: {
+      '预计验收时间': '2026-05-14',
+      '验收方式': '采购方 + 第三方质检',
+      '付款方式': '一次性付款（合同签订后 30 日）',
+      '资金监管': '平台资金托管 + 银行直连'
+    },
+    actions: [
+      { label: '发起验收', primary: true, icon: 'fa-clipboard-check' },
+      { label: '查看付款单', icon: 'fa-money-check-dollar' }
+    ]
+  }
+];
+
+var __flowIdx = 4; /* 默认定位到当前阶段：远程评标 */
+
+function statusLabel(status) {
+  if (status === 'done') return { cls: 'done', icon: 'fa-circle-check', text: '已完成' };
+  if (status === 'in-progress') return { cls: 'in-progress', icon: 'fa-spinner', text: '进行中' };
+  return { cls: 'pending', icon: 'fa-clock', text: '待开始' };
+}
+
+function renderFlowDetail() {
+  var step = FLOW_STEPS[__flowIdx];
+  var s = statusLabel(step.status);
+  var metaHtml = Object.keys(step.meta).map(function (k) {
+    return '<div><b>' + k + '：</b>' + step.meta[k] + '</div>';
+  }).join('');
+  var actionsHtml = (step.actions || []).map(function (a) {
+    return '<button class="bi-flow-action-btn' + (a.primary ? ' primary' : '') + '" type="button"><i class="fa-solid ' + a.icon + '"></i> ' + a.label + '</button>';
+  }).join('');
+  var html = ''
+    + '<div class="bi-flow-detail-head">'
+    +   '<div class="bi-flow-detail-title"><i class="fa-solid ' + step.icon + '"></i> ' + (__flowIdx + 1) + '. ' + step.name + '</div>'
+    +   '<span class="bi-flow-status ' + s.cls + '"><i class="fa-solid ' + s.icon + '"></i> ' + s.text + '</span>'
+    + '</div>'
+    + '<p class="bi-flow-detail-desc">' + step.desc + '</p>'
+    + '<div class="bi-flow-meta-grid">' + metaHtml + '</div>'
+    + (actionsHtml ? '<div class="bi-flow-actions">' + actionsHtml + '</div>' : '');
+  document.getElementById('flowDetail').innerHTML = html;
+
+  /* 更新时间线高亮 */
+  var nodes = document.querySelectorAll('#flowTimeline .bi-flow-step');
+  nodes.forEach(function (n, i) {
+    n.classList.remove('active', 'done', 'pending');
+    if (i === __flowIdx) n.classList.add('active');
+    else if (FLOW_STEPS[i].status === 'done') n.classList.add('done');
+    else n.classList.add('pending');
+  });
+}
+
+function selectFlow(i) {
+  if (i < 0 || i >= FLOW_STEPS.length) return;
+  __flowIdx = i;
+  renderFlowDetail();
+}
+
+function navFlow(delta) {
+  selectFlow(Math.max(0, Math.min(FLOW_STEPS.length - 1, __flowIdx + delta)));
+}
+
+document.addEventListener('DOMContentLoaded', renderFlowDetail);
+
+var __biMode = 'bidding'; /* 当前业务方式：bidding / inquiry */
+
+function applyMode(mode) {
+  __biMode = (mode === 'inquiry') ? 'inquiry' : 'bidding';
+  var kpi = document.getElementById('kpiMode');
+  if (kpi) kpi.textContent = __biMode === 'inquiry' ? '询价采购' : '竞价采购';
+}
+
+function showResult(mode) {
+  if (mode) applyMode(mode);
+  document.getElementById('empty').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function backToBiddingEntry() {
+  closeDrawer();
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('empty').style.display = 'block';
+  window.history.replaceState({}, '', './bidding_inquiry.html');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* 兼容旧调用 */
+function resetPage() { backToBiddingEntry(); }
+
+/* 入口按钮：竞价/询价 → 设置模式 → 触发文件选择 */
+function startBidding() {
+  __biMode = 'bidding';
+  document.getElementById('fileInput').click();
+}
+function startInquiry() {
+  __biMode = 'inquiry';
+  document.getElementById('fileInput').click();
+}
+
+/* 最近记录 → 直接进入对应方式的结果 */
+function reanalyzeBidding(name) { showResult('bidding'); }
+function reanalyzeInquiry(name) { showResult('inquiry'); }
+
+function openDrawer(mode) {
+  var b = mode !== 'inquiry';
+  document.getElementById('drawer').style.display = 'block';
+  document.getElementById('drawerTitle').textContent = b ? '发起竞价' : '发起询价';
+  document.getElementById('modeSelect').value = b ? 'bidding' : 'inquiry';
+  document.getElementById('submitBtn').textContent = b ? '确认发起竞价' : '确认发起询价';
+}
+function closeDrawer() { document.getElementById('drawer').style.display = 'none'; }
+function confirmLaunch() {
+  alert('已发起' + (document.getElementById('modeSelect').value === 'inquiry' ? '询价' : '竞价') + '流程');
+  closeDrawer();
+}
+
+document.getElementById('fileInput').addEventListener('change', function () { showResult(__biMode); });
+document.getElementById('modeSelect').addEventListener('change', function (e) { openDrawer(e.target.value); });
+
+if (new URLSearchParams(window.location.search).get('demo') === '1') {
+  showResult('bidding');
+}
+</script>
+<script src="../assets/unified_topbar.js"></script>
 </body>
 </html>

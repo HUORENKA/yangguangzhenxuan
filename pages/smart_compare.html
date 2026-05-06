@@ -211,6 +211,141 @@
     .entry-card p { margin: 0; color: var(--text-sub); line-height: 1.7; font-size: 14px; }
     .hidden-input { display: none; }
 
+    /* ============ 全网寻品 · 入口区增强 ============ */
+    .finder-hero-wrap { max-width: 1120px; margin: 22px auto 0; padding: 0; }
+    .finder-hero-head { padding: 4px 4px 14px; }
+    .finder-hero-head h1 { margin: 0; font-size: 26px; font-weight: 900; letter-spacing: -0.4px; }
+    .finder-hero-head p { margin: 8px 0 0; color: var(--text-sub); font-size: 14px; line-height: 1.7; }
+
+    /* 顶部引导流程条 */
+    .ff-guide-bar {
+      display:flex; align-items:stretch; justify-content:space-between;
+      background:#fff; border:1px solid var(--border); border-radius:18px;
+      padding:14px 18px; box-shadow:0 8px 22px rgba(15,23,42,0.04);
+      margin-bottom:16px;
+    }
+    .ff-step { flex:1; display:flex; align-items:center; gap:10px; min-width:0; }
+    .ff-step-num {
+      width:30px; height:30px; border-radius:999px; flex:none;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff; font-weight:900; font-size:14px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 6px 14px rgba(124,58,237,0.28);
+    }
+    .ff-step-text { display:flex; flex-direction:column; min-width:0; }
+    .ff-step-title { font-size:13px; font-weight:800; color:#0f172a; line-height:1.2; }
+    .ff-step-desc { font-size:11px; color:var(--text-sub); margin-top:2px; line-height:1.4; }
+    .ff-arrow { display:flex; align-items:center; color:#cbd5e1; font-size:14px; padding:0 8px; flex:none; }
+    @media (max-width: 980px) {
+      .ff-guide-bar { flex-direction:column; gap:12px; }
+      .ff-arrow { display:none; }
+    }
+
+    /* 横向模块 */
+    .ff-block {
+      display:grid; grid-template-columns:35% 1fr; gap:22px;
+      background:#fff; border:1px solid var(--border); border-radius:18px;
+      padding:20px 22px; box-shadow:0 8px 22px rgba(15,23,42,0.04);
+      margin-bottom:14px;
+    }
+    .ff-block .ffb-left { display:flex; flex-direction:column; gap:8px; padding-right:14px; border-right:1px dashed #e2e8f0; }
+    .ff-block .ffb-icon { width:40px; height:40px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%); color:#fff; font-size:16px; }
+    .ff-block .ffb-title { font-size:18px; font-weight:900; margin:6px 0 0; letter-spacing:-0.2px; }
+    .ff-block .ffb-desc { font-size:13px; color:var(--text-sub); line-height:1.7; margin:0; }
+    .ff-block .ffb-meta { margin-top:6px; font-size:12px; color:var(--text-sub); display:flex; flex-direction:column; gap:5px; }
+    .ff-block .ffb-meta span i { color:var(--primary); margin-right:5px; }
+    .ff-block .ffb-right { display:flex; flex-direction:column; gap:12px; min-width:0; }
+
+    /* 主操作按钮 */
+    .ff-primary-btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      height:46px; padding:0 22px; border-radius:12px; cursor:pointer;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff; font-size:14px; font-weight:800; border:none;
+      box-shadow:0 8px 18px rgba(124,58,237,0.24); transition:transform .18s, box-shadow .18s;
+      align-self:flex-start;
+    }
+    .ff-primary-btn:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(124,58,237,0.32); }
+
+    /* 链接输入框 */
+    .ff-link-row { display:flex; gap:0; align-items:stretch; }
+    .ff-link-input {
+      flex:1; min-width:0; height:46px; padding:0 14px;
+      border:1px solid var(--border); border-right:none;
+      border-radius:12px 0 0 12px; outline:none; font-size:14px;
+      background:#fff; color:#0f172a; font-family:inherit;
+      transition:border-color .18s, box-shadow .18s;
+    }
+    .ff-link-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(124,58,237,0.12); }
+    .ff-link-go {
+      height:46px; padding:0 20px; border:none; cursor:pointer;
+      border-radius:0 12px 12px 0;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff; font-size:14px; font-weight:800;
+      box-shadow:0 8px 18px rgba(124,58,237,0.24);
+      transition:transform .18s, box-shadow .18s;
+    }
+    .ff-link-go:hover { transform:translateY(-1px); box-shadow:0 12px 24px rgba(124,58,237,0.32); }
+
+    /* 最近列表（图片/链接共用） */
+    .ff-recent { display:flex; flex-direction:column; gap:8px; }
+    .ff-recent-label { font-size:12px; font-weight:800; color:#475569; letter-spacing:0.3px; }
+    .ff-recent-item {
+      display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;
+      background:#f8fafc; border:1px solid #eef2f7; transition:background .18s, border-color .18s;
+    }
+    .ff-recent-item:hover { background:#faf5ff; border-color:#ddd6fe; }
+    .ff-recent-icon { width:30px; height:30px; border-radius:9px; flex:none;
+      background:#ede9fe; color:#7c3aed; display:flex; align-items:center; justify-content:center; font-size:13px; }
+    .ff-recent-info { flex:1; min-width:0; }
+    .ff-recent-name { font-size:13px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ff-recent-meta { font-size:11px; color:var(--text-sub); margin-top:2px; }
+    .ff-recent-action {
+      flex:none; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:800;
+      color:#7c3aed; background:#ede9fe; border:1px solid #ddd6fe; cursor:pointer;
+    }
+    .ff-recent-action:hover { background:#ddd6fe; }
+
+    /* 来源平台标签 */
+    .ff-source-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+    @media (max-width: 980px) { .ff-source-grid { grid-template-columns:repeat(2,1fr); } }
+    .ff-source-tag {
+      display:flex; align-items:center; gap:9px; padding:10px 14px; border-radius:12px;
+      background:#faf5ff; border:1px solid #ddd6fe; cursor:pointer; transition:all .18s;
+    }
+    .ff-source-tag:hover { background:#ede9fe; transform:translateY(-2px); box-shadow:0 6px 14px rgba(124,58,237,0.14); }
+    .ff-source-tag i { color:var(--primary); font-size:14px; flex:none; }
+    .ff-source-tag span { font-size:13px; font-weight:800; color:#5b21b6; line-height:1.2; }
+
+    /* 底部能力说明条 */
+    .ff-ability-bar {
+      display:grid; grid-template-columns:repeat(5, minmax(0,1fr));
+      gap:10px; padding:14px 18px; border-radius:16px;
+      background:linear-gradient(135deg, #faf5ff 0%, #fff 100%);
+      border:1px solid #ede9fe;
+      margin-top:6px;
+    }
+    .ff-ability-item { display:flex; align-items:center; gap:8px; min-width:0; }
+    .ff-ability-item i { color:var(--primary); font-size:14px; flex:none; }
+    .ff-ability-item span { font-size:12px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    @media (max-width: 980px) { .ff-ability-bar { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width: 720px) {
+      .ff-block { grid-template-columns:1fr; }
+      .ff-block .ffb-left { padding-right:0; border-right:none; padding-bottom:14px; border-bottom:1px dashed #e2e8f0; }
+    }
+
+    /* 结果区返回按钮 */
+    .ff-back-btn {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:7px 14px; border-radius:999px;
+      background:#f8fafc; border:1px solid var(--border);
+      color:#334155; font-size:13px; font-weight:800; cursor:pointer;
+      transition:all 0.18s;
+    }
+    .ff-back-btn:hover { background:#ede9fe; border-color:#ddd6fe; color:#5b21b6; }
+    .ff-back-btn i { font-size:12px; }
+
     .card {
       background: #fff;
       border: 1px solid var(--border);
@@ -668,7 +803,7 @@
       </div>
       <nav class="main-tabs" aria-label="采购主功能导航">
         <a class="main-tab" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
-        <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 竞价询价</a>
+        <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 撮合/竞价</a>
         <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
         <a class="main-tab active" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
         <a class="main-tab" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a>
@@ -698,21 +833,153 @@
     </div>
   </header>
 
-  <section class="empty-hero" id="finderEmpty">
-    <h1 class="empty-title">全网寻品</h1>
-    <p class="empty-subtitle">默认不加载演示数据。请先上传商品图片或粘贴外部商品链接，系统将识别商品信息并推荐平台内相似商品。该页面仅做寻品与查看，不提供“换品”操作。</p>
+  <section class="finder-hero-wrap" id="finderEmpty">
     <input id="emptyCompareImageInput" class="hidden-input" type="file" accept="image/*">
-    <div class="entry-grid">
-      <article class="entry-card" onclick="document.getElementById('emptyCompareImageInput').click()">
-        <div class="entry-icon"><i class="fa-solid fa-image"></i></div>
-        <h3>上传商品图片</h3>
-        <p>支持商品图、截图、参数图等图片输入，AI 识别后匹配平台同类商品。</p>
-      </article>
-      <article class="entry-card" onclick="repasteFinderLink()">
-        <div class="entry-icon"><i class="fa-solid fa-link"></i></div>
-        <h3>粘贴商品链接</h3>
-        <p>输入外部商城商品链接，提取标题、参数和价格线索，并推荐平台商品。</p>
-      </article>
+
+    <!-- 标题区 -->
+    <div class="finder-hero-head">
+      <h1>全网寻品</h1>
+      <p>上传商品图片或粘贴外部链接，AI 自动识别商品并匹配平台同类商品。该模块仅做寻品与查看，不提供「换品」操作。</p>
+    </div>
+
+    <!-- 顶部引导流程条 -->
+    <div class="ff-guide-bar">
+      <div class="ff-step">
+        <div class="ff-step-num">1</div>
+        <div class="ff-step-text">
+          <div class="ff-step-title">上传图片 / 粘贴链接</div>
+          <div class="ff-step-desc">支持图片或外部商城链接</div>
+        </div>
+      </div>
+      <div class="ff-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="ff-step">
+        <div class="ff-step-num">2</div>
+        <div class="ff-step-text">
+          <div class="ff-step-title">AI 识别商品信息</div>
+          <div class="ff-step-desc">提取标题、规格与参数</div>
+        </div>
+      </div>
+      <div class="ff-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="ff-step">
+        <div class="ff-step-num">3</div>
+        <div class="ff-step-text">
+          <div class="ff-step-title">平台同类智能匹配</div>
+          <div class="ff-step-desc">推荐平台合规同类商品</div>
+        </div>
+      </div>
+      <div class="ff-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="ff-step">
+        <div class="ff-step-num">4</div>
+        <div class="ff-step-text">
+          <div class="ff-step-title">查看推荐与商品详情</div>
+          <div class="ff-step-desc">完成对比并进入详情</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模块1：上传商品图片 -->
+    <div class="ff-block">
+      <div class="ffb-left">
+        <div class="ffb-icon"><i class="fa-solid fa-image"></i></div>
+        <h3 class="ffb-title">上传商品图片</h3>
+        <p class="ffb-desc">支持商品图、截图、参数图等图片输入，AI 识别后匹配平台同类商品。</p>
+        <div class="ffb-meta">
+          <span><i class="fa-regular fa-image"></i> 支持格式：JPG / PNG / WEBP</span>
+          <span><i class="fa-solid fa-circle-check"></i> 单图 ≤ 10MB，图片越清晰匹配越精准</span>
+        </div>
+      </div>
+      <div class="ffb-right">
+        <button class="ff-primary-btn" type="button" onclick="document.getElementById('emptyCompareImageInput').click()">
+          <i class="fa-solid fa-cloud-arrow-up"></i> 上传商品图片
+        </button>
+        <div class="ff-recent">
+          <div class="ff-recent-label">最近识别图片</div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-image"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">A4复印纸_截图.png</div>
+              <div class="ff-recent-meta">2026-04-24 · 已匹配 12 件平台同类</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderImage('A4复印纸_截图.png')">重新识别</button>
+          </div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-image"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">显示器外观图.jpg</div>
+              <div class="ff-recent-meta">2026-04-22 · 已匹配 8 件平台同类</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderImage('显示器外观图.jpg')">重新识别</button>
+          </div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-image"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">椅子参数图.webp</div>
+              <div class="ff-recent-meta">2026-04-19 · 已匹配 6 件平台同类</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderImage('椅子参数图.webp')">重新识别</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模块2：粘贴商品链接 -->
+    <div class="ff-block">
+      <div class="ffb-left">
+        <div class="ffb-icon"><i class="fa-solid fa-link"></i></div>
+        <h3 class="ffb-title">粘贴商品链接</h3>
+        <p class="ffb-desc">输入外部商城商品链接，AI 自动提取标题、参数和价格线索，并推荐平台商品。</p>
+        <div class="ffb-meta">
+          <span><i class="fa-solid fa-globe"></i> 支持来源：淘宝/天猫/京东/拼多多/1688/得物</span>
+          <span><i class="fa-solid fa-shield-halved"></i> 仅做寻品参考，不下载第三方资源</span>
+        </div>
+      </div>
+      <div class="ffb-right">
+        <div class="ff-link-row">
+          <input class="ff-link-input" id="finderLinkInput" type="text" placeholder="粘贴商品链接，如 https://item.taobao.com/...">
+          <button class="ff-link-go" type="button" onclick="recognizeFinderLinkInput()"><i class="fa-solid fa-magnifying-glass"></i> 识别</button>
+        </div>
+
+        <div class="ff-recent">
+          <div class="ff-recent-label">常见来源</div>
+          <div class="ff-source-grid">
+            <div class="ff-source-tag" onclick="recognizeFinderSource('淘宝')"><i class="fa-solid fa-bag-shopping"></i><span>淘宝</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('天猫')"><i class="fa-solid fa-store"></i><span>天猫</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('京东')"><i class="fa-solid fa-truck-fast"></i><span>京东</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('拼多多')"><i class="fa-solid fa-people-group"></i><span>拼多多</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('1688')"><i class="fa-solid fa-warehouse"></i><span>1688</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('得物')"><i class="fa-solid fa-gem"></i><span>得物</span></div>
+          </div>
+        </div>
+
+        <div class="ff-recent">
+          <div class="ff-recent-label">最近链接</div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-link"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">item.taobao.com/item.htm?id=623415...</div>
+              <div class="ff-recent-meta">2026-04-23 · 标题：得力A4复印纸 70g 标准装</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderLink('https://item.taobao.com/item.htm?id=623415')">重新识别</button>
+          </div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-link"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">item.jd.com/100012043978.html</div>
+              <div class="ff-recent-meta">2026-04-20 · 标题：联想ThinkPad E14 商务本</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderLink('https://item.jd.com/100012043978.html')">重新识别</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部分析能力说明条 -->
+    <div class="ff-ability-bar">
+      <div class="ff-ability-item"><i class="fa-solid fa-wand-magic-sparkles"></i><span>图片智能识别</span></div>
+      <div class="ff-ability-item"><i class="fa-solid fa-link"></i><span>链接内容解析</span></div>
+      <div class="ff-ability-item"><i class="fa-solid fa-tag"></i><span>商品信息提取</span></div>
+      <div class="ff-ability-item"><i class="fa-solid fa-arrows-left-right-to-line"></i><span>平台同类匹配</span></div>
+      <div class="ff-ability-item"><i class="fa-solid fa-scale-balanced"></i><span>价格对比分析</span></div>
     </div>
   </section>
 
@@ -723,7 +990,12 @@
           <h1 class="hero-title">全网寻品询比结果</h1>
           <div class="hero-subtitle">系统已基于你提供的图片或链接完成内容解析，并结合平台商品库输出推荐商品列表。你可以先查看 AI 内容分析，再从表格中进入商品详情。</div>
         </div>
-        <div id="sourceTypeChip" class="source-chip">来源：演示样例</div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div id="sourceTypeChip" class="source-chip">来源：演示样例</div>
+          <button class="ff-back-btn" type="button" onclick="backToFinderEntry()" title="返回入口">
+            <i class="fa-solid fa-arrow-left"></i> 返回
+          </button>
+        </div>
       </div>
 
       <div class="hero-stats">
@@ -1179,16 +1451,61 @@
     function repasteFinderLink() {
       const url = window.prompt("请输入商品链接", "https://example.com/product/123456");
       if (!url) return;
+      doRecognizeLink(url);
+    }
 
+    function doRecognizeLink(url) {
       const nextState = {
         sourceType: "link",
         url: url,
         sourceLabel: "链接解析",
         rawValue: url
       };
-
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
       renderPage(buildState(nextState));
+      showFinderEmpty(false);
+    }
+
+    function recognizeFinderImage(name) {
+      const nextState = {
+        sourceType: "image",
+        fileName: name,
+        sourceLabel: "图片识别",
+        rawValue: "上传图片：" + name
+      };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+      renderPage(buildState(nextState));
+      showFinderEmpty(false);
+    }
+
+    function recognizeFinderLink(url) {
+      doRecognizeLink(url);
+    }
+
+    function recognizeFinderLinkInput() {
+      const el = document.getElementById('finderLinkInput');
+      const url = (el && el.value || '').trim();
+      if (!url) { window.alert('请先粘贴商品链接'); el && el.focus(); return; }
+      doRecognizeLink(url);
+    }
+
+    /* 按来源平台识别（示例链接，仅原型用） */
+    function recognizeFinderSource(source) {
+      const sampleMap = {
+        '淘宝':   'https://item.taobao.com/item.htm?id=623415',
+        '天猫':   'https://detail.tmall.com/item.htm?id=720915',
+        '京东':   'https://item.jd.com/100012043978.html',
+        '拼多多': 'https://mobile.yangkeduo.com/goods.html?goods_id=185902100',
+        '1688':   'https://detail.1688.com/offer/684591203912.html',
+        '得物':   'https://www.dewu.com/router/product/ProductDetail?spuId=1006300'
+      };
+      const url = sampleMap[source] || ('https://example.com/source/' + source);
+      doRecognizeLink(url);
+    }
+
+    function backToFinderEntry() {
+      sessionStorage.removeItem(STORAGE_KEY);
+      window.location.href = './smart_compare.html?fresh=1';
     }
 
     function showFinderEmpty(isEmpty) {
@@ -1204,5 +1521,6 @@
       renderPage(buildState(getFinderState()));
     })();
   </script>
+<script src="../assets/unified_topbar.js"></script>
 </body>
 </html>

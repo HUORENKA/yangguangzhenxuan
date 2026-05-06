@@ -1151,7 +1151,7 @@
           </div>
 
           <!-- 待办4：待审核商品 -->
-          <div class="todo-card p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl cursor-pointer border border-emerald-200" onclick="window.location.href='admin_product_audit_list.html'">
+          <div class="todo-card p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl cursor-pointer border border-emerald-200" onclick="window.location.href='admin_dashboard.html?page=admin_product_audit_list.html'">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-gradient-to-br from-emerald-200 to-emerald-300 rounded-lg flex items-center justify-center shadow-md flex-shrink-0">
                 <i class="fas fa-boxes-stacked text-emerald-700"></i>
@@ -1486,13 +1486,25 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    /** iframe 内嵌子页时追加 embed=1，子页可隐藏自带侧栏，避免双导航 */
+    function buildAdminSubpageSrc(page) {
+      if (!page) return 'about:blank';
+      const q = page.indexOf('?');
+      const path = q === -1 ? page : page.slice(0, q);
+      const params = new URLSearchParams(q === -1 ? '' : page.slice(q + 1));
+      params.set('embed', '1');
+      const qs = params.toString();
+      return qs ? path + '?' + qs : path + '?embed=1';
+    }
+
     function openAdminSubPage(menuEl, page, title) {
       hideAdminShellViews();
       const shell = document.getElementById('adminSubpageShell');
       const frame = document.getElementById('adminSubpageFrame');
       const titleEl = document.getElementById('adminSubpageTitle');
+      const src = buildAdminSubpageSrc(page);
       if (shell) shell.style.display = 'block';
-      if (frame && frame.getAttribute('src') !== page) frame.setAttribute('src', page);
+      if (frame && frame.getAttribute('src') !== src) frame.setAttribute('src', src);
       if (titleEl) titleEl.textContent = title || adminShellPageConfig[page] || '子功能页面';
       setAdminMenuActive(menuEl || document.querySelector(`.admin-menu-item[data-page-key="${page}"]`));
       window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -407,7 +407,14 @@
 
       localStorage.setItem('role', selected.localRole);
       localStorage.setItem('loginRoleLabel', selected.label);
-      window.location.href = selected.target;
+      localStorage.setItem('gc_auth', '1');
+      const redirect = new URLSearchParams(window.location.search).get('redirect');
+      /* 按角色跳转为主；采购方保留回登录前页面能力 */
+      if (selected.localRole === 'buyer' && redirect) {
+        window.location.href = decodeURIComponent(redirect);
+      } else {
+        window.location.href = selected.target;
+      }
     }
 
     document.addEventListener('keydown', function (event) {

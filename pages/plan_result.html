@@ -200,6 +200,16 @@
     .tab-item.active { color: var(--primary); border-bottom-color: var(--primary); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    .tab-bar-back {
+      margin-left: auto; align-self: center;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 999px;
+      background: #f8fafc; border: 1px solid var(--border);
+      color: #334155; font-size: 13px; font-weight: 800; cursor: pointer;
+      transition: all 0.18s;
+    }
+    .tab-bar-back:hover { background:#dcfce7; border-color:#bbf7d0; color:#15803d; }
+    .tab-bar-back i { font-size: 12px; }
 
     /* ─── Layout ─── */
     .page-wrap {
@@ -949,7 +959,122 @@
       font-weight: 800;
       cursor: pointer;
     }
+    .scene-pick:hover { background:#dcfce7; }
     .hidden-input { display: none; }
+
+    /* ============ 智选方案 · 入口区增强 ============ */
+    .plan-hero-wrap { max-width: 1120px; margin: 22px auto 0; padding: 0; }
+    .plan-hero-head { padding: 4px 4px 14px; }
+    .plan-hero-head h1 { margin: 0; font-size: 26px; font-weight: 900; letter-spacing: -0.4px; }
+    .plan-hero-head p { margin: 8px 0 0; color: var(--text-sub); font-size: 14px; line-height: 1.7; }
+
+    /* 顶部引导流程条 */
+    .flow-guide-bar {
+      display: flex; align-items: stretch; justify-content: space-between;
+      background: #fff; border:1px solid var(--border); border-radius: 18px;
+      padding: 14px 18px; box-shadow: 0 8px 22px rgba(15,23,42,0.04);
+      margin-bottom: 16px;
+    }
+    .flow-step { flex:1; display:flex; align-items:center; gap:10px; min-width:0; }
+    .flow-step-num {
+      width:30px; height:30px; border-radius:999px; flex:none;
+      background: linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff; font-weight:900; font-size:14px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 6px 14px rgba(22,163,74,0.28);
+    }
+    .flow-step-text { display:flex; flex-direction:column; min-width:0; }
+    .flow-step-title { font-size:13px; font-weight:800; color:#0f172a; line-height:1.2; }
+    .flow-step-desc { font-size:11px; color:var(--text-sub); margin-top:2px; line-height:1.4; }
+    .flow-arrow { display:flex; align-items:center; color:#cbd5e1; font-size:14px; padding:0 8px; flex:none; }
+    @media (max-width: 980px) {
+      .flow-guide-bar { flex-direction:column; gap:12px; }
+      .flow-arrow { display:none; }
+    }
+
+    /* 横向模块 */
+    .plan-block {
+      display:grid; grid-template-columns: 35% 1fr; gap: 22px;
+      background:#fff; border:1px solid var(--border); border-radius:18px;
+      padding:20px 22px; box-shadow: 0 8px 22px rgba(15,23,42,0.04);
+      margin-bottom: 14px;
+    }
+    .plan-block .pb-left { display:flex; flex-direction:column; gap:8px; padding-right:14px; border-right:1px dashed #e2e8f0; }
+    .plan-block .pb-icon { width:40px; height:40px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%); color:#fff; font-size:16px; }
+    .plan-block .pb-title { font-size:18px; font-weight:900; margin:6px 0 0; letter-spacing:-0.2px; }
+    .plan-block .pb-desc { font-size:13px; color:var(--text-sub); line-height:1.7; margin:0; }
+    .plan-block .pb-meta { margin-top:6px; font-size:12px; color:var(--text-sub); display:flex; flex-direction:column; gap:5px; }
+    .plan-block .pb-meta span i { color:var(--primary); margin-right:5px; }
+    .plan-block .pb-right { display:flex; flex-direction:column; gap:12px; min-width:0; }
+
+    /* 上传按钮 */
+    .upload-primary-btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      height:46px; padding:0 22px; border-radius:12px; cursor:pointer;
+      background: linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff; font-size:14px; font-weight:800; border:none;
+      box-shadow:0 8px 18px rgba(22,163,74,0.24); transition:transform .18s, box-shadow .18s;
+      align-self:flex-start;
+    }
+    .upload-primary-btn:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(22,163,74,0.32); }
+
+    /* 最近文件列表 */
+    .recent-files { display:flex; flex-direction:column; gap:8px; }
+    .recent-files-label { font-size:12px; font-weight:800; color:#475569; letter-spacing:0.3px; }
+    .recent-file-item {
+      display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;
+      background:#f8fafc; border:1px solid #eef2f7; transition:background .18s, border-color .18s;
+    }
+    .recent-file-item:hover { background:#f0fdf4; border-color:#bbf7d0; }
+    .recent-file-icon { width:30px; height:30px; border-radius:9px; flex:none;
+      background:#dcfce7; color:#15803d; display:flex; align-items:center; justify-content:center; font-size:13px; }
+    .recent-file-info { flex:1; min-width:0; }
+    .recent-file-name { font-size:13px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .recent-file-meta { font-size:11px; color:var(--text-sub); margin-top:2px; }
+    .recent-file-action {
+      flex:none; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:800;
+      color:#15803d; background:#dcfce7; border:1px solid #bbf7d0; cursor:pointer;
+    }
+    .recent-file-action:hover { background:#bbf7d0; }
+
+    /* 场景标签 */
+    .scene-tag-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:10px; }
+    @media (max-width: 980px) { .scene-tag-grid { grid-template-columns: repeat(2,1fr); } }
+    .scene-tag {
+      display:flex; align-items:center; gap:9px; padding:12px 14px; border-radius:12px;
+      background:#f0fdf4; border:1px solid #bbf7d0; cursor:pointer; transition:all .18s;
+    }
+    .scene-tag:hover { background:#dcfce7; transform:translateY(-2px); box-shadow:0 6px 14px rgba(22,163,74,0.14); }
+    .scene-tag i { color:var(--primary); font-size:14px; flex:none; }
+    .scene-tag span { font-size:13px; font-weight:800; color:#15803d; line-height:1.2; }
+
+    /* 场景操作按钮组 */
+    .scene-ops { display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; }
+    .scene-op-btn {
+      display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px;
+      background:#fff; border:1px solid var(--border); color:#0f172a; font-size:12px; font-weight:800; cursor:pointer; transition:all .18s;
+    }
+    .scene-op-btn:hover { border-color:var(--primary); color:var(--primary); }
+    .scene-op-btn.primary { background: linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%); color:#fff; border:none; box-shadow:0 6px 14px rgba(22,163,74,0.24); }
+    .scene-op-btn.primary:hover { transform:translateY(-2px); }
+
+    /* 底部能力说明条 */
+    .ability-bar {
+      display:grid; grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: 10px; padding:14px 18px; border-radius:16px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+      border:1px solid var(--primary-border);
+      margin-top:6px;
+    }
+    .ability-item { display:flex; align-items:center; gap:8px; min-width:0; }
+    .ability-item i { color:var(--primary); font-size:14px; flex:none; }
+    .ability-item span { font-size:12px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    @media (max-width: 980px) { .ability-bar { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 720px) {
+      .plan-block { grid-template-columns: 1fr; }
+      .plan-block .pb-left { padding-right:0; border-right:none; padding-bottom:14px; border-bottom:1px dashed #e2e8f0; }
+    }
   </style>
   <script src="../assets/mode_switcher.js"></script>
 </head>
@@ -963,7 +1088,7 @@
     </div>
     <nav class="main-tabs" aria-label="采购主功能导航">
       <a class="main-tab" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
-      <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 竞价询价</a>
+      <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 撮合/竞价</a>
       <a class="main-tab active" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
       <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
       <a class="main-tab" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a>
@@ -994,26 +1119,129 @@
   </div>
 </header>
 
-<section class="empty-hero" id="planEmpty">
-  <h1 class="empty-title">智选方案</h1>
-  <p class="empty-subtitle">默认不加载演示结果。请先上传采购方案文件，或选择一个采购场景，系统将生成采购分析、推荐商品表和可换品的采购清单。</p>
+<section class="plan-hero-wrap" id="planEmpty">
   <input id="emptyPlanFileInput" class="hidden-input" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
-  <div class="entry-grid">
-    <article class="entry-card" onclick="document.getElementById('emptyPlanFileInput').click()">
-      <div class="entry-icon"><i class="fa-solid fa-upload"></i></div>
-      <h3>上传采购方案</h3>
-      <p>支持采购计划、需求清单、Excel 表格等文件。上传后进入采购文件分析，并保留推荐商品“换品”功能。</p>
-    </article>
-    <article class="entry-card">
-      <div class="entry-icon"><i class="fa-solid fa-layer-group"></i></div>
-      <h3>选择采购场景</h3>
-      <p>从常用场景开始配置采购商品、数量、频次、预算与交付要求，生成场景采购推荐。</p>
-      <div class="scene-picks">
-        <button class="scene-pick" type="button" onclick="startPlanWithScene('日常办公用品')">日常办公用品</button>
-        <button class="scene-pick" type="button" onclick="startPlanWithScene('办公设备更新')">办公设备更新</button>
-        <button class="scene-pick" type="button" onclick="startPlanWithScene('会议物资')">会议物资</button>
+
+  <!-- 标题区 -->
+  <div class="plan-hero-head">
+    <h1>智选方案</h1>
+    <p>上传采购方案文件或选择采购场景，AI 将自动完成需求解析、合规校验与商品推荐。</p>
+  </div>
+
+  <!-- 顶部引导流程条 -->
+  <div class="flow-guide-bar">
+    <div class="flow-step">
+      <div class="flow-step-num">1</div>
+      <div class="flow-step-text">
+        <div class="flow-step-title">上传文件 / 选择场景</div>
+        <div class="flow-step-desc">支持文件分析或场景化采购</div>
       </div>
-    </article>
+    </div>
+    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="flow-step">
+      <div class="flow-step-num">2</div>
+      <div class="flow-step-text">
+        <div class="flow-step-title">AI 自动解析采购需求</div>
+        <div class="flow-step-desc">需求条目识别与拆解</div>
+      </div>
+    </div>
+    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="flow-step">
+      <div class="flow-step-num">3</div>
+      <div class="flow-step-text">
+        <div class="flow-step-title">合规校验与智能推荐</div>
+        <div class="flow-step-desc">合规筛查 + 推荐商品匹配</div>
+      </div>
+    </div>
+    <div class="flow-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+    <div class="flow-step">
+      <div class="flow-step-num">4</div>
+      <div class="flow-step-text">
+        <div class="flow-step-title">确认结果并提交下单</div>
+        <div class="flow-step-desc">一键生成采购订单</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模块1：上传采购方案 -->
+  <div class="plan-block">
+    <div class="pb-left">
+      <div class="pb-icon"><i class="fa-solid fa-upload"></i></div>
+      <h3 class="pb-title">上传采购方案</h3>
+      <p class="pb-desc">支持采购计划、需求清单、Excel 表格等文件，上传后进入采购文件分析，并保留推荐商品「换品」功能。</p>
+      <div class="pb-meta">
+        <span><i class="fa-regular fa-file-lines"></i> 支持格式：PDF / DOC / XLS / PPT / TXT</span>
+        <span><i class="fa-solid fa-circle-check"></i> 单个文件 ≤ 20MB，支持多页表格</span>
+      </div>
+    </div>
+    <div class="pb-right">
+      <button class="upload-primary-btn" type="button" onclick="document.getElementById('emptyPlanFileInput').click()">
+        <i class="fa-solid fa-cloud-arrow-up"></i> 上传采购方案
+      </button>
+      <div class="recent-files">
+        <div class="recent-files-label">最近文件</div>
+        <div class="recent-file-item">
+          <div class="recent-file-icon"><i class="fa-solid fa-file-excel"></i></div>
+          <div class="recent-file-info">
+            <div class="recent-file-name">采购计划2025.xlsx</div>
+            <div class="recent-file-meta">2026-04-16 · 12 项需求 · 9 项已匹配</div>
+          </div>
+          <button class="recent-file-action" type="button" onclick="startPlanWithFile('采购计划2025.xlsx')">重新分析</button>
+        </div>
+        <div class="recent-file-item">
+          <div class="recent-file-icon"><i class="fa-solid fa-file-excel"></i></div>
+          <div class="recent-file-info">
+            <div class="recent-file-name">办公设备更新Q2.xlsx</div>
+            <div class="recent-file-meta">2026-04-08 · 8 项需求 · 6 项已匹配</div>
+          </div>
+          <button class="recent-file-action" type="button" onclick="startPlanWithFile('办公设备更新Q2.xlsx')">重新分析</button>
+        </div>
+        <div class="recent-file-item">
+          <div class="recent-file-icon"><i class="fa-solid fa-file-pdf"></i></div>
+          <div class="recent-file-info">
+            <div class="recent-file-name">2026年度采购需求书.pdf</div>
+            <div class="recent-file-meta">2026-03-22 · 18 项需求 · 14 项已匹配</div>
+          </div>
+          <button class="recent-file-action" type="button" onclick="startPlanWithFile('2026年度采购需求书.pdf')">重新分析</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模块2：选择采购场景 -->
+  <div class="plan-block">
+    <div class="pb-left">
+      <div class="pb-icon" style="background:linear-gradient(135deg,#22c55e 0%,#15803d 100%);"><i class="fa-solid fa-layer-group"></i></div>
+      <h3 class="pb-title">选择采购场景</h3>
+      <p class="pb-desc">从常用场景开始配置采购商品、数量、频次、预算与交付要求，快速生成场景采购推荐。</p>
+      <div class="pb-meta">
+        <span><i class="fa-solid fa-rotate"></i> 适用周期性、批量采购</span>
+        <span><i class="fa-solid fa-bolt"></i> 也支持节日/慰问等临时采购</span>
+      </div>
+    </div>
+    <div class="pb-right">
+      <div class="scene-tag-grid">
+        <div class="scene-tag" onclick="startPlanWithScene('日常办公用品')"><i class="fa-solid fa-paperclip"></i><span>日常办公用品</span></div>
+        <div class="scene-tag" onclick="startPlanWithScene('办公设备更新')"><i class="fa-solid fa-display"></i><span>办公设备更新</span></div>
+        <div class="scene-tag" onclick="startPlanWithScene('会议物资')"><i class="fa-solid fa-users"></i><span>会议物资</span></div>
+        <div class="scene-tag" onclick="startPlanWithScene('后勤保障物资')"><i class="fa-solid fa-truck"></i><span>后勤保障物资</span></div>
+        <div class="scene-tag" onclick="startPlanWithScene('信息化设备采购')"><i class="fa-solid fa-server"></i><span>信息化设备采购</span></div>
+        <div class="scene-tag" onclick="startPlanWithScene('节日慰问物资')"><i class="fa-solid fa-gift"></i><span>节日慰问物资</span></div>
+      </div>
+      <div class="scene-ops">
+        <button class="scene-op-btn primary" type="button" onclick="openSceneModal()"><i class="fa-solid fa-plus"></i> 新增采购场景</button>
+        <button class="scene-op-btn" type="button" onclick="alert('场景模板管理功能开发中，敬请期待。')"><i class="fa-solid fa-folder-tree"></i> 管理场景模板</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部分析能力说明条 -->
+  <div class="ability-bar">
+    <div class="ability-item"><i class="fa-solid fa-wand-magic-sparkles"></i><span>需求自动解析</span></div>
+    <div class="ability-item"><i class="fa-solid fa-shield-halved"></i><span>合规规则校验</span></div>
+    <div class="ability-item"><i class="fa-solid fa-lightbulb"></i><span>推荐商品匹配</span></div>
+    <div class="ability-item"><i class="fa-solid fa-shuffle"></i><span>可换品智能对比</span></div>
+    <div class="ability-item"><i class="fa-solid fa-triangle-exclamation"></i><span>采购风险提示</span></div>
   </div>
 </section>
 
@@ -1024,6 +1252,9 @@
   <div class="tab-item" id="tabSceneBtn" onclick="switchTab('scene')">
     <i class="fa-solid fa-layer-group"></i> 采购场景分析
   </div>
+  <button class="tab-bar-back" type="button" onclick="backToPlanEntry()" title="返回入口">
+    <i class="fa-solid fa-arrow-left"></i> 返回
+  </button>
 </div>
 
 <div class="page-wrap" id="resultWrap">
@@ -1314,6 +1545,11 @@
   function startPlanWithFile(fileName) {
     sessionStorage.setItem('planDemo', JSON.stringify({ file: fileName, scene: null }));
     window.location.href = './plan_result.html';
+  }
+
+  function backToPlanEntry() {
+    sessionStorage.removeItem('planDemo');
+    window.location.href = './plan_result.html?fresh=1';
   }
 
   function startPlanWithScene(sceneName) {
@@ -1865,5 +2101,6 @@
     try { return JSON.parse(sessionStorage.getItem(key)); } catch (e) { return null; }
   }
 </script>
+<script src="../assets/unified_topbar.js"></script>
 </body>
 </html>

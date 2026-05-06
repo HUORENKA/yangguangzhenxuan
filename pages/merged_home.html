@@ -821,6 +821,190 @@
       display: none !important;
     }
 
+    /* ========== HOME ZONE ========== */
+    .home-zone { background: #f8fafc; }
+    .home-section { padding: 36px 0; }
+    .home-section-head { margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(226,232,240,0.9); }
+    .home-section-title { font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
+    .home-section-subtitle { font-size: 13px; color: #64748b; margin: 0; }
+
+    /* 政采资讯台 —— 左图右列布局 */
+    .news-panel { display: flex; gap: 16px; height: 420px; }
+    /* 左：图片轮播 + 标题区 */
+    .news-left { width: 50%; flex-shrink: 0; display: flex; flex-direction: column; border-radius: 16px; border: 1px solid rgba(226,232,240,0.9); overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.05); background: #fff; }
+    .news-img-wrap { position: relative; flex: 1; overflow: hidden; min-height: 0; }
+    .ni-slides { display: flex; height: 100%; transition: transform 0.5s ease; }
+    .ni-slide { min-width: 100%; max-width: 100%; height: 100%; position: relative; overflow: hidden; }
+    .ni-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ni-arr { position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: rgba(15,23,42,0.4); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; border: none; transition: background 0.2s; z-index: 2; }
+    .ni-arr:hover { background: rgba(15,23,42,0.65); }
+    .ni-arr.left { left: 10px; }
+    .ni-arr.right { right: 10px; }
+    .news-img-caption { flex-shrink: 0; padding: 12px 16px 14px; border-top: 1px solid rgba(226,232,240,0.9); background: #fff; }
+    .news-img-caption h4 { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: #0f172a; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .news-img-caption-foot { display: flex; align-items: center; justify-content: space-between; }
+    .ni-date { font-size: 12px; color: #94a3b8; }
+    .ni-dots { display: flex; gap: 5px; align-items: center; }
+    .ni-dot { width: 6px; height: 6px; border-radius: 50%; background: #e2e8f0; cursor: pointer; transition: background 0.2s, width 0.2s; }
+    .ni-dot.active { background: var(--brand); width: 14px; border-radius: 3px; }
+    /* 右：tab + 列表 */
+    .news-right { flex: 1; min-width: 0; display: flex; flex-direction: column; border-radius: 16px; border: 1px solid rgba(226,232,240,0.9); overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.05); background: #fff; }
+    .nr-tab-bar { display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #f1f5f9; flex-shrink: 0; height: 48px; }
+    .nr-tab { height: 100%; padding: 0 14px; border: none; background: transparent; font-size: 14px; font-weight: 700; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.18s; margin-bottom: -1px; }
+    .nr-tab:hover { color: var(--brand); }
+    .nr-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+    .nr-more { margin-left: auto; font-size: 12px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 3px; transition: color 0.15s; }
+    .nr-more:hover { color: var(--brand); }
+    .nr-pane { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
+    .nr-pane.active { display: flex; flex-direction: column; }
+    /* 公告列表 */
+    .nr-notice-item { display: flex; align-items: baseline; gap: 10px; padding: 11px 20px; border-bottom: 1px solid #f8fafc; cursor: pointer; transition: background 0.15s; text-decoration: none; }
+    .nr-notice-item:hover { background: #f8fafc; }
+    .nr-notice-item:last-child { border-bottom: none; }
+    .nr-notice-dot { width: 5px; height: 5px; border-radius: 50%; background: #cbd5e1; flex-shrink: 0; margin-top: 8px; }
+    .nr-notice-title { flex: 1; font-size: 13px; color: #334155; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nr-notice-title:hover { color: var(--brand); }
+    .nr-notice-date { font-size: 12px; color: #94a3b8; flex-shrink: 0; }
+    /* 法规列表 */
+    .nr-law-bar { display: flex; align-items: center; justify-content: flex-end; padding: 8px 20px 4px; flex-shrink: 0; border-bottom: 1px solid #f8fafc; }
+    .nr-law-item { display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #f8fafc; cursor: pointer; transition: background 0.15s; }
+    .nr-law-item:hover { background: #f8fafc; }
+    .nr-law-item:last-child { border-bottom: none; }
+    .nr-law-dot { width: 5px; height: 5px; border-radius: 50%; background: #cbd5e1; flex-shrink: 0; }
+    .nr-law-name { flex: 1; font-size: 13px; color: #334155; line-height: 1.5; }
+    .nr-law-meta { font-size: 11px; color: #94a3b8; flex-shrink: 0; }
+    .nr-law-badge { padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .nr-law-badge.valid { background: #f0fdf4; color: #15803d; }
+    .nr-law-badge.updated { background: #fff7ed; color: #c2410c; }
+
+    /* 采购合规通 */
+    .compliance-pass-section { background: linear-gradient(180deg, #f8fafc 0%, #fff 100%); padding: 36px 0; }
+    .compliance-pass-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .cp-card { background: #fff; border: 1px solid rgba(226,232,240,0.9); border-radius: 18px; padding: 22px 18px 18px; cursor: pointer; transition: all 0.22s; box-shadow: 0 4px 12px rgba(15,23,42,0.04); display: flex; flex-direction: column; gap: 10px; }
+    .cp-card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(15,23,42,0.1); border-color: rgba(255,106,0,0.28); }
+    .cp-card-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .cp-card-icon.plan { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
+    .cp-card-icon.budget { background: linear-gradient(135deg,#d1fae5,#a7f3d0); }
+    .cp-card-icon.contract { background: linear-gradient(135deg,#fce7f3,#fbcfe8); }
+    .cp-card-icon.ai { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
+    .cp-card-name { font-size: 16px; font-weight: 800; color: #0f172a; }
+    .cp-card-desc { font-size: 12px; color: #64748b; line-height: 1.65; flex: 1; }
+    .cp-card-enter { font-size: 12px; color: #ff6a00; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .cp-card-stat { display: flex; align-items: baseline; gap: 5px; padding: 8px 12px; border-radius: 10px; background: #f8fafc; border: 1px solid rgba(226,232,240,0.9); margin-top: 2px; }
+    .cp-card-stat-num { font-size: 22px; font-weight: 800; color: #0f172a; line-height: 1; }
+    .cp-card-stat-num.blue { color: #2563eb; }
+    .cp-card-stat-num.green { color: #16a34a; }
+    .cp-card-stat-num.pink { color: #db2777; }
+    .cp-card-stat-unit { font-size: 12px; color: #64748b; font-weight: 600; }
+    .cp-card-stat-label { font-size: 11px; color: #94a3b8; margin-left: auto; }
+
+    /* 运营数据板 */
+    .data-board-section { padding: 36px 0; background: #f8fafc; }
+    .data-board-inner { border-radius: 20px; border: 1px solid rgba(226,232,240,0.9); background: #fff; overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.05); }
+    .data-board-locked { padding: 52px 24px; text-align: center; }
+    .data-board-locked .lock-icon { font-size: 40px; margin-bottom: 14px; color: #94a3b8; }
+    .data-board-locked h3 { margin: 0 0 7px; font-size: 18px; font-weight: 800; color: #0f172a; }
+    .data-board-locked p { margin: 0 0 20px; font-size: 14px; color: #64748b; }
+    .data-board-unlocked { padding: 24px; }
+    .data-kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
+    .data-kpi-card { background: #f8fafc; border-radius: 14px; padding: 16px; border: 1px solid rgba(226,232,240,0.9); }
+    .data-kpi-label { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 6px; }
+    .data-kpi-value { font-size: 22px; font-weight: 800; color: #0f172a; }
+    .data-kpi-value.orange { color: #ff6a00; }
+    .data-kpi-value.green { color: #16a34a; }
+    .data-kpi-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; margin-top: 4px; }
+    .data-kpi-badge.up { background: #f0fdf4; color: #16a34a; }
+    .data-kpi-badge.down { background: #fef2f2; color: #dc2626; }
+    .data-divider { border: none; border-top: 1px solid #f1f5f9; margin: 4px 0 16px; }
+    /* VIP 专属数据 — 锁定遮罩 */
+    .vip-section-wrap { position: relative; }
+    .vip-blurred { filter: blur(5px); pointer-events: none; user-select: none; opacity: 0.55; }
+    .vip-locked-mask { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; z-index: 2; }
+    .vip-locked-box { background: rgba(255,255,255,0.96); border: 1.5px solid #e9d5ff; border-radius: 18px; padding: 22px 32px; text-align: center; box-shadow: 0 8px 32px rgba(124,58,237,0.13); }
+    .vip-locked-icon { font-size: 32px; margin-bottom: 8px; }
+    .vip-locked-title { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .vip-locked-desc { font-size: 12px; color: #64748b; margin-bottom: 14px; line-height: 1.7; }
+    .vip-unlock-btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 24px; border-radius: 999px; border: none; background: linear-gradient(135deg,#7c3aed,#4f46e5); color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(124,58,237,0.3); transition: all 0.2s; }
+    .vip-unlock-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(124,58,237,0.4); }
+    /* VIP 标题行 */
+    .data-vip-title { font-size: 13px; font-weight: 800; color: #7c3aed; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+    /* VIP 分组 */
+    .vip-group { margin-bottom: 14px; }
+    .vip-group-label { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+    .vip-group-label::after { content:''; flex:1; height:1px; background:#f1f5f9; }
+    .data-vip-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+    .data-vip-grid.cols3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .data-vip-card { background: linear-gradient(135deg,#faf5ff,#f3e8ff); border-radius: 12px; padding: 14px 16px; border: 1px solid #e9d5ff; }
+    .data-vip-card .vip-label { font-size: 11px; color: #7c3aed; font-weight: 600; margin-bottom: 5px; }
+    .data-vip-card .vip-value { font-size: 20px; font-weight: 800; color: #4c1d95; line-height: 1.2; }
+    .data-vip-card .vip-sub { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+    .data-vip-card .vip-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; margin-top: 4px; }
+    .data-vip-card .vip-badge.warn { background: #fef3c7; color: #d97706; }
+    .data-vip-card .vip-badge.danger { background: #fee2e2; color: #dc2626; }
+    .data-vip-card .vip-badge.up { background: #f0fdf4; color: #16a34a; }
+    .data-vip-card .vip-badge.purple { background: #ede9fe; color: #7c3aed; }
+    /* VIP 进度条 */
+    .vip-prog-wrap { margin-top: 6px; }
+    .vip-prog-bar { height: 5px; background: #e9d5ff; border-radius: 999px; overflow: hidden; }
+    .vip-prog-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg,#7c3aed,#a855f7); }
+    /* 风险评级卡 */
+    .data-vip-card.risk-card { background: linear-gradient(135deg,#fdf2f8,#fce7f3); border-color: #fbcfe8; }
+    .data-vip-card.risk-card .vip-label { color: #9d174d; }
+    .data-vip-card.risk-card .vip-value { color: #831843; }
+    /* 服务组 */
+    .data-vip-card.service-card { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border-color: #bae6fd; }
+    .data-vip-card.service-card .vip-label { color: #0369a1; }
+    .data-vip-card.service-card .vip-value { color: #0c4a6e; }
+
+    /* 平台数据暗色区 */
+    .platform-stats-dark { background: linear-gradient(135deg,#0f172a 0%,#1e293b 100%); padding: 32px 0 24px; position: relative; overflow: hidden; }
+    .platform-stats-dark::before { content:""; position:absolute; inset:0; background: linear-gradient(90deg,rgba(47,107,255,0.05) 1px,transparent 1px), linear-gradient(rgba(47,107,255,0.05) 1px,transparent 1px); background-size:48px 48px; pointer-events:none; }
+    .platform-stats-dark::after { content:""; position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:600px; height:200px; background:radial-gradient(ellipse,rgba(47,107,255,0.08) 0%,transparent 70%); pointer-events:none; }
+    .platform-stats-header { text-align:center; margin-bottom:20px; position:relative; z-index:1; }
+    .platform-stats-header h3 { margin:0 0 4px; font-size:16px; font-weight:800; color:#fff; letter-spacing:0.5px; }
+    .platform-stats-header p { margin:0; font-size:12px; color:rgba(255,255,255,0.45); }
+    .platform-stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; position: relative; z-index: 1; }
+    .platform-stat-item { text-align: center; padding: 14px 16px 16px; border-right: 1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; align-items:center; gap:6px; }
+    .platform-stat-item:last-child { border-right: none; }
+    .platform-stat-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:2px; flex-shrink:0; }
+    .platform-stat-num { display: block; font-size: 34px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+    .platform-stat-label { display: block; font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 600; }
+    .platform-stat-desc { display:block; font-size:11px; color:rgba(255,255,255,0.35); line-height:1.5; }
+    .platform-stats-footer { text-align:center; margin-top:20px; position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:12px; }
+    .platform-stats-footer::before,.platform-stats-footer::after { content:""; flex:1; max-width:120px; height:1px; background:rgba(255,255,255,0.1); }
+    .platform-stats-footer span { font-size:11px; color:rgba(255,255,255,0.3); white-space:nowrap; }
+
+    /* 管理法规弹窗 */
+    .law-manage-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.56); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 150; }
+    .law-manage-overlay.open { display: flex; }
+    .law-manage-box { width: min(720px, calc(100vw - 40px)); max-height: calc(100vh - 80px); border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 28px 60px rgba(15,23,42,0.22); display: flex; flex-direction: column; }
+    .law-manage-head { padding: 18px 22px 14px; border-bottom: 1px solid rgba(226,232,240,0.9); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .law-manage-body { flex: 1; overflow-y: auto; padding: 10px 22px; }
+    .law-manage-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .law-manage-item:last-child { border-bottom: none; }
+    .law-manage-actions { padding: 14px 22px; border-top: 1px solid rgba(226,232,240,0.9); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+
+    /* AI推荐采购按钮 */
+    .ai-reco-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px; border: none; background: linear-gradient(135deg,#7c3aed,#4f46e5); color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s; box-shadow: 0 2px 8px rgba(124,58,237,0.25); flex-shrink: 0; }
+    .ai-reco-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(124,58,237,0.35); }
+    /* AI推荐采购 选择弹窗 */
+    .ai-reco-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 300; padding: 20px; }
+    .ai-reco-overlay.open { display: flex; }
+    .ai-reco-box { width: min(480px, calc(100vw - 40px)); border-radius: 20px; background: #fff; box-shadow: 0 24px 56px rgba(15,23,42,0.2); overflow: hidden; }
+    .ai-reco-head { padding: 20px 22px 16px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .ai-reco-title { font-size: 16px; font-weight: 800; color: #0f172a; }
+    .ai-reco-source { font-size: 12px; color: #64748b; margin-top: 4px; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ai-reco-body { padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 12px; }
+    .ai-reco-option { display: flex; align-items: center; gap: 14px; padding: 18px 18px; border-radius: 14px; border: 2px solid rgba(226,232,240,0.9); cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .ai-reco-option:hover { border-color: rgba(124,58,237,0.45); background: #faf5ff; transform: translateY(-2px); box-shadow: 0 8px 22px rgba(124,58,237,0.12); }
+    .ai-reco-option-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .ai-reco-option-icon.zhixuan { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
+    .ai-reco-option-icon.bidding { background: linear-gradient(135deg,#fef3c7,#fde68a); }
+    .ai-reco-option-text { flex: 1; }
+    .ai-reco-option-name { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .ai-reco-option-desc { font-size: 12px; color: #64748b; line-height: 1.65; }
+    .ai-reco-option-arrow { color: #94a3b8; font-size: 14px; flex-shrink: 0; }
+
     @media (max-width: 1100px) {
       .orange-inner { flex-direction: column; }
       .orange-left { width: 100%; }
@@ -854,11 +1038,11 @@
         </a>
         <!-- 中：主功能 Tab -->
         <nav class="main-tabs" aria-label="采购主功能导航">
-          <a class="main-tab active" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
-          <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 竞价询价</a>
+          <a class="main-tab active" id="tabHome" href="javascript:void(0)" onclick="switchMainTab('home')"><i class="fa-solid fa-house"></i> 首页</a>
+          <a class="main-tab" id="tabMall" href="javascript:void(0)" onclick="switchMainTab('mall')"><i class="fa-solid fa-store"></i> 国采搜品</a>
+          <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 撮合/竞价</a>
           <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
           <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
-          <a class="main-tab" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a>
         </nav>
         <!-- 右：操作区 -->
         <div class="topbar-actions">
@@ -887,8 +1071,365 @@
     </div>
   </header>
 
+  <!-- ==================== 首页 ZONE ==================== -->
+  <div id="homeZone">
+
+    <!-- 政采资讯台 -->
+    <section class="home-section" style="background:#fff; border-bottom:1px solid rgba(226,232,240,0.9);">
+      <div class="container">
+        <div class="home-section-head">
+          <h2 class="home-section-title"><i class="fa-solid fa-newspaper" style="color:#2f6bff;font-size:18px;"></i> 政采资讯台</h2>
+          <p class="home-section-subtitle">政采行业新闻、平台公告与采购法规，掌握一手政采资讯。</p>
+        </div>
+        <div class="news-panel">
+          <!-- 左：图片轮播 + 标题 -->
+          <div class="news-left">
+            <div class="news-img-wrap" id="newsImgWrap">
+              <div class="ni-slides" id="niSlides">
+                <div class="ni-slide"><img src="../assets/news1.png" alt="第九届数字中国建设峰会"></div>
+                <div class="ni-slide"><img src="../assets/news2.png" alt="智慧城市建设迈上新台阶"></div>
+                <div class="ni-slide"><img src="../assets/news3.png" alt="政采行业年度数据报告"></div>
+              </div>
+              <button class="ni-arr left" id="niPrev"><i class="fa-solid fa-chevron-left"></i></button>
+              <button class="ni-arr right" id="niNext"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+            <div class="news-img-caption">
+              <h4 id="niTitle">第九届数字中国建设峰会在福州召开，政采数字化成重要议题</h4>
+              <div class="news-img-caption-foot">
+                <span class="ni-date" id="niDate">2026-04-29</span>
+                <div class="ni-dots" id="niDots"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 右：tab + 列表 -->
+          <div class="news-right">
+            <div class="nr-tab-bar">
+              <button class="nr-tab active" onclick="switchNrTab('notice',this)">平台公告</button>
+              <button class="nr-tab" onclick="switchNrTab('law',this)">采购法规</button>
+              <span class="nr-more">更多 <i class="fa-solid fa-chevron-right" style="font-size:10px;"></i></span>
+            </div>
+            <!-- 平台公告 -->
+            <div class="nr-pane active" id="nrPane-notice">
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">关于2026年度政府采购合规培训报名通知</span><span class="nr-notice-date">04-28</span></div>
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">国采e购平台系统升级维护公告（2026年5月）</span><span class="nr-notice-date">04-25</span></div>
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">2026年第一季度优质供应商公示名单</span><span class="nr-notice-date">04-20</span></div>
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">关于规范采购合同电子签章使用管理的通知</span><span class="nr-notice-date">04-15</span></div>
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">平台新功能上线：AI智能询价比价功能正式开放</span><span class="nr-notice-date">04-10</span></div>
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">关于新增5家优质供应商入驻平台的公告</span><span class="nr-notice-date">04-08</span></div>
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">2026年采购管理系统操作手册更新说明</span><span class="nr-notice-date">03-30</span></div>
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">关于调整批量订单处理流程的通知</span><span class="nr-notice-date">03-22</span></div>
+              <div class="nr-notice-item"><span class="nr-notice-dot"></span><span class="nr-notice-title">平台服务条款及隐私政策更新公告</span><span class="nr-notice-date">03-15</span></div>
+            </div>
+            <!-- 采购法规 -->
+            <div class="nr-pane" id="nrPane-law">
+              <div class="nr-law-bar">
+                <button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openLawManageModal()"><i class="fa-solid fa-pen-to-square"></i> 管理法规</button>
+              </div>
+              <div class="nr-law-item">
+                <span class="nr-law-dot"></span>
+                <span class="nr-law-name">中华人民共和国政府采购法</span>
+                <span class="nr-law-meta">修订：2022-06-24</span>
+                <span class="nr-law-badge valid">现行有效</span>
+              </div>
+              <div class="nr-law-item">
+                <span class="nr-law-dot"></span>
+                <span class="nr-law-name">政府采购法实施条例</span>
+                <span class="nr-law-meta">修订：2022-04-06</span>
+                <span class="nr-law-badge valid">现行有效</span>
+              </div>
+              <div class="nr-law-item">
+                <span class="nr-law-dot"></span>
+                <span class="nr-law-name">政府采购货物和服务招标投标管理办法</span>
+                <span class="nr-law-meta">修订：2022-09-01</span>
+                <span class="nr-law-badge updated">近期修订</span>
+              </div>
+              <div class="nr-law-item">
+                <span class="nr-law-dot"></span>
+                <span class="nr-law-name">政府采购非招标采购方式管理办法</span>
+                <span class="nr-law-meta">修订：2021-08-30</span>
+                <span class="nr-law-badge valid">现行有效</span>
+              </div>
+              <div class="nr-law-item">
+                <span class="nr-law-dot"></span>
+                <span class="nr-law-name">政府采购评审专家管理办法</span>
+                <span class="nr-law-meta">修订：2021-08-09</span>
+                <span class="nr-law-badge valid">现行有效</span>
+              </div>
+              <div class="nr-law-item">
+                <span class="nr-law-dot"></span>
+                <span class="nr-law-name">中华人民共和国招标投标法</span>
+                <span class="nr-law-meta">修订：2017-12-27</span>
+                <span class="nr-law-badge valid">现行有效</span>
+              </div>
+            </div>
+          </div><!-- /news-right -->
+        </div><!-- /news-panel -->
+      </div>
+    </section>
+
+    <!-- 采购合规通 -->
+    <section class="compliance-pass-section">
+      <div class="container">
+        <div class="home-section-head">
+          <h2 class="home-section-title"><i class="fa-solid fa-shield-halved" style="color:#ff6a00;font-size:18px;"></i> 采购合规通</h2>
+          <p class="home-section-subtitle">覆盖采购全流程合规管理，计划、预算、合同、AI智询一站到位。</p>
+        </div>
+        <div class="compliance-pass-grid">
+          <div class="cp-card" onclick="openProcPlanModal()">
+            <div class="cp-card-icon plan">📋</div>
+            <div class="cp-card-name">采购计划</div>
+            <div class="cp-card-desc">制定采购计划，追踪执行进度，预警截止逾期风险。</div>
+            <div class="cp-card-stat">
+              <span class="cp-card-stat-num blue">12</span>
+              <span class="cp-card-stat-unit">个</span>
+              <span class="cp-card-stat-label">当前计划数</span>
+            </div>
+            <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
+          </div>
+          <div class="cp-card" onclick="openBudgetDrawer()">
+            <div class="cp-card-icon budget">💰</div>
+            <div class="cp-card-name">预算管理</div>
+            <div class="cp-card-desc">实时追踪预算执行情况，超支自动预警，调整留痕可查。</div>
+            <div class="cp-card-stat">
+              <span class="cp-card-stat-num green">¥580</span>
+              <span class="cp-card-stat-unit">万</span>
+              <span class="cp-card-stat-label">预算总额</span>
+            </div>
+            <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
+          </div>
+          <div class="cp-card" onclick="openContractModal()">
+            <div class="cp-card-icon contract">📝</div>
+            <div class="cp-card-name">合同管理</div>
+            <div class="cp-card-desc">管理合同全生命周期，AI自动审核条款风险，签章存档。</div>
+            <div class="cp-card-stat">
+              <span class="cp-card-stat-num pink">28</span>
+              <span class="cp-card-stat-unit">个</span>
+              <span class="cp-card-stat-label">合同模板数</span>
+            </div>
+            <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
+          </div>
+          <div class="cp-card" onclick="openComplianceModal()">
+            <div class="cp-card-icon ai">🤖</div>
+            <div class="cp-card-name">AI 智询</div>
+            <div class="cp-card-desc">AI实时解答采购合规问题，给出风险提示和整改建议。</div>
+            <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 运营数据板 -->
+    <section class="data-board-section">
+      <div class="container">
+        <div class="home-section-head">
+          <h2 class="home-section-title"><i class="fa-solid fa-chart-line" style="color:#7c3aed;font-size:18px;"></i> 运营数据板</h2>
+          <p class="home-section-subtitle">登录后查看您的核心采购数据与VIP专属数据分析。</p>
+        </div>
+        <div class="data-board-inner">
+          <!-- 未登录状态 -->
+          <div class="data-board-locked" id="dataBoardLocked">
+            <div class="lock-icon"><i class="fa-solid fa-lock"></i></div>
+            <h3>登录后查看完整数据</h3>
+            <p>核心运营指标与VIP专属数据，需要登录后方可查看。</p>
+            <button class="feature-button blue" style="margin:0 auto;" onclick="unlockDataBoard()">
+              <i class="fa-solid fa-unlock"></i> 立即登录
+            </button>
+          </div>
+          <!-- 已登录状态 -->
+          <div class="data-board-unlocked" id="dataBoardUnlocked" style="display:none;">
+            <div style="font-size:13px;font-weight:800;color:#475569;margin-bottom:12px;">核心数据</div>
+            <div class="data-kpi-row">
+              <div class="data-kpi-card">
+                <div class="data-kpi-label">累计采购金额</div>
+                <div class="data-kpi-value orange">¥2.86亿</div>
+                <span class="data-kpi-badge up"><i class="fa-solid fa-arrow-up" style="font-size:9px;"></i> 同比+12.4%</span>
+              </div>
+              <div class="data-kpi-card">
+                <div class="data-kpi-label">累计订单数</div>
+                <div class="data-kpi-value">128,640</div>
+                <span class="data-kpi-badge up"><i class="fa-solid fa-arrow-up" style="font-size:9px;"></i> 同比+8.7%</span>
+              </div>
+              <div class="data-kpi-card">
+                <div class="data-kpi-label">平均节资率</div>
+                <div class="data-kpi-value green">12.7%</div>
+                <span class="data-kpi-badge up"><i class="fa-solid fa-arrow-up" style="font-size:9px;"></i> 环比+0.3%</span>
+              </div>
+              <div class="data-kpi-card">
+                <div class="data-kpi-label">履约及时率</div>
+                <div class="data-kpi-value green">96.3%</div>
+                <span class="data-kpi-badge down"><i class="fa-solid fa-arrow-down" style="font-size:9px;"></i> 环比-0.5%</span>
+              </div>
+            </div>
+            <hr class="data-divider">
+            <div class="data-vip-title"><i class="fa-solid fa-crown"></i> VIP 专属数据</div>
+
+            <!-- VIP 区域：含锁定遮罩 -->
+            <div class="vip-section-wrap" id="vipSectionWrap">
+
+              <!-- 锁定遮罩（默认显示） -->
+              <div class="vip-locked-mask" id="vipLockedMask">
+                <div class="vip-locked-box">
+                  <div class="vip-locked-icon">🔒</div>
+                  <div class="vip-locked-title">开通 VIP 后解锁深度分析数据</div>
+                  <div class="vip-locked-desc">智能效能分析 · 供应链风险洞察 · 专属服务权益追踪<br>11 项深度指标，助力采购决策升级</div>
+                  <button class="vip-unlock-btn" onclick="unlockVip()">
+                    <i class="fa-solid fa-crown"></i> 升级 VIP 服务
+                  </button>
+                </div>
+              </div>
+
+              <!-- 数据内容层（模糊遮罩中预览） -->
+              <div id="vipDataLayer" class="vip-blurred">
+
+                <!-- 第一组：采购智能效能 -->
+                <div class="vip-group">
+                  <div class="vip-group-label"><i class="fa-solid fa-bolt" style="color:#7c3aed;"></i> 采购智能效能</div>
+                  <div class="data-vip-grid">
+                    <div class="data-vip-card">
+                      <div class="vip-label">采购价格偏离指数</div>
+                      <div class="vip-value" style="color:#16a34a;">-8.2%</div>
+                      <div class="vip-sub">低于市场均价，VIP议价能力</div>
+                      <span class="vip-badge up"><i class="fa-solid fa-arrow-down" style="font-size:9px;"></i> 优于行业基准</span>
+                    </div>
+                    <div class="data-vip-card">
+                      <div class="vip-label">AI 推荐命中转化率</div>
+                      <div class="vip-value">92.6%</div>
+                      <div class="vip-sub">AI推荐商品最终采购比率</div>
+                      <span class="vip-badge up">环比+2.1%</span>
+                    </div>
+                    <div class="data-vip-card">
+                      <div class="vip-label">重复需求合并率</div>
+                      <div class="vip-value">78.3%</div>
+                      <div class="vip-sub">自动合并重复采购需求</div>
+                      <span class="vip-badge purple">节省 34 次操作</span>
+                    </div>
+                    <div class="data-vip-card">
+                      <div class="vip-label">品类节资总额（累计）</div>
+                      <div class="vip-value" style="color:#7c3aed;">¥386万</div>
+                      <div class="vip-sub">VIP价格保护累计节省</div>
+                      <span class="vip-badge up">同比+18.4%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 第二组：供应链风险洞察 -->
+                <div class="vip-group">
+                  <div class="vip-group-label"><i class="fa-solid fa-shield-halved" style="color:#db2777;"></i> 供应链风险洞察</div>
+                  <div class="data-vip-grid">
+                    <div class="data-vip-card risk-card">
+                      <div class="vip-label">供应商健康综合评分</div>
+                      <div class="vip-value">A级 · 92分</div>
+                      <div class="vip-sub">合作供应商群体综合评级</div>
+                      <span class="vip-badge up">低风险</span>
+                    </div>
+                    <div class="data-vip-card risk-card">
+                      <div class="vip-label">到货准时率</div>
+                      <div class="vip-value">97.1%</div>
+                      <div class="vip-sub">近90天统计</div>
+                      <span class="vip-badge up">环比+1.2%</span>
+                    </div>
+                    <div class="data-vip-card risk-card">
+                      <div class="vip-label">供应商集中度预警</div>
+                      <div class="vip-value">TOP3 占 62%</div>
+                      <div class="vip-sub">超过60%阈值，建议分散</div>
+                      <span class="vip-badge warn"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px;"></i> 关注</span>
+                    </div>
+                    <div class="data-vip-card risk-card">
+                      <div class="vip-label">合同到期预警</div>
+                      <div class="vip-value" style="color:#dc2626;">3 份</div>
+                      <div class="vip-sub">近30天内到期，需处理</div>
+                      <span class="vip-badge danger"><i class="fa-solid fa-bell" style="font-size:9px;"></i> 待处理</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 第三组：VIP服务权益使用 -->
+                <div class="vip-group" style="margin-bottom:0;">
+                  <div class="vip-group-label"><i class="fa-solid fa-headset" style="color:#0369a1;"></i> VIP 服务权益使用</div>
+                  <div class="data-vip-grid cols3">
+                    <div class="data-vip-card service-card">
+                      <div class="vip-label">专属顾问平均响应</div>
+                      <div class="vip-value">1.8h</div>
+                      <div class="vip-sub">vs 标准客户 5h，快2.8倍</div>
+                      <span class="vip-badge purple">VIP 加速</span>
+                    </div>
+                    <div class="data-vip-card service-card">
+                      <div class="vip-label">本月服务工单</div>
+                      <div class="vip-value">24 <span style="font-size:13px;font-weight:600;color:#0369a1;">/ 50条</span></div>
+                      <div class="vip-prog-wrap">
+                        <div class="vip-prog-bar" style="background:#bae6fd;">
+                          <div class="vip-prog-fill" style="width:48%;background:linear-gradient(90deg,#0369a1,#0ea5e9);"></div>
+                        </div>
+                      </div>
+                      <div class="vip-sub" style="margin-top:4px;">月额度已用 48%</div>
+                    </div>
+                    <div class="data-vip-card service-card">
+                      <div class="vip-label">VIP 定制分析报告</div>
+                      <div class="vip-value">3 份</div>
+                      <div class="vip-sub">本月已生成，含采购优化报告</div>
+                      <span class="vip-badge purple">剩余 2 次额度</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /vipDataLayer -->
+            </div><!-- /vipSectionWrap -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 平台数据暗色区 -->
+    <div class="platform-stats-dark">
+      <div class="container">
+        <div class="platform-stats-header">
+          <h3>平台实力 · 驱动政采未来</h3>
+          <p>全国政府采购数字化服务平台，合规、高效、可信赖</p>
+        </div>
+        <div class="platform-stats-grid">
+          <div class="platform-stat-item">
+            <div class="platform-stat-icon" style="background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(37,99,235,0.15));">
+              <i class="fa-solid fa-building" style="color:#93c5fd;"></i>
+            </div>
+            <span class="platform-stat-num" style="color:#93c5fd;">10<span style="font-size:20px;">+</span></span>
+            <span class="platform-stat-label">入驻供应商</span>
+            <span class="platform-stat-desc">严格资质审核，品质有保障</span>
+          </div>
+          <div class="platform-stat-item">
+            <div class="platform-stat-icon" style="background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(5,150,105,0.15));">
+              <i class="fa-solid fa-landmark" style="color:#6ee7b7;"></i>
+            </div>
+            <span class="platform-stat-num" style="color:#6ee7b7;">100<span style="font-size:20px;">+</span></span>
+            <span class="platform-stat-label">服务采购商</span>
+            <span class="platform-stat-desc">覆盖全国政企采购单位</span>
+          </div>
+          <div class="platform-stat-item">
+            <div class="platform-stat-icon" style="background:linear-gradient(135deg,rgba(251,146,60,0.25),rgba(234,88,12,0.15));">
+              <i class="fa-solid fa-box-open" style="color:#fdba74;"></i>
+            </div>
+            <span class="platform-stat-num" style="color:#fdba74;">280,000<span style="font-size:20px;">+</span></span>
+            <span class="platform-stat-label">在架商品</span>
+            <span class="platform-stat-desc">全品类覆盖，一站式采购</span>
+          </div>
+          <div class="platform-stat-item">
+            <div class="platform-stat-icon" style="background:linear-gradient(135deg,rgba(168,85,247,0.25),rgba(124,58,237,0.15));">
+              <i class="fa-solid fa-tags" style="color:#d8b4fe;"></i>
+            </div>
+            <span class="platform-stat-num" style="color:#d8b4fe;">3,260</span>
+            <span class="platform-stat-label">商品品类</span>
+            <span class="platform-stat-desc">多维分类体系，精准匹配需求</span>
+          </div>
+        </div>
+        <div class="platform-stats-footer">
+          <span>国采e购 · 让政府采购更高效、更合规、更透明</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /homeZone -->
+
   <!-- ==================== 商城区 ==================== -->
-  <div class="mall-zone">
+  <div class="mall-zone" id="mallZone" style="display:none;">
     <div class="container mall-inner">
 
       <!-- 商城页专属搜索 -->
@@ -983,7 +1524,7 @@
 
       <!-- 入驻供应商 -->
       <div class="mall-supplier-section" style="margin-top:16px; padding-bottom:16px;">
-        <div class="mall-supplier-title" style="margin-bottom:14px;">———————— 入驻供应商 ————————</div>
+        <div class="mall-supplier-title" style="margin-bottom:14px;">———————— 认证供应商 ————————</div>
         <div class="mall-supplier-grid" id="supplierGrid"></div>
       </div>
 
@@ -1227,6 +1768,116 @@
       </div>
     </div>
   </footer>
+
+  <!-- ==================== 管理法规弹窗 ==================== -->
+  <!-- AI推荐采购 选择弹窗 -->
+  <div class="ai-reco-overlay" id="aiRecoModal" onclick="closeAiRecoModal(event)">
+    <div class="ai-reco-box" onclick="event.stopPropagation()">
+      <div class="ai-reco-head">
+        <div>
+          <div class="ai-reco-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:#7c3aed;margin-right:6px;"></i>AI 推荐采购方式</div>
+          <div class="ai-reco-source" id="aiRecoSource">请选择合适的采购方式</div>
+        </div>
+        <button onclick="closeAiRecoModal()" style="background:none;border:none;font-size:18px;color:#94a3b8;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1;" title="关闭">✕</button>
+      </div>
+      <div class="ai-reco-body">
+        <div class="ai-reco-option" onclick="gotoZhixuan()">
+          <div class="ai-reco-option-icon zhixuan">🏪</div>
+          <div class="ai-reco-option-text">
+            <div class="ai-reco-option-name">智选直采</div>
+            <div class="ai-reco-option-desc">AI 智能匹配合规商品，自动生成最优采购清单，适合标准化品类直接采购。</div>
+          </div>
+          <i class="fa-solid fa-chevron-right ai-reco-option-arrow"></i>
+        </div>
+        <div class="ai-reco-option" onclick="gotoBidding()">
+          <div class="ai-reco-option-icon bidding">🔨</div>
+          <div class="ai-reco-option-text">
+            <div class="ai-reco-option-name">竞价 / 询价</div>
+            <div class="ai-reco-option-desc">发布竞价或询价需求，广泛获取供应商报价，适合定制化或大额采购。</div>
+          </div>
+          <i class="fa-solid fa-chevron-right ai-reco-option-arrow"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="law-manage-overlay" id="lawManageModal" onclick="closeLawManageModal(event)">
+    <div class="law-manage-box" onclick="event.stopPropagation()">
+      <div class="law-manage-head">
+        <div>
+          <h3 style="margin:0;font-size:20px;font-weight:800;">采购法规管理</h3>
+          <p style="margin:5px 0 0;font-size:13px;color:#64748b;">维护平台展示的采购法规条目。</p>
+        </div>
+        <button class="modal-close" type="button" onclick="closeLawManageModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="law-manage-body">
+        <div class="law-manage-item">
+          <div class="law-icon">📘</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">中华人民共和国政府采购法</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2002-06-29 &nbsp;|&nbsp; 修订：2022-06-24</div>
+          </div>
+          <span class="law-status active" style="margin-right:8px;">现行有效</span>
+          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
+          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
+        </div>
+        <div class="law-manage-item">
+          <div class="law-icon">📗</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">政府采购法实施条例</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2015-02-27 &nbsp;|&nbsp; 修订：2022-04-06</div>
+          </div>
+          <span class="law-status active" style="margin-right:8px;">现行有效</span>
+          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
+          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
+        </div>
+        <div class="law-manage-item">
+          <div class="law-icon">📙</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">政府采购货物和服务招标投标管理办法</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2017-07-11 &nbsp;|&nbsp; 修订：2022-09-01</div>
+          </div>
+          <span class="law-status updated" style="margin-right:8px;">近期修订</span>
+          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
+          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
+        </div>
+        <div class="law-manage-item">
+          <div class="law-icon">📕</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">政府采购非招标采购方式管理办法</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2013-12-19 &nbsp;|&nbsp; 修订：2021-08-30</div>
+          </div>
+          <span class="law-status active" style="margin-right:8px;">现行有效</span>
+          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
+          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
+        </div>
+        <div class="law-manage-item">
+          <div class="law-icon">📘</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">政府采购评审专家管理办法</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2016-12-27 &nbsp;|&nbsp; 修订：2021-08-09</div>
+          </div>
+          <span class="law-status active" style="margin-right:8px;">现行有效</span>
+          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
+          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
+        </div>
+        <div class="law-manage-item">
+          <div class="law-icon">📗</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:700;color:#0f172a;">中华人民共和国招标投标法</div>
+            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：1999-08-30 &nbsp;|&nbsp; 修订：2017-12-27</div>
+          </div>
+          <span class="law-status active" style="margin-right:8px;">现行有效</span>
+          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
+          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
+        </div>
+      </div>
+      <div class="law-manage-actions">
+        <button class="gm-btn gm-btn-primary"><i class="fa-solid fa-plus"></i> 新增法规</button>
+        <button class="gm-btn gm-btn-ghost" onclick="closeLawManageModal()">关闭</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== 模式切换 (本地fallback) ==================== -->
   <div class="mode-switch-fab" id="localModeFab" aria-label="模式切换">
@@ -1868,7 +2519,9 @@
           +'<div class="list-item-head"><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span class="list-item-title">'+p.name+'</span>'+pill+'</div>'
           +'<div class="list-item-meta">计划金额 ¥'+p.amount.toLocaleString()+' · 已执行 ¥'+p.used.toLocaleString()+' · 截止 '+p.deadline+(p.cat?' · '+p.cat:'')+'</div>'
           +'<div class="prog-bar" style="margin-top:6px;"><div class="prog-fill '+(pct>=90?'danger':pct>=70?'warn':'safe')+'" style="width:'+pct+'%;"></div></div>'
-          +'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">执行进度 '+pct+'%</div></div></div>'
+          +'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">执行进度 '+pct+'%</div></div>'
+          +(p.status!=='done'?'<button class="ai-reco-btn" style="margin:14px 14px 0 0;align-self:flex-start;" onclick="openAiRecoModal(\''+p.name.replace(/'/g,"\\'")+'\',\'procPlanModal\')" title="AI推荐采购方式"><i class="fa-solid fa-wand-magic-sparkles"></i> AI推荐采购</button>':'')
+          +'</div>'
           +'<div style="padding:0 14px 11px;display:flex;gap:6px;flex-wrap:wrap;">'
           +(p.status!=='done'?'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="completePlan('+p.id+')"><i class="fa-solid fa-check"></i> 标注完成</button>':'')
           +'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="togglePlanOrders('+p.id+',this)"><i class="fa-solid fa-link"></i> 关联订单 ('+p.orders.length+')</button>'
@@ -1928,7 +2581,7 @@
         var warn=pct>=90?'<div class="warn-tip"><i class="fa-solid fa-triangle-exclamation"></i> '+c.name+'已使用'+pct+'%，接近上限</div>':'';
         var ordersHtml=c.ordersOpen?'<div class="inline-expand" style="margin:0 12px 9px;"><div class="inline-expand-inner"><table class="gm-table"><thead><tr><th>订单号</th><th>商品</th><th>金额</th><th>状态</th></tr></thead><tbody>'+c.orders.map(function(o){return '<tr><td>'+o.no+'</td><td>'+o.goods+'</td><td>¥'+o.amt.toLocaleString()+'</td><td>'+o.status+'</td></tr>';}).join('')+'</tbody></table></div></div>':'';
         var adjustHtml=c.adjustOpen?'<div class="budget-adjust-row"><span style="font-size:12px;font-weight:600;color:#475569;">调整已用：</span><input class="budget-num-input" id="adjustInput-'+c.id+'" type="number" value="'+c.used+'" min="0" max="'+c.budget+'"><button class="gm-btn gm-btn-primary gm-btn-sm" onclick="saveBudgetAdjust(\''+c.id+'\')">保存</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetAdjust(\''+c.id+'\')">取消</button></div>':'';
-        return '<div class="list-item" style="margin-bottom:8px;"><div class="list-item-head" style="flex-direction:column;align-items:stretch;gap:6px;"><div style="display:flex;align-items:center;justify-content:space-between;"><span style="font-size:14px;font-weight:700;color:#0f172a;">'+c.name+'</span><span style="font-size:13px;color:'+(pct>=90?'#dc2626':'#ff6a00')+';font-weight:700;">'+pct+'%</span></div><div class="prog-bar"><div class="prog-fill '+cls+'" style="width:'+pct+'%;"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;"><span>预算 ¥'+(c.budget/10000).toFixed(0)+'万</span><span>已用 ¥'+(c.used/10000).toFixed(1)+'万</span><span>剩余 ¥'+((c.budget-c.used)/10000).toFixed(1)+'万</span></div>'+warn+'</div>'+adjustHtml+'<div style="padding:0 12px 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetAdjust(\''+c.id+'\')"><i class="fa-solid fa-pen-to-square"></i> 调整</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetOrders(\''+c.id+'\')"><i class="fa-solid fa-link"></i> 关联订单 ('+c.orders.length+')</button><button class="gm-btn gm-btn-danger gm-btn-sm" onclick="deleteBudgetItem(\''+c.id+'\')"><i class="fa-solid fa-trash"></i> 删除</button></div>'+ordersHtml+'</div>';
+        return '<div class="list-item" style="margin-bottom:8px;"><div class="list-item-head" style="flex-direction:column;align-items:stretch;gap:6px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:14px;font-weight:700;color:#0f172a;flex:1;">'+c.name+'</span><span style="font-size:13px;color:'+(pct>=90?'#dc2626':'#ff6a00')+';font-weight:700;margin-right:2px;">'+pct+'%</span><button class="ai-reco-btn" onclick="openAiRecoModal(\''+c.name.replace(/'/g,"\\'")+'\',\'budgetModal\')" title="AI推荐采购方式"><i class="fa-solid fa-wand-magic-sparkles"></i> AI推荐采购</button></div><div class="prog-bar"><div class="prog-fill '+cls+'" style="width:'+pct+'%;"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;"><span>预算 ¥'+(c.budget/10000).toFixed(0)+'万</span><span>已用 ¥'+(c.used/10000).toFixed(1)+'万</span><span>剩余 ¥'+((c.budget-c.used)/10000).toFixed(1)+'万</span></div>'+warn+'</div>'+adjustHtml+'<div style="padding:0 12px 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetAdjust(\''+c.id+'\')"><i class="fa-solid fa-pen-to-square"></i> 调整</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetOrders(\''+c.id+'\')"><i class="fa-solid fa-link"></i> 关联订单 ('+c.orders.length+')</button><button class="gm-btn gm-btn-danger gm-btn-sm" onclick="deleteBudgetItem(\''+c.id+'\')"><i class="fa-solid fa-trash"></i> 删除</button></div>'+ordersHtml+'</div>';
       }).join('');
     }
     function toggleBudgetAdjust(id){ var c=budgetCats.find(function(x){return x.id===id;}); if(c) c.adjustOpen=!c.adjustOpen; renderBudgetCats(); }
@@ -2002,6 +2655,190 @@
        初始化 —— script 在 </body> 前，DOM 已完整，直接执行
     ===================================================================== */
     initMallData();
+
+    /* =====================================================================
+       首页 Tab 切换
+    ===================================================================== */
+    function switchMainTab(tab) {
+      var homeZone = document.getElementById('homeZone');
+      var mallZone = document.getElementById('mallZone');
+      var tabHome = document.getElementById('tabHome');
+      var tabMall = document.getElementById('tabMall');
+      if (tab === 'home') {
+        homeZone.style.display = '';
+        mallZone.style.display = 'none';
+        tabHome.classList.add('active');
+        tabMall.classList.remove('active');
+      } else {
+        homeZone.style.display = 'none';
+        mallZone.style.display = '';
+        tabMall.classList.add('active');
+        tabHome.classList.remove('active');
+      }
+    }
+
+    /* =====================================================================
+       政采资讯台：左侧 Tab 切换
+    ===================================================================== */
+    function switchNewsTab(tab, btn) {
+      document.querySelectorAll('.news-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.news-pane').forEach(function(p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var pane = document.getElementById('newsPane-' + tab);
+      if (pane) pane.classList.add('active');
+    }
+
+    /* =====================================================================
+       政采资讯台：左侧图片轮播
+    ===================================================================== */
+    var NI_DATA = [
+      { title: '第九届数字中国建设峰会在福州召开，政采数字化成重要议题', date: '2026-04-29' },
+      { title: '各地加快推进采购全流程电子化，智慧城市建设迈上新台阶', date: '2026-04-26' },
+      { title: '政采行业年度报告：AI赋能采购效率大幅提升，节资率创新高', date: '2026-04-18' }
+    ];
+    var niIdx = 0;
+    var niTimer = null;
+
+    function initNiCarousel() {
+      var dotsEl = document.getElementById('niDots');
+      if (!dotsEl) return;
+      dotsEl.innerHTML = NI_DATA.map(function(_, i) {
+        return '<div class="ni-dot' + (i === 0 ? ' active' : '') + '" data-ni="' + i + '"></div>';
+      }).join('');
+      dotsEl.querySelectorAll('.ni-dot').forEach(function(d) {
+        d.addEventListener('click', function() { goNi(Number(d.dataset.ni)); });
+      });
+      var prev = document.getElementById('niPrev');
+      var next = document.getElementById('niNext');
+      if (prev) prev.addEventListener('click', function() { goNi(niIdx - 1); });
+      if (next) next.addEventListener('click', function() { goNi(niIdx + 1); });
+      var wrap = document.getElementById('newsImgWrap');
+      if (wrap) {
+        wrap.addEventListener('mouseenter', function() { clearInterval(niTimer); });
+        wrap.addEventListener('mouseleave', startNiAuto);
+      }
+      updateNi();
+      startNiAuto();
+    }
+
+    function goNi(idx) {
+      niIdx = ((idx % NI_DATA.length) + NI_DATA.length) % NI_DATA.length;
+      updateNi();
+    }
+    function updateNi() {
+      var slides = document.getElementById('niSlides');
+      if (slides) slides.style.transform = 'translateX(-' + niIdx * 100 + '%)';
+      var titleEl = document.getElementById('niTitle');
+      var dateEl  = document.getElementById('niDate');
+      if (titleEl) titleEl.textContent = NI_DATA[niIdx].title;
+      if (dateEl)  dateEl.textContent  = NI_DATA[niIdx].date;
+      document.querySelectorAll('#niDots .ni-dot').forEach(function(d, i) {
+        d.classList.toggle('active', i === niIdx);
+      });
+    }
+    function startNiAuto() {
+      clearInterval(niTimer);
+      niTimer = setInterval(function() { goNi(niIdx + 1); }, 4500);
+    }
+
+    /* =====================================================================
+       政采资讯台：右侧 Tab 切换（平台公告 / 采购法规）
+    ===================================================================== */
+    function switchNrTab(tab, btn) {
+      document.querySelectorAll('.nr-tab').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.nr-pane').forEach(function(p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var pane = document.getElementById('nrPane-' + tab);
+      if (pane) pane.classList.add('active');
+    }
+
+    /* =====================================================================
+       运营数据板：登录解锁
+    ===================================================================== */
+    function syncDataBoardAuthState() {
+      var locked = document.getElementById('dataBoardLocked');
+      var unlocked = document.getElementById('dataBoardUnlocked');
+      var isLogin = localStorage.getItem('gc_auth') === '1';
+      if (locked) locked.style.display = isLogin ? 'none' : 'block';
+      if (unlocked) unlocked.style.display = isLogin ? 'block' : 'none';
+    }
+    function unlockDataBoard() {
+      var redirect = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = '../login.html?redirect=' + redirect;
+    }
+    function unlockVip() {
+      var mask = document.getElementById('vipLockedMask');
+      var layer = document.getElementById('vipDataLayer');
+      if (mask) mask.style.display = 'none';
+      if (layer) layer.classList.remove('vip-blurred');
+    }
+
+    /* =====================================================================
+       管理法规弹窗
+    ===================================================================== */
+    function openLawManageModal() {
+      document.getElementById('lawManageModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLawManageModal(event) {
+      if (event && event.target && event.target !== document.getElementById('lawManageModal')) return;
+      document.getElementById('lawManageModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    /* =====================================================================
+       AI推荐采购 弹窗
+    ===================================================================== */
+    var _aiRecoSourceId = null; /* 记录是从哪个弹窗打开的 */
+    function openAiRecoModal(label, sourceModalId) {
+      /* 先关闭来源弹窗 */
+      if (sourceModalId) {
+        var srcEl = document.getElementById(sourceModalId);
+        if (srcEl) srcEl.classList.remove('open');
+      }
+      _aiRecoSourceId = sourceModalId || null;
+      var srcTxt = document.getElementById('aiRecoSource');
+      if (srcTxt) srcTxt.textContent = label ? '当前项目：' + label : '请选择合适的采购方式';
+      document.getElementById('aiRecoModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeAiRecoModal(event) {
+      if (event && event.target !== document.getElementById('aiRecoModal')) return;
+      document.getElementById('aiRecoModal').classList.remove('open');
+      /* 关闭后恢复来源弹窗 */
+      if (_aiRecoSourceId) {
+        var srcEl = document.getElementById(_aiRecoSourceId);
+        if (srcEl) srcEl.classList.add('open');
+        _aiRecoSourceId = null;
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+    /* 点击选项跳转时关闭所有弹窗（不再恢复） */
+    function closeAllModalsForNav() {
+      _aiRecoSourceId = null;
+      document.querySelectorAll('.gm-overlay, .gm-drawer-overlay, .ai-reco-overlay, .law-manage-overlay').forEach(function(el) { el.classList.remove('open'); });
+      document.body.style.overflow = '';
+    }
+    /* 跳转到智选方案分析界面 */
+    function gotoZhixuan() {
+      closeAllModalsForNav();
+      try { sessionStorage.setItem('planDemo', JSON.stringify({ file: null, scene: 'AI推荐采购场景' })); } catch(e) {}
+      window.location.href = './plan_result.html';
+    }
+    /* 跳转到竞价询价分析界面 */
+    function gotoBidding() {
+      closeAllModalsForNav();
+      window.location.href = './bidding_inquiry.html?demo=1';
+    }
+
+    /* 初始化首页功能 */
+    if (localStorage.getItem('gc_auth') !== '0' && localStorage.getItem('gc_auth') !== '1') {
+      localStorage.setItem('gc_auth', '0');
+    }
+    syncDataBoardAuthState();
+    initNiCarousel();
   </script>
+<script src="../assets/unified_topbar.js"></script>
 </body>
 </html>

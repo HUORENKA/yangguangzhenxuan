@@ -3,548 +3,199 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>商品审核 | 阳光甄选管理后台</title>
+  <title>商品审核列表 | 管理后台</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../../assets/custom.css">
-  
   <style>
-    @layer utilities {
-      .text-primary { color: #E2231A; }
-      .bg-primary { background-color: #E2231A; }
-      .border-primary { border-color: #E2231A; }
+    :root {
+      --c-blue: #1890FF;
+      --c-green: #52C41A;
+      --c-orange: #FAAD14;
+      --c-red: #F5222D;
+      --bg-page: #F4F7F9;
     }
-    
-    body {
-      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; background: var(--bg-page); color: #262626; min-height: 100vh; }
+    .audit-card-active { border: 2px solid var(--c-blue) !important; box-shadow: 0 4px 14px rgba(24, 144, 255, 0.18); }
+    .mini-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;
     }
-
-    /* ===== 左侧菜单复用样式 ===== */
-    .admin-sidebar {
-      position: fixed; left: 0; top: 0;
-      width: 240px; height: 100vh;
-      background: #1e293b; color: white;
-      transition: width 0.3s ease; z-index: 50;
-      display: flex; flex-direction: column;
+    .tag-ai-pass { background: #f6ffed; color: var(--c-green); border: 1px solid #b7eb8f; }
+    .tag-ai-warn { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; }
+    .tag-ai-fail { background: #fff1f0; color: var(--c-red); border: 1px solid #ffa39e; }
+    .btn-audit {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
     }
-    .admin-sidebar.collapsed { width: 64px; }
-    .admin-sidebar-header {
-      height: 64px; display: flex; items-center; justify-content: space-between;
-      padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
-      background: rgba(0,0,0,0.2);
+    .btn-audit-primary { background: #e6f7ff; color: var(--c-blue); border-color: #91d5ff; }
+    .btn-audit-primary:hover { background: #bae7ff; }
+    .btn-audit-pass { background: #f6ffed; color: var(--c-green); border-color: #b7eb8f; }
+    .btn-audit-pass:hover { background: #d9f7be; }
+    .btn-audit-reject { background: #fff1f0; color: var(--c-red); border-color: #ffa39e; }
+    .btn-audit-reject:hover { background: #ffccc7; }
+    .table-wrap { overflow-x: auto; border: 1px solid #e8e8e8; border-radius: 12px; background: #fff; }
+    th { background: #fafafa; color: #595959; font-size: 13px; font-weight: 700; padding: 14px 16px; text-align: left; white-space: nowrap; border-bottom: 1px solid #f0f0f0; }
+    td { padding: 16px; border-top: 1px solid #f0f0f0; font-size: 14px; vertical-align: top; }
+    .stat-icon-wrap {
+      width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;
     }
-    .admin-sidebar-toggle {
-      background: transparent; border: none; color: #94a3b8; cursor: pointer;
-      transition: color 0.2s ease;
-    }
-    .admin-sidebar-toggle:hover { color: #ffffff; }
-    .admin-sidebar-logo {
-      display: flex; align-items: center; gap: 12px;
-      font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden;
-    }
-    .admin-sidebar-logo i { color: #E2231A; font-size: 24px; }
-    .admin-sidebar-toggle {
-      background: transparent; border: none; color: #94a3b8; cursor: pointer;
-    }
-    .admin-sidebar-toggle:hover { color: white; }
-    .admin-menu {
-      flex: 1; overflow-y: auto; padding: 16px 0;
-    }
-    .admin-menu-item {
-      display: flex; align-items: center; gap: 16px;
-      padding: 12px 20px; color: #cbd5e1; text-decoration: none;
-      transition: all 0.2s; position: relative;
-      white-space: nowrap; overflow: hidden;
-    }
-    .admin-menu-item:hover, .admin-menu-item.active {
-      color: white; background: rgba(255,255,255,0.05);
-    }
-    .admin-menu-item.active::before {
-      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-      width: 4px; background: #E2231A;
-    }
-    .admin-menu-item i {
-      width: 24px; text-align: center; font-size: 16px;
-    }
-    
-    .admin-content {
-      margin-left: 240px; transition: margin-left 0.3s ease; min-height: 100vh;
-    }
-    .admin-sidebar.collapsed ~ .admin-content { margin-left: 64px; }
-
-    /* 页面卡片 */
-    .page-card {
-      background: #ffffff;
-      border: 1px solid rgba(15, 23, 42, 0.06);
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(15, 23, 42, 0.02);
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    /* 状态卡片 */
-    .status-card {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px; border-radius: 12px; cursor: pointer;
-      border: 1px solid #e2e8f0; background: #ffffff;
-      transition: all 0.2s;
-    }
-    .status-card:hover, .status-card.active {
-      border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
-    }
-    .status-card.active { background: #eff6ff; }
-    .status-icon {
-      width: 48px; height: 48px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 20px;
-    }
-    .icon-pending { background: #eff6ff; color: #3b82f6; }
-    .icon-warning { background: #fffbeb; color: #d97706; }
-    .icon-success { background: #ecfdf5; color: #16a34a; }
-    .icon-reject { background: #fef2f2; color: #dc2626; }
-
-    /* 表格样式 */
-    .table-container { overflow-x: auto; }
-    .data-table { width: 100%; border-collapse: collapse; text-align: left; }
-    .data-table th { padding: 12px 16px; background: #f8fafc; color: #475569; font-weight: 600; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
-    .data-table td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
-    .data-table tr:hover { background: #f8fafc; }
-    
-    .badge {
-      display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
-    }
-    .badge-pass { background: #ecfdf5; color: #047857; border: 1px solid #bbf7d0; }
-    .badge-warn { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-    .badge-fail { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-
-    .action-btn { padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
-    .btn-audit { background: #3b82f6; color: white; border: none; }
-    .btn-audit:hover { background: #2563eb; }
-    .btn-pass { background: #10b981; color: white; border: none; }
-    .btn-pass:hover { background: #059669; }
-    .btn-reject { background: #ef4444; color: white; border: none; }
-    .btn-reject:hover { background: #dc2626; }
-
-    /* ==================== 审核抽屉 ==================== */
-    .drawer-overlay {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px);
-      z-index: 100; display: none; opacity: 0; transition: opacity 0.3s;
-    }
-    .drawer-overlay.show { display: block; opacity: 1; }
-    .drawer-panel {
-      position: fixed; right: -1200px; top: 0; bottom: 0; width: min(1200px, 95vw);
-      background: #f8fafc; z-index: 101; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      display: flex; flex-direction: column; box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-    }
-    .drawer-panel.show { right: 0; }
-    
-    .drawer-header {
-      padding: 16px 24px; background: white; border-bottom: 1px solid #e2e8f0;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .drawer-title { font-size: 18px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; }
-    .drawer-close { font-size: 20px; color: #64748b; cursor: pointer; border: none; background: none; }
-    .drawer-close:hover { color: #0f172a; }
-
-    .drawer-body {
-      flex: 1; overflow: hidden; display: flex;
-    }
-    .drawer-left {
-      width: 50%; padding: 20px; overflow-y: auto; background: white; border-right: 1px solid #e2e8f0;
-    }
-    .drawer-right {
-      width: 50%; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
-    }
-
-    .info-section { margin-bottom: 24px; }
-    .info-title { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-    .info-title i { color: #3b82f6; }
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .info-item { background: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #f1f5f9; }
-    .info-label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
-    .info-value { font-size: 14px; color: #0f172a; font-weight: 500; word-break: break-all; }
-
-    .blockchain-proof {
-      background: linear-gradient(to right, #f0f9ff, #e0f2fe); border: 1px solid #bae6fd;
-      padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 12px;
-      margin-top: 16px;
-    }
-    .blockchain-icon { color: #0284c7; font-size: 24px; }
-
-    /* AI 校验报告卡片 */
-    .ai-report-card {
-      background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px;
-    }
-    .ai-report-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .ai-issue-item {
-      padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 8px;
-    }
-    .ai-issue-item.warn { border-left: 4px solid #f59e0b; background: #fffcf2; }
-    .ai-issue-item.fail { border-left: 4px solid #ef4444; background: #fef2f2; }
-
-    /* 人工审核操作区 */
-    .manual-audit-card {
-      background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
-    .audit-form-group { margin-bottom: 16px; }
-    .audit-textarea {
-      width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px;
-      font-size: 14px; min-height: 100px; resize: vertical; outline: none; transition: border-color 0.2s;
-    }
-    .audit-textarea:focus { border-color: #3b82f6; }
-    .audit-actions { display: flex; gap: 12px; justify-content: flex-end; }
-    .btn-large { padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; }
   </style>
 </head>
-<body class="text-slate-800">
-
-  <!-- 左侧导航栏 (复用) -->
-  <div class="admin-sidebar" id="adminSidebar">
-    <div class="admin-sidebar-header">
-      <div class="admin-sidebar-logo">
-        <i class="fas fa-cog"></i>
-        <span>管理后台</span>
+<body>
+  <main class="p-6 max-w-[1920px] mx-auto">
+    <!-- 页头 -->
+    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-cubes text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 tracking-tight">商品审核列表</h1>
+          <p class="text-sm text-gray-500 mt-1 max-w-xl">集中处理供应商提交的商品上架申请，AI 辅助核验风险。</p>
+        </div>
       </div>
-      <button class="admin-sidebar-toggle" onclick="toggleAdminSidebar()" title="收起/展开">
-        <i class="fas fa-chevron-left" id="sidebarToggleIcon"></i>
+      <div class="text-sm text-gray-400 lg:text-right lg:pt-2">
+        管理后台 / <span class="text-gray-700 font-medium">商品审核管理</span>
+      </div>
+    </div>
+
+    <!-- 指标卡片 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-xl p-5 shadow-sm audit-card-active cursor-pointer">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">待人工审核</p>
+            <p class="text-3xl font-bold text-gray-900">26</p>
+          </div>
+          <div class="stat-icon-wrap bg-blue-50 text-[#1890FF]">
+            <i class="fas fa-clock"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-amber-200 transition-colors cursor-pointer">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">AI 预警拦截</p>
+            <p class="text-3xl font-bold text-gray-900">8</p>
+          </div>
+          <div class="stat-icon-wrap bg-amber-50 text-[#FAAD14]">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-green-200 transition-colors cursor-pointer">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">已上架商品</p>
+            <p class="text-3xl font-bold text-gray-900">1,205</p>
+          </div>
+          <div class="stat-icon-wrap bg-green-50 text-[#52C41A]">
+            <i class="fas fa-circle-check"></i>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-red-200 transition-colors cursor-pointer">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">已驳回商品</p>
+            <p class="text-3xl font-bold text-gray-900">42</p>
+          </div>
+          <div class="stat-icon-wrap bg-red-50 text-[#F5222D]">
+            <i class="fas fa-circle-xmark"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 筛选与导出 -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-col lg:flex-row lg:items-center gap-4 lg:justify-between">
+      <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 flex-1">
+        <input type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm min-w-[200px] flex-1 max-w-md outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
+          placeholder="搜索商品名称 / 供应商">
+        <select class="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white min-w-[140px] outline-none focus:border-[#1890FF]">
+          <option>所有类目</option>
+          <option>办公用品</option>
+          <option>电子设备</option>
+          <option>网络设备</option>
+        </select>
+        <button type="button" class="px-5 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200">查询</button>
+      </div>
+      <button type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#1890FF] hover:bg-[#096dd9] shadow-sm whitespace-nowrap">
+        <i class="fas fa-file-export"></i>
+        导出报表
       </button>
     </div>
-    <nav class="admin-menu">
-      <a href="admin_dashboard.html" class="admin-menu-item">
-        <i class="fas fa-home"></i><span>首页</span>
-      </a>
-      <a href="admin_cockpit.html" class="admin-menu-item" target="_blank">
-        <i class="fas fa-tachometer-alt"></i><span>运营驾驶舱</span>
-      </a>
-      <a href="#" class="admin-menu-item">
-        <i class="fas fa-users"></i><span>用户信息管理</span>
-      </a>
-      <a href="#" class="admin-menu-item">
-        <i class="fas fa-building"></i><span>用户企业信息认证</span>
-      </a>
-      <a href="admin_supplier_manage.html" class="admin-menu-item">
-        <i class="fas fa-store"></i><span>供应商管理</span>
-      </a>
-      <a href="admin_product_audit_list.html" class="admin-menu-item active">
-        <i class="fas fa-boxes-stacked"></i><span>商品审核管理</span>
-      </a>
-      <a href="#" class="admin-menu-item">
-        <i class="fas fa-file-invoice"></i><span>采购单管理</span>
-      </a>
-      <a href="#" class="admin-menu-item">
-        <i class="fas fa-shopping-bag"></i><span>订单信息</span>
-      </a>
-      <a href="#" class="admin-menu-item">
-        <i class="fas fa-bullhorn"></i><span>公告管理</span>
-      </a>
-      <a href="admin_reco_manage.html" class="admin-menu-item">
-        <i class="fas fa-layer-group"></i><span>分类推荐管理</span>
-      </a>
-      <a href="#" class="admin-menu-item">
-        <i class="fas fa-sitemap"></i><span>分站管理</span>
-      </a>
-    </nav>
-  </div>
 
-  <!-- 主容器 -->
-  <div class="admin-content">
-    <div class="p-6 max-w-[1920px] mx-auto">
-      
-      <!-- 页面头部 -->
-      <div class="page-card mb-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-              <i class="fas fa-boxes-stacked text-emerald-600 text-xl"></i>
-            </div>
-            <div>
-              <h1 class="text-xl font-bold text-gray-900 mb-1">商品审核列表</h1>
-              <p class="text-sm text-gray-500">集中处理供应商提交的商品上架申请，AI辅助核验风险。</p>
-            </div>
-          </div>
-          <div class="text-sm text-gray-500">
-            <a href="admin_dashboard.html" class="hover:text-primary">管理后台</a> / <span class="text-gray-900">商品审核管理</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 状态过滤区 -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="status-card active">
-          <div>
-            <div class="text-sm text-gray-500 font-medium">待人工审核</div>
-            <div class="text-2xl font-bold text-gray-900 mt-1">26</div>
-          </div>
-          <div class="status-icon icon-pending"><i class="fas fa-clock"></i></div>
-        </div>
-        <div class="status-card">
-          <div>
-            <div class="text-sm text-gray-500 font-medium">AI预警拦截</div>
-            <div class="text-2xl font-bold text-gray-900 mt-1">8</div>
-          </div>
-          <div class="status-icon icon-warning"><i class="fas fa-shield-halved"></i></div>
-        </div>
-        <div class="status-card">
-          <div>
-            <div class="text-sm text-gray-500 font-medium">已上架商品</div>
-            <div class="text-2xl font-bold text-gray-900 mt-1">1,205</div>
-          </div>
-          <div class="status-icon icon-success"><i class="fas fa-circle-check"></i></div>
-        </div>
-        <div class="status-card">
-          <div>
-            <div class="text-sm text-gray-500 font-medium">已驳回商品</div>
-            <div class="text-2xl font-bold text-gray-900 mt-1">42</div>
-          </div>
-          <div class="status-icon icon-reject"><i class="fas fa-circle-xmark"></i></div>
-        </div>
-      </div>
-
-      <!-- 列表操作与搜索 -->
-      <div class="page-card flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div class="flex gap-3">
-          <input type="text" placeholder="搜索商品名称 / 供应商" class="border border-gray-300 rounded-lg px-4 py-2 text-sm w-64 focus:outline-none focus:border-blue-500">
-          <select class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500">
-            <option value="">所有类目</option>
-            <option value="办公设备">办公设备</option>
-            <option value="网络设备">网络设备</option>
-            <option value="办公耗材">办公耗材</option>
-          </select>
-          <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors">查询</button>
-        </div>
-        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm shadow-sm transition-colors"><i class="fas fa-file-export mr-2"></i>导出报表</button>
-      </div>
-
-      <!-- 数据表格 -->
-      <div class="page-card table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>商品信息</th>
-              <th>提报供应商</th>
-              <th>提交时间</th>
-              <th>AI 初审结论</th>
-              <th>当前状态</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="font-medium text-gray-900">得力 A4 复印纸 70g 500张*8包</div>
-                <div class="text-xs text-gray-500 mt-1">类目：办公耗材 | 型号：A4-70g-8</div>
-              </td>
-              <td>浙江得力办公用品有限公司</td>
-              <td class="text-gray-500 text-sm">2026-04-21 10:23</td>
-              <td><span class="badge badge-pass"><i class="fas fa-check"></i>合规无风险</span></td>
-              <td><span class="text-blue-600 font-medium">待人工审核</span></td>
-              <td>
-                <div class="flex gap-2">
-                  <button class="action-btn btn-audit" onclick="openAuditDrawer('UP-003')">去审核</button>
-                  <button class="action-btn btn-pass" onclick="alert('已直接通过')">快捷通过</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="font-medium text-gray-900">联想启天M550 12代i5商用办公电脑</div>
-                <div class="text-xs text-gray-500 mt-1">类目：办公设备 | 型号：启天 M550</div>
-              </td>
-              <td>北京联想直营科技</td>
-              <td class="text-gray-500 text-sm">2026-04-21 09:45</td>
-              <td><span class="badge badge-warn"><i class="fas fa-exclamation"></i>包含夸大宣传</span></td>
-              <td><span class="text-orange-600 font-medium">AI预警拦截</span></td>
-              <td>
-                <div class="flex gap-2">
-                  <button class="action-btn btn-audit" onclick="openAuditDrawer('UP-001')">去审核</button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div class="font-medium text-gray-900">华三 24 口千兆交换机 企业专用款</div>
-                <div class="text-xs text-gray-500 mt-1">类目：网络设备 | 型号：S1850-24P</div>
-              </td>
-              <td>新华三官方旗舰店</td>
-              <td class="text-gray-500 text-sm">2026-04-20 16:30</td>
-              <td><span class="badge badge-fail"><i class="fas fa-xmark"></i>重要参数缺失</span></td>
-              <td><span class="text-orange-600 font-medium">AI预警拦截</span></td>
-              <td>
-                <div class="flex gap-2">
-                  <button class="action-btn btn-audit" onclick="openAuditDrawer('UP-002')">去审核</button>
-                  <button class="action-btn btn-reject" onclick="alert('已快捷驳回')">快捷驳回</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
+    <!-- 表格 -->
+    <div class="table-wrap">
+      <table class="w-full min-w-[960px]">
+        <thead>
+          <tr>
+            <th>商品信息</th>
+            <th>提报供应商</th>
+            <th>提交时间</th>
+            <th>AI 初审结论</th>
+            <th>当前状态</th>
+            <th class="text-right">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="font-semibold text-gray-900">得力 A4 复印纸 70g 500 张/包</div>
+              <div class="text-xs text-gray-500 mt-1">类目：办公用纸　型号：7763</div>
+            </td>
+            <td class="text-gray-800">北京联合科技有限公司</td>
+            <td class="text-gray-600 whitespace-nowrap">2026-04-28 10:32</td>
+            <td>
+              <span class="mini-tag tag-ai-pass"><i class="fas fa-check"></i> 合规无风险</span>
+            </td>
+            <td class="text-[#1890FF] font-medium">待人工审核</td>
+            <td class="text-right whitespace-nowrap">
+              <div class="flex flex-wrap justify-end gap-2">
+                <button type="button" class="btn-audit btn-audit-primary">去审核</button>
+                <button type="button" class="btn-audit btn-audit-pass">快速通过</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="font-semibold text-gray-900">联想启天 M550 台式机（i5/16G/512G）</div>
+              <div class="text-xs text-gray-500 mt-1">类目：计算机　型号：M550-A032</div>
+            </td>
+            <td class="text-gray-800">华北数码供应链有限公司</td>
+            <td class="text-gray-600 whitespace-nowrap">2026-04-27 16:05</td>
+            <td>
+              <span class="mini-tag tag-ai-warn"><i class="fas fa-exclamation"></i> 包含夸大宣传</span>
+            </td>
+            <td class="text-amber-600 font-medium">AI 预警拦截</td>
+            <td class="text-right whitespace-nowrap">
+              <button type="button" class="btn-audit btn-audit-primary">去审核</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="font-semibold text-gray-900">华三 24 口千兆交换机 S5024PV5-EI</div>
+              <div class="text-xs text-gray-500 mt-1">类目：网络设备　型号：S5024PV5-EI</div>
+            </td>
+            <td class="text-gray-800">智联网络设备（上海）有限公司</td>
+            <td class="text-gray-600 whitespace-nowrap">2026-04-27 09:18</td>
+            <td>
+              <span class="mini-tag tag-ai-fail"><i class="fas fa-times"></i> 重要参数缺失</span>
+            </td>
+            <td class="text-amber-600 font-medium">AI 预警拦截</td>
+            <td class="text-right whitespace-nowrap">
+              <div class="flex flex-wrap justify-end gap-2">
+                <button type="button" class="btn-audit btn-audit-primary">去审核</button>
+                <button type="button" class="btn-audit btn-audit-reject">快速驳回</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-
-  <!-- ==================== 人工审核台（全屏抽屉） ==================== -->
-  <div class="drawer-overlay" id="auditOverlay" onclick="closeAuditDrawer()"></div>
-  <div class="drawer-panel" id="auditPanel">
-    <div class="drawer-header">
-      <div class="drawer-title">
-        <i class="fas fa-desktop text-blue-600"></i> 人工审核台 <span class="text-sm font-normal text-gray-500 ml-2" id="auditTitleHint"></span>
-      </div>
-      <button class="drawer-close" onclick="closeAuditDrawer()"><i class="fas fa-xmark"></i></button>
-    </div>
-    
-    <div class="drawer-body">
-      <!-- 左侧：商品数字档案 -->
-      <div class="drawer-left">
-        <div class="info-section">
-          <div class="info-title"><i class="fas fa-box-open"></i> 商品基础信息</div>
-          <div class="info-grid" id="auditProductBase">
-            <div class="info-item"><div class="info-label">商品名称</div><div class="info-value">联想启天M550 12代i5商用办公电脑（旗舰级体验）</div></div>
-            <div class="info-item"><div class="info-label">提报供应商</div><div class="info-value">北京联想直营科技</div></div>
-            <div class="info-item"><div class="info-label">类目</div><div class="info-value">办公设备 / 商用台式机</div></div>
-            <div class="info-item"><div class="info-label">品牌</div><div class="info-value">联想 (Lenovo)</div></div>
-          </div>
-        </div>
-
-        <div class="info-section">
-          <div class="info-title"><i class="fas fa-sliders"></i> 商品参数</div>
-          <table class="data-table" style="font-size:13px;">
-            <tbody id="auditProductParams">
-              <tr><td width="30%">CPU</td><td class="font-medium">英特尔 i5-12400</td></tr>
-              <tr><td>内存</td><td class="font-medium">16GB DDR4</td></tr>
-              <tr><td>显卡接口</td><td class="text-red-500 font-bold">未填写</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="info-section">
-          <div class="info-title"><i class="fas fa-align-left"></i> 商品详情</div>
-          <div class="bg-gray-50 p-4 rounded-lg text-sm text-gray-700 leading-relaxed border border-gray-200">
-            联想启天M550 商用台式机，搭载12代i5处理器，带来旗舰级体验，性能领先同级，轻松应对所有办公场景，是最好的办公选择。
-          </div>
-        </div>
-
-        <!-- 上链存证溯源 -->
-        <div class="blockchain-proof">
-          <i class="fas fa-link blockchain-icon"></i>
-          <div>
-            <div class="text-sm font-bold text-gray-900 mb-1">上链存证凭据</div>
-            <div class="text-xs text-gray-600">商品原始数据哈希值已写入区块链，不可篡改。</div>
-            <div class="text-xs text-blue-600 mt-1 font-mono">TxHash: 0x8f3c...b2e9 | 上链时间: 2026-04-21 09:45:02</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 右侧：AI结论与人工操作 -->
-      <div class="drawer-right">
-        
-        <!-- AI 校验报告 -->
-        <div class="ai-report-card">
-          <div class="ai-report-head">
-            <div class="info-title mb-0"><i class="fas fa-robot"></i> AI 校验报告</div>
-            <span class="badge badge-warn">发现 2 项风险</span>
-          </div>
-          
-          <div class="ai-issue-item warn">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="badge badge-warn">预警</span>
-              <span class="font-bold text-sm">商品标题与详情</span>
-            </div>
-            <p class="text-sm text-gray-700 mb-2">命中"旗舰级体验"等极限用语，存在隐性夸大宣传风险。</p>
-            <div class="text-xs bg-white p-2 rounded border border-gray-100 text-gray-500">
-              规则：《广告法》第九条 · 平台禁用词库 #2031
-            </div>
-          </div>
-
-          <div class="ai-issue-item warn">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="badge badge-warn">预警</span>
-              <span class="font-bold text-sm">商品参数</span>
-            </div>
-            <p class="text-sm text-gray-700 mb-2">缺少"显卡接口"与"电源功率"关键字段。</p>
-            <div class="text-xs bg-white p-2 rounded border border-gray-100 text-gray-500">
-              规则：类目必填项 · 商用台式机模板
-            </div>
-          </div>
-        </div>
-
-        <!-- 人工审核操作 -->
-        <div class="manual-audit-card flex-1 flex flex-col">
-          <div class="info-title"><i class="fas fa-pen-to-square"></i> 人工复核操作</div>
-          
-          <div class="audit-form-group flex-1">
-            <label class="block text-sm font-medium text-gray-700 mb-2">审核意见 (驳回时必填)</label>
-            <textarea class="audit-textarea" id="auditRemark" placeholder="如驳回，请填写具体驳回理由；可直接带入AI结论作为参考..."></textarea>
-            <div class="mt-2 flex gap-2">
-              <button class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100" onclick="document.getElementById('auditRemark').value='请按AI提示修改标题极限词，并补充商品参数后重新提交。'">快捷填入 AI 建议</button>
-            </div>
-          </div>
-
-          <div class="audit-actions mt-auto border-t border-gray-100 pt-4">
-            <button class="btn-large bg-gray-100 text-gray-700 hover:bg-gray-200" onclick="closeAuditDrawer()">取消</button>
-            <!-- 强制修改高权限操作 -->
-            <button class="btn-large bg-amber-500 text-white hover:bg-amber-600 mr-auto" onclick="alert('进入管理员编辑模式，修改后直接发布')"><i class="fas fa-wrench mr-1"></i>强制修改上架</button>
-            
-            <button class="btn-large bg-red-500 text-white hover:bg-red-600" onclick="submitAuditResult('reject')">驳回整改</button>
-            <button class="btn-large bg-green-500 text-white hover:bg-green-600" onclick="submitAuditResult('pass')">审核通过</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function toggleAdminSidebar() {
-      const sidebar = document.getElementById('adminSidebar');
-      const icon = document.getElementById('sidebarToggleIcon');
-      sidebar.classList.toggle('collapsed');
-
-      if (sidebar.classList.contains('collapsed')) {
-        icon.classList.remove('fa-chevron-left');
-        icon.classList.add('fa-chevron-right');
-      } else {
-        icon.classList.remove('fa-chevron-right');
-        icon.classList.add('fa-chevron-left');
-      }
-
-      localStorage.setItem('adminSidebarCollapsed', sidebar.classList.contains('collapsed'));
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const savedState = localStorage.getItem('adminSidebarCollapsed');
-      if (savedState === 'true') {
-        const sidebar = document.getElementById('adminSidebar');
-        const icon = document.getElementById('sidebarToggleIcon');
-        sidebar.classList.add('collapsed');
-        icon.classList.remove('fa-chevron-left');
-        icon.classList.add('fa-chevron-right');
-      }
-    });
-
-    function openAuditDrawer(id) {
-      document.getElementById('auditTitleHint').textContent = `正在审核: ${id}`;
-      document.getElementById('auditOverlay').classList.add('show');
-      // 稍微延迟展示面板，形成动画效果
-      setTimeout(() => {
-        document.getElementById('auditPanel').classList.add('show');
-      }, 10);
-    }
-
-    function closeAuditDrawer() {
-      document.getElementById('auditPanel').classList.remove('show');
-      setTimeout(() => {
-        document.getElementById('auditOverlay').classList.remove('show');
-      }, 300);
-    }
-
-    function submitAuditResult(type) {
-      const msg = type === 'pass' ? '确认【审核通过】并将商品上架？' : '确认【驳回】此商品的上架申请？';
-      if (confirm(msg)) {
-        alert(type === 'pass' ? '审核通过成功，商品已上架。' : '已驳回，供应商将收到整改通知。');
-        closeAuditDrawer();
-      }
-    }
-  </script>
+  </main>
 </body>
 </html>
