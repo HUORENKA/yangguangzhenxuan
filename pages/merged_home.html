@@ -20,6 +20,9 @@
       --shadow-soft: 0 18px 48px rgba(15,23,42,0.08);
       --dark-bg: #0f172a;
       --dark-card: rgba(255,255,255,0.08);
+      /* 方案4 · 纸感肌理（极低对比 SVG 噪点） */
+      --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.5'/%3E%3C/svg%3E");
+      --paper-linen: repeating-linear-gradient(-11deg, rgba(76, 58, 42, 0.024) 0px, rgba(76, 58, 42, 0.024) 1px, transparent 1px, transparent 13px);
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -27,7 +30,7 @@
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
       color: var(--text-main);
-      background: #f8fafc;
+      background: #f9f8f6;
     }
     a { color: inherit; text-decoration: none; }
 
@@ -35,9 +38,9 @@
     .topbar {
       position: sticky; top: 0; z-index: 100;
       backdrop-filter: blur(16px);
-      background: rgba(255,255,255,0.94);
-      border-bottom: 1px solid rgba(226,232,240,0.9);
-      box-shadow: 0 2px 16px rgba(15,23,42,0.06);
+      background: rgba(255, 253, 251, 0.94);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.92);
+      box-shadow: 0 2px 16px rgba(15,23,42,0.06), inset 0 -1px 0 rgba(226,232,240,0.88);
     }
     .container { width: min(1320px, calc(100% - 40px)); margin: 0 auto; }
     .topbar-inner {
@@ -165,10 +168,10 @@
       border: 5px solid transparent; border-bottom-color: #1e293b;
     }
 
-    /* ========== MALL ZONE (white bg) ========== */
+    /* ========== MALL ZONE（偏冷灰底，与首页纸感区分） ========== */
     .mall-zone {
       background:
-        linear-gradient(180deg, #ffffff 0%, #ffffff 72%, #fbfdff 100%);
+        linear-gradient(180deg, #f8fafc 0%, #ffffff 52%, #f8fbff 100%);
       position: relative;
     }
     .mall-zone::after {
@@ -655,8 +658,8 @@
     .stat-item span { display: block; margin-top: 5px; color: rgba(255,255,255,0.7); font-size: 13px; }
 
     /* ========== FOOTER ========== */
-    .footer { background: #0b1220; color: rgba(255,255,255,0.8); padding: 24px 0; }
-    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 14px; }
+    .footer { background: #0b1220; color: rgba(255,255,255,0.8); padding: 14px 0; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px; }
     .footer-links { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
     .footer-links a { color: rgba(255,255,255,0.7); transition: color 0.16s; }
     .footer-links a:hover { color: #fff; }
@@ -716,14 +719,6 @@
     .gm-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
     .gm-tab-pane { display: none; }
     .gm-tab-pane.active { display: block; }
-    .gm-drawer { position: fixed; inset: 0; z-index: 2000; pointer-events: none; }
-    .gm-drawer.open { pointer-events: all; }
-    .gm-drawer-backdrop { position: absolute; inset: 0; background: rgba(15,23,42,.4); opacity: 0; transition: opacity .25s; }
-    .gm-drawer.open .gm-drawer-backdrop { opacity: 1; }
-    .gm-drawer-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(94vw,460px); background: #fff; box-shadow: -8px 0 30px rgba(15,23,42,.14); display: flex; flex-direction: column; transform: translateX(100%); transition: transform .28s cubic-bezier(.16,1,.3,1); }
-    .gm-drawer.open .gm-drawer-panel { transform: translateX(0); }
-    .gm-drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 13px; border-bottom: 1px solid #f1f5f9; flex: none; }
-    .gm-drawer-body { flex: 1; overflow-y: auto; padding: 16px 18px; }
     .gm-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
     .gm-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 13px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; white-space: nowrap; }
     .gm-btn-primary { background: linear-gradient(135deg,#ff7a18,#ff4d00); color: #fff; }
@@ -821,17 +816,38 @@
       display: none !important;
     }
 
-    /* ========== HOME ZONE ========== */
-    .home-zone { background: #f8fafc; }
+    /* ========== HOME ZONE · 方案4 纸感 ========== */
+    #homeZone.home-paper-root {
+      position: relative;
+      isolation: isolate;
+    }
+    .paper-texture-section {
+      background-color: #fdfcfa;
+      background-image: var(--paper-linen), var(--paper-noise);
+      background-size: auto, 192px 192px;
+    }
+    .paper-texture-band {
+      background-color: #faf8f5;
+      background-image:
+        var(--paper-linen),
+        var(--paper-noise),
+        linear-gradient(180deg, #f2ede6 0%, #fdfcfa 52%, #f9f6f2 100%);
+      background-size: auto, 192px 192px, 100% 100%;
+    }
+    .paper-texture-muted {
+      background-color: #f7f4ef;
+      background-image: var(--paper-linen), var(--paper-noise);
+      background-size: auto, 192px 192px;
+    }
     .home-section { padding: 36px 0; }
-    .home-section-head { margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(226,232,240,0.9); }
+    .home-section-head { margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid rgba(210, 198, 186, 0.42); }
     .home-section-title { font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
     .home-section-subtitle { font-size: 13px; color: #64748b; margin: 0; }
 
     /* 政采资讯台 —— 左图右列布局 */
     .news-panel { display: flex; gap: 16px; height: 420px; }
     /* 左：图片轮播 + 标题区 */
-    .news-left { width: 50%; flex-shrink: 0; display: flex; flex-direction: column; border-radius: 16px; border: 1px solid rgba(226,232,240,0.9); overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.05); background: #fff; }
+    .news-left { width: 50%; flex-shrink: 0; display: flex; flex-direction: column; border-radius: 16px; border: 1px solid rgba(218, 206, 192, 0.65); overflow: hidden; box-shadow: 0 8px 26px rgba(48, 36, 26, 0.07); background: #fff; }
     .news-img-wrap { position: relative; flex: 1; overflow: hidden; min-height: 0; }
     .ni-slides { display: flex; height: 100%; transition: transform 0.5s ease; }
     .ni-slide { min-width: 100%; max-width: 100%; height: 100%; position: relative; overflow: hidden; }
@@ -848,7 +864,7 @@
     .ni-dot { width: 6px; height: 6px; border-radius: 50%; background: #e2e8f0; cursor: pointer; transition: background 0.2s, width 0.2s; }
     .ni-dot.active { background: var(--brand); width: 14px; border-radius: 3px; }
     /* 右：tab + 列表 */
-    .news-right { flex: 1; min-width: 0; display: flex; flex-direction: column; border-radius: 16px; border: 1px solid rgba(226,232,240,0.9); overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.05); background: #fff; }
+    .news-right { flex: 1; min-width: 0; display: flex; flex-direction: column; border-radius: 16px; border: 1px solid rgba(218, 206, 192, 0.65); overflow: hidden; box-shadow: 0 8px 26px rgba(48, 36, 26, 0.07); background: #fff; }
     .nr-tab-bar { display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #f1f5f9; flex-shrink: 0; height: 48px; }
     .nr-tab { height: 100%; padding: 0 14px; border: none; background: transparent; font-size: 14px; font-weight: 700; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.18s; margin-bottom: -1px; }
     .nr-tab:hover { color: var(--brand); }
@@ -859,7 +875,7 @@
     .nr-pane.active { display: flex; flex-direction: column; }
     /* 公告列表 */
     .nr-notice-item { display: flex; align-items: baseline; gap: 10px; padding: 11px 20px; border-bottom: 1px solid #f8fafc; cursor: pointer; transition: background 0.15s; text-decoration: none; }
-    .nr-notice-item:hover { background: #f8fafc; }
+    .nr-notice-item:hover { background: rgba(249, 246, 241, 0.95); }
     .nr-notice-item:last-child { border-bottom: none; }
     .nr-notice-dot { width: 5px; height: 5px; border-radius: 50%; background: #cbd5e1; flex-shrink: 0; margin-top: 8px; }
     .nr-notice-title { flex: 1; font-size: 13px; color: #334155; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -868,7 +884,7 @@
     /* 法规列表 */
     .nr-law-bar { display: flex; align-items: center; justify-content: flex-end; padding: 8px 20px 4px; flex-shrink: 0; border-bottom: 1px solid #f8fafc; }
     .nr-law-item { display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #f8fafc; cursor: pointer; transition: background 0.15s; }
-    .nr-law-item:hover { background: #f8fafc; }
+    .nr-law-item:hover { background: rgba(249, 246, 241, 0.95); }
     .nr-law-item:last-child { border-bottom: none; }
     .nr-law-dot { width: 5px; height: 5px; border-radius: 50%; background: #cbd5e1; flex-shrink: 0; }
     .nr-law-name { flex: 1; font-size: 13px; color: #334155; line-height: 1.5; }
@@ -878,10 +894,10 @@
     .nr-law-badge.updated { background: #fff7ed; color: #c2410c; }
 
     /* 采购合规通 */
-    .compliance-pass-section { background: linear-gradient(180deg, #f8fafc 0%, #fff 100%); padding: 36px 0; }
+    .compliance-pass-section { padding: 36px 0; }
     .compliance-pass-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
-    .cp-card { background: #fff; border: 1px solid rgba(226,232,240,0.9); border-radius: 18px; padding: 22px 18px 18px; cursor: pointer; transition: all 0.22s; box-shadow: 0 4px 12px rgba(15,23,42,0.04); display: flex; flex-direction: column; gap: 10px; }
-    .cp-card:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(15,23,42,0.1); border-color: rgba(255,106,0,0.28); }
+    .cp-card { background: #fffefb; border: 1px solid rgba(218, 206, 192, 0.55); border-radius: 18px; padding: 22px 18px 18px; cursor: pointer; transition: all 0.22s; box-shadow: 0 7px 22px rgba(48, 36, 26, 0.065); display: flex; flex-direction: column; gap: 10px; }
+    .cp-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(48, 36, 26, 0.11); border-color: rgba(255,106,0,0.28); }
     .cp-card-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
     .cp-card-icon.plan { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
     .cp-card-icon.budget { background: linear-gradient(135deg,#d1fae5,#a7f3d0); }
@@ -890,7 +906,7 @@
     .cp-card-name { font-size: 16px; font-weight: 800; color: #0f172a; }
     .cp-card-desc { font-size: 12px; color: #64748b; line-height: 1.65; flex: 1; }
     .cp-card-enter { font-size: 12px; color: #ff6a00; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-    .cp-card-stat { display: flex; align-items: baseline; gap: 5px; padding: 8px 12px; border-radius: 10px; background: #f8fafc; border: 1px solid rgba(226,232,240,0.9); margin-top: 2px; }
+    .cp-card-stat { display: flex; align-items: baseline; gap: 5px; padding: 8px 12px; border-radius: 10px; background: rgba(250, 247, 242, 0.98); border: 1px solid rgba(218, 206, 192, 0.45); margin-top: 2px; }
     .cp-card-stat-num { font-size: 22px; font-weight: 800; color: #0f172a; line-height: 1; }
     .cp-card-stat-num.blue { color: #2563eb; }
     .cp-card-stat-num.green { color: #16a34a; }
@@ -899,15 +915,15 @@
     .cp-card-stat-label { font-size: 11px; color: #94a3b8; margin-left: auto; }
 
     /* 运营数据板 */
-    .data-board-section { padding: 36px 0; background: #f8fafc; }
-    .data-board-inner { border-radius: 20px; border: 1px solid rgba(226,232,240,0.9); background: #fff; overflow: hidden; box-shadow: 0 4px 16px rgba(15,23,42,0.05); }
+    .data-board-section { padding: 36px 0; }
+    .data-board-inner { border-radius: 20px; border: 1px solid rgba(218, 206, 192, 0.55); background: #fffefb; overflow: hidden; box-shadow: 0 8px 28px rgba(48, 36, 26, 0.072); }
     .data-board-locked { padding: 52px 24px; text-align: center; }
     .data-board-locked .lock-icon { font-size: 40px; margin-bottom: 14px; color: #94a3b8; }
     .data-board-locked h3 { margin: 0 0 7px; font-size: 18px; font-weight: 800; color: #0f172a; }
     .data-board-locked p { margin: 0 0 20px; font-size: 14px; color: #64748b; }
     .data-board-unlocked { padding: 24px; }
     .data-kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
-    .data-kpi-card { background: #f8fafc; border-radius: 14px; padding: 16px; border: 1px solid rgba(226,232,240,0.9); }
+    .data-kpi-card { background: rgba(252, 249, 244, 0.95); border-radius: 14px; padding: 16px; border: 1px solid rgba(218, 206, 192, 0.42); }
     .data-kpi-label { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 6px; }
     .data-kpi-value { font-size: 22px; font-weight: 800; color: #0f172a; }
     .data-kpi-value.orange { color: #ff6a00; }
@@ -957,22 +973,38 @@
     .data-vip-card.service-card .vip-value { color: #0c4a6e; }
 
     /* 平台数据暗色区 */
-    .platform-stats-dark { background: linear-gradient(135deg,#0f172a 0%,#1e293b 100%); padding: 32px 0 24px; position: relative; overflow: hidden; }
+    .platform-stats-dark { background: linear-gradient(135deg,#0f172a 0%,#1e293b 100%); padding: 16px 0 12px; position: relative; overflow: hidden; }
     .platform-stats-dark::before { content:""; position:absolute; inset:0; background: linear-gradient(90deg,rgba(47,107,255,0.05) 1px,transparent 1px), linear-gradient(rgba(47,107,255,0.05) 1px,transparent 1px); background-size:48px 48px; pointer-events:none; }
-    .platform-stats-dark::after { content:""; position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:600px; height:200px; background:radial-gradient(ellipse,rgba(47,107,255,0.08) 0%,transparent 70%); pointer-events:none; }
-    .platform-stats-header { text-align:center; margin-bottom:20px; position:relative; z-index:1; }
-    .platform-stats-header h3 { margin:0 0 4px; font-size:16px; font-weight:800; color:#fff; letter-spacing:0.5px; }
-    .platform-stats-header p { margin:0; font-size:12px; color:rgba(255,255,255,0.45); }
-    .platform-stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; position: relative; z-index: 1; }
-    .platform-stat-item { text-align: center; padding: 14px 16px 16px; border-right: 1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; align-items:center; gap:6px; }
+    .platform-stats-dark::after { content:""; position:absolute; top:-40px; left:50%; transform:translateX(-50%); width:480px; height:140px; background:radial-gradient(ellipse,rgba(47,107,255,0.08) 0%,transparent 70%); pointer-events:none; }
+    .platform-stats-header { text-align:center; margin-bottom:10px; position:relative; z-index:1; }
+    .platform-stats-header h3 { margin:0 0 2px; font-size:15px; font-weight:800; color:#fff; letter-spacing:0.3px; }
+    .platform-stats-header p { margin:0; font-size:11px; color:rgba(255,255,255,0.45); line-height:1.4; }
+    .platform-stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; position: relative; z-index: 1; align-items: stretch; }
+    .platform-stat-item {
+      display: flex; flex-direction: row; align-items: center; justify-content: flex-start;
+      gap: 10px; padding: 8px 12px; border-right: 1px solid rgba(255,255,255,0.08);
+      text-align: left;
+    }
     .platform-stat-item:last-child { border-right: none; }
-    .platform-stat-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:2px; flex-shrink:0; }
-    .platform-stat-num { display: block; font-size: 34px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
-    .platform-stat-label { display: block; font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 600; }
-    .platform-stat-desc { display:block; font-size:11px; color:rgba(255,255,255,0.35); line-height:1.5; }
-    .platform-stats-footer { text-align:center; margin-top:20px; position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:12px; }
-    .platform-stats-footer::before,.platform-stats-footer::after { content:""; flex:1; max-width:120px; height:1px; background:rgba(255,255,255,0.1); }
-    .platform-stats-footer span { font-size:11px; color:rgba(255,255,255,0.3); white-space:nowrap; }
+    .platform-stat-icon { width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+    .platform-stat-num { font-size: clamp(17px, 1.9vw, 22px); font-weight: 800; letter-spacing: -0.5px; line-height: 1; flex-shrink: 0; white-space: nowrap; }
+    .platform-stat-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; justify-content: center; }
+    .platform-stat-label { display: block; font-size: 12px; color: rgba(255,255,255,0.78); font-weight: 700; line-height: 1.25; }
+    .platform-stat-desc { display:block; font-size:10px; color:rgba(255,255,255,0.38); line-height:1.35; }
+    .platform-stats-footer { text-align:center; margin-top:10px; position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:10px; }
+    .platform-stats-footer::before,.platform-stats-footer::after { content:""; flex:1; max-width:100px; height:1px; background:rgba(255,255,255,0.1); }
+    .platform-stats-footer span { font-size:10px; color:rgba(255,255,255,0.32); white-space:nowrap; }
+    @media (max-width: 960px) {
+      .platform-stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .platform-stat-item { border-right: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .platform-stat-item:nth-child(2n) { border-right: none; }
+      .platform-stat-item:nth-last-child(-n+2) { border-bottom: none; }
+    }
+    @media (max-width: 520px) {
+      .platform-stats-grid { grid-template-columns: 1fr; }
+      .platform-stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .platform-stat-item:last-child { border-bottom: none; }
+    }
 
     /* 管理法规弹窗 */
     .law-manage-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.56); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 150; }
@@ -1072,10 +1104,10 @@
   </header>
 
   <!-- ==================== 首页 ZONE ==================== -->
-  <div id="homeZone">
+  <div id="homeZone" class="home-paper-root">
 
     <!-- 政采资讯台 -->
-    <section class="home-section" style="background:#fff; border-bottom:1px solid rgba(226,232,240,0.9);">
+    <section class="home-section paper-texture-section" style="border-bottom:1px solid rgba(210,198,186,0.42);">
       <div class="container">
         <div class="home-section-head">
           <h2 class="home-section-title"><i class="fa-solid fa-newspaper" style="color:#2f6bff;font-size:18px;"></i> 政采资讯台</h2>
@@ -1123,7 +1155,7 @@
             <!-- 采购法规 -->
             <div class="nr-pane" id="nrPane-law">
               <div class="nr-law-bar">
-                <button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openLawManageModal()"><i class="fa-solid fa-pen-to-square"></i> 管理法规</button>
+                <button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openLawManageModal()"><i class="fa-solid fa-pen-to-square"></i> 法规文件管理</button>
               </div>
               <div class="nr-law-item">
                 <span class="nr-law-dot"></span>
@@ -1168,7 +1200,7 @@
     </section>
 
     <!-- 采购合规通 -->
-    <section class="compliance-pass-section">
+    <section class="compliance-pass-section paper-texture-band">
       <div class="container">
         <div class="home-section-head">
           <h2 class="home-section-title"><i class="fa-solid fa-shield-halved" style="color:#ff6a00;font-size:18px;"></i> 采购合规通</h2>
@@ -1219,7 +1251,7 @@
     </section>
 
     <!-- 运营数据板 -->
-    <section class="data-board-section">
+    <section class="data-board-section paper-texture-muted">
       <div class="container">
         <div class="home-section-head">
           <h2 class="home-section-title"><i class="fa-solid fa-chart-line" style="color:#7c3aed;font-size:18px;"></i> 运营数据板</h2>
@@ -1391,33 +1423,41 @@
             <div class="platform-stat-icon" style="background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(37,99,235,0.15));">
               <i class="fa-solid fa-building" style="color:#93c5fd;"></i>
             </div>
-            <span class="platform-stat-num" style="color:#93c5fd;">10<span style="font-size:20px;">+</span></span>
-            <span class="platform-stat-label">入驻供应商</span>
-            <span class="platform-stat-desc">严格资质审核，品质有保障</span>
+            <span class="platform-stat-num" style="color:#93c5fd;">10<span style="font-size:0.68em;">+</span></span>
+            <div class="platform-stat-text">
+              <span class="platform-stat-label">认证供应商</span>
+              <span class="platform-stat-desc">严格资质审核，品质有保障</span>
+            </div>
           </div>
           <div class="platform-stat-item">
             <div class="platform-stat-icon" style="background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(5,150,105,0.15));">
               <i class="fa-solid fa-landmark" style="color:#6ee7b7;"></i>
             </div>
-            <span class="platform-stat-num" style="color:#6ee7b7;">100<span style="font-size:20px;">+</span></span>
-            <span class="platform-stat-label">服务采购商</span>
-            <span class="platform-stat-desc">覆盖全国政企采购单位</span>
+            <span class="platform-stat-num" style="color:#6ee7b7;">100<span style="font-size:0.68em;">+</span></span>
+            <div class="platform-stat-text">
+              <span class="platform-stat-label">服务采购商</span>
+              <span class="platform-stat-desc">覆盖全国政企采购单位</span>
+            </div>
           </div>
           <div class="platform-stat-item">
             <div class="platform-stat-icon" style="background:linear-gradient(135deg,rgba(251,146,60,0.25),rgba(234,88,12,0.15));">
               <i class="fa-solid fa-box-open" style="color:#fdba74;"></i>
             </div>
-            <span class="platform-stat-num" style="color:#fdba74;">280,000<span style="font-size:20px;">+</span></span>
-            <span class="platform-stat-label">在架商品</span>
-            <span class="platform-stat-desc">全品类覆盖，一站式采购</span>
+            <span class="platform-stat-num" style="color:#fdba74;">280,000<span style="font-size:0.68em;">+</span></span>
+            <div class="platform-stat-text">
+              <span class="platform-stat-label">在架商品</span>
+              <span class="platform-stat-desc">全品类覆盖，一站式采购</span>
+            </div>
           </div>
           <div class="platform-stat-item">
             <div class="platform-stat-icon" style="background:linear-gradient(135deg,rgba(168,85,247,0.25),rgba(124,58,237,0.15));">
               <i class="fa-solid fa-tags" style="color:#d8b4fe;"></i>
             </div>
             <span class="platform-stat-num" style="color:#d8b4fe;">3,260</span>
-            <span class="platform-stat-label">商品品类</span>
-            <span class="platform-stat-desc">多维分类体系，精准匹配需求</span>
+            <div class="platform-stat-text">
+              <span class="platform-stat-label">商品品类</span>
+              <span class="platform-stat-desc">多维分类体系，精准匹配需求</span>
+            </div>
           </div>
         </div>
         <div class="platform-stats-footer">
@@ -1972,15 +2012,14 @@
     </div>
   </div>
 
-  <!-- ==================== 预算管理 Drawer ==================== -->
-  <div class="gm-drawer" id="budgetModal">
-    <div class="gm-drawer-backdrop" onclick="closeBudgetDrawer()"></div>
-    <div class="gm-drawer-panel">
-      <div class="gm-drawer-head">
+  <!-- ==================== 预算管理 Modal（与采购计划弹窗一致） ==================== -->
+  <div class="gm-overlay" id="budgetModal" onclick="closeBudgetDrawer(event)">
+    <div class="gm-box" onclick="event.stopPropagation()">
+      <div class="gm-head">
         <span class="gm-title">💰 预算管理</span>
         <button class="gm-close" onclick="closeBudgetDrawer()"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="gm-drawer-body">
+      <div class="gm-body">
         <div class="budget-modal-overview" id="budgetOverview"></div>
         <div class="gm-toolbar">
           <button class="gm-btn gm-btn-primary" onclick="toggleAddBudgetForm()"><i class="fa-solid fa-plus"></i> 新增品类</button>
@@ -2551,7 +2590,7 @@
     }
 
     /* =====================================================================
-       预算管理 Drawer
+       预算管理 Modal
     ===================================================================== */
     var budgetIdSeed=4;
     var budgetCats=[
@@ -2561,7 +2600,7 @@
       {id:'print',name:'打印耗材',budget:50000,used:49000,adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260410',goods:'得力碳粉盒×50',amt:4450,status:'已收货'}]}
     ];
     function openBudgetDrawer(){ renderBudgetOverview(); renderBudgetCats(); document.getElementById('budgetModal').classList.add('open'); document.body.style.overflow='hidden'; }
-    function closeBudgetDrawer(e){ if(e&&e.target!==document.getElementById('budgetModal')&&!e.target.classList.contains('gm-drawer-backdrop')) return; document.getElementById('budgetModal').classList.remove('open'); document.body.style.overflow=''; }
+    function closeBudgetDrawer(e){ if(e&&e.target!==document.getElementById('budgetModal')) return; document.getElementById('budgetModal').classList.remove('open'); document.body.style.overflow=''; }
     function renderBudgetOverview(){
       var total=budgetCats.reduce(function(s,c){return s+c.budget;},0);
       var used=budgetCats.reduce(function(s,c){return s+c.used;},0);
