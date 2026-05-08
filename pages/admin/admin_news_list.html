@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新闻资讯管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities { .text-primary { color: #E2231A; } .bg-primary { background-color: #E2231A; } }
+    body { font-family: "Microsoft YaHei", sans-serif; background: #f8fafc; color: #334155; }
+    .admin-content { min-height: 100vh; }
+    .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; }
+    .action-btn-primary { background: #E2231A; color: white; }
+    .action-btn-secondary { background: white; color: #334155; border: 1px solid #cbd5e1; }
+    .table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 14px; background: white; }
+    th { background: #f8fafc; color: #64748b; font-size: 13px; font-weight: 700; padding: 12px 16px; white-space: nowrap; text-align: left; }
+    td { padding: 13px 16px; border-top: 1px solid #f1f5f9; font-size: 14px; }
+    .link-btn { color: #2563eb; font-size: 13px; margin-right: 8px; padding: 0; border: none; background: none; cursor: pointer; text-decoration: underline; }
+    .link-btn:disabled { color: #94a3b8; cursor: not-allowed; text-decoration: none; }
+    .danger { color: #dc2626; }
+    .tag { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .hint-bar { font-size: 12px; color: #64748b; background: #f1f5f9; border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <main class="admin-content">
+    <div class="p-6 max-w-[1680px] mx-auto">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        <div>
+          <div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">新闻资讯管理</span></div>
+          <h1 class="text-2xl font-bold text-slate-900">新闻资讯管理</h1>
+          <p class="text-sm text-slate-500 mt-1">发布与维护平台新闻资讯；已上架内容需先下架后方可编辑。</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a id="btnPublish" href="admin_news_edit.html" class="action-btn action-btn-primary no-underline"><i class="fas fa-plus"></i>发布资讯</a>
+        </div>
+      </div>
+
+      <p class="hint-bar"><i class="fas fa-info-circle mr-1"></i>查询条件：<strong>不含分类</strong>；支持关键词、状态、发布时间区间。</p>
+
+      <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 items-end">
+          <div class="md:col-span-2">
+            <label class="block text-xs text-slate-500 mb-1">关键词</label>
+            <input class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="搜索资讯标题">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">状态</label>
+            <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+              <option>全部状态</option>
+              <option>草稿</option>
+              <option>已上架</option>
+              <option>已下架</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">发布时间起</label>
+            <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">发布时间止</label>
+            <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+          <div>
+            <button type="button" class="action-btn action-btn-primary w-full justify-center"><i class="fas fa-search"></i>查询</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="w-full min-w-[880px]">
+          <thead>
+            <tr>
+              <th>资讯标题</th>
+              <th>发布范围</th>
+              <th>上架时间</th>
+              <th>状态</th>
+              <th>阅读量</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-medium text-slate-800">国采平台 2026 年服务升级说明</td>
+              <td><span class="tag bg-red-50 text-red-700">全平台</span></td>
+              <td class="whitespace-nowrap">2026-04-18 09:00</td>
+              <td><span class="tag bg-green-100 text-green-700">已上架</span></td>
+              <td>12,560</td>
+              <td class="whitespace-nowrap">
+                <a class="link-btn" href="admin_news_detail.html?id=published-1">查看</a>
+                <button type="button" class="link-btn" disabled title="已上架内容不可编辑，请先下架">编辑</button>
+                <button type="button" class="link-btn" onclick="alert('原型：已执行下架')">下架</button>
+                <button type="button" class="link-btn danger" disabled title="请先下架后再删除">删除</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">区域分站供应链数字化实践（草稿）</td>
+              <td><span class="tag bg-blue-50 text-blue-700">华东分站</span></td>
+              <td class="whitespace-nowrap text-slate-400">—</td>
+              <td><span class="tag bg-slate-100 text-slate-600">草稿</span></td>
+              <td>0</td>
+              <td class="whitespace-nowrap">
+                <a class="link-btn" href="admin_news_detail.html?id=draft-1">查看</a>
+                <a class="link-btn" href="admin_news_edit.html?id=draft-1">编辑</a>
+                <button type="button" class="link-btn" onclick="alert('原型：已上架')">上架</button>
+                <button type="button" class="link-btn danger" onclick="if(confirm('确认删除该草稿？')) alert('原型：已删除')">删除</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="font-medium text-slate-800">采购商常见问题与合规要点汇编</td>
+              <td><span class="tag bg-red-50 text-red-700">全平台</span></td>
+              <td class="whitespace-nowrap">2026-03-10 11:20</td>
+              <td><span class="tag bg-amber-100 text-amber-800">已下架</span></td>
+              <td>3,210</td>
+              <td class="whitespace-nowrap">
+                <a class="link-btn" href="admin_news_detail.html?id=offline-1">查看</a>
+                <a class="link-btn" href="admin_news_edit.html?id=offline-1">编辑</a>
+                <button type="button" class="link-btn" onclick="alert('原型：已上架')">上架</button>
+                <button type="button" class="link-btn danger" onclick="if(confirm('确认删除？')) alert('原型：已删除')">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <script>
+    (function () {
+      if (new URLSearchParams(location.search).get('embed') !== '1') return;
+      document.querySelectorAll('a[href^="admin_news_"]').forEach(function (a) {
+        var h = a.getAttribute('href');
+        if (h.indexOf('embed=') === -1) a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发布法规 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities { .text-primary { color: #E2231A; } }
+    body { font-family: "Microsoft YaHei", sans-serif; background: #f8fafc; color: #334155; }
+    .admin-content { min-height: 100vh; }
+    .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .action-btn-primary { background: #E2231A; color: white; }
+    .action-btn-secondary { background: white; color: #334155; border: 1px solid #cbd5e1; }
+    .form-card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; }
+    .warn-banner { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; font-size: 13px; padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <main class="admin-content">
+    <div class="p-6 max-w-[900px] mx-auto">
+      <div class="flex items-center gap-4 mb-6">
+        <a id="backList" href="buyer_procurement_law.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 no-underline">
+          <i class="fas fa-arrow-left"></i>返回列表
+        </a>
+        <span id="pageModeLabel" class="text-sm text-slate-500"></span>
+      </div>
+
+      <div id="lockBanner" class="warn-banner hidden">
+        <i class="fas fa-lock mr-1"></i><strong>已上架</strong>的本单位法规不可在此编辑。请先在列表中执行「下架」。
+      </div>
+
+      <div class="form-card">
+        <h1 id="formTitle" class="text-lg font-bold text-slate-900 mb-6">发布法规</h1>
+        <p class="text-xs text-slate-500 -mt-4 mb-6">仅适用于<strong>本单位</strong>补充法规；正文以<strong>上传文件</strong>为准。</p>
+
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">法规标题 <span class="text-red-500">*</span></label>
+            <input id="fieldTitle" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="请输入法规或制度标题">
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">文号</label>
+              <input id="fieldDocNo" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="可选，如内部文号">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">发文机关</label>
+              <input id="fieldIssuer" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="默认为本单位名称">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">摘要</label>
+            <input id="fieldSummary" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="列表与详情页展示的简短说明">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">施行日期</label>
+            <input id="fieldEffective" type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm max-w-xs">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">法规正文文件 <span class="text-red-500">*</span></label>
+            <p class="text-xs text-slate-500 mb-2">请上传 PDF、Word 等；单个文件建议不超过 50MB（原型不实际上传）。</p>
+            <div id="uploadZone" class="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-8 text-center">
+              <input type="file" id="fieldBodyFile" class="sr-only" accept=".pdf,.doc,.docx,application/pdf">
+              <i class="fas fa-file-arrow-up text-2xl text-slate-400 mb-2 block"></i>
+              <p class="text-sm text-slate-600 mb-3">拖拽文件到此处，或点击下方按钮选择</p>
+              <button type="button" id="btnPickFile" class="action-btn action-btn-secondary text-sm" onclick="document.getElementById('fieldBodyFile').click()"><i class="fas fa-folder-open"></i>选择文件</button>
+              <p id="fieldBodyFileName" class="mt-3 text-sm font-medium text-slate-700 break-all">未选择文件</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="formActions" class="mt-8 flex flex-wrap gap-3">
+          <button type="button" class="action-btn action-btn-secondary" onclick="alert('原型：已保存草稿')"><i class="fas fa-save"></i>保存草稿</button>
+          <button type="button" class="action-btn action-btn-primary" onclick="alert('原型：已提交并上架')"><i class="fas fa-cloud-arrow-up"></i>保存并上架</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var id = params.get('id');
+
+      var draftOrg = {
+        title: '本单位耗材类小额采购细则（修订稿）',
+        docNo: '',
+        issuer: '本单位采购管理中心',
+        summary: '规范小额耗材采购流程与审批层级。',
+        effective: '',
+        fileName: '耗材类小额采购细则-修订稿-v2.docx'
+      };
+      var offlineOrg = {
+        title: '本单位供应商约谈工作规范（已废止稿）',
+        docNo: '内采〔2025〕18 号',
+        issuer: '本单位采购管理中心',
+        summary: '已下架，可重新编辑或删除。',
+        effective: '2025-06-01',
+        fileName: '供应商约谈工作规范-2025.pdf'
+      };
+
+      var lockBanner = document.getElementById('lockBanner');
+      var formActions = document.getElementById('formActions');
+      var pageModeLabel = document.getElementById('pageModeLabel');
+
+      if (!id) {
+        document.getElementById('formTitle').textContent = '发布法规';
+        pageModeLabel.textContent = '新建 · 本单位';
+        document.getElementById('fieldIssuer').value = '本单位（示例）';
+        return;
+      }
+
+      if (id === 'org-on') {
+        document.getElementById('formTitle').textContent = '编辑法规（不可编辑）';
+        pageModeLabel.textContent = '已上架 · 只读';
+        lockBanner.classList.remove('hidden');
+        document.getElementById('fieldTitle').value = '本单位年度阳光采购内部指引（试行）';
+        document.getElementById('fieldDocNo').value = '';
+        document.getElementById('fieldIssuer').value = '本单位采购管理中心';
+        document.getElementById('fieldSummary').value = '阳光采购基本原则与内控要求。';
+        document.getElementById('fieldEffective').value = '2026-01-01';
+        document.getElementById('fieldBodyFileName').textContent = '阳光采购内部指引-试行.pdf';
+        ['fieldTitle', 'fieldDocNo', 'fieldIssuer', 'fieldSummary', 'fieldEffective'].forEach(function (fid) {
+          document.getElementById(fid).disabled = true;
+        });
+        document.getElementById('fieldBodyFile').disabled = true;
+        document.getElementById('btnPickFile').disabled = true;
+        document.getElementById('uploadZone').classList.add('opacity-75');
+        formActions.innerHTML = '<span class="text-sm text-slate-500 py-2">请先在工作台列表中下架后再编辑。</span>';
+        return;
+      }
+
+      if (id === 'org-draft') {
+        document.getElementById('formTitle').textContent = '编辑法规';
+        pageModeLabel.textContent = '草稿 · 可编辑';
+        document.getElementById('fieldTitle').value = draftOrg.title;
+        document.getElementById('fieldDocNo').value = draftOrg.docNo;
+        document.getElementById('fieldIssuer').value = draftOrg.issuer;
+        document.getElementById('fieldSummary').value = draftOrg.summary;
+        document.getElementById('fieldEffective').value = draftOrg.effective;
+        document.getElementById('fieldBodyFileName').textContent = draftOrg.fileName;
+        return;
+      }
+
+      if (id === 'org-offline') {
+        document.getElementById('formTitle').textContent = '编辑法规';
+        pageModeLabel.textContent = '已下架 · 可编辑';
+        document.getElementById('fieldTitle').value = offlineOrg.title;
+        document.getElementById('fieldDocNo').value = offlineOrg.docNo;
+        document.getElementById('fieldIssuer').value = offlineOrg.issuer;
+        document.getElementById('fieldSummary').value = offlineOrg.summary;
+        document.getElementById('fieldEffective').value = offlineOrg.effective;
+        document.getElementById('fieldBodyFileName').textContent = offlineOrg.fileName;
+        return;
+      }
+
+      pageModeLabel.textContent = '编辑';
+    })();
+
+    document.getElementById('fieldBodyFile').addEventListener('change', function () {
+      if (this.disabled) return;
+      if (this.files && this.files[0]) {
+        document.getElementById('fieldBodyFileName').textContent = this.files[0].name;
+      }
+    });
+  </script>
+</body>
+</html>

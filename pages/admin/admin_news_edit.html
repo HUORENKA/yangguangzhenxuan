@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>编辑资讯 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities { .text-primary { color: #E2231A; } .bg-primary { background-color: #E2231A; } }
+    body { font-family: "Microsoft YaHei", sans-serif; background: #f8fafc; color: #334155; }
+    .admin-content { min-height: 100vh; }
+    .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .action-btn-primary { background: #E2231A; color: white; }
+    .action-btn-secondary { background: white; color: #334155; border: 1px solid #cbd5e1; }
+    .form-card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; }
+    .warn-banner { background: #fff7ed; border: 1px solid #fdba74; color: #9a3412; font-size: 13px; padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <main class="admin-content">
+    <div class="p-6 max-w-[900px] mx-auto">
+      <div class="flex items-center gap-4 mb-6">
+        <a id="backList" href="admin_news_list.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 no-underline">
+          <i class="fas fa-arrow-left"></i>返回列表
+        </a>
+        <span id="pageModeLabel" class="text-sm text-slate-500"></span>
+      </div>
+
+      <div id="lockBanner" class="warn-banner hidden">
+        <i class="fas fa-lock mr-1"></i><strong>已上架</strong>的资讯不可编辑。请先在列表中执行「下架」，再返回编辑。
+      </div>
+
+      <div class="form-card">
+        <h1 id="formTitle" class="text-lg font-bold text-slate-900 mb-6">发布资讯</h1>
+
+        <div class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">标题 <span class="text-red-500">*</span></label>
+            <input id="fieldTitle" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="请输入资讯标题">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">摘要</label>
+            <input id="fieldSummary" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="列表与详情页展示的简短摘要">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">发布范围</label>
+            <select id="fieldScope" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm max-w-md">
+              <option>全平台</option>
+              <option>华东分站</option>
+              <option>华北分站</option>
+              <option>医疗卫生专区</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">正文 <span class="text-red-500">*</span></label>
+            <textarea id="fieldBody" rows="10" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm resize-y" placeholder="支持纯文本示意；正式系统可替换为富文本编辑器。"></textarea>
+          </div>
+        </div>
+
+        <div id="formActions" class="mt-8 flex flex-wrap gap-3">
+          <button type="button" class="action-btn action-btn-secondary" onclick="alert('原型：已保存草稿')"><i class="fas fa-save"></i>保存草稿</button>
+          <button type="button" class="action-btn action-btn-primary" onclick="alert('原型：已提交并上架')"><i class="fas fa-cloud-arrow-up"></i>保存并上架</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var id = params.get('id');
+
+      var draftData = {
+        title: '区域分站供应链数字化实践（草稿）',
+        summary: '草稿态示例，可在编辑页修改后保存或上架。',
+        scope: '华东分站',
+        body: '此处为草稿正文占位，保存草稿后运营可随时继续编辑。'
+      };
+      var offlineData = {
+        title: '采购商常见问题与合规要点汇编',
+        summary: '已下架内容可重新编辑并再次上架。',
+        scope: '全平台',
+        body: '下架后前台不可见；运营可编辑后重新上架。（静态原型。）'
+      };
+
+      var lockBanner = document.getElementById('lockBanner');
+      var formActions = document.getElementById('formActions');
+      var pageModeLabel = document.getElementById('pageModeLabel');
+
+      if (!id) {
+        document.getElementById('formTitle').textContent = '发布资讯';
+        pageModeLabel.textContent = '新建';
+        return;
+      }
+
+      if (id === 'published-1') {
+        document.getElementById('formTitle').textContent = '编辑资讯（不可编辑）';
+        pageModeLabel.textContent = '已上架 · 只读';
+        lockBanner.classList.remove('hidden');
+        document.getElementById('fieldTitle').value = '国采平台 2026 年服务升级说明';
+        document.getElementById('fieldSummary').value = '本次升级聚焦结算时效、商品审核协同与消息触达能力。';
+        document.getElementById('fieldScope').value = '全平台';
+        document.getElementById('fieldBody').value = '（已上架内容不可修改，请先下架。）';
+        ['fieldTitle', 'fieldSummary', 'fieldScope', 'fieldBody'].forEach(function (fid) {
+          document.getElementById(fid).disabled = true;
+        });
+        formActions.innerHTML = '<span class="text-sm text-slate-500 py-2">无可执行操作，请返回列表下架后再编辑。</span>';
+        return;
+      }
+
+      if (id === 'draft-1') {
+        document.getElementById('formTitle').textContent = '编辑资讯';
+        pageModeLabel.textContent = '草稿 · 可编辑';
+        document.getElementById('fieldTitle').value = draftData.title;
+        document.getElementById('fieldSummary').value = draftData.summary;
+        document.getElementById('fieldScope').value = draftData.scope;
+        document.getElementById('fieldBody').value = draftData.body;
+        return;
+      }
+
+      if (id === 'offline-1') {
+        document.getElementById('formTitle').textContent = '编辑资讯';
+        pageModeLabel.textContent = '已下架 · 可编辑';
+        document.getElementById('fieldTitle').value = offlineData.title;
+        document.getElementById('fieldSummary').value = offlineData.summary;
+        document.getElementById('fieldScope').value = offlineData.scope;
+        document.getElementById('fieldBody').value = offlineData.body;
+        return;
+      }
+
+      pageModeLabel.textContent = '编辑';
+    })();
+
+    (function () {
+      if (new URLSearchParams(location.search).get('embed') !== '1') return;
+      var b = document.getElementById('backList');
+      var h = b.getAttribute('href');
+      b.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+    })();
+  </script>
+</body>
+</html>

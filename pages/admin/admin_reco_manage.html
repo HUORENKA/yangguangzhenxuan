@@ -589,6 +589,14 @@
         <i class="fas fa-boxes-stacked"></i>
         <span>商品上架审核</span>
       </a>
+      <a href="admin_news_list.html" class="admin-menu-item" onclick="handleMenuClick(this, 'admin_news_list.html')">
+        <i class="fas fa-newspaper"></i>
+        <span>新闻资讯管理</span>
+      </a>
+      <a href="admin_law_list.html" class="admin-menu-item" onclick="handleMenuClick(this, 'admin_law_list.html')">
+        <i class="fas fa-scale-balanced"></i>
+        <span>采购法规管理</span>
+      </a>
       <a href="admin_notice.html" class="admin-menu-item" onclick="handleMenuClick(this, 'admin_notice.html')">
         <i class="fas fa-bullhorn"></i>
         <span>平台公告管理</span>
@@ -1925,7 +1933,7 @@
       element.classList.add('active');
       
       // 已实现的页面直接跳转
-      if (page === 'admin_dashboard.html' || page === 'admin_reco_manage.html' || page === 'admin_supplier_manage.html' || page === 'admin_product_audit_list.html' || page === 'admin_station.html' || page === 'admin_buyer_manage.html' || page === 'admin_notice.html' || page === 'admin_po.html' || page === 'admin_orders.html' || page === 'admin_settlement.html') {
+      if (page === 'admin_dashboard.html' || page === 'admin_reco_manage.html' || page === 'admin_supplier_manage.html' || page === 'admin_product_audit_list.html' || page === 'admin_news_list.html' || page === 'admin_law_list.html' || page === 'admin_station.html' || page === 'admin_buyer_manage.html' || page === 'admin_notice.html' || page === 'admin_po.html' || page === 'admin_orders.html' || page === 'admin_settlement.html') {
         window.location.href = page;
       } else {
         // 未实现的页面显示提示

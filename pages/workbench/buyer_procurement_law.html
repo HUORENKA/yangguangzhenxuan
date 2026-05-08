@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购法规 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background: #f8fafc; color: #0f172a; }
+    .page-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .b-platform { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+    .b-org { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .tag-status { display: inline-flex; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .s-on { background: #dcfce7; color: #166534; }
+    .s-off { background: #f1f5f9; color: #64748b; }
+    .btn { height: 32px; padding: 0 12px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1px solid #dbe2ea; background: #fff; color: #475569; cursor: pointer; }
+    .btn-primary { background: #E2231A; border-color: #E2231A; color: #fff; }
+    th { background: #f8fafc; color: #64748b; font-size: 13px; font-weight: 700; }
+    td, th { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; text-align: left; vertical-align: middle; }
+    .link-op {
+      padding: 0; margin-right: 10px; border: none; background: none; font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: underline; color: #2563eb;
+    }
+    .link-op:hover:not(:disabled) { color: #1d4ed8; }
+    .link-op:disabled { color: #cbd5e1; cursor: not-allowed; text-decoration: none; }
+    .link-op-danger { color: #dc2626; }
+    .link-op-danger:hover:not(:disabled) { color: #b91c1c; }
+    .op-muted { font-size: 11px; color: #94a3b8; display: block; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <div class="page-card p-5 mb-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200">
+          <i class="fas fa-scale-balanced text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">采购法规</h1>
+          <p class="text-sm text-slate-500 mt-1">查阅平台统一发布的法规及本单位补充内容。</p>
+        </div>
+      </div>
+      <a href="buyer_procurement_law_edit.html" class="btn btn-primary px-5 h-10 text-sm shrink-0 inline-flex items-center justify-center no-underline">
+        <i class="fas fa-plus mr-1"></i>发布法规
+      </a>
+    </div>
+
+    <div class="page-card p-4 mb-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-4 items-end">
+        <div class="md:col-span-2">
+          <label class="block text-xs text-slate-500 mb-1">关键词</label>
+          <input class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="法规标题 / 文号">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">来源</label>
+          <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <option>全部</option>
+            <option>平台发布</option>
+            <option>本单位</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">状态</label>
+          <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <option>全部状态</option>
+            <option>草稿</option>
+            <option>已上架</option>
+            <option>已下架</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">上架时间起</label>
+          <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">上架时间止</label>
+          <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div class="xl:col-span-1">
+          <button type="button" class="btn btn-primary w-full px-4 justify-center"><i class="fas fa-search mr-1"></i>查询</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-card overflow-x-auto">
+      <table class="w-full text-sm min-w-[1100px]">
+        <thead>
+          <tr>
+            <th>法规标题</th>
+            <th>文号</th>
+            <th>来源</th>
+            <th>状态</th>
+            <th>上架时间</th>
+            <th>阅读量</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 平台发布：仅查看 -->
+          <tr>
+            <td class="font-semibold text-slate-800">《政府采购法实施条例》要点导读</td>
+            <td class="text-slate-600 whitespace-nowrap">国令第 658 号（示例）</td>
+            <td><span class="badge b-platform"><i class="fas fa-building-columns text-[10px]"></i>平台发布</span></td>
+            <td><span class="tag-status s-on">已上架</span></td>
+            <td class="whitespace-nowrap text-slate-600">2026-04-01</td>
+            <td class="text-slate-800 tabular-nums">8,420</td>
+            <td class="whitespace-nowrap">
+              <button type="button" class="link-op" onclick="alert('查看平台法规正文（原型）')">查看</button>
+              <button type="button" class="link-op" disabled title="平台统一配置">编辑</button>
+              <button type="button" class="link-op" disabled title="平台统一配置">下架</button>
+              <button type="button" class="link-op" disabled title="平台统一配置">删除</button>
+              <span class="op-muted">平台配置，不可操作</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="font-semibold text-slate-800">电子卖场管理办法（站内转载版）</td>
+            <td class="text-slate-600 whitespace-nowrap">财库〔2024〕XX 号（示例）</td>
+            <td><span class="badge b-platform"><i class="fas fa-building-columns text-[10px]"></i>平台发布</span></td>
+            <td><span class="tag-status s-on">已上架</span></td>
+            <td class="whitespace-nowrap text-slate-600">2026-02-15</td>
+            <td class="text-slate-800 tabular-nums">5,102</td>
+            <td class="whitespace-nowrap">
+              <button type="button" class="link-op" onclick="alert('查看平台法规正文（原型）')">查看</button>
+              <button type="button" class="link-op" disabled>编辑</button>
+              <button type="button" class="link-op" disabled>下架</button>
+              <button type="button" class="link-op" disabled>删除</button>
+              <span class="op-muted">平台配置，不可操作</span>
+            </td>
+          </tr>
+          <!-- 本单位 · 已上架：查看、下架；编辑/删除禁用 -->
+          <tr>
+            <td class="font-semibold text-slate-800">本单位年度阳光采购内部指引（试行）</td>
+            <td class="text-slate-400">—</td>
+            <td><span class="badge b-org"><i class="fas fa-building text-[10px]"></i>本单位</span></td>
+            <td><span class="tag-status s-on">已上架</span></td>
+            <td class="whitespace-nowrap text-slate-600">2026-01-08</td>
+            <td class="text-slate-800 tabular-nums">326</td>
+            <td class="whitespace-nowrap">
+              <button type="button" class="link-op" onclick="alert('查看本单位法规（原型）')">查看</button>
+              <button type="button" class="link-op" disabled title="已上架，请先下架后再编辑">编辑</button>
+              <button type="button" class="link-op" onclick="alert('原型：已下架')">下架</button>
+              <button type="button" class="link-op" disabled title="已上架，请先下架后再删除">删除</button>
+            </td>
+          </tr>
+          <!-- 本单位 · 草稿：查看、编辑、上架、删除 -->
+          <tr>
+            <td class="font-semibold text-slate-800">本单位耗材类小额采购细则（修订稿）</td>
+            <td class="text-slate-400">—</td>
+            <td><span class="badge b-org"><i class="fas fa-building text-[10px]"></i>本单位</span></td>
+            <td><span class="tag-status s-off">草稿</span></td>
+            <td class="whitespace-nowrap text-slate-400">—</td>
+            <td class="text-slate-800 tabular-nums">0</td>
+            <td class="whitespace-nowrap">
+              <button type="button" class="link-op" onclick="alert('查看草稿（原型）')">查看</button>
+              <a class="link-op" href="buyer_procurement_law_edit.html?id=org-draft">编辑</a>
+              <button type="button" class="link-op" onclick="alert('原型：已上架')">上架</button>
+              <button type="button" class="link-op link-op-danger" onclick="if(confirm('确认删除该草稿？')) alert('原型：已删除')">删除</button>
+            </td>
+          </tr>
+          <!-- 本单位 · 已下架：查看、编辑、上架、删除 -->
+          <tr>
+            <td class="font-semibold text-slate-800">本单位供应商约谈工作规范（已废止稿）</td>
+            <td class="text-slate-400">—</td>
+            <td><span class="badge b-org"><i class="fas fa-building text-[10px]"></i>本单位</span></td>
+            <td><span class="tag-status s-off">已下架</span></td>
+            <td class="whitespace-nowrap text-slate-600">2025-11-20</td>
+            <td class="text-slate-800 tabular-nums">128</td>
+            <td class="whitespace-nowrap">
+              <button type="button" class="link-op" onclick="alert('查看已下架内容（原型）')">查看</button>
+              <a class="link-op" href="buyer_procurement_law_edit.html?id=org-offline">编辑</a>
+              <button type="button" class="link-op" onclick="alert('原型：重新上架')">上架</button>
+              <button type="button" class="link-op link-op-danger" onclick="if(confirm('确认删除？')) alert('原型：已删除')">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

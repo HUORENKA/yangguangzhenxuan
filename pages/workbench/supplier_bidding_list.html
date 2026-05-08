@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>询价竞价 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
+    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .b-blue { background:#eff6ff; color:#1d4ed8; }
+    .b-orange { background:#fff7ed; color:#c2410c; }
+    .b-green { background:#ecfdf5; color:#047857; }
+    .b-slate { background:#f1f5f9; color:#475569; }
+    .b-red { background:#fef2f2; color:#b91c1c; }
+    .tag-mode { font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; }
+    .tm-inq { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+    .tm-bid { background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; }
+    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; cursor:pointer; }
+    .btn-primary { background:#0f766e; border-color:#0f766e; color:#fff; }
+    .btn:hover { filter:brightness(.98); }
+    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
+    td, th { padding:12px 14px; border-bottom:1px solid #f1f5f9; text-align:left; vertical-align:top; }
+    .col-lowest-hidden .col-lowest { display:none; }
+    .money { font-weight:800; color:#dc2626; font-variant-numeric:tabular-nums; }
+    .hint-xs { font-size:11px; color:#94a3b8; margin-top:4px; }
+    table.data-wide { min-width:1080px; }
+    .wrap-table { overflow-x:auto; }
+
+    /* 供货状态 */
+    .sup-in { background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; }
+    .sup-out { background:#fff7ed; color:#c2410c; border:1px solid #fdba74; font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; }
+    .sup-none { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; font-size:11px; font-weight:800; padding:3px 10px; border-radius:999px; }
+
+    /* 弹窗 */
+    .modal-overlay {
+      position:fixed; inset:0; background:rgba(15,23,42,.48); z-index:100;
+      display:none; align-items:center; justify-content:center; padding:20px;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal-box {
+      background:#fff; border-radius:16px; width:100%; max-height:min(90vh, 820px);
+      display:flex; flex-direction:column; overflow:hidden;
+      box-shadow:0 24px 56px rgba(15,23,42,.2);
+    }
+    .modal-box.w-detail { max-width:800px; }
+    .modal-box.w-quote { max-width:560px; }
+    .modal-head { padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-shrink:0; }
+    .modal-head h3 { margin:0; font-size:17px; font-weight:800; color:#0f172a; }
+    .modal-x { width:36px; height:36px; border-radius:10px; border:1px solid #e2e8f0; background:#fff; cursor:pointer; color:#64748b; flex-shrink:0; }
+    .modal-x:hover { color:#0f172a; border-color:#cbd5e1; }
+    .modal-body { padding:16px 20px; overflow-y:auto; flex:1; }
+
+    .inner-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px 20px; box-shadow:0 4px 14px rgba(15,23,42,.04); }
+    .inner-card + .inner-card { margin-top:16px; }
+
+    .seg { display:flex; border-radius:10px; overflow:hidden; border:1px solid #e2e8f0; max-width:100%; }
+    .seg button { flex:1; padding:9px 12px; font-size:13px; font-weight:700; background:#f8fafc; color:#64748b; border:none; cursor:pointer; }
+    .seg button.active { background:#0f766e; color:#fff; }
+    .in-field { border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; font-size:14px; width:100%; max-width:320px; }
+    .btn-lg { height:40px; padding:0 18px; border-radius:10px; font-size:14px; font-weight:700; }
+    .hist-row-m {
+      display:grid; grid-template-columns:120px 72px 1fr 88px; gap:8px; align-items:center;
+      padding:10px 12px; background:#f8fafc; border-radius:10px; font-size:13px; border:1px solid #eef2f7; margin-bottom:8px;
+    }
+    .rule-banner-sm { border-radius:12px; padding:12px 14px; font-size:13px; margin-bottom:14px; }
+    .rule-bid { background:linear-gradient(135deg,#ecfdf5,#fff); border:1px solid #a7f3d0; color:#115e59; }
+    .rule-inq { background:linear-gradient(135deg,#eff6ff,#fff); border:1px solid #bfdbfe; color:#1e40af; }
+
+    .demand-table th, .demand-table td { font-size:13px; padding:10px 12px; }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <div class="page-card p-5 mb-5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center"><i class="fas fa-gavel text-xl"></i></div>
+        <div>
+          <h1 class="text-2xl font-bold">询价竞价</h1>
+          <p class="text-sm text-slate-500 mt-1">询价：截止前可多次修改报价，有效取最新一条，不展示他人价格。竞价：可见全场最低价（匿名），新报价须<strong class="text-teal-700">严格低于</strong>当前最低价。</p>
+        </div>
+      </div>
+      <a class="btn text-teal-700 border-teal-200" href="./supplier_order_list.html"><i class="fas fa-arrow-left mr-1"></i>订单管理</a>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-5">
+      <div class="stat-card"><div><div class="text-sm text-slate-500">待报价</div><div class="text-2xl font-bold mt-1 text-blue-600" id="kpiPending">0</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-hourglass-start"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">报价中</div><div class="text-2xl font-bold mt-1 text-orange-600" id="kpiQuoting">0</div></div><div class="stat-icon bg-orange-50 text-orange-600"><i class="fas fa-pen-to-square"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已截止待结果</div><div class="text-2xl font-bold mt-1 text-slate-600" id="kpiWait">0</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-clock"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">已中选</div><div class="text-2xl font-bold mt-1 text-green-600" id="kpiWin">0</div></div><div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-circle-check"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">未中选</div><div class="text-2xl font-bold mt-1 text-red-600" id="kpiLost">0</div></div><div class="stat-icon bg-red-50 text-red-600"><i class="fas fa-circle-xmark"></i></div></div>
+      <div class="stat-card"><div><div class="text-sm text-slate-500">终止/流标</div><div class="text-2xl font-bold mt-1 text-slate-500" id="kpiEnd">0</div></div><div class="stat-icon bg-slate-100 text-slate-500"><i class="fas fa-ban"></i></div></div>
+    </div>
+
+    <div class="page-card p-4 mb-5 flex flex-wrap gap-3 items-center">
+      <input id="fKw" class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-56" placeholder="项目编号 / 名称">
+      <select id="fMode" class="border border-slate-300 rounded-lg px-3 py-2 text-sm" onchange="applyFilters()">
+        <option value="">采购形式：全部</option>
+        <option value="inquiry">询价</option>
+        <option value="bidding">竞价</option>
+      </select>
+      <select id="fStatus" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        <option value="">我方状态：全部</option>
+        <option value="pending">待报价</option>
+        <option value="quoting">报价中·可修改</option>
+        <option value="waiting">已截止·等待结果</option>
+        <option value="won">已中选</option>
+        <option value="lost">未中选</option>
+        <option value="terminated">项目已终止</option>
+        <option value="failed">流标</option>
+      </select>
+      <button type="button" class="btn btn-primary" onclick="applyFilters()">查询</button>
+      <button type="button" class="btn" onclick="resetFilters()">重置</button>
+      <span class="text-xs text-slate-400 ml-auto">询价筛选时隐藏「当前公示最低价」列</span>
+    </div>
+
+    <div class="page-card overflow-hidden" id="tableShell">
+      <div class="wrap-table">
+        <table class="w-full text-sm data-wide">
+          <thead>
+            <tr>
+              <th>项目 / 单号</th>
+              <th>采购形式</th>
+              <th>采购单位</th>
+              <th class="col-lowest">当前公示最低价<br><span class="font-normal text-xs text-slate-400">竞价可见 · 不含供应商</span></th>
+              <th>我方当前有效报价</th>
+              <th>我方状态</th>
+              <th>报价截止</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 详情：商品需求 + 本店供货状态 -->
+  <div class="modal-overlay" id="modalDetail" onclick="if(event.target===this)closeDetailModal()">
+    <div class="modal-box w-detail" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h3 id="detailTitle">项目需求明细</h3>
+          <p id="detailSub" class="text-sm text-slate-500 mt-1"></p>
+        </div>
+        <button type="button" class="modal-x" onclick="closeDetailModal()" aria-label="关闭"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-xs text-slate-500 mb-3">以下为采购方发布的商品需求，以及贵司店铺侧匹配结果（演示数据）。</p>
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full demand-table border-collapse">
+            <thead>
+              <tr>
+                <th>序号</th>
+                <th>商品/服务</th>
+                <th>规格要求</th>
+                <th>数量</th>
+                <th>本店商品状态</th>
+              </tr>
+            </thead>
+            <tbody id="detailTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 报价：与截图一致的两卡片布局 -->
+  <div class="modal-overlay" id="modalQuote" onclick="if(event.target===this)closeQuoteModal()">
+    <div class="modal-box w-quote" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h3 id="quoteModalTitle">提交报价</h3>
+          <p id="quoteModalSub" class="text-sm text-slate-500 mt-1"></p>
+        </div>
+        <button type="button" class="modal-x" onclick="closeQuoteModal()" aria-label="关闭"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="modal-body bg-slate-50/80">
+        <div id="quoteRuleBanner"></div>
+
+        <div class="inner-card">
+          <h4 class="font-bold text-slate-900 text-base mb-4">提交报价</h4>
+          <div class="seg mb-5">
+            <button type="button" id="mSegTotal" class="active" onclick="setModalSeg(true)">方式 A · 报总价</button>
+            <button type="button" id="mSegLines" onclick="setModalSeg(false)">方式 B · 按商品单价</button>
+          </div>
+          <div id="mPanelTotal">
+            <label class="block text-xs font-bold text-slate-500 mb-1">含税总价（演示）</label>
+            <input type="number" class="in-field" id="mInputTotal" placeholder="请输入金额" min="1" step="1">
+          </div>
+          <div id="mPanelLines" class="hidden">
+            <p class="text-xs text-slate-500 mb-2">填写各行单价，自动汇总总价。</p>
+            <div class="overflow-x-auto">
+              <table class="w-full border-collapse text-sm" id="mLinesTable"></table>
+            </div>
+            <div class="mt-3 text-right font-bold">汇总：<span class="money text-lg" id="mSumLines">¥0</span></div>
+          </div>
+          <div class="mt-6 flex flex-wrap gap-3 items-center">
+            <button type="button" class="btn btn-primary btn-lg" onclick="submitModalQuote()"><i class="fas fa-paper-plane mr-2"></i>提交报价</button>
+            <span class="text-xs text-slate-400">提交后立即写入演示数据（sessionStorage），关闭弹窗后列表刷新可见。</span>
+          </div>
+        </div>
+
+        <div class="inner-card">
+          <h4 class="font-bold text-slate-900 text-base mb-1">我方报价历史</h4>
+          <p class="text-xs text-slate-500 mb-3">按提交时间从新到旧排列。</p>
+          <div id="mHistBox"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'supplierRfQ_demoRows';
+  var HISTORY_KEY = 'supplierRfQ_demoHist';
+
+  /** supply: in_stock | no_stock | not_listed */
+  var PROJECT_DEMAND = {
+    S1: { budget: 120000, lines: [
+      { name: '会议控制器', qty: 2, spec: '支持中控/WiFi', supply: 'in_stock' },
+      { name: '高清摄像机', qty: 4, spec: '1080P及以上', supply: 'no_stock' },
+      { name: '音箱套装', qty: 2, spec: '会议室吊装', supply: 'not_listed' }
+    ]},
+    S2: { budget: 90000, lines: [
+      { name: 'A4复印纸', qty: 100, spec: '70g / 500张×8包', supply: 'in_stock' },
+      { name: '硒鼓', qty: 20, spec: 'HP 85A 兼容', supply: 'not_listed' }
+    ]},
+    S8: { budget: 400000, lines: [
+      { name: '绿地养护', qty: 12, spec: '单位：万平方米·年', supply: 'in_stock' }
+    ]},
+    S3: { budget: 200000, lines: [
+      { name: '人体工学椅', qty: 30, spec: '可调节腰托', supply: 'no_stock' }
+    ]},
+    S4: { budget: 80000, lines: [
+      { name: '网线箱', qty: 40, spec: '六类非屏蔽', supply: 'in_stock' }
+    ]},
+    S5: { budget: 260000, lines: [
+      { name: '台式机', qty: 50, spec: '国产化配置清单见附件', supply: 'no_stock' }
+    ]},
+    S6: { budget: 150000, lines: [
+      { name: '服务费（年）', qty: 1, spec: '24小时常驻岗', supply: 'not_listed' }
+    ]},
+    S7: { budget: 999999, lines: [
+      { name: '复印纸', qty: 500, spec: '集中采购框架协议', supply: 'in_stock' }
+    ]}
+  };
+
+  var SUPPLY_LABEL = {
+    in_stock: { cls: 'sup-in', text: '有库存' },
+    no_stock: { cls: 'sup-out', text: '无库存' },
+    not_listed: { cls: 'sup-none', text: '未上架' }
+  };
+
+  var BASE = [
+    { id:'S1', code:'BID20260507001', title:'会议室音视频改造项目', mode:'bidding', buyer:'市级机关后勤事务管理局', lowest:86200, mine:90500, st:'quoting', deadline:'2026-05-10 18:00' },
+    { id:'S2', code:'RFQ20260507002', title:'年度耗材集中采购', mode:'inquiry', buyer:'区级政府采购中心', lowest:null, mine:42800, st:'quoting', deadline:'2026-05-09 18:00' },
+    { id:'S8', code:'BID20260507008', title:'绿化养护外包（首场竞价）', mode:'bidding', buyer:'市园林绿化管理处', lowest:null, mine:null, st:'quoting', deadline:'2026-05-12 18:00' },
+    { id:'S3', code:'BID20260506003', title:'办公家具更新项目', mode:'bidding', buyer:'海淀区教育局', lowest:128000, mine:131200, st:'waiting', deadline:'2026-05-06 18:00' },
+    { id:'S4', code:'RFQ20260505004', title:'机房布线耗材', mode:'inquiry', buyer:'信息中心', lowest:null, mine:59900, st:'won', deadline:'2026-05-05 18:00' },
+    { id:'S5', code:'BID20260504005', title:'国产化终端竞价', mode:'bidding', buyer:'市级大数据中心', lowest:210000, mine:218000, st:'lost', deadline:'2026-05-04 18:00' },
+    { id:'S6', code:'RFQ20260503006', title:'保安服务费询价', mode:'inquiry', buyer:'物业管理中心', lowest:null, mine:null, st:'failed', deadline:'2026-05-03 18:00' },
+    { id:'S7', code:'BID20260502007', title:'复印纸框架协议竞价', mode:'bidding', buyer:'财政局采购办', lowest:null, mine:null, st:'terminated', deadline:'2026-05-02 18:00' }
+  ];
+
+  function loadRows() {
+    try {
+      var raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return BASE.map(function (r) { return Object.assign({}, r); });
+      var saved = JSON.parse(raw);
+      return BASE.map(function (r) {
+        var o = saved[r.id];
+        return o ? Object.assign({}, r, o) : Object.assign({}, r);
+      });
+    } catch (e) {
+      return BASE.map(function (r) { return Object.assign({}, r); });
+    }
+  }
+
+  var ROWS = loadRows();
+
+  var ST_LABEL = {
+    pending: { text:'待报价', cls:'b-blue' },
+    quoting: { text:'报价中·可修改', cls:'b-orange' },
+    waiting: { text:'已截止·等待结果', cls:'b-slate' },
+    won: { text:'已中选', cls:'b-green' },
+    lost: { text:'未中选', cls:'b-red' },
+    terminated: { text:'项目已终止', cls:'b-slate' },
+    failed: { text:'流标', cls:'b-red' }
+  };
+
+  function fmtMoney(v) {
+    if (v == null || v === '') return '—';
+    return '¥' + Number(v).toLocaleString('zh-CN');
+  }
+
+  function getMergedRow(id) {
+    var r = ROWS.find(function (x) { return x.id === id; });
+    return r ? Object.assign({}, r) : null;
+  }
+
+  function loadOverrides() {
+    try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; }
+  }
+
+  function saveOverrides(o) {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(o));
+  }
+
+  function loadHist() {
+    try { return JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '{}'); } catch (e) { return {}; }
+  }
+
+  function saveHist(h) {
+    sessionStorage.setItem(HISTORY_KEY, JSON.stringify(h));
+  }
+
+  /* ---------- 详情弹窗 ---------- */
+  window.openDetailModal = function (id) {
+    var r = getMergedRow(id);
+    var dem = PROJECT_DEMAND[id];
+    if (!r || !dem) return;
+    document.getElementById('detailTitle').textContent = '采购商品需求 · ' + r.code;
+    document.getElementById('detailSub').textContent = r.title + ' ｜ ' + (r.mode === 'inquiry' ? '询价' : '竞价') + ' ｜ 报价截止 ' + r.deadline;
+
+    document.getElementById('detailTbody').innerHTML = dem.lines.map(function (L, i) {
+      var sl = SUPPLY_LABEL[L.supply] || SUPPLY_LABEL.not_listed;
+      return '<tr><td>' + (i + 1) + '</td><td class="font-semibold">' + esc(L.name) + '</td><td>' + esc(L.spec || '—') + '</td><td>' + L.qty + '</td><td><span class="' + sl.cls + '">' + sl.text + '</span></td></tr>';
+    }).join('');
+
+    document.getElementById('modalDetail').classList.add('open');
+  };
+
+  window.closeDetailModal = function () {
+    document.getElementById('modalDetail').classList.remove('open');
+  };
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ---------- 报价弹窗 ---------- */
+  var modalQuotePid = null;
+  var modalUseTotal = true;
+
+  window.setModalSeg = function (total) {
+    modalUseTotal = total;
+    document.getElementById('mSegTotal').classList.toggle('active', total);
+    document.getElementById('mSegLines').classList.toggle('active', !total);
+    document.getElementById('mPanelTotal').classList.toggle('hidden', !total);
+    document.getElementById('mPanelLines').classList.toggle('hidden', total);
+    if (!total) recalcModalLines();
+  };
+
+  window.recalcModalLines = function () {
+    var rows = document.querySelectorAll('#mLinesTable tbody tr');
+    var sum = 0;
+    rows.forEach(function (tr) {
+      var p = tr.querySelector('.m-p-unit');
+      var q = parseFloat(tr.dataset.qty) || 0;
+      var price = parseFloat(p && p.value) || 0;
+      sum += price * q;
+      var sub = tr.querySelector('.m-line-sub');
+      if (sub) sub.textContent = fmtMoney(price * q);
+    });
+    var el = document.getElementById('mSumLines');
+    if (el) el.textContent = fmtMoney(sum);
+    return sum;
+  };
+
+  function buildModalLinesTable(lines) {
+    var thead = '<thead><tr><th class="text-left p-2 bg-slate-50">商品/服务</th><th class="p-2 bg-slate-50">数量</th><th class="p-2 bg-slate-50">单价（元）</th><th class="p-2 bg-slate-50">小计</th></tr></thead>';
+    var tbody = '<tbody>' + lines.map(function (L) {
+      return '<tr data-qty="' + L.qty + '"><td class="p-2 border-t border-slate-100">' + esc(L.name) + '</td><td class="p-2 border-t border-slate-100">' + L.qty + '</td><td class="p-2 border-t border-slate-100"><input type="number" class="in-field m-p-unit max-w-[140px]" min="0" step="1" placeholder="0" oninput="recalcModalLines()"></td><td class="p-2 border-t border-slate-100 m-line-sub money">¥0</td></tr>';
+    }).join('') + '</tbody>';
+    document.getElementById('mLinesTable').innerHTML = thead + tbody;
+  }
+
+  function renderModalHist(r) {
+    var pid = modalQuotePid;
+    var list = (loadHist()[pid] || []).slice().reverse();
+    var box = document.getElementById('mHistBox');
+    var rows = [];
+    if (r.mine != null && !list.length) {
+      rows.push('<div class="hist-row-m"><span class="text-slate-500">（初始演示）</span><span>—</span><span>来自内置示例 · </span><span class="money">' + fmtMoney(r.mine) + '</span></div>');
+    }
+    list.forEach(function (h) {
+      rows.push('<div class="hist-row-m"><span class="text-slate-500">' + esc(h.time) + '</span><span>' + esc(h.way) + '</span><span>' + esc(h.note || '') + '</span><span class="money">' + fmtMoney(h.amount) + '</span></div>');
+    });
+    box.innerHTML = rows.length ? rows.join('') : '<p class="text-sm text-slate-400">暂无提交记录</p>';
+  }
+
+  window.openQuoteModal = function (id) {
+    var r = getMergedRow(id);
+    var dem = PROJECT_DEMAND[id];
+    if (!r || !dem || (r.st !== 'quoting' && r.st !== 'pending')) return;
+
+    modalQuotePid = id;
+    document.getElementById('quoteModalTitle').textContent = '报价 · ' + r.code;
+    document.getElementById('quoteModalSub').textContent = r.title + ' ｜ 截止 ' + r.deadline;
+
+    var rb = document.getElementById('quoteRuleBanner');
+    if (r.mode === 'bidding') {
+      rb.innerHTML = '<div class="rule-banner-sm rule-bid"><strong>竞价：</strong>公示最低价（匿名）为 <strong class="money">' + (r.lowest == null ? '暂无（首场）' : fmtMoney(r.lowest)) + '</strong>；新报价须<strong>严格小于</strong>该金额，不允许并列。</div>';
+    } else {
+      rb.innerHTML = '<div class="rule-banner-sm rule-inq"><strong>询价：</strong>不展示他人报价；截止前可多次提交，<strong>有效报价为您最新一条</strong>。</div>';
+    }
+
+    modalUseTotal = true;
+    document.getElementById('mSegTotal').classList.add('active');
+    document.getElementById('mSegLines').classList.remove('active');
+    document.getElementById('mPanelTotal').classList.remove('hidden');
+    document.getElementById('mPanelLines').classList.add('hidden');
+
+    document.getElementById('mInputTotal').value = '';
+    document.getElementById('mInputTotal').placeholder = r.mine != null ? ('当前有效 ' + fmtMoney(r.mine)) : '请输入金额';
+
+    buildModalLinesTable(dem.lines);
+    renderModalHist(r);
+
+    document.getElementById('modalQuote').classList.add('open');
+  };
+
+  window.closeQuoteModal = function () {
+    document.getElementById('modalQuote').classList.remove('open');
+    modalQuotePid = null;
+  };
+
+  window.submitModalQuote = function () {
+    var id = modalQuotePid;
+    if (!id) return;
+    var r = getMergedRow(id);
+    var dem = PROJECT_DEMAND[id];
+    if (!r || !dem) return;
+
+    var amount;
+    var wayLabel = modalUseTotal ? '总价' : '明细汇总';
+    var note = '';
+    if (modalUseTotal) {
+      amount = parseFloat(document.getElementById('mInputTotal').value);
+      if (!amount || amount <= 0) { alert('请输入有效总价'); return; }
+      note = '方式A 总价';
+    } else {
+      amount = recalcModalLines();
+      if (!amount || amount <= 0) { alert('请填写各行单价'); return; }
+      note = '方式B 明细汇总';
+    }
+
+    if (dem.budget && amount > dem.budget) {
+      if (!confirm('金额超过演示预算 ' + fmtMoney(dem.budget) + '，仍要提交演示吗？')) return;
+    }
+
+    if (r.mode === 'bidding') {
+      if (r.lowest != null && amount >= r.lowest) {
+        alert('竞价须严格小于当前公示最低价 ' + fmtMoney(r.lowest) + '（不允许并列）。\n您填写：' + fmtMoney(amount));
+        return;
+      }
+    }
+
+    var ov = loadOverrides();
+    if (!ov[id]) ov[id] = {};
+
+    if (r.mode === 'bidding') {
+      ov[id].mine = amount;
+      if (r.lowest == null) ov[id].lowest = amount;
+      else ov[id].lowest = Math.min(r.lowest, amount);
+    } else {
+      ov[id].mine = amount;
+    }
+
+    saveOverrides(ov);
+
+    var hm = loadHist();
+    if (!hm[id]) hm[id] = [];
+    hm[id].push({
+      time: new Date().toLocaleString('zh-CN', { hour12:false }),
+      way: wayLabel,
+      amount: amount,
+      note: note
+    });
+    saveHist(hm);
+
+    ROWS = loadRows();
+    applyFilters();
+    closeQuoteModal();
+    alert('提交成功（演示）');
+  };
+
+  /* ---------- 列表 ---------- */
+  function applyFilters() {
+    var kw = (document.getElementById('fKw').value || '').trim().toLowerCase();
+    var mode = document.getElementById('fMode').value;
+    var st = document.getElementById('fStatus').value;
+
+    ROWS = loadRows();
+
+    var shell = document.getElementById('tableShell');
+    if (mode === 'inquiry') shell.classList.add('col-lowest-hidden');
+    else shell.classList.remove('col-lowest-hidden');
+
+    var filtered = ROWS.filter(function (r) {
+      if (mode && r.mode !== mode) return false;
+      if (st && r.st !== st) return false;
+      if (kw) {
+        var blob = (r.code + ' ' + r.title + ' ' + r.buyer).toLowerCase();
+        if (blob.indexOf(kw) === -1) return false;
+      }
+      return true;
+    });
+
+    updateKpi();
+    renderBody(filtered);
+  }
+
+  function resetFilters() {
+    document.getElementById('fKw').value = '';
+    document.getElementById('fMode').value = '';
+    document.getElementById('fStatus').value = '';
+    document.getElementById('tableShell').classList.remove('col-lowest-hidden');
+    applyFilters();
+  }
+
+  function updateKpi() {
+    ROWS = loadRows();
+    function cnt(pred) { return ROWS.filter(pred).length; }
+    document.getElementById('kpiPending').textContent = cnt(function (r) { return r.st === 'quoting' && (r.mine == null); });
+    document.getElementById('kpiQuoting').textContent = cnt(function (r) { return r.st === 'quoting' && r.mine != null; });
+    document.getElementById('kpiWait').textContent = cnt(function (r) { return r.st === 'waiting'; });
+    document.getElementById('kpiWin').textContent = cnt(function (r) { return r.st === 'won'; });
+    document.getElementById('kpiLost').textContent = cnt(function (r) { return r.st === 'lost'; });
+    document.getElementById('kpiEnd').textContent = cnt(function (r) { return r.st === 'terminated' || r.st === 'failed'; });
+  }
+
+  function renderBody(rows) {
+    var tb = document.getElementById('tbody');
+    tb.innerHTML = rows.map(function (r) {
+      var tag = r.mode === 'inquiry' ? '<span class="tag-mode tm-inq">询价</span>' : '<span class="tag-mode tm-bid">竞价</span>';
+      var lowCell = r.mode === 'bidding'
+        ? fmtMoney(r.lowest)
+        : '<span class="text-slate-400">—</span>';
+      var sd = ST_LABEL[r.st] || ST_LABEL.waiting;
+      var act = '';
+      if (r.st === 'quoting' || r.st === 'pending') {
+        act += '<button type="button" class="btn btn-primary inline-flex items-center" onclick="openQuoteModal(\'' + r.id + '\')">报价</button> ';
+      }
+      act += '<button type="button" class="btn inline-flex items-center" onclick="openDetailModal(\'' + r.id + '\')">详情</button>';
+      if (r.st === 'won') {
+        act += ' <a class="btn inline-flex items-center text-green-700 border-green-200" href="./supplier_order_list.html">待确认订单</a>';
+      }
+      var mineWarn = '';
+      if (r.mode === 'bidding' && r.lowest != null && r.mine != null && r.mine >= r.lowest && r.st === 'quoting') {
+        mineWarn = '<div class="hint-xs text-orange-600"><i class="fas fa-triangle-exclamation"></i> 高于或等于最低价，提交将被拦截</div>';
+      }
+      return '<tr>'
+        + '<td><div class="font-semibold text-slate-900">' + r.code + '</div><div class="text-slate-600 mt-1">' + r.title + '</div></td>'
+        + '<td>' + tag + '</td>'
+        + '<td>' + r.buyer + '</td>'
+        + '<td class="col-lowest">' + lowCell + '</td>'
+        + '<td><span class="money">' + fmtMoney(r.mine) + '</span>' + mineWarn + '</td>'
+        + '<td><span class="badge ' + sd.cls + '">' + sd.text + '</span></td>'
+        + '<td>' + r.deadline + '</td>'
+        + '<td class="whitespace-nowrap">' + act + '</td>'
+        + '</tr>';
+    }).join('');
+
+    if (!rows.length) {
+      tb.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-slate-400">暂无数据</td></tr>';
+    }
+  }
+
+  window.applyFilters = applyFilters;
+  window.resetFilters = resetFilters;
+
+  ROWS = loadRows();
+  applyFilters();
+})();
+</script>
+</body>
+</html>

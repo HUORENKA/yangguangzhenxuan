@@ -865,6 +865,9 @@
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="contract" onclick="openContractFeature()">
           <i class="fas fa-file-signature"></i><span>合同签署</span>
         </a>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="procurement-law" onclick="openProcurementLawFeature()">
+          <i class="fas fa-scale-balanced"></i><span>采购法规</span>
+        </a>
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="settlement" onclick="openSettlementFeature()">
           <i class="fas fa-calculator"></i><span>结算订单</span>
         </a>
@@ -885,6 +888,9 @@
         </a>
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="po" onclick="openWorkbenchSubPage('supplier_po_list.html', 'po', '采购单')">
           <i class="fas fa-file-invoice"></i><span>采购单</span>
+        </a>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="bidding" onclick="openWorkbenchSubPage('supplier_bidding_list.html', 'bidding', '询价竞价')">
+          <i class="fas fa-gavel"></i><span>询价竞价</span>
         </a>
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="orders" onclick="openWorkbenchSubPage('supplier_order_list.html', 'orders', '订单管理')">
           <i class="fas fa-shopping-bag"></i><span>订单管理</span>
@@ -2064,6 +2070,8 @@
           openAfterSalesSubPage();
         } else if (currentWorkbenchMenuKey === 'my-goods' && role !== 'supplier') {
           showWorkbenchHome();
+        } else if (currentWorkbenchMenuKey === 'procurement-law' && role !== 'buyer') {
+          showWorkbenchHome();
         } else {
           setActiveWorkbenchMenu(currentWorkbenchMenuKey);
         }
@@ -2200,6 +2208,11 @@
 
     function openFavoritesFeature() {
       openWorkbenchSubPage('buyer_favorites.html', 'favorites', '我的收藏');
+    }
+
+    function openProcurementLawFeature() {
+      if (getCurrentRole() !== 'buyer') return;
+      openWorkbenchSubPage('buyer_procurement_law.html', 'procurement-law', '采购法规');
     }
 
     function setActiveWorkbenchMenu(menuKey) {

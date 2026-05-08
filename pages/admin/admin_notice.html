@@ -8,21 +8,42 @@
   <link rel="stylesheet" href="../../assets/custom.css">
   <style>
     @layer utilities{.text-primary{color:#E2231A}.bg-primary{background-color:#E2231A}}
-    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600}.action-btn-primary{background:#E2231A;color:white}.action-btn-secondary{background:white;color:#334155;border:1px solid #cbd5e1}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.link-btn{color:#2563eb;font-size:13px;margin-right:10px}.danger{color:#dc2626}.tag{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:600}
+    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600}.action-btn-primary{background:#E2231A;color:white}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.link-btn{color:#2563eb;font-size:13px;margin-right:10px}.danger{color:#dc2626}.tag{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:600}.hint-bar{font-size:12px;color:#64748b;background:#f1f5f9;border-radius:10px;padding:10px 14px;margin-bottom:16px}
   </style>
 </head>
 <body>
   <main class="admin-content"><div class="p-6 max-w-[1680px] mx-auto">
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
       <div><div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">平台公告管理</span></div><h1 class="text-2xl font-bold text-slate-900">平台公告管理</h1><p class="text-sm text-slate-500 mt-1">维护平台公告，支持按分站范围发布。</p></div>
-      <div class="flex gap-3"><button class="action-btn action-btn-secondary"><i class="fas fa-download"></i>导出数据</button><button class="action-btn action-btn-primary"><i class="fas fa-plus"></i>新增公告</button></div>
+      <div class="flex flex-wrap gap-3"><button class="action-btn action-btn-primary"><i class="fas fa-plus"></i>新增公告</button></div>
     </div>
+    <p class="hint-bar"><i class="fas fa-info-circle mr-1"></i>查询条件：<strong>不含分类/类型筛选</strong>；支持关键词、状态、上架时间区间（与新闻资讯模块一致）。</p>
     <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm md:col-span-2" placeholder="搜索公告标题">
-        <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部类型</option><option>平台通知</option><option>政策公告</option><option>系统维护</option></select>
-        <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部分站</option><option>全平台</option><option>北京分站</option></select>
-        <button class="action-btn action-btn-primary justify-center"><i class="fas fa-search"></i>查询</button>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 items-end">
+        <div class="md:col-span-2">
+          <label class="block text-xs text-slate-500 mb-1">关键词</label>
+          <input class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="搜索公告标题">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">状态</label>
+          <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <option>全部状态</option>
+            <option>草稿</option>
+            <option>已发布</option>
+            <option>已下架</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">上架时间起</label>
+          <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">上架时间止</label>
+          <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <button type="button" class="action-btn action-btn-primary w-full justify-center"><i class="fas fa-search"></i>查询</button>
+        </div>
       </div>
     </div>
     <div class="table-wrap"><table class="w-full">
