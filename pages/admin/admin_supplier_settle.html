@@ -458,9 +458,26 @@
 <body class="text-slate-800">
 <script>
   (function () {
-    if (new URLSearchParams(location.search).get('embed') === '1') {
+    var embedded = new URLSearchParams(location.search).get('embed') === '1';
+    if (embedded) {
       document.documentElement.classList.add('admin-embed-mode');
+      document.querySelectorAll('a[href]').forEach(function (a) {
+        var h = a.getAttribute('href');
+        if (!h || /^https?:\/\//i.test(h) || h.indexOf('javascript:') === 0 || h.charAt(0) === '#') return;
+        if (h.indexOf('embed=') !== -1) return;
+        if (h.indexOf('.html') === -1) return;
+        a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+      });
     }
+    window.withAdminEmbed = function (href) {
+      if (!embedded) return href;
+      var q = href.indexOf('?');
+      var base = q === -1 ? href : href.slice(0, q);
+      var params = new URLSearchParams(q === -1 ? '' : href.slice(q + 1));
+      params.set('embed', '1');
+      var s = params.toString();
+      return s ? base + '?' + s : base + '?embed=1';
+    };
   })();
 </script>
 
@@ -509,7 +526,7 @@
         </div>
       </div>
       <div class="flex flex-wrap gap-3">
-        <button class="action-btn action-btn-secondary" onclick="window.location.href='admin_supplier_manage.html'">
+        <button class="action-btn action-btn-secondary" onclick="window.location.href=withAdminEmbed('admin_supplier_manage.html')">
           <i class="fas fa-list"></i><span>返回列表</span>
         </button>
       </div>
@@ -1615,7 +1632,7 @@
           message: '供应商已成功入驻并上线！\n供应商账号将自动激活，可登录供应商工作台开始上架商品。',
           type: 'success',
           confirmText: '返回供应商列表',
-          onConfirm: () => { window.location.href = 'admin_supplier_manage.html'; }
+          onConfirm: () => { window.location.href = withAdminEmbed('admin_supplier_manage.html'); }
         });
       }
     });

@@ -1,30 +1,523 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>采购单管理 | 管理后台</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}.stat-card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:18px}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600;background:#E2231A;color:#fff}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.tag{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:600}
+    body { font-family: "Microsoft YaHei", sans-serif; background: #f8fafc; color: #334155; }
+    .admin-content { min-height: 100vh; }
+    html.admin-embed-mode .admin-sidebar { display: none !important; }
+    html.admin-embed-mode .admin-content { margin-left: 0 !important; }
+    .stat-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .stat-card-risk {
+      border-left: 4px solid #f59e0b;
+      background: linear-gradient(180deg, #fffbeb 0%, #ffffff 52%);
+    }
+    .stat-card-risk.high { border-left-color: #dc2626; background: linear-gradient(180deg, #fef2f2 0%, #ffffff 52%); }
+    .stat-card-tip { font-size: 11px; color: #94a3b8; margin-top: 10px; line-height: 1.45; }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      background: #E2231A;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .action-btn:hover { filter: brightness(1.03); }
+    .action-btn-ghost {
+      background: white;
+      color: #475569;
+      border: 1px solid #dbe2ea;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: white;
+    }
+    th {
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 16px;
+      white-space: nowrap;
+      text-align: left;
+    }
+    td {
+      padding: 13px 16px;
+      border-top: 1px solid #f1f5f9;
+      font-size: 14px;
+      vertical-align: top;
+    }
+    td.nowrap-cell { white-space: nowrap; }
+    .tag {
+      display: inline-flex;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .risk-stack { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; max-width: 260px; }
+    .risk-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .risk-pill.high { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .risk-pill.medium { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .risk-pill.low { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
+    .risk-none { font-size: 13px; color: #cbd5e1; }
+    .risk-detail-btn {
+      font-size: 12px;
+      font-weight: 600;
+      color: #2563eb;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 0;
+      white-space: nowrap;
+    }
+    .risk-detail-btn:hover { text-decoration: underline; }
+    .fade-in-drawer { animation: slideInDrawer 0.22s ease-out; }
+    @keyframes slideInDrawer {
+      from { transform: translateX(100%); opacity: 0.9; }
+      to { transform: translateX(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
-<main class="admin-content"><div class="p-6 max-w-[1680px] mx-auto">
-  <div class="mb-6"><div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">采购单管理</span></div><h1 class="text-2xl font-bold text-slate-900">采购单管理</h1><p class="text-sm text-slate-500 mt-1">全平台采购单监管视图，仅支持查看。</p></div>
-  <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
-    <div class="stat-card"><div class="text-sm text-slate-500">采购单总数</div><div class="text-3xl font-bold text-slate-900 mt-2">12,860</div></div>
-    <div class="stat-card"><div class="text-sm text-slate-500">待审核采购单</div><div class="text-3xl font-bold text-orange-500 mt-2">386</div></div>
-    <div class="stat-card"><div class="text-sm text-slate-500">已通过采购单</div><div class="text-3xl font-bold text-green-600 mt-2">11,240</div></div>
-    <div class="stat-card"><div class="text-sm text-slate-500">驳回采购单</div><div class="text-3xl font-bold text-red-600 mt-2">324</div></div>
-    <div class="stat-card"><div class="text-sm text-slate-500">采购单总金额</div><div class="text-3xl font-bold text-blue-600 mt-2">¥8,520万</div></div>
+<script>
+  (function () {
+    var embedded = new URLSearchParams(location.search).get('embed') === '1';
+    if (!embedded) return;
+    document.documentElement.classList.add('admin-embed-mode');
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var h = a.getAttribute('href');
+      if (!h || /^https?:\/\//i.test(h) || h.indexOf('javascript:') === 0 || h.charAt(0) === '#') return;
+      if (h.indexOf('embed=') !== -1) return;
+      if (h.indexOf('.html') === -1) return;
+      a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+    });
+  })();
+</script>
+
+<main class="admin-content">
+  <div class="p-6 max-w-[1680px] mx-auto">
+    <div class="mb-6">
+      <div class="text-sm text-slate-500 mb-1">
+        <a href="admin_dashboard.html" class="hover:text-[#E2231A] transition-colors">管理后台</a>
+        <span class="mx-1">/</span>
+        <span class="text-slate-800 font-medium">采购单管理</span>
+      </div>
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">采购单管理</h1>
+          <p class="text-sm text-slate-500 mt-1">全平台采购单监管视图，仅支持查看。系统按规则标注风险等级，不作为唯一合规结论。</p>
+        </div>
+        <div class="flex items-start gap-2 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 max-w-xl">
+          <i class="fas fa-shield-halved text-amber-600 mt-0.5"></i>
+          <p class="text-xs text-amber-900 leading-relaxed">
+            <strong>风险提示说明：</strong>含金额偏离、审批时效、驳回频次等内置规则扫描结果；
+            「高」需在监管侧优先关注并与分站核实，「中」列为日常跟踪队列。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+      <div class="stat-card">
+        <div class="text-sm text-slate-500">采购单总数</div>
+        <div class="text-3xl font-bold text-slate-900 mt-2">12,860</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-sm text-slate-500">待审核采购单</div>
+        <div class="text-3xl font-bold text-orange-500 mt-2">386</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-sm text-slate-500">已通过采购单</div>
+        <div class="text-3xl font-bold text-green-600 mt-2">11,240</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-sm text-slate-500">驳回采购单</div>
+        <div class="text-3xl font-bold text-red-600 mt-2">324</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-sm text-slate-500">采购单总金额</div>
+        <div class="text-3xl font-bold text-blue-600 mt-2">¥8,520万</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+      <div class="stat-card stat-card-risk high">
+        <div class="text-sm font-semibold text-slate-600 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-red-600"></span>
+          高风险待关注采购单
+        </div>
+        <div id="riskStatHigh" class="text-3xl font-bold text-red-700 mt-2">0</div>
+        <p class="stat-card-tip">含金额极端偏离分站均价、关联方疑似集中下单等，建议在列表中筛「仅高风险」逐单核对。</p>
+      </div>
+      <div class="stat-card stat-card-risk">
+        <div class="text-sm font-semibold text-slate-600 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          中风险待关注采购单
+        </div>
+        <div id="riskStatMedium" class="text-3xl font-bold text-amber-700 mt-2">0</div>
+        <p class="stat-card-tip">含待审超时、分项金额波动、驳回后短期内再次提交等情况，可由分站定期消化。</p>
+      </div>
+      <div class="stat-card">
+        <div class="text-sm font-semibold text-slate-600 flex items-center gap-2">
+          <i class="fas fa-chart-line text-blue-600"></i>
+          有风险采购单（合计）
+        </div>
+        <div id="riskStatTotal" class="text-3xl font-bold text-slate-800 mt-2">0</div>
+        <p class="stat-card-tip">列为至少命中<strong>任一</strong>规则的单据（含低风险/关联方提示）；与筛选项「有风险（高或中）」不同，后者不包含仅「提示」级别。</p>
+      </div>
+    </div>
+
+    <p id="riskDemoLegend" class="text-xs text-slate-400 mb-6"></p>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 mb-5 border border-slate-100">
+      <div class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">筛查条件</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 items-end">
+        <div class="xl:col-span-3">
+          <label class="block text-xs text-slate-500 mb-1">关键字</label>
+          <input id="fltKeyword" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
+            placeholder="采购单号 / 采购方 / 供应商">
+        </div>
+        <div class="xl:col-span-2">
+          <label class="block text-xs text-slate-500 mb-1">分站</label>
+          <select id="fltStation" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+            <option value="">全部分站</option>
+          </select>
+        </div>
+        <div class="xl:col-span-2">
+          <label class="block text-xs text-slate-500 mb-1">采购单状态</label>
+          <select id="fltStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+            <option value="">全部状态</option>
+            <option value="pending">待审核</option>
+            <option value="passed">已通过</option>
+            <option value="rejected">已驳回</option>
+          </select>
+        </div>
+        <div class="xl:col-span-3">
+          <label class="block text-xs text-slate-500 mb-1">风险筛查</label>
+          <select id="fltRiskLevel" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+            <option value="">全部（含无风险）</option>
+            <option value="has">有风险（高或中）</option>
+            <option value="high">仅高风险</option>
+            <option value="medium">仅中风险</option>
+          </select>
+        </div>
+        <div class="xl:col-span-2">
+          <label class="block text-xs text-slate-500 mb-1">风险类型</label>
+          <select id="fltRiskType" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white">
+            <option value="">全部类型</option>
+            <option value="AMOUNT">金额异常</option>
+            <option value="SLA">时效异常</option>
+            <option value="REJECT_REPEAT">驳回集中</option>
+            <option value="RELATED">关联方提示</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3 mt-4">
+        <button type="button" class="action-btn" onclick="applyPoFilters(true)"><i class="fas fa-search"></i>查询</button>
+        <button type="button" class="action-btn action-btn-ghost" onclick="resetPoFilters()">重置</button>
+        <span id="fltResultTip" class="text-sm text-slate-500 self-center"></span>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th>采购单号</th>
+            <th>所属分站</th>
+            <th>采购方</th>
+            <th>供应商</th>
+            <th>商品数量</th>
+            <th>采购金额</th>
+            <th style="min-width:200px;">风险提示</th>
+            <th>采购单状态</th>
+            <th>创建时间</th>
+          </tr>
+        </thead>
+        <tbody id="poTableBody"></tbody>
+      </table>
+    </div>
   </div>
-  <div class="bg-white rounded-xl shadow-sm p-5 mb-5"><div class="grid grid-cols-1 md:grid-cols-5 gap-4"><input class="border border-slate-300 rounded-lg px-3 py-2 text-sm md:col-span-2" placeholder="采购单号 / 采购方 / 供应商"><select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部分站</option></select><select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>待审核</option><option>已通过</option><option>已驳回</option></select><button class="action-btn justify-center"><i class="fas fa-search"></i>查询</button></div></div>
-  <div class="table-wrap"><table class="w-full"><thead><tr><th>采购单号</th><th>所属分站</th><th>采购方</th><th>供应商</th><th>商品数量</th><th>采购金额</th><th>采购单状态</th><th>创建时间</th></tr></thead><tbody>
-    <tr><td>PO20260427001</td><td>北京分站</td><td>北京市某某局采购中心</td><td>得力办公旗舰店</td><td>18</td><td class="text-red-600 font-semibold">¥128,600</td><td><span class="tag bg-green-100 text-green-700">已通过</span></td><td>2026-04-27 09:30</td></tr>
-    <tr><td>PO20260426018</td><td>医疗卫生专区</td><td>某某公立医院</td><td>惠普设备专营店</td><td>6</td><td class="text-red-600 font-semibold">¥86,400</td><td><span class="tag bg-orange-100 text-orange-700">待审核</span></td><td>2026-04-26 16:20</td></tr>
-    <tr><td>PO20260425072</td><td>教育装备专区</td><td>海淀区某某高级中学</td><td>晨光文具供应商</td><td>42</td><td class="text-red-600 font-semibold">¥34,860</td><td><span class="tag bg-red-100 text-red-700">已驳回</span></td><td>2026-04-25 11:02</td></tr>
-  </tbody></table></div>
-</div></main>
+</main>
+
+<div id="riskDrawerOverlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.35);z-index:90;" onclick="closeRiskDrawer()"></div>
+<aside id="riskDrawer"
+  style="display:none;position:fixed;top:0;right:0;bottom:0;width:min(420px,100vw);background:#fff;z-index:100;box-shadow:-12px 0 40px rgba(15,23,42,0.12);border-left:1px solid #e2e8f0;"
+  class="flex flex-col">
+  <div class="p-5 border-b border-slate-200 flex justify-between items-start gap-3">
+    <div>
+      <div class="text-xs text-slate-500 mb-1">采购单风险提示详情</div>
+      <div id="riskDrawerTitle" class="text-lg font-bold text-slate-900 font-mono">—</div>
+    </div>
+    <button type="button" class="text-slate-400 hover:text-slate-700 text-xl leading-none px-2" onclick="closeRiskDrawer()" aria-label="关闭">&times;</button>
+  </div>
+  <div id="riskDrawerBody" class="flex-1 overflow-y-auto p-5 text-sm text-slate-600 leading-relaxed"></div>
+  <div class="p-4 border-t border-slate-200 text-xs text-slate-400">原型演示：后台规则引擎离线扫描生成的标注，正式发布需对接风控配置与稽核日志。</div>
+</aside>
+
+<script>
+  /** 演示数据：risk-level 为该单最高等级；risks[].code 对接筛选「风险类型」 */
+  function fmtMoney(n) {
+    return '¥' + n.toLocaleString('zh-CN');
+  }
+
+  var PO_DEMO_ROWS = [
+    {
+      po: 'PO20260427001', station: '北京分站', buyer: '北京市某某局采购中心', supplier: '得力办公旗舰店',
+      qty: 18, amt: 128600, status: 'passed', created: '2026-04-27 09:30',
+      risks: [{ level: 'low', code: 'RELATED', label: '关联方提示', detail: '该供应商近三年与本市局属单位成交金额占比偏高，建议在合规复盘时纳入关联审查。', ruleHit: '规则 R-REL-02 · 最近一次扫描：2026-04-27 08:40' }]
+    },
+    {
+      po: 'PO20260426018', station: '医疗卫生专区', buyer: '某某公立医院', supplier: '惠普设备专营店',
+      qty: 6, amt: 86400, status: 'pending', created: '2026-04-26 16:20',
+      risks: [{ level: 'medium', code: 'SLA', label: '待审超时', detail: '待审核已连续 72 小时，超过分站配置阈值 48 小时；若涉应急采购请核实流程节点。', ruleHit: '规则 R-TAT-04 · 最近扫描：2026-04-27 06:05' }]
+    },
+    {
+      po: 'PO20260425102', station: '北京分站', buyer: '北京市某某局采购中心', supplier: '华东数码设备有限公司',
+      qty: 120, amt: 1860000, status: 'pending', created: '2026-04-25 10:15',
+      risks: [
+        { level: 'high', code: 'AMOUNT', label: '金额异常', detail: '金额高于分站同类办公设备近 30 日成交 P95 约 38%，且单笔超过采购单位配置预警线。', ruleHit: '规则 R-AMT-01 · 最近扫描：2026-04-26 22:10' },
+        { level: 'medium', code: 'RELATED', label: '关联方提示', detail: '供应商控股方与采购方下属三产企业存在股权交叉，请结合内控要求复核。', ruleHit: '规则 R-REL-01 · 最近扫描：2026-04-26 22:10' }
+      ]
+    },
+    {
+      po: 'PO20260425072', station: '教育装备专区', buyer: '海淀区某某高级中学', supplier: '晨光文具供应商',
+      qty: 42, amt: 34860, status: 'rejected', created: '2026-04-25 11:02',
+      risks: [
+        { level: 'high', code: 'REJECT_REPEAT', label: '驳回集中', detail: '同一采购方 30 日内第 4 次驳回后再次提交，历史驳回原因含「参数与目录不符」。', ruleHit: '规则 R-REJ-03 · 最近扫描：2026-04-25 15:20' }
+      ]
+    },
+    {
+      po: 'PO20260424055', station: '教育装备专区', buyer: '海淀区某某高级中学', supplier: '晨光文具供应商',
+      qty: 8, amt: 5980, status: 'passed', created: '2026-04-24 14:30',
+      risks: []
+    },
+    {
+      po: 'PO20260423088', station: '医疗卫生专区', buyer: '某某区疾控中心', supplier: '国械标准耗材专营',
+      qty: 220, amt: 412000, status: 'pending', created: '2026-04-23 09:00',
+      risks: [
+        { level: 'medium', code: 'AMOUNT', label: '金额异常', detail: '批次内存在多项单价接近目录上限，建议核对招标/目录版本是否一致。', ruleHit: '规则 R-AMT-03 · 最近扫描：2026-04-24 01:00' },
+        { level: 'medium', code: 'SLA', label: '时效异常', detail: '创建后未在计划节点内完成内部会签，已触发黄灯提醒。', ruleHit: '规则 R-TAT-02 · 最近扫描：2026-04-24 01:00' }
+      ]
+    }
+  ];
+
+  function statusLabel(s) {
+    if (s === 'pending') return { text: '待审核', cls: 'bg-orange-100 text-orange-700' };
+    if (s === 'passed') return { text: '已通过', cls: 'bg-green-100 text-green-700' };
+    if (s === 'rejected') return { text: '已驳回', cls: 'bg-red-100 text-red-700' };
+    return { text: s, cls: 'bg-slate-100 text-slate-600' };
+  }
+
+  function maxRiskLevel(risks) {
+    if (!risks || !risks.length) return null;
+    if (risks.some(function (r) { return r.level === 'high'; })) return 'high';
+    if (risks.some(function (r) { return r.level === 'medium'; })) return 'medium';
+    return 'low';
+  }
+
+  function riskPillClass(level) {
+    if (level === 'high') return 'risk-pill high';
+    if (level === 'medium') return 'risk-pill medium';
+    return 'risk-pill low';
+  }
+
+  function buildStationOptions() {
+    var sel = document.getElementById('fltStation');
+    var set = {};
+    PO_DEMO_ROWS.forEach(function (r) { set[r.station] = 1; });
+    Object.keys(set).sort().forEach(function (st) {
+      var o = document.createElement('option');
+      o.value = st;
+      o.textContent = st;
+      sel.appendChild(o);
+    });
+  }
+
+  function rowMatchesFilters(row) {
+    var kw = (document.getElementById('fltKeyword').value || '').trim().toLowerCase();
+    if (kw) {
+      var blob = (row.po + row.buyer + row.supplier).toLowerCase();
+      if (blob.indexOf(kw) === -1) return false;
+    }
+    var st = document.getElementById('fltStation').value;
+    if (st && row.station !== st) return false;
+    var fs = document.getElementById('fltStatus').value;
+    if (fs && row.status !== fs) return false;
+
+    var rl = document.getElementById('fltRiskLevel').value;
+    var maxL = maxRiskLevel(row.risks);
+    if (rl === 'has') {
+      if (!maxL || maxL === 'low') return false;
+    } else if (rl === 'high') {
+      if (maxL !== 'high') return false;
+    } else if (rl === 'medium') {
+      if (maxL !== 'medium') return false;
+    }
+
+    var rt = document.getElementById('fltRiskType').value;
+    if (rt && (!row.risks || !row.risks.some(function (x) { return x.code === rt; }))) return false;
+
+    return true;
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function renderPoTable(scrollTop) {
+    var tb = document.getElementById('poTableBody');
+    var filtered = PO_DEMO_ROWS.filter(rowMatchesFilters);
+    tb.innerHTML = '';
+
+    filtered.forEach(function (row) {
+      var stinfo = statusLabel(row.status);
+
+      var riskHtml = '';
+      if (!row.risks || row.risks.length === 0) {
+        riskHtml = '<span class="risk-none">暂无</span>';
+      } else {
+        riskHtml += '<div class="risk-stack">';
+        row.risks.forEach(function (r) {
+          if (r.level === 'low') return;
+          var icon = r.level === 'high' ? '<i class="fas fa-circle-exclamation"></i>' : '<i class="fas fa-clock"></i>';
+          riskHtml += '<span class="' + riskPillClass(r.level) + '">' + icon + r.label + '</span>';
+        });
+        var lows = row.risks.filter(function (r) { return r.level === 'low'; });
+        lows.forEach(function (r) {
+          riskHtml += '<span class="' + riskPillClass('low') + '"><i class="fas fa-circle-info"></i>' + r.label + '</span>';
+        });
+        riskHtml += '<button type="button" class="risk-detail-btn" data-po="' + escapeHtml(row.po) + '" onclick="openRiskDrawerForPo(this.getAttribute(\'data-po\'))">详情</button>';
+        riskHtml += '</div>';
+      }
+
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="nowrap-cell font-mono text-sm font-semibold text-slate-800">' + escapeHtml(row.po) + '</td>' +
+        '<td class="nowrap-cell">' + escapeHtml(row.station) + '</td>' +
+        '<td style="white-space:normal;max-width:200px;">' + escapeHtml(row.buyer) + '</td>' +
+        '<td style="white-space:normal;max-width:200px;">' + escapeHtml(row.supplier) + '</td>' +
+        '<td class="nowrap-cell">' + row.qty + '</td>' +
+        '<td class="nowrap-cell text-red-600 font-semibold">' + fmtMoney(row.amt) + '</td>' +
+        '<td>' + riskHtml + '</td>' +
+        '<td class="nowrap-cell"><span class="tag ' + stinfo.cls + '">' + stinfo.text + '</span></td>' +
+        '<td class="nowrap-cell text-slate-500 text-sm">' + escapeHtml(row.created) + '</td>';
+      tb.appendChild(tr);
+    });
+
+    var tip = document.getElementById('fltResultTip');
+    tip.textContent = '共 ' + filtered.length + ' 条（演示数据 ' + PO_DEMO_ROWS.length + ' 条）';
+    if (scrollTop) window.scrollTo({ top: document.querySelector('.table-wrap').offsetTop - 24, behavior: 'smooth' });
+  }
+
+  function openRiskDrawerForPo(po) {
+    if (!po) return;
+    var row = PO_DEMO_ROWS.filter(function (r) { return r.po === po; })[0];
+    if (!row) return;
+    openRiskDrawer(row);
+  }
+
+  function openRiskDrawer(row) {
+    document.getElementById('riskDrawerTitle').textContent = row.po;
+    var body = document.getElementById('riskDrawerBody');
+    if (!row.risks || !row.risks.length) {
+      body.innerHTML = '<p>该采购单未命中当前规则库中的风险提示。</p>';
+    } else {
+      var parts = row.risks.map(function (r) {
+        var tier = r.level === 'high' ? '高风险' : (r.level === 'medium' ? '中风险' : '低 / 提示');
+        return (
+          '<div class="mb-5 pb-5 border-b border-slate-100 last:border-0 last:pb-0">' +
+          '<div class="flex items-center gap-2 mb-2">' +
+          '<span class="' + riskPillClass(r.level) + '">' + escapeHtml(r.label) + '</span>' +
+          '<span class="text-xs text-slate-400">' + escapeHtml(tier) + ' · ' + escapeHtml(r.code) + '</span></div>' +
+          '<p class="text-slate-700 mb-2">' + escapeHtml(r.detail) + '</p>' +
+          '<p class="text-xs text-slate-400">' + escapeHtml(r.ruleHit || '') + '</p></div>'
+        );
+      });
+      body.innerHTML = parts.join('');
+    }
+    document.getElementById('riskDrawerOverlay').style.display = 'block';
+    var d = document.getElementById('riskDrawer');
+    d.style.display = 'flex';
+    d.classList.add('fade-in-drawer');
+  }
+
+  function closeRiskDrawer() {
+    document.getElementById('riskDrawerOverlay').style.display = 'none';
+    document.getElementById('riskDrawer').style.display = 'none';
+    document.getElementById('riskDrawer').classList.remove('fade-in-drawer');
+  }
+
+  function applyPoFilters(scroll) {
+    renderPoTable(!!scroll);
+  }
+
+  function refreshDemoRiskHeadline() {
+    var h = 0;
+    var m = 0;
+    var tracked = 0;
+    PO_DEMO_ROWS.forEach(function (row) {
+      var mx = maxRiskLevel(row.risks);
+      if (mx === 'high') h++;
+      else if (mx === 'medium') m++;
+      if (row.risks && row.risks.some(function (r) { return r.level === 'high' || r.level === 'medium'; })) {
+        tracked++;
+      }
+    });
+    var anyRisk = PO_DEMO_ROWS.filter(function (r) { return r.risks && r.risks.length; }).length;
+
+    document.getElementById('riskStatHigh').textContent = h;
+    document.getElementById('riskStatMedium').textContent = m;
+    document.getElementById('riskStatTotal').textContent = anyRisk;
+
+    var leg = document.getElementById('riskDemoLegend');
+    leg.textContent = '风险提示三张卡片聚合自当前表中【演示样本 ' + PO_DEMO_ROWS.length + ' 条】；其中含「中高」风险条目 ' +
+      tracked + ' 条。正式环境与全平台统计需在接口层汇总。';
+  }
+
+  function resetPoFilters() {
+    document.getElementById('fltKeyword').value = '';
+    document.getElementById('fltStation').value = '';
+    document.getElementById('fltStatus').value = '';
+    document.getElementById('fltRiskLevel').value = '';
+    document.getElementById('fltRiskType').value = '';
+    renderPoTable(false);
+  }
+
+  buildStationOptions();
+  refreshDemoRiskHeadline();
+  renderPoTable(false);
+</script>
 </body>
 </html>

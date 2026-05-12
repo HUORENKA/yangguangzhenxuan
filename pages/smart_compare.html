@@ -1515,6 +1515,17 @@
 
     (function initComparePage() {
       const params = new URLSearchParams(window.location.search);
+      const pasted = params.get("paste_link");
+      if (pasted && pasted.trim()) {
+        doRecognizeLink(pasted.trim());
+        try {
+          const u = new URL(window.location.href);
+          u.searchParams.delete("paste_link");
+          const qs = u.searchParams.toString();
+          window.history.replaceState({}, "", u.pathname + (qs ? "?" + qs : "") + u.hash);
+        } catch (eSkip) {}
+        return;
+      }
       if (params.get("fresh") === "1") {
         sessionStorage.removeItem(STORAGE_KEY);
       }

@@ -1075,6 +1075,21 @@
       .plan-block { grid-template-columns: 1fr; }
       .plan-block .pb-left { padding-right:0; border-right:none; padding-bottom:14px; border-bottom:1px dashed #e2e8f0; }
     }
+    .ai-companion-demo-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f766e;
+      background: linear-gradient(90deg, #ccfbf1 0%, #ecfdf5 100%);
+      border-bottom: 1px solid #99f6e4;
+    }
+    .ai-companion-demo-banner.show { display: flex; }
+    .ai-companion-demo-banner i { flex: none; }
   </style>
   <script src="../assets/mode_switcher.js"></script>
 </head>
@@ -1118,6 +1133,8 @@
     </div>
   </div>
 </header>
+
+<div id="aiCompanionDemoBanner" class="ai-companion-demo-banner" role="status" aria-live="polite"></div>
 
 <section class="plan-hero-wrap" id="planEmpty">
   <input id="emptyPlanFileInput" class="hidden-input" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
@@ -1500,7 +1517,27 @@
       if (!this.files || !this.files[0]) return;
       startPlanWithFile(this.files[0].name);
     });
-    const stored = safeGetStorage('planDemo');
+    let stored = safeGetStorage('planDemo');
+
+    /** 新开窗口 sessionStorage 不共享：从 URL 补全场景入场（综合 → 场景采购方案） */
+    const tabFromUrl = params.get('tab');
+    const aiSpring = params.get('ai_demo') === 'scenario_spring_goods';
+    const sceneFromUrl = params.get('scene');
+    if (!stored && (aiSpring || sceneFromUrl || tabFromUrl === 'scene')) {
+      let sceneName = '年货采购';
+      if (sceneFromUrl && String(sceneFromUrl).trim()) {
+        try {
+          sceneName = decodeURIComponent(sceneFromUrl.trim());
+        } catch (err) {
+          sceneName = String(sceneFromUrl).trim();
+        }
+      }
+      stored = { file: null, scene: sceneName };
+      try {
+        sessionStorage.setItem('planDemo', JSON.stringify(stored));
+      } catch (e2) {}
+    }
+
     if (!stored) {
       showPlanEmpty(true);
       document.addEventListener('keydown', function (e) {
@@ -1527,6 +1564,9 @@
     }
     renderFileTab();
     renderSceneTab();
+    if (tabFromUrl === 'scene') {
+      switchTab('scene');
+    }
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') { closeDrawer(); closeSceneModal(); }
     });
@@ -2100,6 +2140,27 @@
   function safeGetStorage(key) {
     try { return JSON.parse(sessionStorage.getItem(key)); } catch (e) { return null; }
   }
+
+  (function initAiCompanionDemoBanner() {
+    var sp = new URLSearchParams(location.search);
+    var demo = sp.get('ai_demo');
+    if (!demo) {
+      var st = safeGetStorage('aiCompanionDemo');
+      if (st && st.demo) demo = st.demo;
+    }
+    if (!demo) return;
+    var labels = {
+      scenario_spring_goods: '来自国采 AI 助手：春节单位年货 · 场景采购方案',
+      plan_document: '来自国采 AI 助手：集中采购方案 · 采购方案分析',
+      image_sheet: '来自国采 AI 助手：图片材料 · 已生成分析视图',
+      link_page: '来自国采 AI 助手：网页链接 · 已生成分析视图'
+    };
+    var el = document.getElementById('aiCompanionDemoBanner');
+    if (!el) return;
+    var text = labels[demo] || ('来自国采 AI 助手：' + demo);
+    el.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i><span>' + esc(text) + '</span>';
+    el.classList.add('show');
+  })();
 </script>
 <script src="../assets/unified_topbar.js"></script>
 </body>

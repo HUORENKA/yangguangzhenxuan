@@ -671,6 +671,27 @@
       justify-content: center; padding: 20px; z-index: 120;
     }
     .modal-overlay.open { display: flex; }
+    .modal-box.cp-login-modal {
+      width: min(440px, calc(100vw - 40px));
+      height: auto;
+      max-height: calc(100vh - 40px);
+    }
+    .cp-login-modal-body {
+      padding: 8px 22px 22px;
+      flex: none;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.72;
+      text-align: center;
+    }
+    .cp-login-modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 22px 22px;
+      flex: none;
+    }
     .modal-box {
       width: min(900px, calc(100vw - 40px)); height: 680px; max-height: calc(100vh - 40px);
       border-radius: 26px; overflow: hidden; background: #fff;
@@ -886,6 +907,7 @@
     .nr-law-item { display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #f8fafc; cursor: pointer; transition: background 0.15s; }
     .nr-law-item:hover { background: rgba(249, 246, 241, 0.95); }
     .nr-law-item:last-child { border-bottom: none; }
+    a.nr-law-item { text-decoration: none; color: inherit; }
     .nr-law-dot { width: 5px; height: 5px; border-radius: 50%; background: #cbd5e1; flex-shrink: 0; }
     .nr-law-name { flex: 1; font-size: 13px; color: #334155; line-height: 1.5; }
     .nr-law-meta { font-size: 11px; color: #94a3b8; flex-shrink: 0; }
@@ -913,6 +935,12 @@
     .cp-card-stat-num.pink { color: #db2777; }
     .cp-card-stat-unit { font-size: 12px; color: #64748b; font-weight: 600; }
     .cp-card-stat-label { font-size: 11px; color: #94a3b8; margin-left: auto; }
+    .cp-card-stat.cp-card-stat--guest {
+      justify-content: center;
+      background: rgba(248, 250, 252, 0.95);
+      border-style: dashed;
+    }
+    .cp-card-stat-guest-msg { font-size: 12px; color: #94a3b8; font-weight: 600; text-align: center; width: 100%; }
 
     /* 运营数据板 */
     .data-board-section { padding: 36px 0; }
@@ -1037,6 +1065,490 @@
     .ai-reco-option-desc { font-size: 12px; color: #64748b; line-height: 1.65; }
     .ai-reco-option-arrow { color: #94a3b8; font-size: 14px; flex-shrink: 0; }
 
+    /* ========== AI 智能助手 · 悬浮球 + 方案A 弹窗 ========== */
+    .ai-float-fab {
+      position: fixed;
+      top: 50%;
+      right: 26px;
+      bottom: auto;
+      z-index: 230;
+      width: 62px;
+      height: 62px;
+      padding: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      background: #0a0a0a;
+      color: transparent;
+      overflow: hidden;
+      box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.35),
+        0 4px 12px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-50%);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .ai-float-fab:hover {
+      transform: translateY(-50%) scale(1.06);
+      box-shadow:
+        0 14px 36px rgba(0, 0, 0, 0.4),
+        0 6px 16px rgba(0, 0, 0, 0.22);
+      border-color: rgba(255, 255, 255, 0.55);
+    }
+    .ai-float-fab:focus-visible { outline: 3px solid rgba(47,107,255,0.45); outline-offset: 3px; }
+    .ai-float-fab-img {
+      width: 106%;
+      height: 106%;
+      object-fit: cover;
+      object-position: 50% 48%;
+      display: block;
+      pointer-events: none;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 1px);
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+    .ai-comp-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.52);
+      backdrop-filter: blur(8px);
+      z-index: 3200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.22s ease;
+    }
+    .ai-comp-overlay.open {
+      display: flex;
+      opacity: 1;
+      pointer-events: all;
+    }
+    .ai-comp-dialog {
+      width: min(440px, 100%);
+      height: auto;
+      max-height: min(88vh, 680px);
+      min-height: 0;
+      background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -16px 48px rgba(15,23,42,0.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), max-height 0.22s ease;
+    }
+    .ai-comp-dialog.ai-mode-unified {
+      width: 100%;
+      max-width: 100vw;
+      max-height: min(94vh, 940px);
+    }
+    .ai-comp-overlay.open .ai-comp-dialog {
+      transform: translateY(0);
+    }
+    .ai-comp-head {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid #eef2f6;
+      background: #fff;
+    }
+    .ai-comp-head-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .ai-comp-head-icon {
+      width: 40px; height: 40px; border-radius: 14px;
+      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      color: #4338ca;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .ai-comp-head-title {
+      font-size: 16px; font-weight: 800; color: #0f172a;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .ai-comp-head-sub { font-size: 11px; color: #94a3b8; margin: 3px 0 0; }
+    .ai-comp-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .ai-comp-icon-btn {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 10px;
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .ai-comp-icon-btn:hover { background: #e2e8f0; color: #0f172a; }
+    .ai-comp-stage {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      position: relative;
+      background: #f8fafc;
+    }
+    .ai-comp-panel {
+      display: none;
+      flex-direction: column;
+      padding: 10px 16px 12px;
+      overflow: visible;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .ai-comp-panel.active { display: flex; animation: aiCompFade 0.24s ease; }
+    .ai-comp-dialog.ai-mode-unified #aiPanel-unified {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    @keyframes aiCompFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .ai-chat-log {
+      flex: 1 1 auto;
+      max-height: min(44vh, 320px);
+      min-height: 120px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 4px 2px;
+      margin-bottom: 8px;
+    }
+    .ai-comp-dialog.ai-mode-unified #aiPanel-unified .ai-chat-log {
+      flex: 1 1 auto;
+      max-height: min(74vh, 680px);
+      min-height: 320px;
+    }
+    .ai-msg { max-width: 92%; padding: 10px 13px; border-radius: 14px; font-size: 13px; line-height: 1.55; word-break: break-word; }
+    .ai-msg.user { align-self: flex-end; background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #fff; border-bottom-right-radius: 4px; }
+    .ai-msg.bot { align-self: flex-start; background: #fff; color: #334155; border: 1px solid #ebeef5; border-bottom-left-radius: 4px; box-shadow: 0 4px 12px rgba(15,23,42,0.04); }
+    .ai-msg-hint { font-size: 12px; color: #64748b; text-align: center; padding: 24px 12px; line-height: 1.65; }
+    .ai-msg.bot.ai-msg-rich {
+      align-self: stretch;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .ai-msg-rich p { margin: 0 0 8px; line-height: 1.58; }
+    .ai-msg-rich p:last-of-type { margin-bottom: 6px; }
+    .ai-msg-rich ul { margin: 6px 0 12px; padding-left: 1.15em; color: #475569; font-size: 12.5px; }
+    .ai-msg-rich li { margin-bottom: 5px; }
+    .ai-inline-action-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      height: 42px;
+      border: none;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.12s;
+    }
+    .ai-inline-action-btn:hover { opacity: 0.94; transform: translateY(-1px); }
+    .ai-inline-action-btn.ai-btn-scene {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      box-shadow: 0 6px 18px rgba(234, 88, 12, 0.32);
+    }
+    .ai-inline-action-btn.ai-btn-plan {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      box-shadow: 0 6px 18px rgba(47, 107, 255, 0.28);
+    }
+    .ai-compose-row {
+      display: flex; align-items: flex-end; gap: 8px;
+      flex-shrink: 0;
+      padding-top: 4px;
+      border-top: 1px solid rgba(226,232,240,0.85);
+      margin-top: auto;
+      padding-top: 10px;
+    }
+    .ai-compose-input {
+      flex: 1;
+      min-height: 42px;
+      max-height: 112px;
+      padding: 10px 12px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 13px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .ai-compose-input:focus { border-color: rgba(47,107,255,0.45); }
+    .ai-send-btn {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.15s;
+    }
+    .ai-send-btn:hover { opacity: 0.92; }
+    .ai-mic-btn {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1.5px solid #e2e8f0;
+      cursor: pointer;
+      background: #fff;
+      color: var(--brand);
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .ai-mic-btn:hover {
+      background: #eff6ff;
+      border-color: rgba(47,107,255,0.35);
+    }
+    .ai-mic-btn.recording {
+      border-color: #6366f1;
+      color: #4338ca;
+      background: #eef2ff;
+      animation: aiPulseMic 1.2s ease-in-out infinite;
+    }
+    @keyframes aiPulseMic {
+      50% { box-shadow: 0 0 0 4px rgba(99,102,241,0.2); }
+    }
+    .ai-upload-card {
+      flex: 0 0 auto;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      min-height: 128px;
+    }
+    .ai-upload-card:hover, .ai-upload-card.drag-over { border-color: var(--brand); background: #eff6ff; }
+    .ai-upload-card i { font-size: 36px; color: #94a3b8; }
+    .ai-upload-card .t1 { font-size: 14px; font-weight: 700; color: #475569; }
+    .ai-upload-card .t2 { font-size: 12px; color: #94a3b8; }
+    .ai-file-list, .ai-img-list {
+      flex: 0 1 auto;
+      max-height: min(26vh, 180px);
+      overflow-y: auto;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ai-file-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px;
+      background: #fff;
+      border: 1px solid #eef2f6;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #475569;
+    }
+    .ai-file-row button {
+      margin-left: auto;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px 6px;
+    }
+    .ai-img-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .ai-img-thumb {
+      width: 88px;
+      height: 88px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid #e2e8f0;
+      position: relative;
+    }
+    .ai-img-thumb-wrap { position: relative; }
+    .ai-img-thumb-wrap button {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: none;
+      background: #0f172a;
+      color: #fff;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .ai-voice-tip { font-size: 13px; color: #64748b; text-align: center; max-width: 280px; line-height: 1.55; }
+    .ai-link-panel { flex: 0 1 auto; display: flex; flex-direction: column; gap: 10px; padding-top: 2px; }
+    .ai-link-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    .ai-link-input:focus { border-color: rgba(47,107,255,0.45); }
+    .ai-link-input.err { border-color: #f87171; background: #fef2f2; }
+    .ai-panel-action {
+      flex-shrink: 0;
+      margin-top: auto;
+      padding-top: 12px;
+    }
+    .ai-primary-btn {
+      width: 100%;
+      height: 44px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      transition: opacity 0.15s;
+    }
+    .ai-primary-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .ai-primary-btn:hover:not(:disabled) { opacity: 0.92; }
+    .ai-mode-dock {
+      flex-shrink: 0;
+      margin-top: 10px;
+      padding: 14px 16px 18px;
+      background: linear-gradient(180deg, #ebeef5 0%, #f4f7fb 52%, #e8eef6 100%);
+      border-top: 2px solid rgba(148, 163, 184, 0.55);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        0 -12px 32px rgba(15, 23, 42, 0.09),
+        inset 0 14px 20px -16px rgba(255, 255, 255, 0.5);
+    }
+    .ai-mode-dock-hint {
+      margin: 0 0 12px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #64748b;
+    }
+    .ai-mode-grid {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      gap: 8px;
+      max-width: 100%;
+      flex-wrap: nowrap;
+    }
+    .ai-mode-btn {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 54px;
+      padding: 8px 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(203, 213, 225, 0.95);
+      background: rgba(255, 255, 255, 0.96);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #475569;
+      transition: transform 0.15s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+    .ai-mode-btn i { font-size: 16px; }
+    .ai-mode-btn span { font-size: 11px; font-weight: 800; letter-spacing: 0.02em; white-space: nowrap; }
+    .ai-mode-btn:hover {
+      border-color: rgba(47, 107, 255, 0.28);
+      background: #fff;
+      color: var(--brand);
+      box-shadow: 0 6px 16px rgba(47, 107, 255, 0.1);
+      transform: translateY(-1px);
+    }
+    .ai-mode-btn.active {
+      border-color: rgba(47, 107, 255, 0.45);
+      background: linear-gradient(180deg, #ffffff 0%, #eef4ff 100%);
+      color: var(--brand);
+      box-shadow:
+        inset 0 0 0 1px rgba(47, 107, 255, 0.1),
+        0 8px 20px rgba(47, 107, 255, 0.16);
+    }
+    .ai-mode-btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.32);
+    }
+    @media (min-width: 520px) {
+      .ai-comp-overlay { align-items: center; padding: 24px 16px; }
+      .ai-comp-dialog {
+        border-radius: 20px;
+        max-height: min(88vh, 680px);
+        height: auto;
+        box-shadow: 0 28px 64px rgba(15,23,42, 0.2);
+        transform: scale(0.94) translateY(12px);
+        opacity: 0;
+        transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, max-height 0.22s ease;
+      }
+      .ai-comp-dialog.ai-mode-unified {
+        width: min(94vw, 920px);
+        max-width: min(94vw, 920px);
+        max-height: min(94vh, 940px);
+      }
+      .ai-comp-overlay.open .ai-comp-dialog {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+    @media (max-width: 860px) {
+      .ai-float-fab { right: 12px; top: 50%; bottom: auto; transform: translateY(-50%); }
+      .ai-float-fab:hover { transform: translateY(-50%) scale(1.06); }
+    }
+
     @media (max-width: 1100px) {
       .orange-inner { flex-direction: column; }
       .orange-left { width: 100%; }
@@ -1072,7 +1584,7 @@
         <nav class="main-tabs" aria-label="采购主功能导航">
           <a class="main-tab active" id="tabHome" href="javascript:void(0)" onclick="switchMainTab('home')"><i class="fa-solid fa-house"></i> 首页</a>
           <a class="main-tab" id="tabMall" href="javascript:void(0)" onclick="switchMainTab('mall')"><i class="fa-solid fa-store"></i> 国采搜品</a>
-          <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 撮合/竞价</a>
+          <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 最价撮合</a>
           <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
           <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
         </nav>
@@ -1107,7 +1619,7 @@
   <div id="homeZone" class="home-paper-root">
 
     <!-- 政采资讯台 -->
-    <section class="home-section paper-texture-section" style="border-bottom:1px solid rgba(210,198,186,0.42);">
+    <section id="nrNewsSection" class="home-section paper-texture-section" style="border-bottom:1px solid rgba(210,198,186,0.42);">
       <div class="container">
         <div class="home-section-head">
           <h2 class="home-section-title"><i class="fa-solid fa-newspaper" style="color:#2f6bff;font-size:18px;"></i> 政采资讯台</h2>
@@ -1157,42 +1669,42 @@
               <div class="nr-law-bar">
                 <button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openLawManageModal()"><i class="fa-solid fa-pen-to-square"></i> 法规文件管理</button>
               </div>
-              <div class="nr-law-item">
+              <a class="nr-law-item" href="./law_detail.html?id=zfcgfl">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">中华人民共和国政府采购法</span>
                 <span class="nr-law-meta">修订：2022-06-24</span>
                 <span class="nr-law-badge valid">现行有效</span>
-              </div>
-              <div class="nr-law-item">
+              </a>
+              <a class="nr-law-item" href="./law_detail.html?id=zfcgfl_ss">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">政府采购法实施条例</span>
                 <span class="nr-law-meta">修订：2022-04-06</span>
                 <span class="nr-law-badge valid">现行有效</span>
-              </div>
-              <div class="nr-law-item">
+              </a>
+              <a class="nr-law-item" href="./law_detail.html?id=zfcg_zb">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">政府采购货物和服务招标投标管理办法</span>
                 <span class="nr-law-meta">修订：2022-09-01</span>
                 <span class="nr-law-badge updated">近期修订</span>
-              </div>
-              <div class="nr-law-item">
+              </a>
+              <a class="nr-law-item" href="./law_detail.html?id=zfcg_fbz">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">政府采购非招标采购方式管理办法</span>
                 <span class="nr-law-meta">修订：2021-08-30</span>
                 <span class="nr-law-badge valid">现行有效</span>
-              </div>
-              <div class="nr-law-item">
+              </a>
+              <a class="nr-law-item" href="./law_detail.html?id=zfcg_zj">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">政府采购评审专家管理办法</span>
                 <span class="nr-law-meta">修订：2021-08-09</span>
                 <span class="nr-law-badge valid">现行有效</span>
-              </div>
-              <div class="nr-law-item">
+              </a>
+              <a class="nr-law-item" href="./law_detail.html?id=bid_law">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">中华人民共和国招标投标法</span>
                 <span class="nr-law-meta">修订：2017-12-27</span>
                 <span class="nr-law-badge valid">现行有效</span>
-              </div>
+              </a>
             </div>
           </div><!-- /news-right -->
         </div><!-- /news-panel -->
@@ -1207,40 +1719,49 @@
           <p class="home-section-subtitle">覆盖采购全流程合规管理，计划、预算、合同、AI智询一站到位。</p>
         </div>
         <div class="compliance-pass-grid">
-          <div class="cp-card" onclick="openProcPlanModal()">
+          <div class="cp-card" onclick="onCompliancePassCardEnter('plan')">
             <div class="cp-card-icon plan">📋</div>
             <div class="cp-card-name">采购计划</div>
             <div class="cp-card-desc">制定采购计划，追踪执行进度，预警截止逾期风险。</div>
-            <div class="cp-card-stat">
+            <div class="cp-card-stat cp-card-stat--guest" id="cpStatPlanGuest">
+              <span class="cp-card-stat-guest-msg">登录后查看单位数据</span>
+            </div>
+            <div class="cp-card-stat cp-card-stat--user" id="cpStatPlanUser" style="display:none;">
               <span class="cp-card-stat-num blue">12</span>
               <span class="cp-card-stat-unit">个</span>
               <span class="cp-card-stat-label">当前计划数</span>
             </div>
             <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
           </div>
-          <div class="cp-card" onclick="openBudgetDrawer()">
+          <div class="cp-card" onclick="onCompliancePassCardEnter('budget')">
             <div class="cp-card-icon budget">💰</div>
             <div class="cp-card-name">预算管理</div>
             <div class="cp-card-desc">实时追踪预算执行情况，超支自动预警，调整留痕可查。</div>
-            <div class="cp-card-stat">
+            <div class="cp-card-stat cp-card-stat--guest" id="cpStatBudgetGuest">
+              <span class="cp-card-stat-guest-msg">登录后查看单位数据</span>
+            </div>
+            <div class="cp-card-stat cp-card-stat--user" id="cpStatBudgetUser" style="display:none;">
               <span class="cp-card-stat-num green">¥580</span>
               <span class="cp-card-stat-unit">万</span>
               <span class="cp-card-stat-label">预算总额</span>
             </div>
             <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
           </div>
-          <div class="cp-card" onclick="openContractModal()">
+          <div class="cp-card" onclick="onCompliancePassCardEnter('contract')">
             <div class="cp-card-icon contract">📝</div>
             <div class="cp-card-name">合同管理</div>
             <div class="cp-card-desc">管理合同全生命周期，AI自动审核条款风险，签章存档。</div>
-            <div class="cp-card-stat">
+            <div class="cp-card-stat cp-card-stat--guest" id="cpStatContractGuest">
+              <span class="cp-card-stat-guest-msg">登录后查看单位数据</span>
+            </div>
+            <div class="cp-card-stat cp-card-stat--user" id="cpStatContractUser" style="display:none;">
               <span class="cp-card-stat-num pink">28</span>
               <span class="cp-card-stat-unit">个</span>
               <span class="cp-card-stat-label">合同模板数</span>
             </div>
             <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
           </div>
-          <div class="cp-card" onclick="openComplianceModal()">
+          <div class="cp-card" onclick="onCompliancePassCardEnter('ai')">
             <div class="cp-card-icon ai">🤖</div>
             <div class="cp-card-name">AI 智询</div>
             <div class="cp-card-desc">AI实时解答采购合规问题，给出风险提示和整改建议。</div>
@@ -1925,6 +2446,103 @@
     <button class="mode-switch-item" type="button" onclick="goToManagementMode()">管理模式</button>
   </div>
 
+  <!-- ========== AI 智能助手（底部模式功能区） ========== -->
+  <button type="button" class="ai-float-fab" id="aiCompanionFab" aria-label="打开 AI 智能助手" title="AI 智能助手" onclick="openAiCompanion()">
+    <img class="ai-float-fab-img" src="../assets/ai_companion_cat.png" alt="" width="64" height="64" decoding="async" draggable="false" />
+  </button>
+  <div class="ai-comp-overlay" id="aiCompanionOverlay" role="dialog" aria-modal="true" aria-labelledby="aiCompanionTitle" onclick="closeAiCompanion(event)">
+    <div class="ai-comp-dialog ai-mode-unified" id="aiCompanionDialog" onclick="event.stopPropagation()">
+      <header class="ai-comp-head">
+        <div class="ai-comp-head-info">
+          <div class="ai-comp-head-icon" aria-hidden="true"><i class="fa-solid fa-robot"></i></div>
+          <div>
+            <p class="ai-comp-head-title" id="aiCompanionTitle">国采 AI 助手</p>
+            <p class="ai-comp-head-sub">综合交互（含语音）· 文件 · 图片 · 链接</p>
+          </div>
+        </div>
+        <div class="ai-comp-head-actions">
+          <button type="button" class="ai-comp-icon-btn" title="收起" aria-label="收起对话框" onclick="closeAiCompanion()"><i class="fa-solid fa-minus"></i></button>
+          <button type="button" class="ai-comp-icon-btn" title="关闭" aria-label="关闭" onclick="closeAiCompanion()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </header>
+      <div class="ai-comp-stage">
+        <div class="ai-comp-panel active" id="aiPanel-unified" data-ai-mode="unified" role="tabpanel">
+          <div class="ai-chat-log" id="aiChatLog">
+            <div class="ai-msg bot">您好，我是国采 AI 助手。可直接输入文字，或点击麦克风进行<strong>语音输入</strong>（结束录音后填入对话）；可通过下方<strong>功能区</strong>切换文件、图片、链接等模式。</div>
+          </div>
+          <div class="ai-compose-row">
+            <label for="aiComposeInput" class="sr-only">输入消息</label>
+            <textarea id="aiComposeInput" class="ai-compose-input" rows="2" placeholder="输入问题，例如：帮我解读框架协议与分散采购的区别…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiCompanionChat();}"></textarea>
+            <button type="button" class="ai-mic-btn" id="aiVoiceBtn" aria-pressed="false" title="语音输入" aria-label="语音输入" onclick="toggleAiCompanionVoice()"><i class="fa-solid fa-microphone" id="aiVoiceIcon"></i></button>
+            <button type="button" class="ai-send-btn" title="发送" aria-label="发送" onclick="sendAiCompanionChat()"><i class="fa-solid fa-paper-plane"></i></button>
+          </div>
+        </div>
+        <div class="ai-comp-panel" id="aiPanel-file" data-ai-mode="file" role="tabpanel">
+          <div class="ai-upload-card" id="aiFileDrop" onclick="document.getElementById('aiFileInput').click()">
+            <i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i>
+            <span class="t1">点击或拖拽上传文件</span>
+            <span class="t2">上传任意文件将按《集中采购方案》范本进行分析</span>
+          </div>
+          <input type="file" id="aiFileInput" multiple style="position:absolute;width:0;height:0;opacity:0;pointer-events:none" />
+          <div class="ai-file-list" id="aiFileList"></div>
+          <div class="ai-panel-action">
+            <button type="button" class="ai-primary-btn" id="aiFileSubmitBtn" disabled onclick="submitAiCompanionFiles()">发送给 AI 分析</button>
+          </div>
+        </div>
+        <div class="ai-comp-panel" id="aiPanel-image" data-ai-mode="image" role="tabpanel">
+          <div class="ai-upload-card" id="aiImgDrop" onclick="document.getElementById('aiImageInput').click()">
+            <i class="fa-regular fa-image" aria-hidden="true"></i>
+            <span class="t1">上传或粘贴图片</span>
+            <span class="t2">支持多张图片</span>
+          </div>
+          <input type="file" id="aiImageInput" accept="image/*" multiple style="position:absolute;width:0;height:0;opacity:0;pointer-events:none" />
+          <div class="ai-img-list" id="aiImgList"><div class="ai-img-grid" id="aiImgGrid"></div></div>
+          <div class="ai-panel-action">
+            <button type="button" class="ai-primary-btn" id="aiImgSubmitBtn" disabled onclick="submitAiCompanionImages()">发送给 AI 分析</button>
+          </div>
+        </div>
+        <div class="ai-comp-panel" id="aiPanel-link" data-ai-mode="link" role="tabpanel">
+          <div class="ai-link-panel">
+            <label for="aiLinkInput" class="t1" style="display:block;margin-bottom:4px;">粘贴链接</label>
+            <input type="text" class="ai-link-input" id="aiLinkInput" inputmode="url" placeholder="https://example.com/notice/..." autocomplete="off" />
+          </div>
+          <div class="ai-panel-action">
+            <button type="button" class="ai-primary-btn" id="aiLinkSubmitBtn" onclick="submitAiCompanionLink()">解析链接并分析</button>
+          </div>
+        </div>
+      </div>
+      <nav class="ai-mode-dock" aria-label="交互方式">
+        <p class="ai-mode-dock-hint">选择交互方式</p>
+        <div class="ai-mode-grid" role="tablist">
+          <button type="button" class="ai-mode-btn active" role="tab" aria-selected="true" data-mode="unified" onclick="setAiCompanionMode('unified', this)"><i class="fa-solid fa-comments"></i><span>综合</span></button>
+          <button type="button" class="ai-mode-btn" role="tab" aria-selected="false" data-mode="file" onclick="setAiCompanionMode('file', this)"><i class="fa-solid fa-file-lines"></i><span>文件</span></button>
+          <button type="button" class="ai-mode-btn" role="tab" aria-selected="false" data-mode="image" onclick="setAiCompanionMode('image', this)"><i class="fa-solid fa-image"></i><span>图片</span></button>
+          <button type="button" class="ai-mode-btn" role="tab" aria-selected="false" data-mode="link" onclick="setAiCompanionMode('link', this)"><i class="fa-solid fa-link"></i><span>链接</span></button>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ==================== 采购合规通 · 未登录提示 ==================== -->
+  <div id="cpLoginPromptModal" class="modal-overlay" style="z-index:2100;" onclick="closeCpLoginPromptModal(event)">
+    <div class="modal-box cp-login-modal" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h3 class="modal-title"><i class="fa-solid fa-user-lock" style="color:#ff6a00;margin-right:8px;"></i>需要登录</h3>
+          <p class="modal-subtitle">采购合规功能需登录后绑定单位才可使用。</p>
+        </div>
+        <button class="modal-close" type="button" onclick="closeCpLoginPromptModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="cp-login-modal-body">
+        “采购合规通”中的计划、预算、合同和单位数据仅对登录用户开放；登录后即可进入对应功能并完成 AI 智询等服务。
+      </div>
+      <div class="cp-login-modal-actions">
+        <button class="gm-btn gm-btn-ghost" type="button" onclick="closeCpLoginPromptModal()">稍后再说</button>
+        <button class="feature-button orange" type="button" onclick="gotoCpLoginFromPrompt()"><i class="fa-solid fa-right-to-bracket"></i> 前往登录</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== 采购合规助手弹窗 ==================== -->
   <div id="complianceModal" class="modal-overlay" onclick="closeComplianceModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
@@ -2005,7 +2623,7 @@
                 <span id="newProcPlanFileLabel" style="font-size:12px;color:#64748b;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title=""></span>
                 <button type="button" id="newProcPlanFileClearBtn" class="gm-btn gm-btn-ghost gm-btn-sm" style="display:none;padding:4px 8px;" onclick="clearNewProcPlanFile()" title="移除已选文件">移除</button>
               </div>
-              <div style="font-size:11px;color:#94a3b8;margin-top:4px;">支持 PDF、Office 文档、TXT、图片等，单文件本地预览（原型演示）。</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:4px;">支持 PDF、Office 文档、TXT、图片等；单文件可在本地预览。</div>
             </div>
           </div>
           <div class="form-row single">
@@ -2078,7 +2696,7 @@
                 <span id="newBudgetFileLabel" style="font-size:12px;color:#64748b;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title=""></span>
                 <button type="button" id="newBudgetFileClearBtn" class="gm-btn gm-btn-ghost gm-btn-sm" style="display:none;padding:4px 8px;" onclick="clearNewBudgetFile()" title="移除已选文件">移除</button>
               </div>
-              <div style="font-size:11px;color:#94a3b8;margin-top:4px;">支持 PDF、Office 文档、TXT、图片等，单文件本地预览（原型演示）。</div>
+              <div style="font-size:11px;color:#94a3b8;margin-top:4px;">支持 PDF、Office 文档、TXT、图片等；单文件可在本地预览。</div>
             </div>
           </div>
           <div class="form-row single">
@@ -2663,7 +3281,7 @@
         +'<div><span style="font-weight:700;color:#0f172a;">收货部门/联系人</span><span style="margin-left:8px;">'+escapeAttr(receiver)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">付款方式</span><span style="margin-left:8px;">'+escapeAttr(payMethod)+'</span></div>'
         +'</div>'
-        +'<p style="margin:14px 0 0;font-size:11px;color:#94a3b8;">以上为原型演示数据，正式环境由订单中心接口返回。</p></div>';
+        +'<p style="margin:14px 0 0;font-size:11px;color:#94a3b8;">以上为示例汇总，正式发布后由订单中心接口同步。</p></div>';
       document.getElementById('planOrderDetailModal').classList.add('open');
     }
     function closePlanOrderDetail(e){
@@ -2817,7 +3435,7 @@
         +'<div><span style="font-weight:700;color:#0f172a;">收货部门/联系人</span><span style="margin-left:8px;">'+escapeAttr(receiver)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">付款方式</span><span style="margin-left:8px;">'+escapeAttr(payMethod)+'</span></div>'
         +'</div>'
-        +'<p style="margin:14px 0 0;font-size:11px;color:#94a3b8;">以上为原型演示数据，正式环境由订单中心接口返回。</p></div>';
+        +'<p style="margin:14px 0 0;font-size:11px;color:#94a3b8;">以上为示例汇总，正式发布后由订单中心接口同步。</p></div>';
       document.getElementById('budgetOrderDetailModal').classList.add('open');
     }
     function closeBudgetOrderDetail(e){
@@ -3063,7 +3681,49 @@
       var isLogin = localStorage.getItem('gc_auth') === '1';
       if (locked) locked.style.display = isLogin ? 'none' : 'block';
       if (unlocked) unlocked.style.display = isLogin ? 'block' : 'none';
+      syncCompliancePassAuthState(isLogin);
     }
+    /** 采购合规通：未登录不展示计划/预算/合同的统计数字 */
+    function syncCompliancePassAuthState(isLogin) {
+      if (typeof isLogin !== 'boolean') {
+        isLogin = localStorage.getItem('gc_auth') === '1';
+      }
+      ['cpStatPlan', 'cpStatBudget', 'cpStatContract'].forEach(function(prefix) {
+        var g = document.getElementById(prefix + 'Guest');
+        var u = document.getElementById(prefix + 'User');
+        if (g) g.style.display = isLogin ? 'none' : 'flex';
+        if (u) u.style.display = isLogin ? 'flex' : 'none';
+      });
+    }
+
+    /** 采购合规通卡片入口：未登录弹出登录提示 */
+    function openCpLoginPromptModal() {
+      var wrap = document.getElementById('cpLoginPromptModal');
+      if (!wrap) return;
+      wrap.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeCpLoginPromptModal(event) {
+      var wrap = document.getElementById('cpLoginPromptModal');
+      if (!wrap) return;
+      if (event && event.target && event.target !== wrap) return;
+      wrap.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function gotoCpLoginFromPrompt() {
+      unlockDataBoard();
+    }
+    function onCompliancePassCardEnter(which) {
+      if (localStorage.getItem('gc_auth') !== '1') {
+        openCpLoginPromptModal();
+        return;
+      }
+      if (which === 'plan') openProcPlanModal();
+      else if (which === 'budget') openBudgetDrawer();
+      else if (which === 'contract') openContractModal();
+      else if (which === 'ai') openComplianceModal();
+    }
+
     function unlockDataBoard() {
       var redirect = encodeURIComponent(window.location.pathname + window.location.search);
       window.location.href = '../login.html?redirect=' + redirect;
@@ -3119,7 +3779,7 @@
     /* 点击选项跳转时关闭所有弹窗（不再恢复） */
     function closeAllModalsForNav() {
       _aiRecoSourceId = null;
-      document.querySelectorAll('.gm-overlay, .gm-drawer-overlay, .ai-reco-overlay, .law-manage-overlay').forEach(function(el) { el.classList.remove('open'); });
+      document.querySelectorAll('.gm-overlay, .gm-drawer-overlay, .ai-reco-overlay, .law-manage-overlay, .ai-comp-overlay').forEach(function(el) { el.classList.remove('open'); });
       document.body.style.overflow = '';
     }
     /* 跳转到智选方案分析界面 */
@@ -3134,12 +3794,371 @@
       window.location.href = './bidding_inquiry.html?demo=1';
     }
 
+    /* ========== AI 智能助手（悬浮球 + 方案A） ========== */
+    var _aiVoiceRecording = false;
+    var _aiCompanionFiles = [];
+    var _aiCompanionImages = [];
+
+    function setAiCompanionDemoSession(demoKey) {
+      try {
+        sessionStorage.setItem('aiCompanionDemo', JSON.stringify({ demo: demoKey, ts: Date.now() }));
+      } catch (e) {}
+    }
+
+    /** 在新窗口打开采购方案/分析页（不占用当前页） */
+    function openAiCompanionAnalysisPage(demoKey) {
+      var url = './plan_result.html?ai_demo=' + encodeURIComponent(demoKey);
+      setAiCompanionDemoSession(demoKey);
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function gotoAiCompanionScenarioSpring() {
+      setAiCompanionDemoSession('scenario_spring_goods');
+      var q = '?ai_demo=scenario_spring_goods&tab=scene&scene=' + encodeURIComponent('年货采购');
+      window.open('./plan_result.html' + q, '_blank', 'noopener,noreferrer');
+    }
+
+    function openAiCompanion() {
+      var ov = document.getElementById('aiCompanionOverlay');
+      var fab = document.getElementById('aiCompanionFab');
+      if (!ov) return;
+      ov.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if (fab) fab.style.visibility = 'hidden';
+      var dlg = document.getElementById('aiCompanionDialog');
+      var activePanel = document.querySelector('.ai-comp-panel.active');
+      if (dlg && activePanel) {
+        dlg.classList.toggle('ai-mode-unified', activePanel.getAttribute('data-ai-mode') === 'unified');
+      }
+      setTimeout(function() {
+        var unified = document.getElementById('aiPanel-unified');
+        var inp = document.getElementById('aiComposeInput');
+        if (inp && unified && unified.classList.contains('active')) inp.focus();
+      }, 350);
+    }
+
+    function closeAiCompanion(event) {
+      var ov = document.getElementById('aiCompanionOverlay');
+      if (!ov) return;
+      if (event && event.target !== ov) return;
+      ov.classList.remove('open');
+      document.body.style.overflow = '';
+      var fab = document.getElementById('aiCompanionFab');
+      if (fab) fab.style.visibility = '';
+    }
+
+    function setAiCompanionMode(mode, btn) {
+      document.querySelectorAll('.ai-comp-panel').forEach(function(p) {
+        p.classList.toggle('active', p.getAttribute('data-ai-mode') === mode);
+      });
+      document.querySelectorAll('.ai-mode-btn').forEach(function(b) {
+        var on = b.getAttribute('data-mode') === mode;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      var dlg = document.getElementById('aiCompanionDialog');
+      if (dlg) {
+        dlg.classList.toggle('ai-mode-unified', mode === 'unified');
+      }
+    }
+
+    function escapeAiHtml(s) {
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function fmtAiBytes(n) {
+      if (n < 1024) return n + ' B';
+      if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+      return (n / 1048576).toFixed(1) + ' MB';
+    }
+
+    function appendAiChat(role, text) {
+      var log = document.getElementById('aiChatLog');
+      if (!log) return;
+      var div = document.createElement('div');
+      div.className = 'ai-msg ' + (role === 'user' ? 'user' : 'bot');
+      div.textContent = text;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    /** 结构化 AI 气泡（固定文案拼接，可按需扩展） */
+    function appendAiBotRich(htmlInner) {
+      var log = document.getElementById('aiChatLog');
+      if (!log) return;
+      var div = document.createElement('div');
+      div.className = 'ai-msg bot ai-msg-rich';
+      div.innerHTML = htmlInner;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function sendAiCompanionChat() {
+      var ta = document.getElementById('aiComposeInput');
+      if (!ta) return;
+      var t = (ta.value || '').trim();
+      if (!t) return;
+      appendAiChat('user', t);
+      ta.value = '';
+      setTimeout(function() {
+        appendAiChat('bot', '已收到您的问题。我将结合采购知识库与适用规则，为您提供法规解读、流程建议与风险提示。');
+      }, 450);
+    }
+
+    function renderAiFileList() {
+      var list = document.getElementById('aiFileList');
+      var btn = document.getElementById('aiFileSubmitBtn');
+      if (!list) return;
+      list.innerHTML = '';
+      _aiCompanionFiles.forEach(function(f, idx) {
+        var row = document.createElement('div');
+        row.className = 'ai-file-row';
+        row.innerHTML = '<i class="fa-regular fa-file" aria-hidden="true"></i><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeAiHtml(f.name) + '</span><span style="color:#94a3b8;flex:none;">' + fmtAiBytes(f.size) + '</span>';
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.setAttribute('aria-label', '移除');
+        rm.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        (function(i) {
+          rm.onclick = function() {
+            _aiCompanionFiles.splice(i, 1);
+            renderAiFileList();
+          };
+        })(idx);
+        row.appendChild(rm);
+        list.appendChild(row);
+      });
+      if (btn) btn.disabled = _aiCompanionFiles.length === 0;
+    }
+
+    function renderAiImgGrid() {
+      var grid = document.getElementById('aiImgGrid');
+      var btn = document.getElementById('aiImgSubmitBtn');
+      if (!grid) return;
+      grid.innerHTML = '';
+      _aiCompanionImages.forEach(function(slot, idx) {
+        var wrap = document.createElement('div');
+        wrap.className = 'ai-img-thumb-wrap';
+        var img = document.createElement('img');
+        img.className = 'ai-img-thumb';
+        img.src = slot.url;
+        img.alt = slot.file.name || 'upload';
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.setAttribute('aria-label', '移除');
+        rm.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        (function(i) {
+          rm.onclick = function() {
+            var s = _aiCompanionImages[i];
+            if (s && s.url) URL.revokeObjectURL(s.url);
+            _aiCompanionImages.splice(i, 1);
+            renderAiImgGrid();
+          };
+        })(idx);
+        wrap.appendChild(img);
+        wrap.appendChild(rm);
+        grid.appendChild(wrap);
+      });
+      if (!_aiCompanionImages.length) {
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = '发送给 AI 分析';
+        }
+      } else {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '发送给 AI 分析';
+        }
+      }
+    }
+
+    function addAiCompanionFilesFromList(fileList) {
+      if (!fileList || !fileList.length) return;
+      for (var i = 0; i < fileList.length; i++) {
+        _aiCompanionFiles.push(fileList[i]);
+      }
+      renderAiFileList();
+    }
+
+    function addAiCompanionImagesFromList(fileList) {
+      if (!fileList || !fileList.length) return;
+      for (var i = 0; i < fileList.length; i++) {
+        var f = fileList[i];
+        if (!f.type || f.type.indexOf('image/') !== 0) continue;
+        _aiCompanionImages.push({ file: f, url: URL.createObjectURL(f) });
+      }
+      renderAiImgGrid();
+    }
+
+    function submitAiCompanionFiles() {
+      if (!_aiCompanionFiles.length) return;
+      var count = _aiCompanionFiles.length;
+      var names = _aiCompanionFiles.map(function(f) { return f.name; }).join('、');
+      appendAiChat('user', '已上传《单位集中采购方案》类文件（' + count + ' 个）：' + names + '（将按集中采购方案范本解析）');
+      _aiCompanionFiles = [];
+      renderAiFileList();
+      setAiCompanionMode('unified', document.querySelector('.ai-mode-btn[data-mode="unified"]'));
+      setTimeout(function() {
+        appendAiBotRich(
+          '<p><strong>已识别</strong>该文档为单位集中采购方案，并完成初步结构化阅读。</p>' +
+          '<ul>' +
+          '<li><strong>范围与标段</strong>：识别出服务/货物大类与分包逻辑，可按目录树对照采购清单。</li>' +
+          '<li><strong>关键条款</strong>：履约周期、验收标准、分包与联合体限制等条目已打点，建议在「分析页」逐项核对。</li>' +
+          '<li><strong>风险提示</strong>：预算科目与框架协议衔接处需重点关注，避免履约争议。</li>' +
+          '</ul>' +
+          '<button type="button" class="ai-inline-action-btn ai-btn-plan" onclick="openAiCompanionAnalysisPage(\'plan_document\')">采购方案分析</button>'
+        );
+      }, 520);
+    }
+
+    function submitAiCompanionImages() {
+      var n = _aiCompanionImages.length;
+      if (!n) return;
+      try {
+        var names = _aiCompanionImages.map(function(s) {
+          return (s.file && s.file.name) ? s.file.name : '图片';
+        }).join('、');
+        /** 写入与 smart_compare.html 相同的会话状态后跳转全网寻品（图片识别与页内上传一致） */
+        sessionStorage.setItem(FINDER_COMPARE_STORAGE_KEY, JSON.stringify({
+          sourceType: 'image',
+          fileName: names,
+          sourceLabel: '图片识别',
+          rawValue: '上传图片：' + names
+        }));
+      } catch (eSkip) {}
+      window.location.href = './smart_compare.html';
+    }
+
+    function toggleAiCompanionVoice() {
+      var btn = document.getElementById('aiVoiceBtn');
+      var icon = document.getElementById('aiVoiceIcon');
+      if (!btn || !icon) return;
+      _aiVoiceRecording = !_aiVoiceRecording;
+      btn.classList.toggle('recording', _aiVoiceRecording);
+      btn.setAttribute('aria-pressed', _aiVoiceRecording ? 'true' : 'false');
+      if (_aiVoiceRecording) {
+        icon.className = 'fa-solid fa-stop';
+        return;
+      }
+      icon.className = 'fa-solid fa-microphone';
+      setAiCompanionMode('unified', document.querySelector('.ai-mode-btn[data-mode="unified"]'));
+      var demo = '我需要为单位春节置办一批年货，请你为我提供建议。';
+      appendAiChat('user', '【语音】' + demo);
+      setTimeout(function() {
+        appendAiBotRich(
+          '<p><strong>场景化需求</strong>：已识别您正在为单位筹备<strong>春节年货</strong>采购，可从合规、履约与慰问礼遇三方面给出规划建议。</p>' +
+          '<ul>' +
+          '<li><strong>品类建议</strong>：米油特产礼盒、节日慰问品套装、可追溯品牌的糕点小食；如有工会经费规则，可按人均额度选型。</li>' +
+          '<li><strong>采购路径</strong>：优先框架协议/电子卖场可追溯商品；大批量可拆单或按标段邀请优质供应商比价。</li>' +
+          '<li><strong>留痕合规</strong>：保留选型依据、比价记录与签收清单，便于审计与复检。</li>' +
+          '</ul>' +
+          '<button type="button" class="ai-inline-action-btn ai-btn-scene" onclick="gotoAiCompanionScenarioSpring()">场景采购方案</button>'
+        );
+      }, 520);
+    }
+
+    function normalizeAiLink(raw) {
+      raw = String(raw || '').trim();
+      if (!raw) return null;
+      if (!/^https?:\/\//i.test(raw)) raw = 'https://' + raw;
+      try {
+        return new URL(raw).href;
+      } catch (e2) {
+        return null;
+      }
+    }
+
+    function submitAiCompanionLink() {
+      var input = document.getElementById('aiLinkInput');
+      if (!input) return;
+      input.classList.remove('err');
+      var href = normalizeAiLink(input.value);
+      if (!href) {
+        input.classList.add('err');
+        return;
+      }
+      /** 跳转「全网寻品」粘贴商品链接分析页（与 smart_compare.html 内「粘贴商品链接」同源） */
+      window.location.href = './smart_compare.html?paste_link=' + encodeURIComponent(href);
+    }
+
+    function aiBindDropZone(el, onFiles) {
+      if (!el) return;
+      ['dragenter', 'dragover'].forEach(function(ev) {
+        el.addEventListener(ev, function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          el.classList.add('drag-over');
+        });
+      });
+      el.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        el.classList.remove('drag-over');
+      });
+      el.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        el.classList.remove('drag-over');
+        var fl = e.dataTransfer && e.dataTransfer.files;
+        if (fl && fl.length) onFiles(fl);
+      });
+    }
+
+    function initAiCompanionWidget() {
+      var fi = document.getElementById('aiFileInput');
+      var ii = document.getElementById('aiImageInput');
+      if (fi) {
+        fi.addEventListener('change', function() {
+          addAiCompanionFilesFromList(fi.files);
+          fi.value = '';
+        });
+      }
+      if (ii) {
+        ii.addEventListener('change', function() {
+          addAiCompanionImagesFromList(ii.files);
+          ii.value = '';
+        });
+      }
+      aiBindDropZone(document.getElementById('aiFileDrop'), function(files) {
+        addAiCompanionFilesFromList(files);
+      });
+      aiBindDropZone(document.getElementById('aiImgDrop'), function(files) {
+        addAiCompanionImagesFromList(files);
+      });
+      var ov = document.getElementById('aiCompanionOverlay');
+      if (ov) {
+        ov.addEventListener('paste', function(e) {
+          var imgPanel = document.getElementById('aiPanel-image');
+          if (!imgPanel || !imgPanel.classList.contains('active')) return;
+          var items = e.clipboardData && e.clipboardData.items;
+          if (!items) return;
+          var blobs = [];
+          for (var i = 0; i < items.length; i++) {
+            if (items[i].type && items[i].type.indexOf('image/') === 0) {
+              var b = items[i].getAsFile();
+              if (b) blobs.push(b);
+            }
+          }
+          if (!blobs.length) return;
+          e.preventDefault();
+          addAiCompanionImagesFromList(blobs);
+        });
+      }
+      document.addEventListener('keydown', function(e) {
+        if (e.key !== 'Escape') return;
+        var ovel = document.getElementById('aiCompanionOverlay');
+        if (ovel && ovel.classList.contains('open')) closeAiCompanion();
+      });
+    }
+
     /* 初始化首页功能 */
     if (localStorage.getItem('gc_auth') !== '0' && localStorage.getItem('gc_auth') !== '1') {
       localStorage.setItem('gc_auth', '0');
     }
     syncDataBoardAuthState();
     initNiCarousel();
+    initAiCompanionWidget();
   </script>
 <script src="../assets/unified_topbar.js"></script>
 </body>

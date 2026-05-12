@@ -279,9 +279,26 @@
 <body>
 <script>
   (function () {
-    if (new URLSearchParams(location.search).get('embed') === '1') {
+    var embedded = new URLSearchParams(location.search).get('embed') === '1';
+    if (embedded) {
       document.documentElement.classList.add('admin-embed-mode');
+      document.querySelectorAll('a[href]').forEach(function (a) {
+        var h = a.getAttribute('href');
+        if (!h || /^https?:\/\//i.test(h) || h.indexOf('javascript:') === 0 || h.charAt(0) === '#') return;
+        if (h.indexOf('embed=') !== -1) return;
+        if (h.indexOf('.html') === -1) return;
+        a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+      });
     }
+    window.withAdminEmbed = function (href) {
+      if (!embedded) return href;
+      var q = href.indexOf('?');
+      var base = q === -1 ? href : href.slice(0, q);
+      var params = new URLSearchParams(q === -1 ? '' : href.slice(q + 1));
+      params.set('embed', '1');
+      var s = params.toString();
+      return s ? base + '?' + s : base + '?embed=1';
+    };
   })();
 </script>
 
@@ -335,7 +352,7 @@
           <button class="action-btn action-btn-secondary" onclick="exportData()">
             <i class="fas fa-download"></i><span>导出数据</span>
           </button>
-          <button class="action-btn action-btn-primary" onclick="window.location.href='admin_supplier_settle.html'">
+          <button class="action-btn action-btn-primary" onclick="window.location.href=withAdminEmbed('admin_supplier_settle.html')">
             <i class="fas fa-plus"></i><span>供应商入驻</span>
           </button>
         </div>
@@ -737,7 +754,7 @@
       type: 'info',
       confirmText: '前往整改',
       cancelText: '稍后处理',
-      onConfirm: () => { window.location.href = 'admin_supplier_settle.html'; }
+      onConfirm: () => { window.location.href = withAdminEmbed('admin_supplier_settle.html'); }
     });
   }
 
