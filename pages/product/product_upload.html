@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>上架商品 | 阳光甄选</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../../assets/custom.css">
   <style>
@@ -1505,7 +1505,7 @@
       <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
         <div class="min-w-0 md:max-w-md lg:max-w-[22rem] xl:max-w-lg 2xl:max-w-xl">
           <h2 class="text-lg font-bold text-slate-900">待提交商品</h2>
-          <p class="text-sm text-slate-500 mt-1 leading-relaxed">支持<strong>添加商品</strong>单笔录入，或点击 <strong>批量上传</strong> 直接载入原型演示数据；亦可下载<strong>CSV / Excel</strong>模板准备批量数据（「仓库库存JSON」与各仓数量）。列表<strong>预览</strong>新开页面展示。无需完成 AI 合规校验亦可提交审核。</p>
+          <p class="text-sm text-slate-500 mt-1 leading-relaxed">支持<strong>添加商品</strong>单笔录入，或点击 <strong>批量上传</strong> 直接载入原型演示数据；亦可下载<strong>CSV / Excel</strong>模板准备批量数据（「仓库库存JSON」可选，上架提交<strong>可不登记库存</strong>）。列表<strong>预览</strong>新开页面展示。无需完成 AI 合规校验亦可提交审核；库存请在<strong>审核通过后</strong>于「我的商品」维护。</p>
         </div>
         <div class="flex flex-wrap gap-2 shrink-0 lg:flex-nowrap">
           <button type="button" class="action-btn action-btn-secondary" onclick="openAddProductModal()">
@@ -1565,7 +1565,7 @@
                 <th class="text-left px-5 py-4 font-semibold">价格（元）</th>
                 <th class="text-left px-5 py-4 font-semibold">单位</th>
                 <th class="text-left px-5 py-4 font-semibold">类目路径</th>
-                <th class="text-left px-5 py-4 font-semibold">分仓库存（各仓数量）</th>
+                <th class="text-left px-5 py-4 font-semibold">分仓库存（上架可不登记）</th>
                 <th class="text-left px-5 py-4 font-semibold">操作</th>
               </tr>
             </thead>
@@ -1739,7 +1739,7 @@
         <div>
           <div class="text-xs font-black uppercase tracking-[0.14em] text-red-600">单笔录入</div>
           <h3 class="text-xl font-black text-slate-900 mt-1">添加商品</h3>
-          <p class="text-sm text-slate-500 mt-2 leading-6">价格按人民币填写；选择与平台一致的三级类目后，系统将展示该类目<strong>固定规格</strong>。勾选的每个仓库需单独填写<strong>非负整数</strong>库存。商品图片分为主图（必填）、副图（可选）与<strong>详情图</strong>（可选）。</p>
+          <p class="text-sm text-slate-500 mt-2 leading-6">价格按人民币填写；选择与平台一致的三级类目后，系统将展示该类目<strong>固定规格</strong>。<strong>上架提交审核可不登记库存</strong>（可不勾选仓库）；若勾选仓库须逐项填写<strong>非负整数</strong>库存。商品图片分为主图（必填）、副图（可选）与<strong>详情图</strong>（可选）。</p>
         </div>
         <button type="button" class="assistant-close rounded-full bg-slate-100 text-slate-500 w-10 h-10 border-0" onclick="closeAddProductModal()" aria-label="关闭">
           <i class="fa-solid fa-xmark"></i>
@@ -1790,8 +1790,8 @@
       </div>
 
       <div class="apm-section">
-        <div class="apm-section-title">仓库与分仓库存（可多选）</div>
-        <p class="text-xs text-slate-500 mb-3">勾选仓库后，请在该行填写该仓的库存（非负整数）；未勾选的仓不参与。</p>
+        <div class="apm-section-title">仓库与分仓库存（可选）</div>
+        <p class="text-xs text-slate-500 mb-3">上架提交<strong>可不登记</strong>：不勾选任何仓库即视为暂不登记库存（审核通过后请在「我的商品」修改库存）。若勾选仓库，须在该行填写该仓<strong>非负整数</strong>库存。</p>
         <div id="apmWarehouseWrap" class="apm-wm-grid"></div>
       </div>
 

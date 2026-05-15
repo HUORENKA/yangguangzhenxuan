@@ -144,12 +144,27 @@ function splitMulti(raw) {
 
 /** @returns {{ warehouseStocks: Record<string, number>, warehouses: string[] }} */
 function parseAndValidateWarehouseStockJson(text, rowTag) {
-  const obj = parseSpecJson(text);
+  const raw = text !== undefined && text !== null ? String(text).trim() : '';
+  if (!raw) {
+    const warehouseStocks = {};
+    WAREHOUSES.forEach(w => {
+      warehouseStocks[w] = 0;
+    });
+    return { warehouseStocks, warehouses: [] };
+  }
+
+  const obj = parseSpecJson(raw);
   if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
-    throw new Error(`${rowTag} 「仓库库存JSON」须为合法 JSON 对象`);
+    throw new Error(`${rowTag} 「仓库库存JSON」须为合法 JSON 对象（可为空对象 {} 表示暂不登记库存）`);
   }
   const keys = Object.keys(obj);
-  if (!keys.length) throw new Error(`${rowTag} 「仓库库存JSON」至少填写一个仓库及库存`);
+  if (!keys.length) {
+    const warehouseStocks = {};
+    WAREHOUSES.forEach(w => {
+      warehouseStocks[w] = 0;
+    });
+    return { warehouseStocks, warehouses: [] };
+  }
 
   const warehouseStocks = {};
   for (const k of keys) {
@@ -258,6 +273,13 @@ function showDialog(options) {
   } = options || {};
 
   const overlay = document.getElementById('globalDialogOverlay');
+  if (!overlay) {
+    const finalMsg = [title, message].filter(Boolean).join('\n');
+    alert(finalMsg || '提示');
+    if (typeof onConfirm === 'function') onConfirm();
+    return;
+  }
+
   const iconEl = document.getElementById('globalDialogIcon');
   const titleEl = document.getElementById('globalDialogTitle');
   const bodyEl = document.getElementById('globalDialogBody');
@@ -284,6 +306,13 @@ function showDialog(options) {
 
 window.closeGlobalDialogWhich = function closeGlobalDialog(which) {
   const overlay = document.getElementById('globalDialogOverlay');
+  if (!overlay) {
+    const ghost = which === 'confirm' ? globalDialogOnConfirm : globalDialogOnCancel;
+    globalDialogOnConfirm = null;
+    globalDialogOnCancel = null;
+    if (typeof ghost === 'function') ghost();
+    return;
+  }
   overlay.classList.remove('show');
   const cb = which === 'confirm' ? globalDialogOnConfirm : globalDialogOnCancel;
   globalDialogOnConfirm = null;
@@ -469,8 +498,7 @@ function templateExampleValues() {
         }, {})
       )
     : '{}';
-  const wj =
-    '{"华东一号仓":80,"华北物流中心":40}';
+  const wj = '{}';
 
   return [
     `示例台式机_${Date.now() % 10000}`,
@@ -514,7 +542,7 @@ window.downloadTemplate = function downloadTemplate(kind) {
       const ws2Data = [
         ['字段说明', ''],
         ['规格JSON', '键须与所选三级类目下固定规格标签完全一致'],
-        ['仓库库存JSON', `JSON 对象，键为仓库名（${WAREHOUSES.join('、')}），值为非负整数库存，可多仓。示例：{"华东一号仓":120,"华北物流中心":30}`]
+        ['仓库库存JSON', `可选。JSON 对象，键为仓库名（${WAREHOUSES.join('、')}），值为非负整数。「上架审核」可不登记库存：留空或填 {} 表示各仓按 0；上架通过后在「我的商品」维护库存。示例：{"华东一号仓":120}`]
       ];
       const ws2 = XLSX.utils.aoa_to_sheet(ws2Data);
       XLSX.utils.book_append_sheet(wb, ws2, '填写说明');
@@ -626,7 +654,7 @@ window.triggerBulkUpload = function triggerBulkUpload() {
   document.getElementById('resultSection').classList.add('hidden');
   showDialog({
     title: '已载入演示数据',
-    message: `已向待提交列表追加 ${batch.length} 条模拟商品（含各仓库存），可点击「预览」查看详情。\n可随时再次点击「批量上传」继续追加演示数据。`,
+    message: `已向待提交列表追加 ${batch.length} 条模拟商品（含演示库存），可点击「预览」查看详情。\n可随时再次点击「批量上传」继续追加演示数据。\n说明：上架提交审核可不登记库存；通过后请在「我的商品」修改库存。`,
     type: 'success',
     confirmText: '好的'
   });
@@ -800,6 +828,13 @@ const IMAGE_PREVIEW_IDS = {
   apmDetailImg: 'apmDetailImgPreview'
 };
 
+/** 无新上传文件时用 URL/DataURL（信息变更页 / 「我的商品」编辑弹窗回填） */
+let apmUrlFallback = { main: '', sub: [], detail: [] };
+
+window.getApmImageUrlFallback = function getApmImageUrlFallback() {
+  return { main: apmUrlFallback.main, sub: [...apmUrlFallback.sub], detail: [...apmUrlFallback.detail] };
+};
+
 function revokeBlobUrlsFromContainer(container) {
   if (!container) return;
   container.querySelectorAll('img[src^="blob:"]').forEach(img => {
@@ -820,29 +855,71 @@ function clearAllImagePreviews() {
   });
 }
 
-function refreshImagePreviews(inputId) {
+function makeUrlThumb(src) {
+  const cell = document.createElement('div');
+  cell.className = 'img-thumb';
+  const im = document.createElement('img');
+  im.alt = '';
+  im.src = src;
+  cell.appendChild(im);
+  return cell;
+}
+
+/** 渲染当前图片预览：有新选文件则用 blob；否则退回 apmUrlFallback */
+function refreshApmImageRow(inputId) {
   const input = document.getElementById(inputId);
   const wrapId = IMAGE_PREVIEW_IDS[inputId];
-  if (!input || !wrapId) return;
+  if (!wrapId) return;
   const wrap = document.getElementById(wrapId);
   if (!wrap) return;
+
   revokeBlobUrlsFromContainer(wrap);
   wrap.innerHTML = '';
-  const raw = input.files ? [...input.files] : [];
-  if (!raw.length) return;
+
+  const raw = input && input.files ? [...input.files] : [];
   const list = inputId === 'apmMainImg' ? raw.slice(0, 1) : raw;
-  list.forEach(file => {
-    if (!file || !/^image\//.test(file.type)) return;
-    const url = URL.createObjectURL(file);
-    const cell = document.createElement('div');
-    cell.className = 'img-thumb';
-    cell.title = file.name ? String(file.name) : '';
-    const im = document.createElement('img');
-    im.alt = '';
-    im.src = url;
-    cell.appendChild(im);
-    wrap.appendChild(cell);
-  });
+  const imageFiles = list.filter(f => f && /^image\//.test(f.type));
+  if (imageFiles.length) {
+    imageFiles.forEach(file => {
+      const url = URL.createObjectURL(file);
+      const cell = document.createElement('div');
+      cell.className = 'img-thumb';
+      cell.title = file.name ? String(file.name) : '';
+      const im = document.createElement('img');
+      im.alt = '';
+      im.src = url;
+      cell.appendChild(im);
+      wrap.appendChild(cell);
+    });
+    return;
+  }
+
+  if (inputId === 'apmMainImg' && apmUrlFallback.main) {
+    wrap.appendChild(makeUrlThumb(apmUrlFallback.main));
+    return;
+  }
+  if (inputId === 'apmSubImg' && apmUrlFallback.sub.length) {
+    apmUrlFallback.sub.forEach(u => {
+      wrap.appendChild(makeUrlThumb(u));
+    });
+    return;
+  }
+  if (inputId === 'apmDetailImg' && apmUrlFallback.detail.length) {
+    apmUrlFallback.detail.forEach(u => wrap.appendChild(makeUrlThumb(u)));
+  }
+}
+
+function onApmImageInputChange(inputId) {
+  const input = document.getElementById(inputId);
+  const has = !!(input && input.files && input.files.length);
+  if (inputId === 'apmMainImg') {
+    if (has) apmUrlFallback.main = '';
+  } else if (inputId === 'apmSubImg') {
+    if (has) apmUrlFallback.sub = [];
+  } else if (inputId === 'apmDetailImg') {
+    if (has) apmUrlFallback.detail = [];
+  }
+  refreshApmImageRow(inputId);
 }
 
 window.toggleTemplateMenu = function toggleTemplateMenu(ev) {
@@ -864,11 +941,14 @@ window.closeTemplateMenu = function closeTemplateMenu() {
 /* ---------- 添加商品弹窗 ---------- */
 
 window.closeAddProductModal = function closeAddProductModal() {
-  document.getElementById('addProductOverlay').classList.remove('show');
+  const el = document.getElementById('addProductOverlay');
+  if (el) el.classList.remove('show');
 };
 
 window.openAddProductModal = function openAddProductModal() {
-  document.getElementById('addProductOverlay').classList.add('show');
+  const el = document.getElementById('addProductOverlay');
+  if (!el) return;
+  el.classList.add('show');
   resetAddForm();
 };
 
@@ -879,6 +959,10 @@ window.addFormCatChange = function addFormCatChange(which) {
 };
 
 function resetAddForm() {
+  const nameEl = document.getElementById('apmName');
+  if (!nameEl) return;
+  apmUrlFallback = { main: '', sub: [], detail: [] };
+
   document.getElementById('apmName').value = '';
   document.getElementById('apmPrice').value = '';
 
@@ -917,11 +1001,12 @@ function resetAddForm() {
     cb.checked = false;
   });
 
-  clearAllImagePreviews();
   ['apmMainImg', 'apmSubImg', 'apmDetailImg'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  ['apmMainImg', 'apmSubImg', 'apmDetailImg'].forEach(refreshApmImageRow);
+
   renderSpecFields(null);
 }
 
@@ -971,6 +1056,7 @@ function onCat3() {
 
 function renderSpecFields(leaf) {
   const wrap = document.getElementById('apmSpecArea');
+  if (!wrap) return;
   if (!leaf || !leaf.specLabels.length) {
     wrap.innerHTML = '<p class="text-sm text-slate-400">请先选择三级类目，以下将展示该类目固定规格字段。</p>';
     return;
@@ -985,6 +1071,384 @@ function renderSpecFields(leaf) {
     )
     .join('');
 }
+
+function readWarehouseStocksFromApmPartial() {
+  const warehouseStocksPartial = {};
+  for (const row of document.querySelectorAll('.apm-wm-row')) {
+    const cb = row.querySelector('input[type="checkbox"][data-wm]');
+    if (!cb || !cb.checked) continue;
+    const wh = cb.value;
+    const inp = row.querySelector('input[data-wstock]');
+    const q = inp && inp.value !== '' ? sanitizeInt(String(inp.value)) : NaN;
+    if (!Number.isNaN(q)) warehouseStocksPartial[wh] = q;
+  }
+  const warehouseStocks = {};
+  WAREHOUSES.forEach(w => {
+    warehouseStocks[w] = warehouseStocksPartial[w] !== undefined ? warehouseStocksPartial[w] : 0;
+  });
+  return warehouseStocks;
+}
+
+function readSpecsMapFromDomForLeaf(leaf) {
+  const specs = {};
+  if (!leaf || !leaf.specLabels) return specs;
+  const inputs = document.querySelectorAll('#apmSpecArea [data-sp-label]');
+  leaf.specLabels.forEach(lbl => {
+    const inp = [...inputs].find(el => el.getAttribute('data-sp-label') === lbl);
+    specs[lbl] = inp ? inp.value.trim() : '';
+  });
+  return specs;
+}
+
+window.applyProductSnapshotToApmForm = function applyProductSnapshotToApmForm(p) {
+  if (!p || !document.getElementById('apmName')) return;
+
+  resetAddForm();
+
+  const main = typeof p.mainImage === 'string' ? p.mainImage.trim() : '';
+  const subs = Array.isArray(p.subImages) ? p.subImages.map(String) : [];
+  const dets = Array.isArray(p.detailImages) ? p.detailImages.map(String) : [];
+
+  apmUrlFallback = { main: main || '', sub: [...subs], detail: [...dets] };
+
+  document.getElementById('apmName').value = p.name !== undefined ? String(p.name) : '';
+  document.getElementById('apmPrice').value =
+    typeof p.price === 'number' && Number.isFinite(p.price) ? String(p.price) : '';
+
+  const unitSel = document.getElementById('apmUnit');
+  const uwant = String(p.unit || '').trim();
+  if (uwant) {
+    let hit = [...unitSel.options].some(o => o.value === uwant);
+    if (!hit) {
+      const opt = document.createElement('option');
+      opt.value = uwant;
+      opt.textContent = uwant;
+      unitSel.appendChild(opt);
+    }
+    unitSel.value = uwant;
+  }
+
+  const cat1 = String(p.cat1 || '').trim();
+  const cat2 = String(p.cat2 || '').trim();
+  const cat3 = String(p.cat3 || '').trim();
+
+  document.getElementById('apmCat1').value = cat1;
+  window.addFormCatChange(1);
+  document.getElementById('apmCat2').value = cat2;
+  window.addFormCatChange(2);
+  document.getElementById('apmCat3').value = cat3;
+  window.addFormCatChange(3);
+
+  const leaf = cat1 && cat2 && cat3 ? findLeaf(cat1, cat2, cat3) : null;
+  const specs = p.specs && typeof p.specs === 'object' ? p.specs : {};
+  document.querySelectorAll('#apmSpecArea [data-sp-label]').forEach(el => {
+    const k = el.getAttribute('data-sp-label');
+    if (!k) return;
+    el.value = specs[k] !== undefined ? String(specs[k]) : '';
+  });
+
+  const wsNorm = {};
+  WAREHOUSES.forEach(w => {
+    const raw = p.warehouseStocks && typeof p.warehouseStocks === 'object' ? p.warehouseStocks[w] : undefined;
+    const n = typeof raw === 'number' ? raw : Number(String(raw ?? '').trim());
+    wsNorm[w] = Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+  });
+
+  document.querySelectorAll('.apm-wm-row').forEach(row => {
+    const cb = row.querySelector('input[type="checkbox"][data-wm]');
+    const inp = row.querySelector('input[data-wstock]');
+    if (!(cb instanceof HTMLInputElement) || !(inp instanceof HTMLInputElement)) return;
+    const wh = cb.value;
+    const n = wsNorm[wh] ?? 0;
+    if (n > 0) {
+      cb.checked = true;
+      inp.disabled = false;
+      inp.value = String(n);
+    } else {
+      cb.checked = false;
+      inp.disabled = true;
+      inp.value = '';
+    }
+  });
+
+  ['apmMainImg', 'apmSubImg', 'apmDetailImg'].forEach(refreshApmImageRow);
+};
+
+async function resolveApmImagesOrThrow() {
+  const mainFile = document.getElementById('apmMainImg').files && document.getElementById('apmMainImg').files[0];
+
+  let mainImage;
+  if (mainFile) mainImage = await readFileAsDataUrl(mainFile);
+  else if (apmUrlFallback.main && String(apmUrlFallback.main).trim()) mainImage = String(apmUrlFallback.main).trim();
+  else throw new Error('商品主图为必填');
+
+  const subFs = document.getElementById('apmSubImg').files ? [...document.getElementById('apmSubImg').files] : [];
+  let subImages;
+  if (subFs.length) subImages = await readMulti(document.getElementById('apmSubImg').files);
+  else subImages = [...apmUrlFallback.sub];
+
+  const detFs = document.getElementById('apmDetailImg').files
+    ? [...document.getElementById('apmDetailImg').files]
+    : [];
+  let detailImages;
+  if (detFs.length) detailImages = await readMulti(document.getElementById('apmDetailImg').files);
+  else detailImages = [...apmUrlFallback.detail];
+
+  return { mainImage, subImages, detailImages };
+}
+
+/**
+ * @param {(msg:string)=>void} customBad 校验失败回调
+ * @returns {Promise<object|null>}
+ */
+window.gatherAddProductPayloadAsync = async function gatherAddProductPayloadAsync(customBad) {
+  const bad =
+    typeof customBad === 'function'
+      ? customBad
+      : msg => {
+          if (document.getElementById('globalDialogOverlay')) {
+            showDialog({ title: '请完善表单', message: msg, confirmText: '确定' });
+          } else alert(msg);
+        };
+
+  if (!document.getElementById('apmName')) return null;
+
+  const name = document.getElementById('apmName').value.trim();
+  const priceRaw = sanitizePrice(document.getElementById('apmPrice').value);
+  const unit = document.getElementById('apmUnit').value;
+  const c1 = document.getElementById('apmCat1').value;
+  const c2 = document.getElementById('apmCat2').value;
+  const c3 = document.getElementById('apmCat3').value;
+
+  if (!name) {
+    bad('请填写商品名称');
+    return null;
+  }
+  if (Number.isNaN(priceRaw)) {
+    bad('请填写合法的人民币价格（元）');
+    return null;
+  }
+  if (!unit) {
+    bad('请选择单位');
+    return null;
+  }
+  if (!c1 || !c2 || !c3) {
+    bad('请选择完整三级类目');
+    return null;
+  }
+  const leaf = findLeaf(c1, c2, c3);
+  if (!leaf) {
+    bad('类目无效');
+    return null;
+  }
+
+  const specs = readSpecsMapFromDomForLeaf(leaf);
+  const vSpecs = validateSpecObject(leaf, specs);
+  if (!vSpecs.ok) {
+    bad(vSpecs.msg);
+    return null;
+  }
+
+  const warehouseStocksPartial = {};
+  for (const row of document.querySelectorAll('.apm-wm-row')) {
+    const cb = row.querySelector('input[type="checkbox"][data-wm]');
+    if (!cb || !cb.checked) continue;
+    const wh = cb.value;
+    const inp = row.querySelector('input[data-wstock]');
+    const q = inp && inp.value !== '' ? sanitizeInt(String(inp.value)) : NaN;
+    if (Number.isNaN(q)) {
+      bad(`请为「${wh}」填写非负整数库存`);
+      return null;
+    }
+    warehouseStocksPartial[wh] = q;
+  }
+
+  const warehouseStocks = {};
+  WAREHOUSES.forEach(w => {
+    warehouseStocks[w] = warehouseStocksPartial[w] !== undefined ? warehouseStocksPartial[w] : 0;
+  });
+  const warehouses = WAREHOUSES.filter(w => warehouseStocks[w] > 0);
+
+  let imgs;
+  try {
+    imgs = await resolveApmImagesOrThrow();
+  } catch (e2) {
+    bad(e2.message || String(e2));
+    return null;
+  }
+
+  return {
+    name,
+    price: priceRaw,
+    unit,
+    cat1: c1,
+    cat2: c2,
+    cat3: c3,
+    specLabels: [...leaf.specLabels],
+    specs,
+    warehouses,
+    warehouseStocks,
+    mainImage: imgs.mainImage,
+    subImages: imgs.subImages,
+    detailImages: imgs.detailImages
+  };
+};
+
+window.listApmFormChangesVsBefore = function listApmFormChangesVsBefore(before) {
+  if (!before || !document.getElementById('apmName')) return [];
+
+  const changes = [];
+
+  const name = document.getElementById('apmName').value.trim();
+  if (before.name !== name) changes.push('商品名称');
+
+  const priceRaw = sanitizePrice(document.getElementById('apmPrice').value);
+  const priceBeforeCent = Math.round(Number(before.price || 0) * 100);
+  const priceAfterCent =
+    Number.isFinite(priceRaw) && !Number.isNaN(priceRaw) ? Math.round(priceRaw * 100) : null;
+  if (priceAfterCent === null || priceAfterCent !== priceBeforeCent) changes.push('价格（元）');
+
+  const unit = document.getElementById('apmUnit').value.trim();
+  if (before.unit !== unit) changes.push('单位');
+
+  const c1 = document.getElementById('apmCat1').value;
+  const c2 = document.getElementById('apmCat2').value;
+  const c3 = document.getElementById('apmCat3').value;
+  if (before.cat1 !== c1 || before.cat2 !== c2 || before.cat3 !== c3) {
+    changes.push('三级类目');
+  }
+
+  const leaf = c1 && c2 && c3 ? findLeaf(c1, c2, c3) : null;
+  if (leaf) {
+    const sm = readSpecsMapFromDomForLeaf(leaf);
+    leaf.specLabels.forEach(lbl => {
+      const b = String((before.specs || {})[lbl] ?? '');
+      const a = String(sm[lbl] ?? '');
+      if (b !== a) changes.push(`规格 · ${lbl}`);
+    });
+  }
+
+  const curWs = readWarehouseStocksFromApmPartial();
+  WAREHOUSES.forEach(w => {
+    const b = Number((before.warehouseStocks || {})[w] ?? 0);
+    const bInt = Number.isFinite(b) ? Math.floor(b) : 0;
+    if (bInt !== curWs[w]) changes.push(`仓库库存 · ${w}`);
+  });
+
+  const mainPick = !!(document.getElementById('apmMainImg').files && document.getElementById('apmMainImg').files[0]);
+  if (mainPick || (apmUrlFallback.main || '') !== (before.mainImage || '')) changes.push('商品主图');
+
+  const subPick = !!(document.getElementById('apmSubImg').files && document.getElementById('apmSubImg').files.length);
+  if (subPick || JSON.stringify(apmUrlFallback.sub) !== JSON.stringify(before.subImages || []))
+    changes.push('商品副图');
+
+  const detPick = !!(document.getElementById('apmDetailImg').files && document.getElementById('apmDetailImg').files.length);
+  if (detPick || JSON.stringify(apmUrlFallback.detail) !== JSON.stringify(before.detailImages || []))
+    changes.push('详情图片');
+
+  return [...new Set(changes)];
+};
+
+function readSpecsMapFromDomLoose() {
+  const specs = {};
+  document.querySelectorAll('#apmSpecArea [data-sp-label]').forEach(el => {
+    const k = el.getAttribute('data-sp-label');
+    if (k) specs[k] = el.value.trim();
+  });
+  return specs;
+}
+
+/**
+ * @returns {{ label:string, beforeVal:string, afterVal:string, isDiff:boolean }[]}
+ */
+window.getApmCompareRowsAgainstBefore = function getApmCompareRowsAgainstBefore(before) {
+  if (!before || !document.getElementById('apmName')) return [];
+
+  const rows = [];
+  const add = (label, bRaw, aRaw) => {
+    const bStr = String(bRaw ?? '');
+    const aStr = String(aRaw ?? '');
+    rows.push({
+      label,
+      beforeVal: bStr || '—',
+      afterVal: aStr || '—',
+      isDiff: bStr !== aStr
+    });
+  };
+
+  const nameCur = document.getElementById('apmName').value.trim();
+  add('商品名称', before.name ?? '', nameCur);
+
+  const priceRaw = sanitizePrice(document.getElementById('apmPrice').value);
+  const validPrice = Number.isFinite(priceRaw) && !Number.isNaN(priceRaw);
+  const bDisplay = Number.isFinite(Number(before.price)) ? Number(before.price).toFixed(2) : '—';
+  const aDisplay = validPrice ? priceRaw.toFixed(2) : '—';
+  rows.push({
+    label: '价格（元）',
+    beforeVal: bDisplay,
+    afterVal: aDisplay,
+    isDiff:
+      validPrice && Math.round(Number(before.price || 0) * 100) !== Math.round(priceRaw * 100)
+  });
+
+  const unitCur = document.getElementById('apmUnit').value.trim();
+  add('单位', before.unit ?? '', unitCur);
+
+  const c1 = document.getElementById('apmCat1').value;
+  const c2 = document.getElementById('apmCat2').value;
+  const c3 = document.getElementById('apmCat3').value;
+  add('一级类目', before.cat1 ?? '', c1);
+  add('二级类目', before.cat2 ?? '', c2);
+  add('三级类目', before.cat3 ?? '', c3);
+
+  const sm = readSpecsMapFromDomLoose();
+  const specKeys = new Set([...Object.keys(before.specs || {}), ...Object.keys(sm)]);
+  specKeys.forEach(k => {
+    const bv = String((before.specs || {})[k] ?? '');
+    const av = String(sm[k] ?? '');
+    add(`规格 · ${k}`, bv, av);
+  });
+
+  const curWs = readWarehouseStocksFromApmPartial();
+  WAREHOUSES.forEach(w => {
+    const b = Math.floor(Number((before.warehouseStocks || {})[w] ?? 0));
+    const bv = Number.isFinite(b) ? String(b) : '—';
+    const av = Number.isFinite(curWs[w]) ? String(curWs[w]) : '—';
+    add(`库存 · ${w}`, bv, av);
+  });
+
+  const mf = !!(document.getElementById('apmMainImg').files && document.getElementById('apmMainImg').files[0]);
+  const bMain = String(before.mainImage || '').trim();
+  const aMainUrl = String(apmUrlFallback.main || '').trim();
+  const mainChanged = mf || bMain !== aMainUrl;
+
+  rows.push({
+    label: '主图',
+    beforeVal: '—',
+    afterVal: mf ? '已修改（重新上传）' : mainChanged ? '已修改' : '未修改',
+    isDiff: mainChanged
+  });
+
+  const sfLen = document.getElementById('apmSubImg').files
+    ? document.getElementById('apmSubImg').files.length
+    : 0;
+  add(
+    '副图（数量）',
+    String((before.subImages || []).length),
+    sfLen ? `本次已选 ${sfLen} 个新文件（将替换原有）` : String(apmUrlFallback.sub.length)
+  );
+
+  const dfLen = document.getElementById('apmDetailImg').files
+    ? document.getElementById('apmDetailImg').files.length
+    : 0;
+  add(
+    '详情图（数量）',
+    String((before.detailImages || []).length),
+    dfLen ? `本次已选 ${dfLen} 个新文件（将替换原有）` : String(apmUrlFallback.detail.length)
+  );
+
+  return rows;
+};
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -1011,77 +1475,30 @@ async function readMulti(files) {
 
 window.confirmAddProduct = async function confirmAddProduct() {
   try {
-    const name = document.getElementById('apmName').value.trim();
-    const priceRaw = sanitizePrice(document.getElementById('apmPrice').value);
-    const unit = document.getElementById('apmUnit').value;
-    const c1 = document.getElementById('apmCat1').value;
-    const c2 = document.getElementById('apmCat2').value;
-    const c3 = document.getElementById('apmCat3').value;
+    const product = await window.gatherAddProductPayloadAsync();
+    if (!product) return;
 
-    const bad = msg => showDialog({ title: '请完善表单', message: msg, confirmText: '确定' });
-
-    if (!name) return bad('请填写商品名称');
-    if (Number.isNaN(priceRaw)) return bad('请填写合法的人民币价格（元）');
-    if (!unit) return bad('请选择单位');
-    if (!c1 || !c2 || !c3) return bad('请选择完整三级类目');
-    const leaf = findLeaf(c1, c2, c3);
-    if (!leaf) return bad('类目无效');
-
-    const specs = {};
-    const inputs = document.querySelectorAll('#apmSpecArea [data-sp-label]');
-    leaf.specLabels.forEach(lbl => {
-      const inp = [...inputs].find(el => el.getAttribute('data-sp-label') === lbl);
-      specs[lbl] = inp ? inp.value.trim() : '';
-    });
-
-    const vSpecs = validateSpecObject(leaf, specs);
-    if (!vSpecs.ok) return bad(vSpecs.msg);
-
-    const warehouseStocks = {};
-    let anyWh = false;
-    for (const row of document.querySelectorAll('.apm-wm-row')) {
-      const cb = row.querySelector('input[type="checkbox"][data-wm]');
-      if (!cb || !cb.checked) continue;
-      anyWh = true;
-      const wh = cb.value;
-      const inp = row.querySelector('input[data-wstock]');
-      const q = inp && inp.value !== '' ? sanitizeInt(String(inp.value)) : NaN;
-      if (Number.isNaN(q)) return bad(`请为「${wh}」填写非负整数库存`);
-      warehouseStocks[wh] = q;
+    if (typeof window.ADD_PRODUCT_SUBMIT_HANDLER === 'function') {
+      const fn = window.ADD_PRODUCT_SUBMIT_HANDLER;
+      window.ADD_PRODUCT_SUBMIT_HANDLER = null;
+      await Promise.resolve(fn(product));
+      closeAddProductModal();
+      return;
     }
-    if (!anyWh || !Object.keys(warehouseStocks).length) return bad('请勾选至少一个仓库，并为所选仓库逐项填写库存');
-
-    const warehouses = WAREHOUSES.filter(w => Object.prototype.hasOwnProperty.call(warehouseStocks, w));
-
-    const mainFile = document.getElementById('apmMainImg').files && document.getElementById('apmMainImg').files[0];
-    if (!mainFile) return bad('商品主图为必填');
-
-    const mainImage = await readFileAsDataUrl(mainFile);
-    const subImages = await readMulti(document.getElementById('apmSubImg').files);
-    const detailImages = await readMulti(document.getElementById('apmDetailImg').files);
 
     pendingProducts.push({
       id: makeId(),
-      name,
-      price: priceRaw,
-      unit,
-      cat1: c1,
-      cat2: c2,
-      cat3: c3,
-      specLabels: [...leaf.specLabels],
-      specs,
-      warehouses,
-      warehouseStocks,
-      mainImage,
-      subImages,
-      detailImages,
+      ...product,
       stage: '待提交'
     });
 
-    renderPendingTable();
+    if (typeof renderPendingTable === 'function' && document.getElementById('pendingTableBody')) {
+      renderPendingTable();
+    }
     closeAddProductModal();
 
-    document.getElementById('resultSection').classList.add('hidden');
+    const rs = document.getElementById('resultSection');
+    if (rs) rs.classList.add('hidden');
 
     showDialog({ title: '已添加', message: '商品已进入待提交列表，可预览或批量提交审核。', confirmText: '好的' });
   } catch (e) {
@@ -1096,6 +1513,7 @@ function initSourceBanner() {
   if (!source) return;
   const banner = document.getElementById('sourceBanner');
   const text = document.getElementById('sourceBannerText');
+  if (!banner || !text) return;
   banner.classList.remove('hidden');
 
   if (source === 'rectify' && id) {
@@ -1108,19 +1526,21 @@ function initSourceBanner() {
 document.addEventListener('DOMContentLoaded', () => {
   initSourceBanner();
 
+  const dlg = document.getElementById('globalDialogOverlay');
   const confirmBtn = document.getElementById('globalDialogConfirmBtn');
   const cancelBtn = document.getElementById('globalDialogCancelBtn');
+  if (dlg && confirmBtn && cancelBtn) {
+    confirmBtn.onclick = () => closeGlobalDialogWhich('confirm');
+    cancelBtn.onclick = () => closeGlobalDialogWhich('cancel');
 
-  confirmBtn.onclick = () => closeGlobalDialogWhich('confirm');
-  cancelBtn.onclick = () => closeGlobalDialogWhich('cancel');
+    dlg.addEventListener('click', event => {
+      if (event.target.id === 'globalDialogOverlay') closeGlobalDialogWhich('cancel');
+    });
+  }
 
-  document.getElementById('globalDialogOverlay').addEventListener('click', event => {
-    if (event.target.id === 'globalDialogOverlay') closeGlobalDialogWhich('cancel');
-  });
-
-  const addOv = document.getElementById('addProductOverlay');
-  if (addOv) {
-    addOv.addEventListener('change', ev => {
+  const wmHost = document.getElementById('addProductOverlay') || document.getElementById('apmFormHost');
+  if (wmHost) {
+    wmHost.addEventListener('change', ev => {
       const t = ev.target;
       if (!(t instanceof HTMLInputElement)) return;
       if (t.type !== 'checkbox' || !t.hasAttribute('data-wm')) return;
@@ -1133,19 +1553,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const aiBtn = document.getElementById('aiCheckBtn');
-  if (aiBtn) {
-    aiBtn.onclick = () => runAiComplianceDemo();
-  }
+  if (aiBtn) aiBtn.onclick = () => runAiComplianceDemo();
 
   Object.keys(IMAGE_PREVIEW_IDS).forEach(inpId => {
     const inp = document.getElementById(inpId);
-    if (inp) inp.addEventListener('change', () => refreshImagePreviews(inpId));
+    if (inp) inp.addEventListener('change', () => onApmImageInputChange(inpId));
   });
 
   document.addEventListener('click', ev => {
     if (!ev.target.closest('.template-dd-wrap')) closeTemplateMenu();
   });
 
-  renderPendingTable();
-  document.getElementById('resultSection').classList.add('hidden');
+  if (document.getElementById('pendingTableBody')) {
+    renderPendingTable();
+    const rs = document.getElementById('resultSection');
+    if (rs) rs.classList.add('hidden');
+  }
 });

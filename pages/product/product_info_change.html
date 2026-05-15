@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>商品信息变更 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/custom.css" />
+  <style>
+    body {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      color: #0f172a;
+    }
+
+    .page-card {
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    .chg-banner {
+      border-left: 4px solid #e2231a;
+      background: linear-gradient(90deg, #fff1f2 0%, #ffffff 100%);
+    }
+
+    .sticky-compare {
+      position: sticky;
+      top: 1rem;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      font-family: inherit;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .action-btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 22px rgba(239, 68, 68, 0.22);
+    }
+
+    .action-btn-secondary {
+      color: #475569;
+      background: #fff;
+      border: 1px solid #dbe2ea;
+    }
+
+    .compare-cell {
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      line-height: 1.45;
+    }
+
+    .compare-before {
+      background: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .compare-after {
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+    }
+
+    .compare-after.diff {
+      border-color: #fbbf24;
+      background: #fffbeb;
+      box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.35);
+    }
+
+    .compare-grid-head {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+    }
+
+    .img-thumb {
+      width: 76px;
+      height: 76px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      flex-shrink: 0;
+    }
+
+    .img-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .mod-chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mod-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #fff7ed 0%, #ffedd5 100%);
+      color: #c2410c;
+      border: 1px solid rgba(251, 146, 60, 0.42);
+    }
+
+    /* ================= 单笔录入表单（与上架商品页「添加商品」弹窗 class 完全一致） ================= */
+    .apm-head-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .apm-section {
+      margin-top: 16px;
+    }
+
+    .apm-section-title {
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .add-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 14px;
+    }
+
+    .add-form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .add-form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .add-form-input {
+      border: 1px solid #dbe2ea;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .add-form-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+
+    .apm-wm-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .apm-wm-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fafbfc;
+    }
+
+    .apm-wm-row .apm-wm-stock-input {
+      flex: 1;
+      min-width: 160px;
+      max-width: 260px;
+    }
+
+    .apm-wm-row .apm-wm-stock-input:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: #f1f5f9;
+    }
+
+    .apm-wm-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px 12px;
+    }
+
+    #apmSpecArea {
+      margin-top: 4px;
+    }
+
+    .img-upload-row {
+      margin-bottom: 20px;
+    }
+
+    .img-upload-card {
+      margin-top: 8px;
+      position: relative;
+    }
+
+    .apm-hidden-file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .img-upload-zone {
+      width: 100%;
+      min-height: 128px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .img-upload-zone:hover {
+      border-color: #f97316;
+      background: linear-gradient(180deg, #fffafb 0%, #fff7ed 100%);
+      color: #b91c1c;
+      box-shadow: 0 0 0 1px rgba(254, 215, 170, 0.6);
+    }
+
+    .img-upload-zone:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(226, 35, 26, 0.15);
+    }
+
+    .img-upload-zone-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+      color: #e11d48;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .img-upload-hint {
+      font-size: 12px;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+
+    .img-upload-zone:hover .img-upload-hint {
+      color: #9a3412;
+    }
+
+    .img-preview-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .apm-section.chg-flash-warn {
+      box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.95);
+      border-radius: 12px;
+      padding-top: 4px;
+      margin-left: -4px;
+      margin-right: -4px;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.48);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 120;
+    }
+
+    .dialog-overlay.show {
+      display: flex;
+    }
+
+    .dialog-card {
+      width: min(480px, 92vw);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      box-shadow: 0 26px 48px rgba(15, 23, 42, 0.24);
+      overflow: hidden;
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      background: linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
+    }
+
+    .dialog-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .dialog-icon.info {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .dialog-icon.success {
+      background: #ecfdf5;
+      color: #16a34a;
+    }
+
+    .dialog-icon.warn {
+      background: #fffbeb;
+      color: #d97706;
+    }
+
+    .dialog-icon.error {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .dialog-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .dialog-body {
+      padding: 16px 20px;
+      font-size: 14px;
+      line-height: 1.9;
+      color: #475569;
+      white-space: pre-line;
+    }
+
+    .dialog-actions {
+      padding: 0 20px 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .dialog-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .dialog-btn-cancel {
+      border-color: #dbe2ea;
+      background: #ffffff;
+      color: #475569;
+    }
+
+    .dialog-btn-confirm {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body class="text-slate-800 pb-16">
+  <div class="max-w-[1600px] mx-auto p-5">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
+      <div>
+        <div class="text-sm text-slate-500 mb-2">
+          <a href="./my_products.html" class="hover:text-[#e2231a] transition-colors">我的商品</a>
+          <span class="mx-2">/</span>
+          <span>更新信息 · 变更审核</span>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">更新商品资料</h1>
+        <p class="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
+          表单布局与<strong>上架商品 · 单笔录入</strong>一致；右侧<strong>橙色标签</strong>汇总已修改的业务字段，表格为变更前后明细。提交后生成<strong>信息变更审核单</strong>。
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2 shrink-0">
+        <button type="button" class="action-btn action-btn-secondary" onclick="history.back()">
+          <i class="fas fa-arrow-left"></i><span>返回</span>
+        </button>
+        <button type="button" class="action-btn action-btn-primary" onclick="submitChangeAudit()" id="btnSubmitChange">
+          <i class="fas fa-paper-plane"></i><span>提交变更审核</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="loadError" class="hidden page-card p-8 text-center text-slate-500">
+      <i class="fas fa-circle-exclamation text-3xl text-amber-500 mb-3"></i>
+      <p class="font-semibold text-slate-700">无法加载变更上下文</p>
+      <p class="text-sm mt-2">请从「我的商品」中对<strong>已上架</strong>或<strong>已下架</strong>的商品点击<strong>更新信息</strong>进入本页。</p>
+      <a href="./my_products.html" class="inline-flex mt-4 text-[#e2231a] font-semibold hover:underline">返回我的商品</a>
+    </div>
+
+    <div id="mainEditor" class="hidden grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6 items-start">
+      <div class="space-y-5">
+        <div class="page-card chg-banner p-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-red-700 mb-1">当前商品</div>
+          <p class="text-sm text-slate-700 leading-relaxed" id="ctxBanner"></p>
+        </div>
+
+        <div id="apmFormHost" class="page-card p-6">
+          <div class="apm-head-row">
+            <div>
+              <div class="text-xs font-black uppercase tracking-[0.14em] text-red-600">单笔录入 · 变更</div>
+              <h3 class="text-xl font-black text-slate-900 mt-1">填写变更后资料</h3>
+              <p class="text-sm text-slate-500 mt-2 leading-6">
+                价格按人民币填写；选择与平台一致的三级类目后，系统将展示该类目<strong>固定规格</strong>。<strong>提交变更可不登记库存</strong>（可不勾选仓库）；若勾选仓库须逐项填写<strong>非负整数</strong>库存。商品图片分为主图（必填）、副图（可选）与<strong>详情图</strong>（可选）。
+              </p>
+            </div>
+          </div>
+
+          <div class="apm-section" id="sec-basic">
+            <div class="apm-section-title">基本信息</div>
+            <div class="add-form-grid">
+              <label class="add-form-field" style="grid-column: 1 / -1;">
+                <span class="add-form-label">商品名称 <span class="text-red-500">*</span></span>
+                <input id="apmName" type="text" class="add-form-input" placeholder="请输入商品名称" />
+              </label>
+              <label class="add-form-field">
+                <span class="add-form-label">价格（人民币 · 元）<span class="text-red-500">*</span></span>
+                <input id="apmPrice" type="number" step="0.01" min="0" class="add-form-input" placeholder="例如 4288.88" />
+              </label>
+              <label class="add-form-field">
+                <span class="add-form-label">单位（单枚举）<span class="text-red-500">*</span></span>
+                <select id="apmUnit" class="add-form-input"></select>
+              </label>
+            </div>
+          </div>
+
+          <div class="apm-section" id="sec-cat">
+            <div class="apm-section-title">三级类目 · 规格</div>
+            <div class="add-form-grid">
+              <label class="add-form-field">
+                <span class="add-form-label">一级类目 <span class="text-red-500">*</span></span>
+                <select id="apmCat1" class="add-form-input" onchange="addFormCatChange(1)">
+                  <option value="">请选择</option>
+                </select>
+              </label>
+              <label class="add-form-field">
+                <span class="add-form-label">二级类目 <span class="text-red-500">*</span></span>
+                <select id="apmCat2" class="add-form-input" onchange="addFormCatChange(2)">
+                  <option value="">请选择</option>
+                </select>
+              </label>
+              <label class="add-form-field">
+                <span class="add-form-label">三级类目 <span class="text-red-500">*</span></span>
+                <select id="apmCat3" class="add-form-input" onchange="addFormCatChange(3)">
+                  <option value="">请选择</option>
+                </select>
+              </label>
+              <div id="apmSpecArea" class="add-form-grid" style="grid-column: 1 / -1;"></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-3 leading-relaxed">
+              请先选择三级类目，以下将展示该类目固定规格字段。
+            </p>
+          </div>
+
+          <div class="apm-section" id="sec-wh">
+            <div class="apm-section-title">仓库与分仓库存（可选）</div>
+            <p class="text-xs text-slate-500 mb-3 leading-relaxed">
+              信息变更<strong>可不登记库存</strong>：不勾选任何仓库即视为暂不改动分仓录入方式；若勾选仓库，须在该行填写该仓<strong>非负整数</strong>库存。
+            </p>
+            <div id="apmWarehouseWrap" class="apm-wm-grid"></div>
+          </div>
+
+          <div class="apm-section" id="sec-img">
+            <div class="apm-section-title">图片 · 分成商品图片与详情图</div>
+
+            <div class="img-upload-row">
+              <div class="add-form-label">商品主图 <span class="text-red-500">*</span></div>
+              <div class="img-upload-card">
+                <input id="apmMainImg" type="file" accept="image/*" class="apm-hidden-file-input" tabindex="-1" />
+                <button type="button" class="img-upload-zone" onclick="document.getElementById('apmMainImg').click()">
+                  <span class="img-upload-zone-icon"><i class="fas fa-cloud-arrow-up"></i></span>
+                  <span>上传图片</span>
+                  <span class="img-upload-hint">必选 1 张主图 · 可先沿用当前预览，或点此重新选择文件</span>
+                </button>
+                <div id="apmMainImgPreview" class="img-preview-row" aria-live="polite"></div>
+              </div>
+            </div>
+
+            <div class="img-upload-row">
+              <div class="add-form-label">商品副图（可选）</div>
+              <div class="img-upload-card">
+                <input id="apmSubImg" type="file" multiple accept="image/*" class="apm-hidden-file-input" tabindex="-1" />
+                <button type="button" class="img-upload-zone" onclick="document.getElementById('apmSubImg').click()">
+                  <span class="img-upload-zone-icon"><i class="fas fa-images"></i></span>
+                  <span>上传图片</span>
+                  <span class="img-upload-hint">可选多张 · 新选择将替换原副图组（原型）</span>
+                </button>
+                <div id="apmSubImgPreview" class="img-preview-row" aria-live="polite"></div>
+              </div>
+            </div>
+
+            <div class="img-upload-row">
+              <div class="add-form-label">详情图片（可选）</div>
+              <div class="img-upload-card">
+                <input id="apmDetailImg" type="file" multiple accept="image/*" class="apm-hidden-file-input" tabindex="-1" />
+                <button type="button" class="img-upload-zone" onclick="document.getElementById('apmDetailImg').click()">
+                  <span class="img-upload-zone-icon"><i class="fas fa-photo-film"></i></span>
+                  <span>上传图片</span>
+                  <span class="img-upload-hint">可选多张 · 新选择将替换原详情图组（原型）</span>
+                </button>
+                <div id="apmDetailImgPreview" class="img-preview-row" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="page-card p-6 sticky-compare">
+        <h2 class="text-base font-bold text-slate-900 mb-1 flex items-center gap-2">
+          <i class="fas fa-highlighter text-amber-600"></i>
+          已修改项目
+        </h2>
+        <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+          与当前<strong>生效版本</strong>相比，以下内容已改动；未出现在此列表则表示与原版一致。
+        </p>
+        <div id="modifiedChipsMount" class="mod-chip-wrap mb-6 min-h-[2.5rem]"></div>
+
+        <h3 class="text-sm font-black text-slate-800 mb-2 flex items-center gap-2">
+          <i class="fas fa-code-compare text-slate-600"></i>
+          变更明细
+        </h3>
+        <p class="text-xs text-slate-500 mb-3 leading-relaxed">黄色高亮为本次与生效版不一致的行。</p>
+        <div id="compareMount"></div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="dialog-overlay" id="globalDialogOverlay">
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <div class="dialog-icon info" id="globalDialogIcon"><i class="fas fa-circle-info"></i></div>
+        <div class="dialog-title" id="globalDialogTitle">提示</div>
+      </div>
+      <div class="dialog-body" id="globalDialogBody">-</div>
+      <div class="dialog-actions">
+        <button class="dialog-btn dialog-btn-cancel" id="globalDialogCancelBtn" type="button">取消</button>
+        <button class="dialog-btn dialog-btn-confirm" id="globalDialogConfirmBtn" type="button">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./product_upload_app.js"></script>
+  <script>
+    'use strict';
+
+    const STORAGE_PAYLOAD = 'PRODUCT_INFO_CHANGE_PAYLOAD';
+    const STORAGE_APPEND = 'PROTOTYPE_AUDIT_QUEUE_APPEND';
+    const STORAGE_PENDING_MAP = 'PRODUCT_CHANGE_PENDING_MAP';
+
+    /** @type {{ productId:string, sku:string, sourceShelf:string, before:any }} */
+    let ctx = null;
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function deepClone(o) {
+      return JSON.parse(JSON.stringify(o));
+    }
+
+    function normalizeWarehouseStocks(ws) {
+      const keys = ['华东一号仓', '华北物流中心', '华南保税仓', '西南协同仓', '华中中心仓'];
+      const o = ws && typeof ws === 'object' ? ws : {};
+      const full = {};
+      keys.forEach(w => {
+        const n = Number(o[w]);
+        full[w] = Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+      });
+      return full;
+    }
+
+    function specsEqual(a, b) {
+      const ka = Object.keys(a || {}).sort();
+      const kb = Object.keys(b || {}).sort();
+      if (ka.length !== kb.length) return false;
+      return ka.every(k => String((a || {})[k]) === String((b || {})[k]));
+    }
+
+    function arrEqual(a, b) {
+      const aa = [...(a || [])].map(String);
+      const bb = [...(b || [])].map(String);
+      if (aa.length !== bb.length) return false;
+      return aa.every((v, i) => v === bb[i]);
+    }
+
+    function readPayload() {
+      try {
+        const raw = sessionStorage.getItem(STORAGE_PAYLOAD);
+        if (!raw) return null;
+        const p = JSON.parse(raw);
+        if (!p || !p.productId || !p.before) return null;
+        return p;
+      } catch {
+        return null;
+      }
+    }
+
+    function rerenderPanels() {
+      if (!ctx) return;
+
+      const changes = typeof window.listApmFormChangesVsBefore === 'function' ? window.listApmFormChangesVsBefore(ctx.before) : [];
+
+      document.getElementById('modifiedChipsMount').innerHTML = changes.length
+        ? changes
+            .slice()
+            .sort()
+            .map(
+              lbl =>
+                `<span class="mod-chip"><i class="fas fa-circle-small text-[8px] opacity-70"></i>${escapeHtml(lbl)}</span>`
+            )
+            .join('')
+        : `<span class="text-xs font-semibold text-slate-400">暂无修改 · 内容与生效版一致（或尚未编辑）</span>`;
+
+      highlightSections(changes);
+
+      const rows = typeof window.getApmCompareRowsAgainstBefore === 'function'
+        ? window.getApmCompareRowsAgainstBefore(ctx.before)
+        : [];
+
+      document.getElementById('compareMount').innerHTML = `
+        <div class="grid grid-cols-[minmax(76px,0.95fr)_1fr_1fr] gap-x-2 gap-y-2 items-start text-xs leading-snug">
+          <div class="compare-grid-head pb-2">字段</div>
+          <div class="compare-grid-head pb-2">变更前（生效）</div>
+          <div class="compare-grid-head pb-2">变更后（草稿）</div>
+          ${rows
+            .map(
+              r => `
+              <div class="font-semibold text-slate-600 pt-1.5">${escapeHtml(r.label)}</div>
+              <div class="compare-cell compare-before break-all">${escapeHtml(r.beforeVal)}</div>
+              <div class="compare-cell compare-after break-all ${r.isDiff ? 'diff' : ''}">${escapeHtml(r.afterVal)}</div>`
+            )
+            .join('')}
+        </div>`;
+    }
+
+    function highlightSections(changeLabelsText) {
+      const setWarn = id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.add('chg-flash-warn');
+      };
+      const clearAll = () => {
+        ['sec-basic', 'sec-cat', 'sec-wh', 'sec-img'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('chg-flash-warn');
+        });
+      };
+
+      clearAll();
+
+      changeLabelsText.forEach(t => {
+        if (t === '商品名称' || t === '价格（元）' || t === '单位') setWarn('sec-basic');
+        if (t === '三级类目' || /^规格 ·/.test(t)) setWarn('sec-cat');
+        if (/^仓库库存 ·/.test(t)) setWarn('sec-wh');
+        if (t === '商品主图' || t === '商品副图' || t === '详情图片') setWarn('sec-img');
+      });
+    }
+
+    function padNow() {
+      const d = new Date();
+      const p = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    window.submitChangeAudit = async function submitChangeAudit() {
+      const after = await window.gatherAddProductPayloadAsync(msg =>
+        alert(msg)
+      );
+      if (!after) return;
+
+      const afterSnapFull = deepClone(after);
+      afterSnapFull.warehouseStocks = normalizeWarehouseStocks(afterSnapFull.warehouseStocks || {});
+
+      const beforeSnap = deepClone(ctx.before);
+      beforeSnap.warehouseStocks = normalizeWarehouseStocks(beforeSnap.warehouseStocks || {});
+
+      const unchanged =
+        beforeSnap.name === afterSnapFull.name &&
+        Math.round(Number(beforeSnap.price || 0) * 100) === Math.round(Number(afterSnapFull.price || 0) * 100) &&
+        beforeSnap.unit === afterSnapFull.unit &&
+        beforeSnap.cat1 === afterSnapFull.cat1 &&
+        beforeSnap.cat2 === afterSnapFull.cat2 &&
+        beforeSnap.cat3 === afterSnapFull.cat3 &&
+        specsEqual(beforeSnap.specs, afterSnapFull.specs) &&
+        JSON.stringify(beforeSnap.warehouseStocks) === JSON.stringify(afterSnapFull.warehouseStocks) &&
+        (beforeSnap.mainImage || '') === (afterSnapFull.mainImage || '') &&
+        arrEqual(beforeSnap.subImages, afterSnapFull.subImages) &&
+        arrEqual(beforeSnap.detailImages, afterSnapFull.detailImages);
+
+      if (unchanged) {
+        alert('请至少修改一项后再提交变更审核。');
+        return;
+      }
+
+      const ticketId = `CHG-${Date.now()}`;
+      const row = {
+        id: ticketId,
+        auditKind: 'CHANGE_INFO',
+        linkedProductId: ctx.productId,
+        listStatus: 'pending',
+        sku: ctx.sku,
+        specLabels: afterSnapFull.specLabels,
+        name: afterSnapFull.name,
+        price: afterSnapFull.price,
+        unit: afterSnapFull.unit,
+        cat1: afterSnapFull.cat1,
+        cat2: afterSnapFull.cat2,
+        cat3: afterSnapFull.cat3,
+        specs: { ...afterSnapFull.specs },
+        warehouseStocks: { ...afterSnapFull.warehouseStocks },
+        mainImage: afterSnapFull.mainImage,
+        subImages: [...afterSnapFull.subImages],
+        detailImages: [...afterSnapFull.detailImages],
+        supplierName: '演示供应商（工作台）',
+        submittedAt: padNow(),
+        aiKind: 'warn',
+        beforeSnapshot: beforeSnap,
+        afterSnapshot: afterSnapFull,
+        shelfSnapshot: ctx.sourceShelf === 'published' ? 'online' : 'offline'
+      };
+
+      let append = [];
+      try {
+        append = JSON.parse(sessionStorage.getItem(STORAGE_APPEND) || '[]');
+        if (!Array.isArray(append)) append = [];
+      } catch {
+        append = [];
+      }
+      append.push(row);
+      sessionStorage.setItem(STORAGE_APPEND, JSON.stringify(append));
+
+      let pend = {};
+      try {
+        pend = JSON.parse(sessionStorage.getItem(STORAGE_PENDING_MAP) || '{}');
+        if (!pend || typeof pend !== 'object') pend = {};
+      } catch {
+        pend = {};
+      }
+      pend[ctx.productId] = ticketId;
+      sessionStorage.setItem(STORAGE_PENDING_MAP, JSON.stringify(pend));
+
+      alert(
+        '已提交信息变更审核（原型）。请在运营后台「商品审核列表」中查看并审批。\n审核类型将显示为「信息变更」，并可查看前后对比。'
+      );
+      window.location.href = './my_products.html';
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      ctx = readPayload();
+      if (!ctx) {
+        document.getElementById('loadError').classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('mainEditor').classList.remove('hidden');
+
+      document.getElementById('ctxBanner').innerHTML = `
+        SKU：<span class="font-mono font-semibold text-slate-900">${escapeHtml(ctx.sku)}</span>
+        · ID：<span class="font-mono">${escapeHtml(ctx.productId)}</span>
+        · 来源：<strong>${ctx.sourceShelf === 'published' ? '已上架' : '已下架'}</strong>`;
+
+      const b = ctx.before;
+      const snap = {
+        name: b.name,
+        price: typeof b.price === 'number' && Number.isFinite(b.price) ? b.price : Number(b.price) || 0,
+        unit: b.unit || '台',
+        cat1: b.cat1,
+        cat2: b.cat2,
+        cat3: b.cat3,
+        specs: b.specs && typeof b.specs === 'object' ? { ...b.specs } : {},
+        warehouseStocks: normalizeWarehouseStocks(b.warehouseStocks),
+        mainImage: typeof b.mainImage === 'string' ? b.mainImage : '',
+        subImages: Array.isArray(b.subImages) ? [...b.subImages] : [],
+        detailImages: Array.isArray(b.detailImages) ? [...b.detailImages] : []
+      };
+
+      window.applyProductSnapshotToApmForm(snap);
+
+      rerenderPanels();
+
+      const host = document.getElementById('apmFormHost');
+      if (host) {
+        host.addEventListener('input', rerenderPanels);
+        host.addEventListener('change', rerenderPanels);
+      }
+      document.querySelectorAll('#apmFormHost select').forEach(el =>
+        el.addEventListener('change', () => setTimeout(rerenderPanels, 0))
+      );
+    });
+  </script>
+</body>
+</html>

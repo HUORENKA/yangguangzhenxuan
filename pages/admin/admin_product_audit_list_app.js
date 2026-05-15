@@ -22,6 +22,100 @@ function escapeAttr(s) {
   return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
+function normalizeWarehouseStocksFull(ws) {
+  const o = ws && typeof ws === 'object' ? ws : {};
+  const full = {};
+  WAREHOUSES.forEach(w => {
+    const n = Number(o[w]);
+    full[w] = Number.isFinite(n) ? n : 0;
+  });
+  return full;
+}
+
+function joinUrls(arr) {
+  return (arr || []).join(', ');
+}
+
+function arrEqual(a, b) {
+  const aa = [...(a || [])].map(String);
+  const bb = [...(b || [])].map(String);
+  if (aa.length !== bb.length) return false;
+  return aa.every((v, i) => v === bb[i]);
+}
+
+/** @returns {{label:string,bVal:string,aVal:string,isDiff:boolean}[]} */
+function compareSnapshotRows(before, after) {
+  const rows = [];
+  const wb = normalizeWarehouseStocksFull(before.warehouseStocks);
+  const wa = normalizeWarehouseStocksFull(after.warehouseStocks);
+
+  function pushRow(label, bVal, aVal, isDiff) {
+    rows.push({ label, bVal, aVal, isDiff });
+  }
+
+  pushRow('商品名称', before.name, after.name, before.name !== after.name);
+  pushRow(
+    '价格（元）',
+    Number(before.price).toFixed(2),
+    Number(after.price).toFixed(2),
+    Number(before.price) !== Number(after.price)
+  );
+  pushRow('单位', before.unit, after.unit, before.unit !== after.unit);
+  pushRow('一级类目', before.cat1, after.cat1, before.cat1 !== after.cat1);
+  pushRow('二级类目', before.cat2, after.cat2, before.cat2 !== after.cat2);
+  pushRow('三级类目', before.cat3, after.cat3, before.cat3 !== after.cat3);
+
+  const labelSet = new Set([
+    ...(before.specLabels || []),
+    ...(after.specLabels || []),
+    ...Object.keys(before.specs || {}),
+    ...Object.keys(after.specs || {})
+  ]);
+  labelSet.forEach(lbl => {
+    const bv = String((before.specs || {})[lbl] ?? '');
+    const av = String((after.specs || {})[lbl] ?? '');
+    pushRow(`规格 · ${lbl}`, bv || '—', av || '—', bv !== av);
+  });
+
+  WAREHOUSES.forEach(w => {
+    pushRow(`库存 · ${w}`, String(wb[w]), String(wa[w]), wb[w] !== wa[w]);
+  });
+
+  pushRow(
+    '主图 URL',
+    before.mainImage || '—',
+    after.mainImage || '—',
+    (before.mainImage || '') !== (after.mainImage || '')
+  );
+  pushRow(
+    '副图（列表）',
+    joinUrls(before.subImages) || '—',
+    joinUrls(after.subImages) || '—',
+    !arrEqual(before.subImages, after.subImages)
+  );
+  pushRow(
+    '详情图（列表）',
+    joinUrls(before.detailImages) || '—',
+    joinUrls(after.detailImages) || '—',
+    !arrEqual(before.detailImages, after.detailImages)
+  );
+
+  return rows;
+}
+
+function clearLinkedPendingChange(linkedProductId) {
+  if (!linkedProductId) return;
+  try {
+    const pend = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_PENDING_MAP') || '{}');
+    if (pend && typeof pend === 'object') {
+      delete pend[linkedProductId];
+      sessionStorage.setItem('PRODUCT_CHANGE_PENDING_MAP', JSON.stringify(pend));
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 /** @returns {string} YYYY-MM-DD */
 function shelvedDayFromRow(row) {
   const s = (row.submittedAt || '').trim();
@@ -81,6 +175,46 @@ window.openListingPreview = function openListingPreview(rowId) {
     window.open('../product/product_upload_preview.html?ctx=audit', '_blank', 'noopener');
   } catch {
     window.alert('无法写入预览数据（sessionStorage）。');
+  }
+};
+
+function normalizeSnapForAdminChangePage(snap) {
+  return {
+    name: snap.name ?? '',
+    price: Number.isFinite(Number(snap.price)) ? Number(snap.price) : Number(snap.price) || 0,
+    unit: snap.unit || '台',
+    cat1: snap.cat1 || '',
+    cat2: snap.cat2 || '',
+    cat3: snap.cat3 || '',
+    specs: snap.specs && typeof snap.specs === 'object' ? { ...snap.specs } : {},
+    warehouseStocks: normalizeWarehouseStocksFull(snap.warehouseStocks),
+    mainImage: String(snap.mainImage || ''),
+    subImages: Array.isArray(snap.subImages) ? [...snap.subImages] : [],
+    detailImages: Array.isArray(snap.detailImages) ? [...snap.detailImages] : []
+  };
+}
+
+window.openChangeAuditDetailPage = function openChangeAuditDetailPage(rowId) {
+  const row = auditQueue.find(x => x.id === rowId);
+  if (!row || row.auditKind !== 'CHANGE_INFO' || !row.beforeSnapshot || !row.afterSnapshot) {
+    openAuditDetailModal(rowId);
+    return;
+  }
+  const payload = {
+    ticketId: row.id,
+    sku: row.sku || '',
+    supplierName: row.supplierName || '',
+    submittedAt: row.submittedAt || '',
+    linkedProductId: row.linkedProductId || '',
+    shelfSnapshot: row.shelfSnapshot === 'offline' ? 'offline' : 'online',
+    before: normalizeSnapForAdminChangePage(row.beforeSnapshot),
+    after: normalizeSnapForAdminChangePage(row.afterSnapshot)
+  };
+  try {
+    sessionStorage.setItem('ADMIN_CHANGE_DETAIL_PAYLOAD', JSON.stringify(payload));
+    window.location.href = './admin_product_change_audit_detail.html';
+  } catch (e) {
+    window.alert('无法打开核对页：' + (e.message || String(e)));
   }
 };
 
@@ -247,6 +381,66 @@ function buildSupplierMirrorModalHtml(row) {
 </div>`;
 }
 
+/** 信息变更审核：前后快照对比（与供应商变更页字段对齐） */
+function buildChangeCompareModalHtml(row) {
+  const b = row.beforeSnapshot;
+  const a = row.afterSnapshot;
+  if (!b || !a) return buildSupplierMirrorModalHtml(row);
+
+  const cmpRows = compareSnapshotRows(b, a);
+  const idEsc = escapeAttr(row.id);
+
+  const banner = `
+      <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 mb-1 text-sm text-amber-950 leading-relaxed">
+        <strong><i class="fas fa-code-branch mr-1"></i>本单为「信息变更」审核</strong>
+        · 非新建上架；通过后将以<strong>变更后</strong>快照更新前台展示（原型）。
+        · SKU：<span class="font-mono">${escapeHtml(row.sku || '—')}</span>
+        ${row.linkedProductId ? ` · 关联商品 ID：<span class="font-mono">${escapeHtml(row.linkedProductId)}</span>` : ''}
+      </div>`;
+
+  const grid = `
+    <div class="grid grid-cols-[minmax(76px,92px)_1fr_1fr] gap-x-2 gap-y-2 text-sm items-start mt-4">
+      <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wide pb-1 border-b border-slate-100">字段</div>
+      <div class="text-[11px] font-bold text-slate-400 uppercase pb-1 border-b border-slate-100">变更前（生效）</div>
+      <div class="text-[11px] font-bold text-slate-400 uppercase pb-1 border-b border-slate-100">变更后（待审）</div>
+      ${cmpRows
+        .map(
+          r => `
+        <div class="font-semibold text-slate-600 text-xs pt-1.5">${escapeHtml(r.label)}</div>
+        <div class="rounded-lg border border-slate-200 px-2 py-2 bg-slate-50 text-slate-700 text-xs leading-snug break-all">${escapeHtml(r.bVal)}</div>
+        <div class="rounded-lg border px-2 py-2 text-xs leading-snug break-all ${
+          r.isDiff ? 'bg-amber-50 border-amber-300 text-amber-950' : 'bg-white border-slate-200 text-slate-800'
+        }">${escapeHtml(r.aVal)}</div>`
+        )
+        .join('')}
+    </div>`;
+
+  return `
+<div class="add-product-modal audit-snapshot-shell" role="dialog" aria-modal="true" onclick="event.stopPropagation()" style="width:min(900px,100%)">
+  <div class="apm-head-row">
+    <div class="min-w-0">
+      <div class="text-xs font-black uppercase tracking-[0.14em] text-amber-700">审批 · 信息变更</div>
+      <h3 class="text-xl font-black text-slate-900 mt-1 leading-snug break-words">${escapeHtml(row.name)}</h3>
+      <p class="text-sm text-slate-500 mt-2">供应商：${escapeHtml(row.supplierName)} · 提交时间：${escapeHtml(row.submittedAt || '—')}</p>
+      ${banner}
+    </div>
+    <button type="button" class="assistant-close-ro rounded-full bg-slate-100 text-slate-500 border-0 shrink-0" style="width:40px;height:40px" onclick="closeAuditDetailModal()" aria-label="关闭">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <div class="apm-section">
+    <div class="apm-section-title">变更内容前后对比</div>
+    ${grid}
+  </div>
+
+  <div class="flex flex-wrap justify-end gap-3 mt-8 pt-4 border-t border-slate-200">
+    <button type="button" class="action-btn action-btn-secondary" onclick="closeAuditDetailModal()">关闭</button>
+    <button type="button" class="action-btn action-btn-primary" onclick="openListingPreview('${idEsc}')"><i class="fas fa-camera"></i>预览（变更后）</button>
+  </div>
+</div>`;
+}
+
 window.closeAuditDetailModal = function closeAuditDetailModal() {
   const modal = document.getElementById('auditDetailModal');
   const mount = document.getElementById('auditDetailMount');
@@ -260,7 +454,8 @@ window.openAuditDetailModal = function openAuditDetailModal(rowId) {
   const modal = document.getElementById('auditDetailModal');
   const mount = document.getElementById('auditDetailMount');
   if (!modal || !mount) return;
-  mount.innerHTML = buildSupplierMirrorModalHtml(row);
+  const isChange = row.auditKind === 'CHANGE_INFO' && row.beforeSnapshot && row.afterSnapshot;
+  mount.innerHTML = isChange ? buildChangeCompareModalHtml(row) : buildSupplierMirrorModalHtml(row);
   modal.hidden = false;
 };
 
@@ -303,12 +498,14 @@ function confirmRejectAudit() {
   }
   const idx = auditQueue.findIndex(x => x.id === rejectTargetId);
   const nameSnap = idx >= 0 ? auditQueue[idx].name : '';
+  const linkedPid = idx >= 0 ? auditQueue[idx].linkedProductId : null;
   if (idx === -1) {
     closeRejectModal();
     return;
   }
   auditQueue[idx].listStatus = 'rejected';
   auditQueue[idx].auditStatusLabel = '已驳回';
+  clearLinkedPendingChange(linkedPid);
   closeRejectModal();
   renderShelfTabs();
   renderAuditProductTable();
@@ -319,8 +516,34 @@ window.auditApprove = function auditApprove(rowId) {
   const row = auditQueue.find(x => x.id === rowId);
   if (!row || row.listStatus !== 'pending') return;
   if (!window.confirm(`确认通过审核？\n${row.name}`)) return;
-  row.listStatus = 'online';
-  row.auditStatusLabel = '已上架';
+
+  if (row.auditKind === 'CHANGE_INFO' && row.afterSnapshot) {
+    const a = row.afterSnapshot;
+    row.name = a.name;
+    row.price = a.price;
+    row.unit = a.unit;
+    row.cat1 = a.cat1;
+    row.cat2 = a.cat2;
+    row.cat3 = a.cat3;
+    row.specs = { ...(a.specs || {}) };
+    row.specLabels = [...(a.specLabels && a.specLabels.length ? a.specLabels : Object.keys(a.specs || {}))];
+    row.warehouseStocks = normalizeWarehouseStocksFull(a.warehouseStocks);
+    row.mainImage = a.mainImage || '';
+    row.subImages = [...(a.subImages || [])];
+    row.detailImages = [...(a.detailImages || [])];
+    row.listStatus = row.shelfSnapshot === 'offline' ? 'offline' : 'online';
+    row.auditStatusLabel = row.listStatus === 'online' ? '已上架' : '已下架';
+    row.auditKind = undefined;
+    row.beforeSnapshot = null;
+    row.afterSnapshot = null;
+    row.shelfSnapshot = undefined;
+    clearLinkedPendingChange(row.linkedProductId);
+    row.linkedProductId = undefined;
+  } else {
+    row.listStatus = 'online';
+    row.auditStatusLabel = '已上架';
+  }
+
   renderShelfTabs();
   renderAuditProductTable();
 };
@@ -368,6 +591,75 @@ const baseAuditMocks = [
     supplierName: '北京联合科技有限公司',
     submittedAt: '2026-05-12 10:08',
     aiKind: 'pass'
+  },
+  {
+    id: 'AUD-DEMO-CHANGE-PAPER',
+    auditKind: 'CHANGE_INFO',
+    linkedProductId: '',
+    listStatus: 'pending',
+    sku: 'SKU-GC-PPR-CHG01',
+    specLabels: ['克重', '幅面规格', '包装数量', '颜色'],
+    name: '【演示·变更】得力风 A4复印纸 70g（10包装）',
+    price: 135,
+    unit: '箱',
+    cat1: '办公耗材',
+    cat2: '纸张类',
+    cat3: '复印打印纸',
+    specs: { 克重: '70g', 幅面规格: 'A4', 包装数量: '10包×500张', 颜色: '高白' },
+    warehouseStocks: {
+      华东一号仓: 600,
+      华北物流中心: 300,
+      华南保税仓: 200,
+      西南协同仓: 100,
+      华中中心仓: 280
+    },
+    mainImage: 'https://picsum.photos/seed/guocai-adm-paper-new/480/480',
+    subImages: [],
+    detailImages: [],
+    supplierName: '华东优选办公用品商行',
+    submittedAt: '2026-05-13 14:05',
+    aiKind: 'warn',
+    shelfSnapshot: 'online',
+    beforeSnapshot: {
+      name: '【演示·变更】得力风 A4复印纸 70g（8包装）',
+      price: 128,
+      unit: '箱',
+      cat1: '办公耗材',
+      cat2: '纸张类',
+      cat3: '复印打印纸',
+      specs: { 克重: '70g', 幅面规格: 'A4', 包装数量: '8包×500张', 颜色: '高白' },
+      specLabels: ['克重', '幅面规格', '包装数量', '颜色'],
+      warehouseStocks: {
+        华东一号仓: 520,
+        华北物流中心: 310,
+        华南保税仓: 180,
+        西南协同仓: 95,
+        华中中心仓: 240
+      },
+      mainImage: 'https://picsum.photos/seed/guocai-adm-paper/480/480',
+      subImages: [],
+      detailImages: []
+    },
+    afterSnapshot: {
+      name: '【演示·变更】得力风 A4复印纸 70g（10包装）',
+      price: 135,
+      unit: '箱',
+      cat1: '办公耗材',
+      cat2: '纸张类',
+      cat3: '复印打印纸',
+      specs: { 克重: '70g', 幅面规格: 'A4', 包装数量: '10包×500张', 颜色: '高白' },
+      specLabels: ['克重', '幅面规格', '包装数量', '颜色'],
+      warehouseStocks: {
+        华东一号仓: 600,
+        华北物流中心: 300,
+        华南保税仓: 200,
+        西南协同仓: 100,
+        华中中心仓: 280
+      },
+      mainImage: 'https://picsum.photos/seed/guocai-adm-paper-new/480/480',
+      subImages: [],
+      detailImages: []
+    }
   },
   {
     id: 'AUD-DEMO-AIO',
@@ -474,22 +766,6 @@ const baseAuditMocks = [
 /** @type {typeof baseAuditMocks} */
 let auditQueue = [...baseAuditMocks];
 
-/** 数据来源：队列中出现过 + 预设拓展（便于筛选演示） */
-function buildThirdCategoryOptions() {
-  const sel = document.getElementById('auditFilterCat3');
-  if (!sel) return;
-  const preset = [...new Set(baseAuditMocks.map(r => r.cat3))].sort();
-  const extras = ['商用台式机', '激光打印机', '键鼠套装', '中性笔', '网布办公椅'];
-  const merged = [...new Set([...preset, ...extras])].sort();
-  while (sel.options.length > 1) sel.remove(1);
-  merged.forEach(c3 => {
-    const opt = document.createElement('option');
-    opt.value = c3;
-    opt.textContent = c3;
-    sel.appendChild(opt);
-  });
-}
-
 function aiTagHtml(aiKind) {
   if (aiKind === 'pass')
     return '<span class="mini-tag tag-ai-pass"><i class="fas fa-check"></i> 合规无风险</span>';
@@ -516,9 +792,20 @@ function listStatusCellHtml(row) {
   return `<span class="${u.cls}">${escapeHtml(u.label)}</span>`;
 }
 
+function auditKindCellHtml(row) {
+  if (row.auditKind === 'CHANGE_INFO') {
+    return `<span class="mini-tag bg-amber-50 text-amber-900 border border-amber-200"><i class="fas fa-code-branch"></i> 信息变更</span>`;
+  }
+  return `<span class="mini-tag bg-slate-50 text-slate-600 border border-slate-200"><i class="fas fa-plus"></i> 新建上架</span>`;
+}
+
 function rowActionsHtml(r) {
   const idEsc = escapeAttr(r.id);
-  const detail = `<button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openAuditDetailModal('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`;
+  const useChangeDetailPage =
+    r.auditKind === 'CHANGE_INFO' && r.beforeSnapshot && r.afterSnapshot;
+  const detail = useChangeDetailPage
+    ? `<button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openChangeAuditDetailPage('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`
+    : `<button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openAuditDetailModal('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`;
   const preview = `<button type="button" class="btn-audit bg-slate-50 text-gray-700 border border-gray-200 hover:bg-slate-100" onclick="openListingPreview('${idEsc}')"><i class="fas fa-camera"></i>预览</button>`;
 
   if (r.listStatus === 'pending') {
@@ -587,9 +874,25 @@ function getFilteredRows() {
   const sup = supEl && supEl.value ? supEl.value.trim() : '';
   if (sup) rows = rows.filter(r => r.supplierName.includes(sup));
 
+  const cat1El = document.getElementById('auditFilterCat1');
+  const cat2El = document.getElementById('auditFilterCat2');
   const cat3El = document.getElementById('auditFilterCat3');
-  const cat3 = cat3El && cat3El.value ? cat3El.value.trim() : '';
-  if (cat3) rows = rows.filter(r => r.cat3 === cat3);
+  const f1 = cat1El && cat1El.value ? cat1El.value.trim() : '';
+  const f2 = cat2El && cat2El.value ? cat2El.value.trim() : '';
+  const f3 = cat3El && cat3El.value ? cat3El.value.trim() : '';
+  if (f1 || f2 || f3) {
+    rows = rows.filter(r => {
+      if (f1 && r.cat1 !== f1) return false;
+      if (f2 && r.cat2 !== f2) return false;
+      if (f3 && r.cat3 !== f3) return false;
+      return true;
+    });
+  }
+
+  const kindEl = document.getElementById('auditFilterAuditKind');
+  const kind = kindEl && kindEl.value ? kindEl.value.trim() : '';
+  if (kind === 'CHANGE_INFO') rows = rows.filter(r => r.auditKind === 'CHANGE_INFO');
+  else if (kind === 'NEW_LISTING') rows = rows.filter(r => r.auditKind !== 'CHANGE_INFO');
 
   const startEl = document.getElementById('auditShelvedStart');
   const endEl = document.getElementById('auditShelvedEnd');
@@ -619,8 +922,15 @@ function resetFilters() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  const cat3 = document.getElementById('auditFilterCat3');
-  if (cat3) cat3.selectedIndex = 0;
+  const kind = document.getElementById('auditFilterAuditKind');
+  if (kind) kind.selectedIndex = 0;
+  if (typeof window.resetThreeLevelCategoryFilter === 'function') {
+    window.resetThreeLevelCategoryFilter({
+      cat1: 'auditFilterCat1',
+      cat2: 'auditFilterCat2',
+      cat3: 'auditFilterCat3'
+    });
+  }
 }
 
 function renderAuditProductTable() {
@@ -632,7 +942,7 @@ function renderAuditProductTable() {
   if (!rows.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="10" class="text-center py-14 text-gray-500 text-sm">
+        <td colspan="11" class="text-center py-14 text-gray-500 text-sm">
           暂无符合条件的数据。<br/><span class="text-xs text-gray-400 mt-2 inline-block">可点击「重置」清空筛选。</span>
         </td>
       </tr>`;
@@ -656,6 +966,7 @@ function renderAuditProductTable() {
           <td class="space-y-0.5">${formatWarehouseCols(r)}</td>
           <td class="text-gray-800 whitespace-nowrap">${escapeHtml(r.supplierName)}</td>
           <td class="text-gray-600 whitespace-nowrap">${escapeHtml(r.submittedAt)}</td>
+          <td>${auditKindCellHtml(r)}</td>
           <td>${aiTagCell(r)}</td>
           <td>${listStatusCellHtml(r)}</td>
           <td class="text-right">
@@ -696,7 +1007,22 @@ function bindAuditModals() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  buildThirdCategoryOptions();
+  try {
+    const append = JSON.parse(sessionStorage.getItem('PROTOTYPE_AUDIT_QUEUE_APPEND') || '[]');
+    if (Array.isArray(append) && append.length) {
+      append.forEach(r => auditQueue.unshift(r));
+      sessionStorage.removeItem('PROTOTYPE_AUDIT_QUEUE_APPEND');
+    }
+  } catch {
+    /* ignore */
+  }
+
+  if (typeof window.bindThreeLevelCategoryFilter === 'function') {
+    window.bindThreeLevelCategoryFilter(
+      { cat1: 'auditFilterCat1', cat2: 'auditFilterCat2', cat3: 'auditFilterCat3' },
+      renderAuditProductTable
+    );
+  }
 
   document.querySelectorAll('[data-audit-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -724,5 +1050,5 @@ document.addEventListener('DOMContentLoaded', () => {
       if (ev.key === 'Enter') renderAuditProductTable();
     });
   });
-  document.getElementById('auditFilterCat3')?.addEventListener('change', renderAuditProductTable);
+  document.getElementById('auditFilterAuditKind')?.addEventListener('change', renderAuditProductTable);
 });

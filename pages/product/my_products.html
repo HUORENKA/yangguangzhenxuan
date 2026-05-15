@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的商品 | 阳光甄选</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../../assets/custom.css">
   <style>
@@ -227,6 +227,332 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+
+    /* —— 以下与 product_upload.html「添加商品」弹窗一致（用于「编辑」） —— */
+    .add-product-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 95;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+    }
+
+    .add-product-overlay.show {
+      display: flex;
+    }
+
+    .add-product-modal {
+      width: min(760px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 30px 65px rgba(15, 23, 42, 0.26);
+      padding: 26px 26px 22px;
+      border: 1px solid rgba(226, 232, 240, 0.96);
+    }
+
+    .apm-head-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .apm-section {
+      margin-top: 16px;
+    }
+
+    .apm-section-title {
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .add-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 14px;
+    }
+
+    .add-form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .add-form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .add-form-input {
+      border: 1px solid #dbe2ea;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .add-form-input:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+
+    .apm-wm-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .apm-wm-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fafbfc;
+    }
+
+    .apm-wm-row .apm-wm-stock-input {
+      flex: 1;
+      min-width: 160px;
+      max-width: 260px;
+    }
+
+    .apm-wm-row .apm-wm-stock-input:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: #f1f5f9;
+    }
+
+    .apm-wm-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px 12px;
+    }
+
+    #apmSpecArea {
+      margin-top: 4px;
+    }
+
+    .img-upload-row {
+      margin-bottom: 20px;
+    }
+
+    .img-upload-card {
+      margin-top: 8px;
+      position: relative;
+    }
+
+    .apm-hidden-file-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .img-upload-zone {
+      width: 100%;
+      min-height: 128px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .img-upload-zone:hover {
+      border-color: #f97316;
+      background: linear-gradient(180deg, #fffafb 0%, #fff7ed 100%);
+      color: #b91c1c;
+      box-shadow: 0 0 0 1px rgba(254, 215, 170, 0.6);
+    }
+
+    .img-upload-zone-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+      color: #e11d48;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .img-upload-hint {
+      font-size: 12px;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+
+    .img-preview-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .img-thumb {
+      width: 76px;
+      height: 76px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      flex-shrink: 0;
+    }
+
+    .img-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .assistant-close {
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.48);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 120;
+    }
+
+    .dialog-overlay.show {
+      display: flex;
+    }
+
+    .dialog-card {
+      width: min(480px, 92vw);
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      box-shadow: 0 26px 48px rgba(15, 23, 42, 0.24);
+      overflow: hidden;
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      background: linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
+    }
+
+    .dialog-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .dialog-icon.info {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    .dialog-icon.success {
+      background: #ecfdf5;
+      color: #16a34a;
+    }
+
+    .dialog-icon.warn {
+      background: #fffbeb;
+      color: #d97706;
+    }
+
+    .dialog-icon.error {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    .dialog-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .dialog-body {
+      padding: 16px 20px;
+      font-size: 14px;
+      line-height: 1.9;
+      color: #475569;
+      white-space: pre-line;
+    }
+
+    .dialog-actions {
+      padding: 0 20px 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .dialog-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .dialog-btn-cancel {
+      border-color: #dbe2ea;
+      background: #ffffff;
+      color: #475569;
+    }
+
+    .dialog-btn-confirm {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+    }
   </style>
 </head>
 <body class="text-slate-800">
@@ -257,20 +583,22 @@
     </div>
 
     <div class="page-card p-5 mb-5">
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
-        <div class="xl:col-span-2">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-8 gap-3">
+        <div class="md:col-span-2 xl:col-span-2">
           <label class="block text-xs font-medium text-slate-500 mb-1">商品名称或 SKU</label>
           <input id="searchInput" class="toolbar-input" placeholder="输入商品名称或 SKU 模糊查询" />
         </div>
-        <div class="xl:col-span-1">
-          <label class="block text-xs font-medium text-slate-500 mb-1">品类</label>
-          <select id="categoryFilter" class="toolbar-select">
-            <option value="">全部品类</option>
-            <option value="办公设备">办公设备</option>
-            <option value="办公耗材">办公耗材</option>
-            <option value="网络设备">网络设备</option>
-            <option value="办公家具">办公家具</option>
-          </select>
+        <div class="min-w-0">
+          <label class="block text-xs font-medium text-slate-500 mb-1" for="mpFilterCat1">一级类目</label>
+          <select id="mpFilterCat1" class="toolbar-select min-w-0"></select>
+        </div>
+        <div class="min-w-0">
+          <label class="block text-xs font-medium text-slate-500 mb-1" for="mpFilterCat2">二级类目</label>
+          <select id="mpFilterCat2" class="toolbar-select min-w-0"></select>
+        </div>
+        <div class="min-w-0">
+          <label class="block text-xs font-medium text-slate-500 mb-1" for="mpFilterCat3">三级类目</label>
+          <select id="mpFilterCat3" class="toolbar-select min-w-0"></select>
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-500 mb-1">提交时间起</label>
@@ -280,7 +608,7 @@
           <label class="block text-xs font-medium text-slate-500 mb-1">提交时间止</label>
           <input id="submitDateTo" type="date" class="toolbar-input" />
         </div>
-        <div class="flex gap-3 items-end">
+        <div class="md:col-span-2 xl:col-span-1 flex gap-3 items-end">
           <button class="action-btn action-btn-secondary flex-1" onclick="resetFilters()">
             <i class="fas fa-rotate-left"></i>
             <span>重置</span>
@@ -371,7 +699,7 @@
   <div id="stockModalOverlay" class="stock-modal-overlay" onclick="if (event.target === this) closeStockModal()" role="presentation">
     <div class="stock-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="stockModalHeading" onclick="event.stopPropagation()">
       <div class="stock-modal-head">
-        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">已上架 · 库存维护</div>
+        <div id="stockModalShelfBadge" class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">库存维护</div>
         <h2 id="stockModalHeading" class="text-lg font-bold text-slate-900 leading-snug">修改分仓库存</h2>
         <div class="mt-2 text-xs text-slate-500"><span class="font-mono text-slate-700" id="stockModalSku"></span></div>
         <p id="stockModalSubtitle" class="text-sm text-slate-600 mt-2 leading-relaxed"></p>
@@ -386,6 +714,152 @@
       </div>
     </div>
   </div>
+
+  <div class="add-product-overlay" id="addProductOverlay" onclick="if (event.target === this) closeAddProductModal()">
+    <div class="add-product-modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <div class="apm-head-row">
+        <div>
+          <div id="mpEditBadge" class="text-xs font-black uppercase tracking-[0.14em] text-red-600">单笔录入 · 编辑</div>
+          <h3 id="mpEditTitle" class="text-xl font-black text-slate-900 mt-1">编辑商品</h3>
+          <p class="text-sm text-slate-500 mt-2 leading-6">
+            与「上架商品」弹窗一致填写；保存后将写回「我的商品」列表与预览快照（原型）。草稿/未通过商品可无主图占位后补全。
+          </p>
+        </div>
+        <button type="button" class="assistant-close rounded-full bg-slate-100 text-slate-500 w-10 h-10 border-0" onclick="closeAddProductModal()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="apm-section">
+        <div class="apm-section-title">基本信息</div>
+        <div class="add-form-grid">
+          <label class="add-form-field" style="grid-column: 1 / -1;">
+            <span class="add-form-label">商品名称 <span class="text-red-500">*</span></span>
+            <input id="apmName" type="text" class="add-form-input" placeholder="请输入商品名称" />
+          </label>
+          <label class="add-form-field">
+            <span class="add-form-label">价格（人民币 · 元）<span class="text-red-500">*</span></span>
+            <input id="apmPrice" type="number" step="0.01" min="0" class="add-form-input" placeholder="例如 4288.88" />
+          </label>
+          <label class="add-form-field">
+            <span class="add-form-label">单位（单枚举）<span class="text-red-500">*</span></span>
+            <select id="apmUnit" class="add-form-input"></select>
+          </label>
+        </div>
+      </div>
+
+      <div class="apm-section">
+        <div class="apm-section-title">三级类目 · 规格</div>
+        <div class="add-form-grid">
+          <label class="add-form-field">
+            <span class="add-form-label">一级类目 <span class="text-red-500">*</span></span>
+            <select id="apmCat1" class="add-form-input" onchange="addFormCatChange(1)">
+              <option value="">请选择</option>
+            </select>
+          </label>
+          <label class="add-form-field">
+            <span class="add-form-label">二级类目 <span class="text-red-500">*</span></span>
+            <select id="apmCat2" class="add-form-input" onchange="addFormCatChange(2)">
+              <option value="">请选择</option>
+            </select>
+          </label>
+          <label class="add-form-field">
+            <span class="add-form-label">三级类目 <span class="text-red-500">*</span></span>
+            <select id="apmCat3" class="add-form-input" onchange="addFormCatChange(3)">
+              <option value="">请选择</option>
+            </select>
+          </label>
+          <div id="apmSpecArea" class="add-form-grid" style="grid-column: 1 / -1;"></div>
+        </div>
+        <p class="text-xs text-slate-500 mt-3 leading-relaxed">请先选择三级类目，以下将展示该类目固定规格字段。</p>
+      </div>
+
+      <div class="apm-section">
+        <div class="apm-section-title">仓库与分仓库存（可选）</div>
+        <p class="text-xs text-slate-500 mb-3 leading-relaxed">
+          上架提交<strong>可不登记</strong>：不勾选任何仓库即视为暂不登记库存。若勾选仓库，须在该行填写该仓<strong>非负整数</strong>库存。
+        </p>
+        <div id="apmWarehouseWrap" class="apm-wm-grid"></div>
+      </div>
+
+      <div class="apm-section">
+        <div class="apm-section-title">图片 · 分成商品图片与详情图</div>
+
+        <div class="img-upload-row">
+          <div class="add-form-label">商品主图 <span class="text-red-500">*</span></div>
+          <div class="img-upload-card">
+            <input id="apmMainImg" type="file" accept="image/*" class="apm-hidden-file-input" tabindex="-1" />
+            <button type="button" class="img-upload-zone" onclick="document.getElementById('apmMainImg').click()">
+              <span class="img-upload-zone-icon"><i class="fas fa-cloud-arrow-up"></i></span>
+              <span>上传图片</span>
+              <span class="img-upload-hint">必选 1 张主图 · 可沿用当前图或重新选择</span>
+            </button>
+            <div id="apmMainImgPreview" class="img-preview-row" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="img-upload-row">
+          <div class="add-form-label">商品副图（可选）</div>
+          <div class="img-upload-card">
+            <input id="apmSubImg" type="file" multiple accept="image/*" class="apm-hidden-file-input" tabindex="-1" />
+            <button type="button" class="img-upload-zone" onclick="document.getElementById('apmSubImg').click()">
+              <span class="img-upload-zone-icon"><i class="fas fa-images"></i></span>
+              <span>上传图片</span>
+              <span class="img-upload-hint">可选多张 · 支持一次多选文件</span>
+            </button>
+            <div id="apmSubImgPreview" class="img-preview-row" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="img-upload-row">
+          <div class="add-form-label">详情图片（可选）</div>
+          <div class="img-upload-card">
+            <input id="apmDetailImg" type="file" multiple accept="image/*" class="apm-hidden-file-input" tabindex="-1" />
+            <button type="button" class="img-upload-zone" onclick="document.getElementById('apmDetailImg').click()">
+              <span class="img-upload-zone-icon"><i class="fas fa-photo-film"></i></span>
+              <span>上传图片</span>
+              <span class="img-upload-hint">可选多张 · 用于详情页大图</span>
+            </button>
+            <div id="apmDetailImgPreview" class="img-preview-row" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap justify-end gap-3 mt-8 pt-4 border-t border-slate-200">
+        <button type="button" class="action-btn action-btn-secondary" onclick="closeAddProductModal()">取消</button>
+        <button type="button" class="action-btn action-btn-primary" onclick="confirmAddProduct()">
+          <i class="fas fa-floppy-disk"></i>
+          <span id="mpEditSubmitLabel">保存修改</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dialog-overlay" id="globalDialogOverlay">
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <div class="dialog-icon info" id="globalDialogIcon"><i class="fas fa-circle-info"></i></div>
+        <div class="dialog-title" id="globalDialogTitle">提示</div>
+      </div>
+      <div class="dialog-body" id="globalDialogBody">-</div>
+      <div class="dialog-actions">
+        <button class="dialog-btn dialog-btn-cancel" id="globalDialogCancelBtn" type="button">取消</button>
+        <button class="dialog-btn dialog-btn-confirm" id="globalDialogConfirmBtn" type="button">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../assets/platform_categories_data.js"></script>
+  <script src="./product_upload_app.js"></script>
+  <script>
+    (function wrapCloseAdd() {
+      var prev = window.closeAddProductModal;
+      window.closeAddProductModal = function () {
+        window.ADD_PRODUCT_SUBMIT_HANDLER = null;
+        if (typeof prev === 'function') prev();
+      };
+    })();
+  </script>
 
   <script>
     const products = [
@@ -623,6 +1097,91 @@
       return m[status] || '—';
     }
 
+    function buildInfoChangePayload(productId) {
+      const item = products.find(p => p.id === productId);
+      if (!item || (item.status !== 'published' && item.status !== 'offline')) return null;
+
+      let pend = {};
+      try {
+        pend = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_PENDING_MAP') || '{}');
+      } catch {
+        pend = {};
+      }
+      if (pend && pend[productId]) {
+        alert('该商品已有信息变更审核待处理，请等待运营审批后再发起（原型）。');
+        return null;
+      }
+
+      const extra = PREVIEW_BY_ID[productId] || {};
+      const ws = normalizeWarehouseStocks(
+        item.warehouseStocks !== undefined && item.warehouseStocks !== null
+          ? item.warehouseStocks
+          : extra.warehouseStocks
+      );
+      const catPath =
+        Array.isArray(extra.catPath) && extra.catPath.length >= 3
+          ? extra.catPath
+          : [item.category || '—', '—', '—'];
+
+      let specs =
+        extra.specs && typeof extra.specs === 'object' && Object.keys(extra.specs).length
+          ? { ...extra.specs }
+          : {};
+      if (!Object.keys(specs).length && item.spec && item.spec !== '-') {
+        specs = { 规格摘要: item.spec };
+      }
+
+      const specLabels = Object.keys(specs);
+
+      let mainImage = typeof extra.mainImage === 'string' ? extra.mainImage.trim() : '';
+      if (!mainImage) {
+        mainImage = `https://picsum.photos/seed/myprod-ph-${encodeURIComponent(productId).slice(-16)}/480/480`;
+      }
+
+      return {
+        productId,
+        sku: item.sku || productId,
+        sourceShelf: item.status === 'published' ? 'published' : 'offline',
+        before: {
+          name: item.name,
+          price: typeof extra.price === 'number' && extra.price >= 0 ? extra.price : 0,
+          unit: extra.unit || '台',
+          cat1: catPath[0],
+          cat2: catPath[1],
+          cat3: catPath[2],
+          specs,
+          specLabels,
+          warehouseStocks: { ...ws },
+          mainImage,
+          subImages: Array.isArray(extra.subImages) ? [...extra.subImages] : [],
+          detailImages: Array.isArray(extra.detailImages) ? [...extra.detailImages] : []
+        }
+      };
+    }
+
+    window.openProductInfoChange = function openProductInfoChange(productId) {
+      const payload = buildInfoChangePayload(productId);
+      if (!payload) return;
+      try {
+        sessionStorage.setItem('PRODUCT_INFO_CHANGE_PAYLOAD', JSON.stringify(payload));
+        window.location.href = './product_info_change.html';
+      } catch {
+        alert('无法写入变更上下文（可能被浏览器禁用存储）。');
+      }
+    };
+
+    function changePendingChipHtml(productId) {
+      try {
+        const pend = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_PENDING_MAP') || '{}');
+        if (pend && pend[productId]) {
+          return `<span class="inline-flex mt-1.5 items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-950 border border-amber-200/90"><i class="fas fa-code-branch text-[10px]"></i>变更审核中</span>`;
+        }
+      } catch {
+        /* ignore */
+      }
+      return '';
+    }
+
     /** 打开与「上架商品」相同的快照预览页（供应商侧工作台） */
     window.openProductListingPreview = function openProductListingPreview(productId) {
       const item = products.find(p => p.id === productId);
@@ -699,6 +1258,22 @@
       return String(value).trim().slice(0, 10);
     }
 
+    function getProductCatPath(item) {
+      const extra = PREVIEW_BY_ID[item.id] || {};
+      if (Array.isArray(extra.catPath) && extra.catPath.length >= 3) {
+        return { cat1: extra.catPath[0], cat2: extra.catPath[1], cat3: extra.catPath[2] };
+      }
+      return { cat1: item.category || '', cat2: '', cat3: '' };
+    }
+
+    function formatCategoryCell(item) {
+      const extra = PREVIEW_BY_ID[item.id] || {};
+      if (Array.isArray(extra.catPath) && extra.catPath.length >= 3) {
+        return `${extra.catPath[0]} / ${extra.catPath[1]} / ${extra.catPath[2]}`;
+      }
+      return item.category || '—';
+    }
+
     function matchesSubmitDateRange(item, fromVal, toVal) {
       const day = parseSubmittedDay(item.submittedAt);
       if (fromVal && day < fromVal) return false;
@@ -708,13 +1283,17 @@
 
     function getFilteredProducts() {
       const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
-      const category = document.getElementById('categoryFilter').value;
+      const fc1 = document.getElementById('mpFilterCat1').value.trim();
+      const fc2 = document.getElementById('mpFilterCat2').value.trim();
+      const fc3 = document.getElementById('mpFilterCat3').value.trim();
       const submitFrom = document.getElementById('submitDateFrom').value;
       const submitTo = document.getElementById('submitDateTo').value;
 
       return products.filter(item => {
         const matchStatus = currentStatus === 'all' || item.status === currentStatus;
-        const matchCategory = !category || item.category === category;
+        const cp = getProductCatPath(item);
+        const matchCategory =
+          (!fc1 || cp.cat1 === fc1) && (!fc2 || cp.cat2 === fc2) && (!fc3 || cp.cat3 === fc3);
         const sku = (item.sku || item.id).toLowerCase();
         const haystack = `${item.name} ${sku}`.toLowerCase();
         const matchKeyword = !keyword || haystack.includes(keyword);
@@ -746,8 +1325,102 @@
       return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
     }
 
+    function sanitizePriceLocal(raw) {
+      const n = Number(String(raw).replace(/,/g, '').trim());
+      if (Number.isNaN(n) || n < 0) return NaN;
+      return Math.round(n * 100) / 100;
+    }
+
+    function buildSnapshotForEditor(productId) {
+      const item = products.find(p => p.id === productId);
+      if (!item) return null;
+      const extra = PREVIEW_BY_ID[productId] || {};
+      const ws = normalizeWarehouseStocks(
+        item.warehouseStocks !== undefined && item.warehouseStocks !== null
+          ? item.warehouseStocks
+          : extra.warehouseStocks
+      );
+
+      let specs =
+        extra.specs && typeof extra.specs === 'object' && Object.keys(extra.specs).length
+          ? { ...extra.specs }
+          : {};
+      if (!Object.keys(specs).length && item.spec && item.spec !== '-') {
+        specs = { 规格摘要: item.spec };
+      }
+
+      const catPath =
+        Array.isArray(extra.catPath) && extra.catPath.length >= 3
+          ? extra.catPath
+          : [item.category || '—', '—', '—'];
+
+      let mainImg = typeof extra.mainImage === 'string' ? extra.mainImage.trim() : '';
+      if (!mainImg) {
+        mainImg = `https://picsum.photos/seed/myprod-edit-${encodeURIComponent(productId).slice(-12)}/480/480`;
+      }
+
+      const pn = sanitizePriceLocal(
+        typeof extra.price === 'number' && Number.isFinite(extra.price) ? String(extra.price) : String(extra.price ?? '')
+      );
+
+      return {
+        name: item.name,
+        price: Number.isNaN(pn) ? 0 : pn,
+        unit: extra.unit || '台',
+        cat1: catPath[0],
+        cat2: catPath[1],
+        cat3: catPath[2],
+        specs,
+        warehouseStocks: { ...ws },
+        mainImage: mainImg,
+        subImages: Array.isArray(extra.subImages) ? [...extra.subImages] : [],
+        detailImages: Array.isArray(extra.detailImages) ? [...extra.detailImages] : []
+      };
+    }
+
+    function applyEditorResultToMyProducts(productId, product) {
+      const item = products.find(p => p.id === productId);
+      if (item) {
+        item.name = product.name;
+        const vs = Object.values(product.specs || {}).filter(v => String(v).trim());
+        item.spec = vs.length ? vs.join(' / ') : item.spec;
+        if (item.status === 'published' || item.status === 'offline') {
+          item.warehouseStocks = normalizeWarehouseStocks(product.warehouseStocks);
+        }
+      }
+      PREVIEW_BY_ID[productId] = {
+        price: product.price,
+        unit: product.unit,
+        catPath: [product.cat1, product.cat2, product.cat3],
+        specs: { ...product.specs },
+        warehouseStocks: normalizeWarehouseStocks(product.warehouseStocks),
+        mainImage: product.mainImage,
+        subImages: [...(product.subImages || [])],
+        detailImages: [...(product.detailImages || [])]
+      };
+      renderTable();
+    }
+
     function goEdit(productId) {
-      window.location.href = `./product_upload.html?id=${encodeURIComponent(productId)}`;
+      const item = products.find(p => p.id === productId);
+      const snap = buildSnapshotForEditor(productId);
+      if (!snap) return;
+      const ov = document.getElementById('addProductOverlay');
+      if (!ov || typeof window.applyProductSnapshotToApmForm !== 'function') {
+        alert('编辑弹窗脚本未就绪。');
+        return;
+      }
+      window.ADD_PRODUCT_SUBMIT_HANDLER = function handler(product) {
+        applyEditorResultToMyProducts(productId, product);
+      };
+      ov.classList.add('show');
+      window.applyProductSnapshotToApmForm(snap);
+      const bd = document.getElementById('mpEditBadge');
+      const ttl = document.getElementById('mpEditTitle');
+      if (bd) bd.textContent = '单笔录入 · 编辑';
+      if (ttl) ttl.textContent = '编辑商品';
+      const submitLbl = document.getElementById('mpEditSubmitLabel');
+      if (submitLbl) submitLbl.textContent = item && item.status === 'rejected' ? '再次提交' : '保存修改';
     }
 
     function deleteProduct(productId) {
@@ -811,23 +1484,16 @@
       }
 
       if (item.status === 'reviewing') {
-        return (
-          previewBtn +
-          `
-              <button class="action-btn action-btn-secondary" type="button" onclick="openDrawer('${id}')">
-                <i class="fas fa-file-lines"></i>
-                <span>查看详情</span>
-              </button>`
-        );
+        return previewBtn;
       }
 
       if (item.status === 'published') {
         return (
           previewBtn +
           `
-              <button class="action-btn action-btn-secondary" type="button" onclick="openDrawer('${id}')">
-                <i class="fas fa-file-lines"></i>
-                <span>查看详情</span>
+              <button class="action-btn action-btn-secondary" type="button" onclick="openProductInfoChange('${id}')">
+                <i class="fas fa-arrows-rotate"></i>
+                <span>更新信息</span>
               </button>
               <button class="action-btn action-btn-secondary" type="button" onclick="openStockModal('${id}')">
                 <i class="fas fa-sliders"></i>
@@ -844,9 +1510,13 @@
         return (
           previewBtn +
           `
-              <button class="action-btn action-btn-secondary" type="button" onclick="openDrawer('${id}')">
-                <i class="fas fa-file-lines"></i>
-                <span>查看详情</span>
+              <button class="action-btn action-btn-secondary" type="button" onclick="openProductInfoChange('${id}')">
+                <i class="fas fa-arrows-rotate"></i>
+                <span>更新信息</span>
+              </button>
+              <button class="action-btn action-btn-secondary" type="button" onclick="openStockModal('${id}')">
+                <i class="fas fa-sliders"></i>
+                <span>修改库存</span>
               </button>
               <button class="action-btn action-btn-primary" type="button" onclick="setProductOnline('${id}')">
                 <i class="fas fa-arrow-up-from-bracket"></i>
@@ -886,9 +1556,10 @@
         <tr class="border-t border-slate-100 hover:bg-slate-50 transition-colors">
           <td class="px-5 py-4">
             <div class="font-semibold text-slate-900">${item.name}</div>
+            ${changePendingChipHtml(item.id)}
           </td>
           <td class="px-5 py-4 font-mono text-sm text-slate-700">${getSku(item)}</td>
-          <td class="px-5 py-4">${item.category}</td>
+          <td class="px-5 py-4 text-sm text-slate-600">${formatCategoryCell(item)}</td>
           <td class="px-5 py-4">${getStatusBadge(item.status)}</td>
           <td class="px-5 py-4 text-slate-500">${getSubmittedDate(item)}</td>
           <td class="px-5 py-4">
@@ -909,7 +1580,13 @@
 
     function resetFilters() {
       document.getElementById('searchInput').value = '';
-      document.getElementById('categoryFilter').value = '';
+      if (typeof window.resetThreeLevelCategoryFilter === 'function') {
+        window.resetThreeLevelCategoryFilter({
+          cat1: 'mpFilterCat1',
+          cat2: 'mpFilterCat2',
+          cat3: 'mpFilterCat3'
+        });
+      }
       document.getElementById('submitDateFrom').value = '';
       document.getElementById('submitDateTo').value = '';
       currentStatus = 'all';
@@ -962,7 +1639,7 @@
     let stockModalProductId = null;
 
     window.openStockModal = function openStockModal(productId) {
-      const item = products.find(p => p.id === productId && p.status === 'published');
+      const item = products.find(p => p.id === productId && (p.status === 'published' || p.status === 'offline'));
       if (!item) return;
       stockModalProductId = productId;
       const extra = PREVIEW_BY_ID[productId] || {};
@@ -971,6 +1648,9 @@
           ? item.warehouseStocks
           : extra.warehouseStocks
       );
+
+      const badge = document.getElementById('stockModalShelfBadge');
+      if (badge) badge.textContent = item.status === 'published' ? '已上架 · 库存维护' : '已下架 · 库存维护';
 
       document.getElementById('stockModalHeading').textContent = item.name;
       document.getElementById('stockModalSku').textContent = `SKU：${getSku(item)}`;
@@ -993,7 +1673,7 @@
     window.saveStockModal = function saveStockModal() {
       if (!stockModalProductId) return;
       const item = products.find(p => p.id === stockModalProductId);
-      if (!item || item.status !== 'published') {
+      if (!item || (item.status !== 'published' && item.status !== 'offline')) {
         closeStockModal();
         return;
       }
@@ -1032,7 +1712,13 @@
       }
     });
 
-    document.getElementById('categoryFilter').addEventListener('change', renderTable);
+    if (typeof window.bindThreeLevelCategoryFilter === 'function') {
+      window.bindThreeLevelCategoryFilter(
+        { cat1: 'mpFilterCat1', cat2: 'mpFilterCat2', cat3: 'mpFilterCat3' },
+        renderTable
+      );
+    }
+
     document.getElementById('submitDateFrom').addEventListener('change', renderTable);
     document.getElementById('submitDateTo').addEventListener('change', renderTable);
 
