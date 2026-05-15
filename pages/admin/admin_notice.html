@@ -8,22 +8,70 @@
   <link rel="stylesheet" href="../../assets/custom.css">
   <style>
     @layer utilities{.text-primary{color:#E2231A}.bg-primary{background-color:#E2231A}}
-    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600}.action-btn-primary{background:#E2231A;color:white}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.link-btn{color:#2563eb;font-size:13px;margin-right:10px}.danger{color:#dc2626}.tag{display:inline-flex;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:600}.hint-bar{font-size:12px;color:#64748b;background:#f1f5f9;border-radius:10px;padding:10px 14px;margin-bottom:16px}
+    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}
+    .action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;text-decoration:none}
+    .action-btn-primary{background:#E2231A;color:white}
+    .action-btn-secondary{background:white;color:#334155;border:1px solid #cbd5e1}
+    .table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}
+    th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}
+    td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px}
+    .link-btn{color:#2563eb;font-size:13px;margin-right:8px;padding:0;border:none;background:none;cursor:pointer;text-decoration:underline}
+    .link-btn:disabled{color:#94a3b8;cursor:not-allowed;text-decoration:none}
+    .danger{color:#dc2626}
+    .tag{display:inline-flex;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600}
+    .hint-bar{font-size:12px;color:#64748b;background:#f1f5f9;border-radius:10px;padding:10px 14px;margin-bottom:16px}
+    .drag-handle{cursor:grab;color:#94a3b8;padding:4px 6px;border-radius:8px}
+    .drag-handle:active{cursor:grabbing}
+    tbody tr.drag-over{outline:2px dashed #E2231A;outline-offset:-2px;background:#fff7f7}
+    tbody tr.sortable-ghost{opacity:0.45}
+    tr.row-pinned td{background:#fffbeb}
+    .pin-btn{color:#d97706;border:none;background:none;cursor:pointer;padding:2px 6px;border-radius:8px;font-size:14px}
+    .pin-btn.active{color:#b45309}
+    .pin-btn:hover{background:#fef3c7}
   </style>
 </head>
 <body>
   <main class="admin-content"><div class="p-6 max-w-[1680px] mx-auto">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-      <div><div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">平台公告管理</span></div><h1 class="text-2xl font-bold text-slate-900">平台公告管理</h1><p class="text-sm text-slate-500 mt-1">维护平台公告，支持按分站范围发布。</p></div>
-      <div class="flex flex-wrap gap-3"><button class="action-btn action-btn-primary"><i class="fas fa-plus"></i>新增公告</button></div>
+      <div>
+        <div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">平台公告管理</span></div>
+        <h1 class="text-2xl font-bold text-slate-900">平台公告管理</h1>
+        <p class="text-sm text-slate-500 mt-1">独立维护平台公告（与新闻资讯分离）；支持按发布范围投放、列表拖拽排序与置顶。</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="admin_notice_edit.html" class="action-btn action-btn-primary no-underline"><i class="fas fa-plus"></i>新增公告</a>
+      </div>
     </div>
-    <p class="hint-bar"><i class="fas fa-info-circle mr-1"></i>查询条件：<strong>不含分类/类型筛选</strong>；支持关键词、状态、上架时间区间（与新闻资讯模块一致）。</p>
-    <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 items-end">
+
+    <p class="hint-bar"><i class="fas fa-info-circle mr-1"></i>查询支持：关键词、<strong>公告类型</strong>、<strong>发布范围</strong>、状态、<strong>发布时间</strong>区间。列表同一发布范围内可按<strong>拖拽排序</strong>，<strong>置顶</strong>公告在同范围内优先展示。<strong>已发布未下线</strong>的公告不可编辑，需先「下线」后再编辑。</p>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 mb-5 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-end">
         <div class="md:col-span-2">
           <label class="block text-xs text-slate-500 mb-1">关键词</label>
           <input class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="搜索公告标题">
         </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">公告类型</label>
+          <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <option>全部类型</option>
+            <option>平台通知</option>
+            <option>活动通知</option>
+            <option>政策公告</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-500 mb-1">发布范围</label>
+          <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+            <option>全部范围</option>
+            <option>全平台</option>
+            <option>北京分站</option>
+            <option>华东分站</option>
+            <option>医疗卫生专区</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
         <div>
           <label class="block text-xs text-slate-500 mb-1">状态</label>
           <select class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
@@ -34,26 +82,179 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs text-slate-500 mb-1">上架时间起</label>
+          <label class="block text-xs text-slate-500 mb-1">发布时间起</label>
           <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
         </div>
         <div>
-          <label class="block text-xs text-slate-500 mb-1">上架时间止</label>
+          <label class="block text-xs text-slate-500 mb-1">发布时间止</label>
           <input type="date" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
         </div>
-        <div>
-          <button type="button" class="action-btn action-btn-primary w-full justify-center"><i class="fas fa-search"></i>查询</button>
+        <div class="flex gap-2">
+          <button type="button" class="action-btn action-btn-primary flex-1 justify-center"><i class="fas fa-search"></i>查询</button>
+          <button type="button" class="action-btn action-btn-secondary flex-1 justify-center" onclick="alert('原型：已重置筛选条件')"><i class="fas fa-rotate-left"></i>重置</button>
         </div>
       </div>
     </div>
-    <div class="table-wrap"><table class="w-full">
-      <thead><tr><th>公告标题</th><th>类型</th><th>发布分站</th><th>发布时间</th><th>有效期</th><th>状态</th><th>阅读量</th><th>操作</th></tr></thead>
-      <tbody>
-        <tr><td>关于五一期间物流时效调整的通知</td><td>平台通知</td><td><span class="tag bg-red-100 text-red-700">全平台</span></td><td>2026-04-25 10:00</td><td>2026-04-25 至 2026-05-08</td><td><span class="tag bg-green-100 text-green-700">已发布</span></td><td>2,845</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn">下线</button><button class="link-btn danger">删除</button></td></tr>
-        <tr><td>北京分站办公耗材专项采购活动</td><td>活动通知</td><td><span class="tag bg-blue-100 text-blue-700">北京分站</span></td><td>2026-04-20 09:30</td><td>2026-04-20 至 2026-05-20</td><td><span class="tag bg-green-100 text-green-700">已发布</span></td><td>968</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn">下线</button><button class="link-btn danger">删除</button></td></tr>
-        <tr><td>医疗专区供应商资质复核提醒</td><td>政策公告</td><td><span class="tag bg-purple-100 text-purple-700">医疗卫生专区</span></td><td>-</td><td>2026-05-01 至 2026-06-01</td><td><span class="tag bg-slate-100 text-slate-600">草稿</span></td><td>0</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn">发布</button><button class="link-btn danger">删除</button></td></tr>
-      </tbody>
-    </table></div>
-  </div></main>
+
+    <div class="table-wrap">
+      <table class="w-full min-w-[1020px]">
+        <thead>
+          <tr>
+            <th class="w-10"></th>
+            <th class="w-14">置顶</th>
+            <th>公告标题</th>
+            <th>类型</th>
+            <th>发布范围</th>
+            <th>发布时间</th>
+            <th>状态</th>
+            <th>阅读量</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="noticeTbody">
+          <tr data-id="n1" draggable="false" class="row-pinned">
+            <td class="align-middle"><span class="drag-handle" title="拖动排序（与置顶行一起参与排序）" draggable="true"><i class="fas fa-grip-vertical"></i></span></td>
+            <td class="align-middle"><button type="button" class="pin-btn active" title="取消置顶" onclick="togglePin(this)" aria-pressed="true"><i class="fas fa-thumbtack"></i></button></td>
+            <td class="font-medium text-slate-800">关于五一期间物流时效调整的通知</td>
+            <td>平台通知</td>
+            <td><span class="tag bg-red-100 text-red-700">全平台</span></td>
+            <td class="whitespace-nowrap">2026-04-25 10:00</td>
+            <td><span class="tag bg-green-100 text-green-700">已发布</span></td>
+            <td>2,845</td>
+            <td class="whitespace-nowrap">
+              <button type="button" class="link-btn" onclick="openNoticePreviewHint('关于五一期间物流时效调整的通知')">预览</button>
+              <button type="button" class="link-btn" disabled title="已发布未下线，请先执行「下线」后再编辑">编辑</button>
+              <button type="button" class="link-btn" onclick="alert('原型：已下线')">下线</button>
+              <button type="button" class="link-btn danger" disabled title="已发布请先下线">删除</button>
+            </td>
+          </tr>
+          <tr data-id="n2" draggable="false">
+            <td><span class="drag-handle" draggable="true"><i class="fas fa-grip-vertical"></i></span></td>
+            <td><button type="button" class="pin-btn" title="置顶" onclick="togglePin(this)" aria-pressed="false"><i class="fas fa-thumbtack"></i></button></td>
+            <td class="font-medium text-slate-800">北京分站办公耗材专项采购活动</td>
+            <td>活动通知</td>
+            <td><span class="tag bg-blue-100 text-blue-700">北京分站</span></td>
+            <td class="whitespace-nowrap">2026-04-20 09:30</td>
+            <td><span class="tag bg-green-100 text-green-700">已发布</span></td>
+            <td>968</td>
+            <td class="whitespace-nowrap">
+              <button type="button" class="link-btn" onclick="openNoticePreviewHint('北京分站办公耗材专项采购活动')">预览</button>
+              <button type="button" class="link-btn" disabled title="已发布未下线，请先执行「下线」后再编辑">编辑</button>
+              <button type="button" class="link-btn" onclick="alert('原型：已下线')">下线</button>
+              <button type="button" class="link-btn danger" disabled title="已发布请先下线">删除</button>
+            </td>
+          </tr>
+          <tr data-id="n3" draggable="false">
+            <td><span class="drag-handle" draggable="true"><i class="fas fa-grip-vertical"></i></span></td>
+            <td><button type="button" class="pin-btn" title="置顶" onclick="togglePin(this)" aria-pressed="false"><i class="fas fa-thumbtack"></i></button></td>
+            <td class="font-medium text-slate-800">医疗专区供应商资质复核提醒</td>
+            <td>政策公告</td>
+            <td><span class="tag bg-purple-100 text-purple-700">医疗卫生专区</span></td>
+            <td class="whitespace-nowrap text-slate-400">—</td>
+            <td><span class="tag bg-slate-100 text-slate-600">草稿</span></td>
+            <td>0</td>
+            <td class="whitespace-nowrap">
+              <button type="button" class="link-btn" onclick="openNoticePreviewHint('医疗专区供应商资质复核提醒')">预览</button>
+              <a class="link-btn" href="admin_notice_edit.html?id=n3-draft">编辑</a>
+              <button type="button" class="link-btn" onclick="alert('原型：已发布')">发布</button>
+              <button type="button" class="link-btn danger" onclick="if(confirm('确认删除该草稿？')) alert('原型：已删除')">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 预览效果说明（正式系统将新开页面展示前台公告详情） -->
+  <div id="noticePreviewModal" class="fixed inset-0 z-[100] hidden" aria-modal="true" role="dialog" aria-labelledby="noticePreviewHeading">
+    <div class="absolute inset-0 bg-slate-900/45" onclick="closeNoticePreviewHint()"></div>
+    <div class="absolute left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 px-4">
+      <div class="relative rounded-xl bg-white shadow-xl border border-slate-200 p-6">
+        <div class="flex items-start gap-3">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-[#E2231A]">
+            <i class="fas fa-window-restore text-lg"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <h2 id="noticePreviewHeading" class="text-lg font-bold text-slate-900">公告预览</h2>
+            <p class="mt-1 text-sm text-slate-600">当前公告：<span id="noticePreviewModalTitle" class="font-medium text-slate-800">—</span></p>
+            <p class="mt-3 text-sm leading-relaxed text-slate-600">正式环境中，「预览」将在<strong class="text-slate-800">新窗口或新标签页</strong>打开前台<strong>公告详情页</strong>，展示与采购端用户所见一致的内容与样式。</p>
+            <p class="mt-2 text-xs text-slate-500">本页为静态原型，此处用弹窗仅演示交互效果，不实际跳转。</p>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-2">
+          <button type="button" class="action-btn action-btn-primary justify-center px-5" onclick="closeNoticePreviewHint()">知道了</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+  <script>
+    (function () {
+      window.togglePin = function (btn) {
+        var tr = btn.closest('tr');
+        var tbody = tr.parentElement;
+        var on = btn.classList.toggle('active');
+        tr.classList.toggle('row-pinned', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        btn.title = on ? '取消置顶' : '置顶';
+        if (on) tbody.insertBefore(tr, tbody.firstElementChild);
+      };
+
+      var previewEl = document.getElementById('noticePreviewModal');
+      window.openNoticePreviewHint = function (title) {
+        var t = document.getElementById('noticePreviewModalTitle');
+        if (t) t.textContent = title || '—';
+        if (previewEl) previewEl.classList.remove('hidden');
+      };
+      window.closeNoticePreviewHint = function () {
+        if (previewEl) previewEl.classList.add('hidden');
+      };
+
+      var tbody = document.getElementById('noticeTbody');
+      var dragEl = null;
+
+      tbody.addEventListener('dragstart', function (e) {
+        var h = e.target.closest('.drag-handle');
+        if (!h) return;
+        dragEl = h.closest('tr');
+        if (dragEl) {
+          dragEl.classList.add('sortable-ghost');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', dragEl.dataset.id || '');
+        }
+      });
+
+      tbody.addEventListener('dragend', function () {
+        if (dragEl) dragEl.classList.remove('sortable-ghost');
+        tbody.querySelectorAll('tr').forEach(function (r) { r.classList.remove('drag-over'); });
+        dragEl = null;
+      });
+
+      tbody.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        var row = e.target.closest('tbody tr');
+        if (!row || row === dragEl) return;
+        tbody.querySelectorAll('tr').forEach(function (r) { r.classList.remove('drag-over'); });
+        row.classList.add('drag-over');
+      });
+
+      tbody.addEventListener('drop', function (e) {
+        e.preventDefault();
+        var row = e.target.closest('tbody tr');
+        if (!row || !dragEl || row === dragEl) return;
+        var rect = row.getBoundingClientRect();
+        var before = (e.clientY - rect.top) < rect.height / 2;
+        if (before) tbody.insertBefore(dragEl, row);
+        else tbody.insertBefore(dragEl, row.nextSibling);
+        row.classList.remove('drag-over');
+      });
+
+      if (new URLSearchParams(location.search).get('embed') !== '1') return;
+      document.querySelectorAll('a[href^="admin_notice"]').forEach(function (a) {
+        var h = a.getAttribute('href');
+        if (h.indexOf('embed=') === -1) a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+      });
+    })();
+  </script>
 </body>
 </html>

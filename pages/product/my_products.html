@@ -25,28 +25,6 @@
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
     }
 
-    .summary-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 20px;
-      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-
-    .summary-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
-    }
-
-    .summary-number {
-      font-size: 34px;
-      line-height: 1;
-      font-weight: 700;
-      margin-top: 12px;
-      margin-bottom: 10px;
-    }
-
     .toolbar-input,
     .toolbar-select {
       width: 100%;
@@ -95,6 +73,7 @@
     .status-reviewing { background: #dbeafe; color: #1d4ed8; }
     .status-offline { background: #e2e8f0; color: #475569; }
     .status-rejected { background: #fee2e2; color: #b91c1c; }
+    .status-draft { background: #f1f5f9; color: #475569; }
 
     .result-badge {
       display: inline-flex;
@@ -178,6 +157,76 @@
       padding: 14px;
       background: #f8fafc;
     }
+
+    .stock-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.48);
+      z-index: 70;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+    }
+    .stock-modal-overlay.show {
+      display: flex;
+    }
+    .stock-modal-dialog {
+      width: min(460px, 100%);
+      max-height: min(520px, 92vh);
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow: 0 24px 50px rgba(15, 23, 42, 0.2);
+    }
+    .stock-modal-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .stock-modal-body {
+      padding: 16px 20px;
+    }
+    .stock-modal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .stock-modal-row:last-child {
+      border-bottom: none;
+    }
+    .stock-wh-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      flex: 1;
+      min-width: 0;
+    }
+    .stock-qty-input {
+      width: 112px;
+      border: 1px solid #dbe2ea;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 14px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .stock-qty-input:focus {
+      outline: none;
+      border-color: #E2231A;
+      box-shadow: 0 0 0 3px rgba(226, 35, 26, 0.1);
+    }
+    .stock-modal-foot {
+      padding: 14px 20px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body class="text-slate-800">
@@ -195,7 +244,7 @@
           </div>
           <div>
             <h1 class="text-3xl font-bold text-slate-900">我的商品</h1>
-            <p class="text-sm text-slate-500 mt-1">查看商品状态、审核结论与整改建议，点击首页模块后默认带入对应筛选。</p>
+            <p class="text-sm text-slate-500 mt-1">按 SKU、品类与时间筛选查看商品列表，工作台入口可附带状态筛选。</p>
           </div>
         </div>
       </div>
@@ -207,64 +256,31 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
-      <div class="summary-card" onclick="setStatusFilter('published')">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-slate-700">已上架商品</span>
-          <span class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center">
-            <i class="fas fa-circle-check"></i>
-          </span>
-        </div>
-        <div class="summary-number text-green-600" id="summaryPublished">0</div>
-        <p class="text-sm text-slate-500">已审核通过并正常展示，可继续查看销售表现与库存状态。</p>
-      </div>
-      <div class="summary-card" onclick="setStatusFilter('reviewing')">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-slate-700">审核中商品</span>
-          <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
-            <i class="fas fa-spinner"></i>
-          </span>
-        </div>
-        <div class="summary-number text-blue-600" id="summaryReviewing">0</div>
-        <p class="text-sm text-slate-500">AI 语义、参数、图片一致性校验中，或处于整改复核阶段。</p>
-      </div>
-      <div class="summary-card" onclick="setStatusFilter('offline')">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-slate-700">已下架商品</span>
-          <span class="w-10 h-10 rounded-xl bg-slate-200 text-slate-600 flex items-center justify-center">
-            <i class="fas fa-box-archive"></i>
-          </span>
-        </div>
-        <div class="summary-number text-slate-700" id="summaryOffline">0</div>
-        <p class="text-sm text-slate-500">因库存、价格策略或合规要求已下架，可再次编辑后重新上架。</p>
-      </div>
-      <div class="summary-card" onclick="setStatusFilter('rejected')">
-        <div class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-slate-700">审核未通过</span>
-          <span class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
-            <i class="fas fa-triangle-exclamation"></i>
-          </span>
-        </div>
-        <div class="summary-number text-red-600" id="summaryRejected">0</div>
-        <p class="text-sm text-slate-500">存在夸大宣传、参数冲突或图片问题，需查看结论并整改后重提。</p>
-      </div>
-    </div>
-
     <div class="page-card p-5 mb-5">
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
         <div class="xl:col-span-2">
-          <input id="searchInput" class="toolbar-input" placeholder="搜索商品名称、型号或商品编码" />
+          <label class="block text-xs font-medium text-slate-500 mb-1">商品名称或 SKU</label>
+          <input id="searchInput" class="toolbar-input" placeholder="输入商品名称或 SKU 模糊查询" />
         </div>
-        <div>
+        <div class="xl:col-span-1">
+          <label class="block text-xs font-medium text-slate-500 mb-1">品类</label>
           <select id="categoryFilter" class="toolbar-select">
-            <option value="">全部类目</option>
+            <option value="">全部品类</option>
             <option value="办公设备">办公设备</option>
             <option value="办公耗材">办公耗材</option>
             <option value="网络设备">网络设备</option>
             <option value="办公家具">办公家具</option>
           </select>
         </div>
-        <div class="flex gap-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">提交时间起</label>
+          <input id="submitDateFrom" type="date" class="toolbar-input" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">提交时间止</label>
+          <input id="submitDateTo" type="date" class="toolbar-input" />
+        </div>
+        <div class="flex gap-3 items-end">
           <button class="action-btn action-btn-secondary flex-1" onclick="resetFilters()">
             <i class="fas fa-rotate-left"></i>
             <span>重置</span>
@@ -281,10 +297,11 @@
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
         <div class="flex flex-wrap gap-2" id="statusTabs">
           <button class="tab-btn" data-status="all" onclick="setStatusFilter('all')">全部商品</button>
-          <button class="tab-btn" data-status="published" onclick="setStatusFilter('published')">已上架</button>
-          <button class="tab-btn" data-status="reviewing" onclick="setStatusFilter('reviewing')">审核中</button>
-          <button class="tab-btn" data-status="offline" onclick="setStatusFilter('offline')">已下架</button>
+          <button class="tab-btn" data-status="draft" onclick="setStatusFilter('draft')">草稿</button>
           <button class="tab-btn" data-status="rejected" onclick="setStatusFilter('rejected')">审核未通过</button>
+          <button class="tab-btn" data-status="reviewing" onclick="setStatusFilter('reviewing')">审核中</button>
+          <button class="tab-btn" data-status="published" onclick="setStatusFilter('published')">已上架</button>
+          <button class="tab-btn" data-status="offline" onclick="setStatusFilter('offline')">已下架</button>
         </div>
         <div class="text-sm text-slate-500" id="tableSummary">共 0 条商品记录</div>
       </div>
@@ -295,10 +312,10 @@
             <thead class="bg-slate-50 text-slate-500 text-sm">
               <tr>
                 <th class="text-left px-5 py-4 font-semibold">商品信息</th>
-                <th class="text-left px-5 py-4 font-semibold">类目 / 规格</th>
+                <th class="text-left px-5 py-4 font-semibold">SKU</th>
+                <th class="text-left px-5 py-4 font-semibold">品类</th>
                 <th class="text-left px-5 py-4 font-semibold">当前状态</th>
-                <th class="text-left px-5 py-4 font-semibold">最近一次校验</th>
-                <th class="text-left px-5 py-4 font-semibold">提交时间</th>
+                <th class="text-left px-5 py-4 font-semibold">提交日期</th>
                 <th class="text-left px-5 py-4 font-semibold">操作</th>
               </tr>
             </thead>
@@ -351,10 +368,30 @@
     </div>
   </aside>
 
+  <div id="stockModalOverlay" class="stock-modal-overlay" onclick="if (event.target === this) closeStockModal()" role="presentation">
+    <div class="stock-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="stockModalHeading" onclick="event.stopPropagation()">
+      <div class="stock-modal-head">
+        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">已上架 · 库存维护</div>
+        <h2 id="stockModalHeading" class="text-lg font-bold text-slate-900 leading-snug">修改分仓库存</h2>
+        <div class="mt-2 text-xs text-slate-500"><span class="font-mono text-slate-700" id="stockModalSku"></span></div>
+        <p id="stockModalSubtitle" class="text-sm text-slate-600 mt-2 leading-relaxed"></p>
+      </div>
+      <div class="stock-modal-body" id="stockModalBody"></div>
+      <div class="stock-modal-foot">
+        <button type="button" class="action-btn action-btn-secondary" onclick="closeStockModal()">取消</button>
+        <button type="button" class="action-btn action-btn-primary" onclick="saveStockModal()">
+          <i class="fas fa-floppy-disk"></i>
+          <span>保存</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const products = [
       {
         id: 'SPU-202604-001',
+        sku: 'SKU-LX-M550-001',
         name: '联想启天M550商用台式机',
         category: '办公设备',
         spec: 'i5 / 16G / 512G SSD',
@@ -369,6 +406,7 @@
       },
       {
         id: 'SPU-202604-002',
+        sku: 'SKU-DELY-A4-8P',
         name: '得力A4复印纸 70g 8包/箱',
         category: '办公耗材',
         spec: '70g / 500张 / 8包',
@@ -380,6 +418,7 @@
       },
       {
         id: 'SPU-202604-003',
+        sku: 'SKU-H3C-S1850-24P',
         name: '华三千兆交换机 S1850-24P',
         category: '网络设备',
         spec: '24口千兆 / 交换容量 56Gbps',
@@ -394,6 +433,7 @@
       },
       {
         id: 'SPU-202604-004',
+        sku: 'SKU-AUR-A7-CHAIR',
         name: '震旦办公转椅 A7-人体工学版',
         category: '办公家具',
         spec: '黑色 / 网布 / 带扶手',
@@ -407,6 +447,7 @@
       },
       {
         id: 'SPU-202604-005',
+        sku: 'SKU-HP-428FDW',
         name: '惠普LaserJet Pro MFP 428fdw',
         category: '办公设备',
         spec: '黑白激光 / 双面打印 / 网络传真',
@@ -420,6 +461,7 @@
       },
       {
         id: 'SPU-202604-006',
+        sku: 'SKU-LOG-K580',
         name: '罗技K580无线键鼠套装',
         category: '办公设备',
         spec: '蓝牙 / 2.4G / 静音键帽',
@@ -431,21 +473,208 @@
           { level: '黄色预警', type: 'AI语义校验', field: '详情', desc: '命中“全场景零延迟”表达，不建议在办公外设类目中使用。', advice: '建议替换为“支持多设备稳定连接”。' },
           { level: '黄色预警', type: '参数智能校验', field: '参数表', desc: '无线接收器接口类型缺失。', advice: '补充 USB 接收器规格与兼容系统。' }
         ]
+      },
+      {
+        id: 'DRAFT-202605-001',
+        sku: 'SKU-DRAFT-LJP-PRO',
+        name: '佳能激光打印机（信息待完善）',
+        category: '办公设备',
+        spec: '-',
+        status: 'draft',
+        result: 'pass',
+        submittedAt: '2026-05-12 09:25',
+        summary: '草稿尚未提交审核，暂无 AI 校验记录。',
+        issues: []
+      },
+      {
+        id: 'DRAFT-202605-002',
+        sku: 'SKU-DRAFT-SCAN-01',
+        name: '高速扫描仪（草稿）',
+        category: '办公设备',
+        spec: '-',
+        status: 'draft',
+        result: 'pass',
+        submittedAt: '2026-05-11 17:08',
+        summary: '草稿尚未提交审核，暂无 AI 校验记录。',
+        issues: []
       }
     ];
 
     const statusMeta = {
       all: { label: '全部商品' },
-      published: { label: '已上架商品', className: 'status-badge status-published', icon: 'fa-circle-check' },
-      reviewing: { label: '审核中商品', className: 'status-badge status-reviewing', icon: 'fa-spinner' },
-      offline: { label: '已下架商品', className: 'status-badge status-offline', icon: 'fa-box-archive' },
-      rejected: { label: '审核未通过', className: 'status-badge status-rejected', icon: 'fa-triangle-exclamation' }
+      draft: { label: '草稿', className: 'status-badge status-draft', icon: 'fa-file-pen' },
+      rejected: { label: '审核未通过', className: 'status-badge status-rejected', icon: 'fa-triangle-exclamation' },
+      reviewing: { label: '审核中', className: 'status-badge status-reviewing', icon: 'fa-spinner' },
+      published: { label: '已上架', className: 'status-badge status-published', icon: 'fa-circle-check' },
+      offline: { label: '已下架', className: 'status-badge status-offline', icon: 'fa-box-archive' }
     };
 
     const resultMeta = {
       pass: { label: '通过', className: 'result-badge result-pass', icon: 'fa-circle-check' },
       warn: { label: '待整改', className: 'result-badge result-warn', icon: 'fa-triangle-exclamation' },
       fail: { label: '不通过', className: 'result-badge result-fail', icon: 'fa-circle-xmark' }
+    };
+
+    /** 与商品快照预览页保持一致的五仓键 */
+    const PREVIEW_WH = ['华东一号仓', '华北物流中心', '华南保税仓', '西南协同仓', '华中中心仓'];
+
+    /** 各 SPU 在预览页展示的扩展字段（无则仅用列表中的名称/类目/摘要兜底） */
+    const PREVIEW_BY_ID = {
+      'SPU-202604-001': {
+        price: 5799,
+        unit: '台',
+        catPath: ['办公设备', '台式整机', '商用台式机'],
+        specs: { 处理器: 'Intel i5', 内存: '16GB', 硬盘: '512GB SSD', 显示器尺寸: '23.8英寸' },
+        warehouseStocks: { 华东一号仓: 40, 华北物流中心: 28, 华南保税仓: 0, 西南协同仓: 18, 华中中心仓: 32 },
+        mainImage: 'https://picsum.photos/seed/myprod-lxm550-main/520/520',
+        subImages: ['https://picsum.photos/seed/myprod-lxm550-a/180/180'],
+        detailImages: ['https://picsum.photos/seed/myprod-lxm550-d/820/460']
+      },
+      'SPU-202604-002': {
+        price: 128,
+        unit: '箱',
+        catPath: ['办公耗材', '纸张类', '复印打印纸'],
+        specs: { 克重: '70g', 幅面规格: 'A4', 包装数量: '8包×500张', 颜色: '高白' },
+        warehouseStocks: { 华东一号仓: 520, 华北物流中心: 310, 华南保税仓: 180, 西南协同仓: 95, 华中中心仓: 240 },
+        mainImage: 'https://picsum.photos/seed/myprod-deli-main/520/520',
+        subImages: [],
+        detailImages: []
+      },
+      'SPU-202604-003': {
+        price: 899,
+        unit: '台',
+        catPath: ['网络设备', '交换路由', '以太网交换机'],
+        specs: { 端口数: '24', 交换容量: '56Gbps', PoE供电: '不支持', 机架规格: '桌面型' },
+        warehouseStocks: { 华东一号仓: 66, 华北物流中心: 44, 华南保税仓: 22, 西南协同仓: 12, 华中中心仓: 30 },
+        mainImage: 'https://picsum.photos/seed/myprod-h3c-main/520/520',
+        subImages: ['https://picsum.photos/seed/myprod-h3c-s1/160/160'],
+        detailImages: []
+      },
+      'SPU-202604-004': {
+        price: 899,
+        unit: '把',
+        catPath: ['办公家具', '人体工学座椅', '网布办公椅'],
+        specs: { 材质: '网布+尼龙脚', 扶手机构: '可升降', 气杆等级: '三级气压杆', 承重: '120kg' },
+        warehouseStocks: { 华东一号仓: 0, 华北物流中心: 48, 华南保税仓: 0, 西南协同仓: 12, 华中中心仓: 20 },
+        mainImage: 'https://picsum.photos/seed/myprod-chair-main/520/520',
+        subImages: [],
+        detailImages: []
+      },
+      'SPU-202604-005': {
+        price: 4899,
+        unit: '台',
+        catPath: ['办公设备', '打印输出', '多功能一体机'],
+        specs: { 打印方式: '黑白激光', 扫描方式: '平板+ADF', 传真: '支持', ADF: '50页自动' },
+        warehouseStocks: { 华东一号仓: 25, 华北物流中心: 18, 华南保税仓: 10, 西南协同仓: 6, 华中中心仓: 14 },
+        mainImage: 'https://picsum.photos/seed/myprod-hp428-main/520/520',
+        subImages: ['https://picsum.photos/seed/myprod-hp428-s1/200/200', 'https://picsum.photos/seed/myprod-hp428-s2/200/200'],
+        detailImages: ['https://picsum.photos/seed/myprod-hp428-d/900/520']
+      },
+      'SPU-202604-006': {
+        price: 329,
+        unit: '套',
+        catPath: ['办公设备', '外设配件', '键鼠套装'],
+        specs: { 连接方式: '蓝牙+2.4G', 键区布局: '全尺寸', 供电方式: '电池', 兼容系统: 'Win/macOS' },
+        warehouseStocks: { 华东一号仓: 150, 华北物流中心: 88, 华南保税仓: 60, 西南协同仓: 40, 华中中心仓: 72 },
+        mainImage: 'https://picsum.photos/seed/myprod-logi-main/520/520',
+        subImages: [],
+        detailImages: []
+      },
+      'DRAFT-202605-001': {
+        price: 0,
+        unit: '台',
+        catPath: ['办公设备', '打印输出', '激光打印机'],
+        specs: { 规格摘要: '信息待供应商完善' },
+        warehouseStocks: { 华东一号仓: 0, 华北物流中心: 0, 华南保税仓: 0, 西南协同仓: 0, 华中中心仓: 0 },
+        mainImage: '',
+        subImages: [],
+        detailImages: []
+      },
+      'DRAFT-202605-002': {
+        price: 0,
+        unit: '台',
+        catPath: ['办公设备', '打印输出', '多功能一体机'],
+        specs: { 规格摘要: '草稿 · 未定稿参数' },
+        warehouseStocks: { 华东一号仓: 0, 华北物流中心: 0, 华南保税仓: 0, 西南协同仓: 0, 华中中心仓: 0 },
+        mainImage: '',
+        subImages: [],
+        detailImages: []
+      }
+    };
+
+    function normalizeWarehouseStocks(ws) {
+      const o = ws && typeof ws === 'object' ? ws : {};
+      const full = {};
+      PREVIEW_WH.forEach(w => {
+        const n = Number(o[w]);
+        full[w] = Number.isFinite(n) ? n : 0;
+      });
+      return full;
+    }
+
+    function previewStageFromMyProductStatus(status) {
+      const m = {
+        draft: '草稿',
+        reviewing: '审核中',
+        published: '已上架',
+        offline: '已下架',
+        rejected: '审核未通过'
+      };
+      return m[status] || '—';
+    }
+
+    /** 打开与「上架商品」相同的快照预览页（供应商侧工作台） */
+    window.openProductListingPreview = function openProductListingPreview(productId) {
+      const item = products.find(p => p.id === productId);
+      if (!item) return;
+      const extra = PREVIEW_BY_ID[productId] || {};
+      const ws = normalizeWarehouseStocks(
+        item.warehouseStocks !== undefined && item.warehouseStocks !== null
+          ? item.warehouseStocks
+          : extra.warehouseStocks
+      );
+      let sum = 0;
+      PREVIEW_WH.forEach(w => {
+        sum += ws[w];
+      });
+
+      let specs =
+        extra.specs && typeof extra.specs === 'object' && Object.keys(extra.specs).length
+          ? { ...extra.specs }
+          : {};
+      if (!Object.keys(specs).length && item.spec && item.spec !== '-') {
+        specs = { 规格摘要: item.spec };
+      }
+
+      let mainImg = typeof extra.mainImage === 'string' ? extra.mainImage.trim() : '';
+      if (!mainImg) {
+        mainImg = `https://picsum.photos/seed/myprod-ph-${encodeURIComponent(productId).slice(-16)}/480/480`;
+      }
+
+      const payload = {
+        name: item.name,
+        price: typeof extra.price === 'number' && extra.price >= 0 ? extra.price : 0,
+        unit: extra.unit || '台',
+        catPath:
+          Array.isArray(extra.catPath) && extra.catPath.length >= 3
+            ? extra.catPath
+            : [item.category || '—', '—', '—'],
+        specs,
+        warehouses: PREVIEW_WH.filter(w => ws[w] > 0),
+        warehouseStocks: ws,
+        totalStock: sum,
+        mainImage: mainImg,
+        subImages: Array.isArray(extra.subImages) ? [...extra.subImages] : [],
+        detailImages: Array.isArray(extra.detailImages) ? [...extra.detailImages] : [],
+        stage: previewStageFromMyProductStatus(item.status)
+      };
+
+      try {
+        sessionStorage.setItem('PRODUCT_UPLOAD_PREVIEW', JSON.stringify(payload));
+        window.open('./product_upload_preview.html', '_blank', 'noopener');
+      } catch {
+        alert('无法写入预览数据（可能被浏览器禁用 sessionStorage）。');
+      }
     };
 
     let currentStatus = 'all';
@@ -466,30 +695,35 @@
       window.history.replaceState({}, '', url);
     }
 
-    function renderSummary() {
-      const summary = {
-        published: products.filter(item => item.status === 'published').length,
-        reviewing: products.filter(item => item.status === 'reviewing').length,
-        offline: products.filter(item => item.status === 'offline').length,
-        rejected: products.filter(item => item.status === 'rejected').length
-      };
+    function parseSubmittedDay(value) {
+      return String(value).trim().slice(0, 10);
+    }
 
-      document.getElementById('summaryPublished').textContent = summary.published;
-      document.getElementById('summaryReviewing').textContent = summary.reviewing;
-      document.getElementById('summaryOffline').textContent = summary.offline;
-      document.getElementById('summaryRejected').textContent = summary.rejected;
+    function matchesSubmitDateRange(item, fromVal, toVal) {
+      const day = parseSubmittedDay(item.submittedAt);
+      if (fromVal && day < fromVal) return false;
+      if (toVal && day > toVal) return false;
+      return true;
     }
 
     function getFilteredProducts() {
       const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
       const category = document.getElementById('categoryFilter').value;
+      const submitFrom = document.getElementById('submitDateFrom').value;
+      const submitTo = document.getElementById('submitDateTo').value;
 
       return products.filter(item => {
         const matchStatus = currentStatus === 'all' || item.status === currentStatus;
         const matchCategory = !category || item.category === category;
-        const haystack = `${item.name} ${item.spec} ${item.id}`.toLowerCase();
+        const sku = (item.sku || item.id).toLowerCase();
+        const haystack = `${item.name} ${sku}`.toLowerCase();
         const matchKeyword = !keyword || haystack.includes(keyword);
-        return matchStatus && matchCategory && matchKeyword;
+        return (
+          matchStatus &&
+          matchCategory &&
+          matchKeyword &&
+          matchesSubmitDateRange(item, submitFrom, submitTo)
+        );
       });
     }
 
@@ -499,9 +733,129 @@
       });
     }
 
+    function getSku(item) {
+      return item.sku || item.id;
+    }
+
+    function getSubmittedDate(item) {
+      return parseSubmittedDay(item.submittedAt);
+    }
+
     function getStatusBadge(status) {
       const meta = statusMeta[status];
       return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+    }
+
+    function goEdit(productId) {
+      window.location.href = `./product_upload.html?id=${encodeURIComponent(productId)}`;
+    }
+
+    function deleteProduct(productId) {
+      if (!confirm('确定删除该商品？此为原型页面的示例操作。')) return;
+      const index = products.findIndex(p => p.id === productId);
+      if (index >= 0) {
+        products.splice(index, 1);
+        renderTable();
+      }
+    }
+
+    function setProductOffline(productId) {
+      if (!confirm('确定下架该商品？')) return;
+      const item = products.find(p => p.id === productId);
+      if (item) {
+        item.status = 'offline';
+        renderTabs();
+        updateQuery();
+        renderTable();
+      }
+    }
+
+    function setProductOnline(productId) {
+      if (!confirm('确定重新上架该商品？')) return;
+      const item = products.find(p => p.id === productId);
+      if (item) {
+        item.status = 'published';
+        if (item.warehouseStocks === undefined || item.warehouseStocks === null) {
+          const ex = PREVIEW_BY_ID[productId];
+          if (ex && ex.warehouseStocks) {
+            item.warehouseStocks = normalizeWarehouseStocks(ex.warehouseStocks);
+          }
+        }
+        renderTabs();
+        updateQuery();
+        renderTable();
+      }
+    }
+
+    function getActionButtonsHtml(item) {
+      const id = item.id.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      const previewBtn = `
+              <button class="action-btn action-btn-secondary" type="button" onclick="openProductListingPreview('${id}')">
+                <i class="fas fa-camera"></i>
+                <span>预览</span>
+              </button>`;
+
+      if (item.status === 'draft' || item.status === 'rejected') {
+        return (
+          previewBtn +
+          `
+              <button class="action-btn action-btn-secondary" type="button" onclick="goEdit('${id}')">
+                <i class="fas fa-pen"></i>
+                <span>编辑</span>
+              </button>
+              <button class="action-btn action-btn-secondary" type="button" onclick="deleteProduct('${id}')">
+                <i class="fas fa-trash"></i>
+                <span>删除</span>
+              </button>`
+        );
+      }
+
+      if (item.status === 'reviewing') {
+        return (
+          previewBtn +
+          `
+              <button class="action-btn action-btn-secondary" type="button" onclick="openDrawer('${id}')">
+                <i class="fas fa-file-lines"></i>
+                <span>查看详情</span>
+              </button>`
+        );
+      }
+
+      if (item.status === 'published') {
+        return (
+          previewBtn +
+          `
+              <button class="action-btn action-btn-secondary" type="button" onclick="openDrawer('${id}')">
+                <i class="fas fa-file-lines"></i>
+                <span>查看详情</span>
+              </button>
+              <button class="action-btn action-btn-secondary" type="button" onclick="openStockModal('${id}')">
+                <i class="fas fa-sliders"></i>
+                <span>修改库存</span>
+              </button>
+              <button class="action-btn action-btn-secondary" type="button" onclick="setProductOffline('${id}')">
+                <i class="fas fa-arrow-down-long"></i>
+                <span>下架</span>
+              </button>`
+        );
+      }
+
+      if (item.status === 'offline') {
+        return (
+          previewBtn +
+          `
+              <button class="action-btn action-btn-secondary" type="button" onclick="openDrawer('${id}')">
+                <i class="fas fa-file-lines"></i>
+                <span>查看详情</span>
+              </button>
+              <button class="action-btn action-btn-primary" type="button" onclick="setProductOnline('${id}')">
+                <i class="fas fa-arrow-up-from-bracket"></i>
+                <span>上架</span>
+              </button>`
+        );
+      }
+
+      return '';
     }
 
     function getResultBadge(result) {
@@ -532,35 +886,14 @@
         <tr class="border-t border-slate-100 hover:bg-slate-50 transition-colors">
           <td class="px-5 py-4">
             <div class="font-semibold text-slate-900">${item.name}</div>
-            <div class="text-xs text-slate-400 mt-1">${item.id}</div>
           </td>
-          <td class="px-5 py-4">
-            <div>${item.category}</div>
-            <div class="text-xs text-slate-400 mt-1">${item.spec}</div>
-          </td>
+          <td class="px-5 py-4 font-mono text-sm text-slate-700">${getSku(item)}</td>
+          <td class="px-5 py-4">${item.category}</td>
           <td class="px-5 py-4">${getStatusBadge(item.status)}</td>
-          <td class="px-5 py-4">
-            <div>${getResultBadge(item.result)}</div>
-            <div class="text-xs text-slate-400 mt-2 line-clamp-2">${item.summary}</div>
-          </td>
-          <td class="px-5 py-4 text-slate-500">${item.submittedAt}</td>
+          <td class="px-5 py-4 text-slate-500">${getSubmittedDate(item)}</td>
           <td class="px-5 py-4">
             <div class="flex flex-wrap gap-2">
-              <button class="action-btn action-btn-secondary" onclick="openDrawer('${item.id}')">
-                <i class="fas fa-file-lines"></i>
-                <span>查看结果</span>
-              </button>
-              ${item.status === 'rejected' || item.result === 'warn' ? `
-                <button class="action-btn action-btn-primary" onclick="window.location.href='./product_upload.html?source=rectify&id=${item.id}'">
-                  <i class="fas fa-wrench"></i>
-                  <span>整改重提</span>
-                </button>
-              ` : `
-                <button class="action-btn action-btn-secondary" onclick="window.location.href='./product_upload.html?id=${item.id}'">
-                  <i class="fas fa-pen"></i>
-                  <span>继续编辑</span>
-                </button>
-              `}
+              ${getActionButtonsHtml(item)}
             </div>
           </td>
         </tr>
@@ -577,6 +910,8 @@
     function resetFilters() {
       document.getElementById('searchInput').value = '';
       document.getElementById('categoryFilter').value = '';
+      document.getElementById('submitDateFrom').value = '';
+      document.getElementById('submitDateTo').value = '';
       currentStatus = 'all';
       renderTabs();
       updateQuery();
@@ -615,6 +950,82 @@
       document.getElementById('detailDrawer').classList.remove('show');
     }
 
+    function attachInitialWarehouseSnapshots() {
+      products.forEach(p => {
+        const ex = PREVIEW_BY_ID[p.id];
+        if (ex && ex.warehouseStocks) {
+          p.warehouseStocks = normalizeWarehouseStocks(ex.warehouseStocks);
+        }
+      });
+    }
+
+    let stockModalProductId = null;
+
+    window.openStockModal = function openStockModal(productId) {
+      const item = products.find(p => p.id === productId && p.status === 'published');
+      if (!item) return;
+      stockModalProductId = productId;
+      const extra = PREVIEW_BY_ID[productId] || {};
+      const ws = normalizeWarehouseStocks(
+        item.warehouseStocks !== undefined && item.warehouseStocks !== null
+          ? item.warehouseStocks
+          : extra.warehouseStocks
+      );
+
+      document.getElementById('stockModalHeading').textContent = item.name;
+      document.getElementById('stockModalSku').textContent = `SKU：${getSku(item)}`;
+      document.getElementById('stockModalSubtitle').textContent =
+        '以下为五大仓可分仓库存，请填写非负整数；保存后与「预览」页同步（原型示意）。';
+
+      document.getElementById('stockModalBody').innerHTML = PREVIEW_WH.map(
+        w =>
+          `<div class="stock-modal-row"><span class="stock-wh-name">${w}</span><input type="number" class="stock-qty-input" min="0" step="1" inputmode="numeric" data-wh="${w}" value="${ws[w]}" /></div>`
+      ).join('');
+      document.getElementById('stockModalOverlay').classList.add('show');
+    };
+
+    window.closeStockModal = function closeStockModal() {
+      stockModalProductId = null;
+      document.getElementById('stockModalOverlay').classList.remove('show');
+      document.getElementById('stockModalBody').innerHTML = '';
+    };
+
+    window.saveStockModal = function saveStockModal() {
+      if (!stockModalProductId) return;
+      const item = products.find(p => p.id === stockModalProductId);
+      if (!item || item.status !== 'published') {
+        closeStockModal();
+        return;
+      }
+      const inputs = [...document.querySelectorAll('#stockModalBody .stock-qty-input')];
+      if (inputs.length !== PREVIEW_WH.length) {
+        alert('库存表单异常，请关闭后重试。');
+        return;
+      }
+
+      const next = {};
+      for (let i = 0; i < PREVIEW_WH.length; i++) {
+        const wh = PREVIEW_WH[i];
+        const inp = inputs[i];
+        const got = inp.getAttribute('data-wh');
+        const raw = String(inp.value ?? '').trim();
+        if (got !== wh) {
+          alert('仓位顺序异常，请关闭后重试。');
+          return;
+        }
+        if (!/^\d+$/.test(raw)) {
+          alert(`请为「${wh}」填写非负整数。`);
+          return;
+        }
+        next[wh] = parseInt(raw, 10);
+      }
+
+      item.warehouseStocks = normalizeWarehouseStocks(next);
+      closeStockModal();
+      renderTable();
+      alert('库存已更新（原型示意）。点击「预览」可查看快照。');
+    };
+
     document.getElementById('searchInput').addEventListener('keydown', event => {
       if (event.key === 'Enter') {
         renderTable();
@@ -622,10 +1033,12 @@
     });
 
     document.getElementById('categoryFilter').addEventListener('change', renderTable);
+    document.getElementById('submitDateFrom').addEventListener('change', renderTable);
+    document.getElementById('submitDateTo').addEventListener('change', renderTable);
 
     document.addEventListener('DOMContentLoaded', () => {
+      attachInitialWarehouseSnapshots();
       currentStatus = getQueryStatus();
-      renderSummary();
       renderTabs();
       renderTable();
     });

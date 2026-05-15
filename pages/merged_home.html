@@ -917,17 +917,18 @@
 
     /* 采购合规通 */
     .compliance-pass-section { padding: 36px 0; }
-    .compliance-pass-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
-    .cp-card { background: #fffefb; border: 1px solid rgba(218, 206, 192, 0.55); border-radius: 18px; padding: 22px 18px 18px; cursor: pointer; transition: all 0.22s; box-shadow: 0 7px 22px rgba(48, 36, 26, 0.065); display: flex; flex-direction: column; gap: 10px; }
+    .compliance-pass-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+    .cp-card { background: #fffefb; border: 1px solid rgba(218, 206, 192, 0.55); border-radius: 18px; padding: 22px 18px 18px; cursor: pointer; transition: all 0.22s; box-shadow: 0 7px 22px rgba(48, 36, 26, 0.065); display: flex; flex-direction: column; gap: 10px; min-height: 100%; align-items: stretch; }
     .cp-card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(48, 36, 26, 0.11); border-color: rgba(255,106,0,0.28); }
-    .cp-card-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .cp-card-top { display: flex; flex-direction: row; align-items: flex-start; gap: 12px; flex: none; }
+    .cp-card-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+    .cp-card-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
     .cp-card-icon.plan { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
     .cp-card-icon.budget { background: linear-gradient(135deg,#d1fae5,#a7f3d0); }
     .cp-card-icon.contract { background: linear-gradient(135deg,#fce7f3,#fbcfe8); }
-    .cp-card-icon.ai { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
-    .cp-card-name { font-size: 16px; font-weight: 800; color: #0f172a; }
-    .cp-card-desc { font-size: 12px; color: #64748b; line-height: 1.65; flex: 1; }
-    .cp-card-enter { font-size: 12px; color: #ff6a00; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+    .cp-card-name { font-size: 16px; font-weight: 800; color: #0f172a; line-height: 1.35; }
+    .cp-card-desc { font-size: 12px; color: #64748b; line-height: 1.6; flex: none; }
+    .cp-card-enter { font-size: 12px; color: #ff6a00; font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: auto; flex: none; }
     .cp-card-stat { display: flex; align-items: baseline; gap: 5px; padding: 8px 12px; border-radius: 10px; background: rgba(250, 247, 242, 0.98); border: 1px solid rgba(218, 206, 192, 0.45); margin-top: 2px; }
     .cp-card-stat-num { font-size: 22px; font-weight: 800; color: #0f172a; line-height: 1; }
     .cp-card-stat-num.blue { color: #2563eb; }
@@ -1584,8 +1585,7 @@
         <nav class="main-tabs" aria-label="采购主功能导航">
           <a class="main-tab active" id="tabHome" href="javascript:void(0)" onclick="switchMainTab('home')"><i class="fa-solid fa-house"></i> 首页</a>
           <a class="main-tab" id="tabMall" href="javascript:void(0)" onclick="switchMainTab('mall')"><i class="fa-solid fa-store"></i> 国采搜品</a>
-          <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 最价撮合</a>
-          <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
+          <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 最价方案</a>
           <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
         </nav>
         <!-- 右：操作区 -->
@@ -1716,13 +1716,17 @@
       <div class="container">
         <div class="home-section-head">
           <h2 class="home-section-title"><i class="fa-solid fa-shield-halved" style="color:#ff6a00;font-size:18px;"></i> 采购合规通</h2>
-          <p class="home-section-subtitle">覆盖采购全流程合规管理，计划、预算、合同、AI智询一站到位。</p>
+          <p class="home-section-subtitle">覆盖采购全流程合规管理，计划、预算、合同一站到位。</p>
         </div>
         <div class="compliance-pass-grid">
           <div class="cp-card" onclick="onCompliancePassCardEnter('plan')">
-            <div class="cp-card-icon plan">📋</div>
-            <div class="cp-card-name">采购计划</div>
-            <div class="cp-card-desc">制定采购计划，追踪执行进度，预警截止逾期风险。</div>
+            <div class="cp-card-top">
+              <div class="cp-card-icon plan">📋</div>
+              <div class="cp-card-text">
+                <div class="cp-card-name">采购计划</div>
+                <div class="cp-card-desc">制定采购计划，追踪执行进度，预警截止逾期风险。</div>
+              </div>
+            </div>
             <div class="cp-card-stat cp-card-stat--guest" id="cpStatPlanGuest">
               <span class="cp-card-stat-guest-msg">登录后查看单位数据</span>
             </div>
@@ -1734,9 +1738,13 @@
             <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
           </div>
           <div class="cp-card" onclick="onCompliancePassCardEnter('budget')">
-            <div class="cp-card-icon budget">💰</div>
-            <div class="cp-card-name">预算管理</div>
-            <div class="cp-card-desc">实时追踪预算执行情况，超支自动预警，调整留痕可查。</div>
+            <div class="cp-card-top">
+              <div class="cp-card-icon budget">💰</div>
+              <div class="cp-card-text">
+                <div class="cp-card-name">预算管理</div>
+                <div class="cp-card-desc">实时追踪预算执行情况，超支自动预警，调整留痕可查。</div>
+              </div>
+            </div>
             <div class="cp-card-stat cp-card-stat--guest" id="cpStatBudgetGuest">
               <span class="cp-card-stat-guest-msg">登录后查看单位数据</span>
             </div>
@@ -1748,9 +1756,13 @@
             <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
           </div>
           <div class="cp-card" onclick="onCompliancePassCardEnter('contract')">
-            <div class="cp-card-icon contract">📝</div>
-            <div class="cp-card-name">合同管理</div>
-            <div class="cp-card-desc">管理合同全生命周期，AI自动审核条款风险，签章存档。</div>
+            <div class="cp-card-top">
+              <div class="cp-card-icon contract">📝</div>
+              <div class="cp-card-text">
+                <div class="cp-card-name">合同管理</div>
+                <div class="cp-card-desc">管理合同全生命周期，AI自动审核条款风险，签章存档。</div>
+              </div>
+            </div>
             <div class="cp-card-stat cp-card-stat--guest" id="cpStatContractGuest">
               <span class="cp-card-stat-guest-msg">登录后查看单位数据</span>
             </div>
@@ -1759,12 +1771,6 @@
               <span class="cp-card-stat-unit">个</span>
               <span class="cp-card-stat-label">合同模板数</span>
             </div>
-            <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
-          </div>
-          <div class="cp-card" onclick="onCompliancePassCardEnter('ai')">
-            <div class="cp-card-icon ai">🤖</div>
-            <div class="cp-card-name">AI 智询</div>
-            <div class="cp-card-desc">AI实时解答采购合规问题，给出风险提示和整改建议。</div>
             <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
           </div>
         </div>
@@ -2197,19 +2203,19 @@
           </div>
         </section>
 
-        <!-- ② 智选方案 -->
+        <!-- ② 最价方案 -->
         <section class="feature-card green">
           <div class="card-title-wrap">
             <div class="feature-icon green"><i class="fa-regular fa-file-lines"></i></div>
             <div class="card-main">
               <div class="title-row">
-                <h2 class="feature-name">智选方案</h2>
+                <h2 class="feature-name">最价方案</h2>
                 <div class="title-tags">
                   <span class="highlight-chip">自动拆解需求</span>
                   <span class="highlight-chip">模板生成</span>
                 </div>
               </div>
-              <p class="feature-desc">AI自动拆解采购目标、识别关键参数与预算边界，输出可直接复用的智选方案与流程建议，大幅减少编制时间。</p>
+              <p class="feature-desc">AI自动拆解采购目标、识别关键参数与预算边界，输出可直接复用的最价方案与流程建议，大幅减少编制时间。</p>
               <input id="planFileInput" class="hidden-input" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
               <div class="plan-action-row">
                 <button id="planFileButton" class="action-button" type="button" onclick="handlePlanFileClick()"><i class="fa-solid fa-upload"></i> 上传采购文件</button>
@@ -2285,7 +2291,7 @@
             <i class="fa-solid fa-shield-halved"></i>
           </div>
           <h3>合规保障</h3>
-          <p>覆盖智选方案、流程节点和文本条款的智能审核，实时识别关键风险并输出整改建议。</p>
+          <p>覆盖最价方案、流程节点和文本条款的智能审核，实时识别关键风险并输出整改建议。</p>
           <p>有效降低采购违规风险，提升审查效率与管理透明度。</p>
           <a class="advantage-link" href="./ai_assistant.html">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
         </article>
@@ -2534,7 +2540,7 @@
         <button class="modal-close" type="button" onclick="closeCpLoginPromptModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="cp-login-modal-body">
-        “采购合规通”中的计划、预算、合同和单位数据仅对登录用户开放；登录后即可进入对应功能并完成 AI 智询等服务。
+        “采购合规通”中的计划、预算、合同和单位数据仅对登录用户开放；登录后即可进入对应功能模块。
       </div>
       <div class="cp-login-modal-actions">
         <button class="gm-btn gm-btn-ghost" type="button" onclick="closeCpLoginPromptModal()">稍后再说</button>
@@ -2549,24 +2555,24 @@
       <div class="modal-head">
         <div>
           <h3 class="modal-title">采购合规助手</h3>
-          <p class="modal-subtitle">针对智选方案、流程节点和合同条款进行 AI 咨询与风险提示。</p>
+          <p class="modal-subtitle">针对最价方案、流程节点和合同条款进行 AI 咨询与风险提示。</p>
         </div>
         <button class="modal-close" type="button" onclick="closeComplianceModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="quick-asks">
-        <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我检查这份智选方案的合规风险')">检查智选方案</button>
+        <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我检查这份最价方案的合规风险')">检查最价方案</button>
         <button class="quick-ask" type="button" onclick="fillComplianceQuestion('询价流程需要注意哪些合规节点？')">询价流程节点</button>
         <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我审阅合同中的付款条款风险')">审阅付款条款</button>
       </div>
       <div id="complianceChatBody" class="chat-body">
         <div class="chat-item ai">
           <div class="chat-avatar ai">AI</div>
-          <div class="chat-bubble">您好，我是采购合规助手。您可以直接输入智选方案、询价流程或合同条款相关问题，我会给出风险提示和处理建议。</div>
+          <div class="chat-bubble">您好，我是采购合规助手。您可以直接输入最价方案、询价流程或合同条款相关问题，我会给出风险提示和处理建议。</div>
         </div>
       </div>
       <div class="chat-input-wrap">
         <div class="chat-input-row">
-          <textarea id="complianceInput" class="chat-textarea" placeholder="请输入您的问题，例如：请帮我检查这份智选方案是否存在单一来源采购风险"></textarea>
+          <textarea id="complianceInput" class="chat-textarea" placeholder="请输入您的问题，例如：请帮我检查这份最价方案是否存在单一来源采购风险"></textarea>
           <button class="feature-button orange" type="button" onclick="sendComplianceMessage()">发送咨询 <i class="fa-solid fa-paper-plane"></i></button>
         </div>
       </div>
@@ -2604,14 +2610,10 @@
               <input class="form-input" id="newPlanAmt" type="number" placeholder="如：200000">
             </div>
           </div>
-          <div class="form-row">
+          <div class="form-row single">
             <div class="form-group">
               <label class="form-label">截止日期 <span style="color:#ef4444;">*</span></label>
               <input class="form-input" id="newPlanDate" type="date">
-            </div>
-            <div class="form-group">
-              <label class="form-label">品类范围</label>
-              <input class="form-input" id="newPlanCat" placeholder="如：笔记本电脑、显示器">
             </div>
           </div>
           <div class="form-row single">
@@ -3330,11 +3332,10 @@
       var amt=parseFloat(document.getElementById('newPlanAmt').value);
       var date=document.getElementById('newPlanDate').value;
       if(!name){alert('请填写计划名称');return;} if(!amt||isNaN(amt)){alert('请填写计划金额');return;} if(!date){alert('请选择截止日期');return;}
-      var cat=document.getElementById('newPlanCat').value.trim();
       var fileIn=document.getElementById('newProcPlanFileInput');
       var file=fileIn&&fileIn.files&&fileIn.files[0];
       function commit(extra){
-        var row={id:++planIdSeed,name:name,amount:amt,used:0,deadline:date,cat:cat,status:'active',orders:[]};
+        var row={id:++planIdSeed,name:name,amount:amt,used:0,deadline:date,cat:'',status:'active',orders:[]};
         if(extra&&extra.fileName&&(extra.fileData||extra.fileUrl)){
           row.fileName=extra.fileName;
           if(extra.fileData) row.fileData=extra.fileData;
@@ -3721,7 +3722,6 @@
       if (which === 'plan') openProcPlanModal();
       else if (which === 'budget') openBudgetDrawer();
       else if (which === 'contract') openContractModal();
-      else if (which === 'ai') openComplianceModal();
     }
 
     function unlockDataBoard() {
@@ -3782,7 +3782,7 @@
       document.querySelectorAll('.gm-overlay, .gm-drawer-overlay, .ai-reco-overlay, .law-manage-overlay, .ai-comp-overlay').forEach(function(el) { el.classList.remove('open'); });
       document.body.style.overflow = '';
     }
-    /* 跳转到智选方案分析界面 */
+    /* 跳转到最价方案分析界面 */
     function gotoZhixuan() {
       closeAllModalsForNav();
       try { sessionStorage.setItem('planDemo', JSON.stringify({ file: null, scene: 'AI推荐采购场景' })); } catch(e) {}

@@ -212,61 +212,6 @@
       border-left: 3px solid #E2231A; display: inline-block;
     }
 
-    /* ===== 供应商详情侧滑面板 ===== */
-    .detail-drawer {
-      position: fixed; right: -560px; top: 0; width: 560px; height: 100vh;
-      background: #fff; box-shadow: -20px 0 60px rgba(15,23,42,0.12);
-      z-index: 200; transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
-      display: flex; flex-direction: column; overflow: hidden;
-    }
-    .detail-drawer.open { right: 0; }
-    .drawer-backdrop {
-      position: fixed; inset: 0; background: rgba(15,23,42,0.4);
-      backdrop-filter: blur(2px); z-index: 199;
-      display: none; opacity: 0; transition: opacity 0.3s;
-    }
-    .drawer-backdrop.show { display: block; opacity: 1; }
-
-    .drawer-head {
-      padding: 20px 24px; border-bottom: 1px solid #f1f5f9;
-      background: linear-gradient(135deg, #f0f9ff 0%, #fff 60%);
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    }
-    .drawer-close {
-      width: 36px; height: 36px; border-radius: 10px;
-      border: 1px solid #e2e8f0; background: #fff; color: #475569;
-      display: inline-flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .drawer-close:hover { background: #f8fafc; color: #0f172a; }
-    .drawer-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
-    .drawer-foot {
-      padding: 14px 24px; border-top: 1px solid #f1f5f9;
-      display: flex; align-items: center; justify-content: flex-end; gap: 10px;
-    }
-
-    .info-section { margin-bottom: 20px; }
-    .info-section-title {
-      font-size: 13px; font-weight: 800; color: #64748b;
-      letter-spacing: 0.04em; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .info-section-title i { color: #2563eb; }
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
-    .info-item { display: flex; flex-direction: column; gap: 2px; }
-    .info-item-label { font-size: 11px; color: #94a3b8; }
-    .info-item-value { font-size: 13px; color: #0f172a; font-weight: 600; }
-
-    .qual-file-row {
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 10px 12px; border-radius: 10px; border: 1px solid #e2e8f0;
-      background: #f8fafc; margin-bottom: 8px;
-    }
-    .qual-file-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
-    }
-
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeInUp 0.5s ease-out; }
 
@@ -359,38 +304,16 @@
       </div>
     </div>
 
-    <!-- 统计卡片 -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6 fade-in">
+    <!-- 统计卡片：与「上架状态」筛选一致（全部 / 待整改 / 审核中 / 已上架 / 已下架） -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6 fade-in">
       <div class="stat-card bg-white rounded-xl shadow-md p-5 cursor-pointer" onclick="filterByStatus('')">
         <div class="flex items-start justify-between">
           <div>
             <p class="text-xs text-slate-500 font-medium mb-1">全部供应商</p>
-            <p class="text-3xl font-bold text-slate-900">45</p>
+            <p id="statCountAll" class="text-3xl font-bold text-slate-900">—</p>
           </div>
           <div class="w-11 h-11 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center">
             <i class="fas fa-store text-slate-500"></i>
-          </div>
-        </div>
-      </div>
-      <div class="stat-card bg-white rounded-xl shadow-md p-5 cursor-pointer" onclick="filterByStatus('online')">
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-xs text-slate-500 font-medium mb-1">已上线</p>
-            <p class="text-3xl font-bold text-green-600">38</p>
-          </div>
-          <div class="w-11 h-11 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
-            <i class="fas fa-circle-check text-green-600"></i>
-          </div>
-        </div>
-      </div>
-      <div class="stat-card bg-white rounded-xl shadow-md p-5 cursor-pointer" onclick="filterByStatus('reviewing')">
-        <div class="flex items-start justify-between">
-          <div>
-            <p class="text-xs text-slate-500 font-medium mb-1">AI审核中</p>
-            <p class="text-3xl font-bold text-blue-600">3</p>
-          </div>
-          <div class="w-11 h-11 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center">
-            <i class="fas fa-spinner text-blue-600"></i>
           </div>
         </div>
       </div>
@@ -398,21 +321,43 @@
         <div class="flex items-start justify-between">
           <div>
             <p class="text-xs text-slate-500 font-medium mb-1">待整改</p>
-            <p class="text-3xl font-bold text-amber-600">2</p>
+            <p id="statCountPending" class="text-3xl font-bold text-amber-600">—</p>
           </div>
           <div class="w-11 h-11 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center">
             <i class="fas fa-triangle-exclamation text-amber-600"></i>
           </div>
         </div>
       </div>
-      <div class="stat-card bg-white rounded-xl shadow-md p-5 cursor-pointer" onclick="filterByStatus('rejected')">
+      <div class="stat-card bg-white rounded-xl shadow-md p-5 cursor-pointer" onclick="filterByStatus('reviewing')">
         <div class="flex items-start justify-between">
           <div>
-            <p class="text-xs text-slate-500 font-medium mb-1">审核未通过</p>
-            <p class="text-3xl font-bold text-red-600">2</p>
+            <p class="text-xs text-slate-500 font-medium mb-1">审核中</p>
+            <p id="statCountReviewing" class="text-3xl font-bold text-blue-600">—</p>
           </div>
-          <div class="w-11 h-11 bg-gradient-to-br from-red-100 to-red-200 rounded-xl flex items-center justify-center">
-            <i class="fas fa-circle-xmark text-red-600"></i>
+          <div class="w-11 h-11 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center">
+            <i class="fas fa-spinner text-blue-600"></i>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card bg-white rounded-xl shadow-md p-5 cursor-pointer" onclick="filterByStatus('online')">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs text-slate-500 font-medium mb-1">已上架</p>
+            <p id="statCountOnline" class="text-3xl font-bold text-green-600">—</p>
+          </div>
+          <div class="w-11 h-11 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center">
+            <i class="fas fa-circle-check text-green-600"></i>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card bg-white rounded-xl shadow-md p-5 cursor-pointer" onclick="filterByStatus('offline')">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-xs text-slate-500 font-medium mb-1">已下架</p>
+            <p id="statCountOffline" class="text-3xl font-bold text-slate-600">—</p>
+          </div>
+          <div class="w-11 h-11 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center">
+            <i class="fas fa-eye-slash text-slate-500"></i>
           </div>
         </div>
       </div>
@@ -425,23 +370,14 @@
         <div class="flex flex-wrap gap-2 items-center">
           <div class="relative">
             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input type="text" class="filter-input pl-8 w-56" placeholder="搜索供应商名称…" id="searchInput" oninput="applyFilter()">
+            <input type="text" class="filter-input pl-8 w-64" placeholder="搜索名称、编号、信用代码、联系人、手机号…" id="searchInput" oninput="applyFilter()">
           </div>
-          <select class="filter-select" id="categoryFilter" onchange="applyFilter()">
-            <option value="">全部类目</option>
-            <option>办公设备</option>
-            <option>网络设备</option>
-            <option>办公耗材</option>
-            <option>IT配件</option>
-            <option>家具家居</option>
-          </select>
           <select class="filter-select" id="statusFilter" onchange="applyFilter()">
             <option value="">全部状态</option>
-            <option value="online">已上线</option>
-            <option value="reviewing">AI审核中</option>
             <option value="pending">待整改</option>
-            <option value="rejected">审核未通过</option>
-            <option value="offline">已下线</option>
+            <option value="reviewing">审核中</option>
+            <option value="online">已上架</option>
+            <option value="offline">已下架</option>
           </select>
           <select class="filter-select" id="aiFilter" onchange="applyFilter()">
             <option value="">AI审核结果</option>
@@ -454,7 +390,7 @@
         <div class="flex gap-2 flex-wrap">
           <button class="table-op-btn" onclick="resetFilter()"><i class="fas fa-rotate-left"></i>重置</button>
           <button class="table-op-btn danger" id="batchOfflineBtn" style="display:none;" onclick="batchOffline()">
-            <i class="fas fa-arrow-down"></i>批量下线
+            <i class="fas fa-arrow-down"></i>批量下架
           </button>
         </div>
       </div>
@@ -469,11 +405,13 @@
                   <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" class="w-4 h-4 accent-red-600">
                 </th>
                 <th class="text-left px-4 py-3 font-semibold">供应商名称</th>
-                <th class="text-left px-4 py-3 font-semibold">主营类目</th>
+                <th class="text-left px-4 py-3 font-semibold whitespace-nowrap">统一社会信用代码</th>
+                <th class="text-left px-4 py-3 font-semibold whitespace-nowrap">联系人</th>
+                <th class="text-left px-4 py-3 font-semibold">所在分站</th>
                 <th class="text-left px-4 py-3 font-semibold">入驻时间</th>
                 <th class="text-left px-4 py-3 font-semibold">资质状态</th>
                 <th class="text-left px-4 py-3 font-semibold">AI审核结果</th>
-                <th class="text-left px-4 py-3 font-semibold">上线状态</th>
+                <th class="text-left px-4 py-3 font-semibold">上架状态</th>
                 <th class="text-left px-4 py-3 font-semibold">操作</th>
               </tr>
             </thead>
@@ -502,28 +440,6 @@
   </div>
 </div>
 
-<!-- ===== 供应商详情侧滑面板 ===== -->
-<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
-<div class="detail-drawer" id="detailDrawer">
-  <div class="drawer-head">
-    <div>
-      <div class="text-xs text-slate-500 mb-1">供应商详情</div>
-      <div class="text-lg font-bold text-slate-900" id="drawerTitle">—</div>
-      <div class="mt-1" id="drawerStatusBadge"></div>
-    </div>
-    <button class="drawer-close" onclick="closeDrawer()"><i class="fas fa-xmark"></i></button>
-  </div>
-  <div class="drawer-body" id="drawerBody">
-    <!-- 动态渲染 -->
-  </div>
-  <div class="drawer-foot">
-    <button class="action-btn action-btn-secondary" onclick="closeDrawer()">关闭</button>
-    <button class="action-btn" id="drawerActionBtn"
-      style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;"
-      onclick="drawerAction()">—</button>
-  </div>
-</div>
-
 <!-- ===== 对话框 ===== -->
 <div class="dialog-overlay" id="dialogOverlay">
   <div class="dialog-card">
@@ -540,22 +456,45 @@
 </div>
 
 <script>
-  // ===== 模拟数据 =====
+  // ===== 模拟数据（与资质详情页 SUPPLIER_DETAIL_DB 保持一致） =====
   const suppliersData = [
-    { id:'SP-001', name:'北京联合科技有限公司', category:'办公设备', settleDate:'2025-12-10', qualStatus:'warn', aiResult:'warn', onlineStatus:'online', contact:'王经理', phone:'138-0010-1234', creditCode:'91110000123456789X', address:'北京市朝阳区望京SOHO T1栋', qualFiles:[{type:'营业执照',status:'pass'},{type:'税务登记证',status:'pass'},{type:'行业资质证书',status:'warn'},{type:'开户行许可证',status:'pass'},{type:'法人身份证',status:'pass'}] },
-    { id:'SP-002', name:'上海联华网络设备有限公司', category:'网络设备', settleDate:'2026-01-05', qualStatus:'fail', aiResult:'fail', onlineStatus:'rejected', contact:'李总', phone:'139-0021-5678', creditCode:'91310000987654321A', address:'上海市浦东新区张江高科技园区', qualFiles:[{type:'营业执照',status:'pass'},{type:'税务登记证',status:'fail'},{type:'行业资质证书',status:'fail'},{type:'开户行许可证',status:'pass'},{type:'法人身份证',status:'pass'}] },
-    { id:'SP-003', name:'广州得力办公用品贸易公司', category:'办公耗材', settleDate:'2026-02-18', qualStatus:'pass', aiResult:'pass', onlineStatus:'online', contact:'张主任', phone:'135-0032-9012', creditCode:'91440000456789012B', address:'广州市天河区珠江新城', qualFiles:[{type:'营业执照',status:'pass'},{type:'税务登记证',status:'pass'},{type:'行业资质证书',status:'pass'},{type:'开户行许可证',status:'pass'},{type:'法人身份证',status:'pass'}] },
-    { id:'SP-004', name:'深圳华强IT配件有限公司', category:'IT配件', settleDate:'2026-03-01', qualStatus:'progress', aiResult:'none', onlineStatus:'reviewing', contact:'陈经理', phone:'136-0043-3456', creditCode:'91440300789012345C', address:'深圳市福田区华强北路', qualFiles:[{type:'营业执照',status:'progress'},{type:'税务登记证',status:'progress'},{type:'行业资质证书',status:'neutral'},{type:'开户行许可证',status:'neutral'},{type:'法人身份证',status:'neutral'}] },
-    { id:'SP-005', name:'杭州智创家具科技股份公司', category:'家具家居', settleDate:'2026-03-15', qualStatus:'warn', aiResult:'warn', onlineStatus:'pending', contact:'刘总监', phone:'137-0054-7890', creditCode:'91330000321456789D', address:'杭州市西湖区文三路', qualFiles:[{type:'营业执照',status:'pass'},{type:'税务登记证',status:'pass'},{type:'行业资质证书',status:'warn'},{type:'开户行许可证',status:'fail'},{type:'法人身份证',status:'pass'}] },
-    { id:'SP-006', name:'成都宇宙电子商务有限公司', category:'IT配件', settleDate:'2026-01-20', qualStatus:'pass', aiResult:'pass', onlineStatus:'online', contact:'赵总', phone:'133-0065-2345', creditCode:'91510000654321987E', address:'成都市高新区天府大道', qualFiles:[{type:'营业执照',status:'pass'},{type:'税务登记证',status:'pass'},{type:'行业资质证书',status:'pass'},{type:'开户行许可证',status:'pass'},{type:'法人身份证',status:'pass'}] },
-    { id:'SP-007', name:'武汉光谷办公家具有限公司', category:'家具家居', settleDate:'2025-11-08', qualStatus:'pass', aiResult:'pass', onlineStatus:'online', contact:'孙总', phone:'131-0076-6789', creditCode:'91420000987123456F', address:'武汉市洪山区光谷广场', qualFiles:[{type:'营业执照',status:'pass'},{type:'税务登记证',status:'pass'},{type:'行业资质证书',status:'pass'},{type:'开户行许可证',status:'pass'},{type:'法人身份证',status:'pass'}] },
-    { id:'SP-008', name:'南京智造网络科技有限公司', category:'网络设备', settleDate:'2026-04-02', qualStatus:'progress', aiResult:'none', onlineStatus:'reviewing', contact:'周经理', phone:'132-0087-0123', creditCode:'91320000147258369G', address:'南京市鼓楼区江北新区', qualFiles:[{type:'营业执照',status:'progress'},{type:'税务登记证',status:'neutral'},{type:'行业资质证书',status:'neutral'},{type:'开户行许可证',status:'neutral'},{type:'法人身份证',status:'neutral'}] },
+    { id:'SP-001', name:'北京联合科技有限公司', station:'北京分站', settleDate:'2025-12-10', qualStatus:'warn', aiResult:'warn', onlineStatus:'online', applicantName:'王小明', applicantMobile:'13800102334', contact:'王主任', phone:'138-0010-2334', legalPerson:'王某', creditCode:'91110000MA0012345X', address:'北京市朝阳区望京SOHO T1栋' },
+    { id:'SP-002', name:'上海联华网络设备有限公司', station:'华东分站', settleDate:'2026-01-05', qualStatus:'fail', aiResult:'fail', onlineStatus:'offline', applicantName:'李丽', applicantMobile:'13600101028', contact:'李老师', phone:'136-0010-1028', legalPerson:'李某', creditCode:'52110000MJ1234567A', address:'上海市浦东新区张江高科技园区' },
+    { id:'SP-003', name:'广州得力办公用品贸易公司', station:'医疗卫生专区', settleDate:'2026-02-18', qualStatus:'pass', aiResult:'pass', onlineStatus:'online', applicantName:'张伟', applicantMobile:'13500108820', contact:'赵老师', phone:'135-0010-8820', legalPerson:'张某', creditCode:'12110000MB9876543B', address:'广州市天河区珠江新城' },
+    { id:'SP-004', name:'深圳华强IT配件有限公司', station:'教育装备专区', settleDate:'2026-03-01', qualStatus:'progress', aiResult:'none', onlineStatus:'reviewing', applicantName:'陈晨', applicantMobile:'13900109900', contact:'钱老师', phone:'139-0010-9900', legalPerson:'陈某', creditCode:'91310000MB4455667C', address:'深圳市福田区华强北路' },
+    { id:'SP-005', name:'杭州智创家具科技股份公司', station:'华东分站', settleDate:'2026-03-15', qualStatus:'warn', aiResult:'warn', onlineStatus:'pending', applicantName:'刘洋', applicantMobile:'13700106677', contact:'孙老师', phone:'137-0010-6677', legalPerson:'刘某', creditCode:'91110000MB8899001D', address:'杭州市西湖区文三路' },
+    { id:'SP-006', name:'成都宇宙电子商务有限公司', station:'北京分站', settleDate:'2026-01-20', qualStatus:'pass', aiResult:'pass', onlineStatus:'offline', applicantName:'赵敏', applicantMobile:'13300652345', contact:'赵总', phone:'133-0065-2345', legalPerson:'赵某', creditCode:'91510000654321987E', address:'成都市高新区天府大道' },
+    { id:'SP-007', name:'武汉光谷办公家具有限公司', station:'医疗卫生专区', settleDate:'2025-11-08', qualStatus:'pass', aiResult:'pass', onlineStatus:'online', applicantName:'孙磊', applicantMobile:'13100766789', contact:'孙总', phone:'131-0076-6789', legalPerson:'孙某', creditCode:'91420000987123456F', address:'武汉市洪山区光谷广场' },
+    { id:'SP-008', name:'南京智造网络科技有限公司', station:'教育装备专区', settleDate:'2026-04-02', qualStatus:'progress', aiResult:'none', onlineStatus:'reviewing', applicantName:'周杰', applicantMobile:'13200870123', contact:'周经理', phone:'132-0087-0123', legalPerson:'周某', creditCode:'91320000147258369G', address:'南京市鼓楼区江北新区' },
   ];
 
   let filteredData = [...suppliersData];
   let selectedIds = new Set();
   let dialogOnConfirm = null;
-  let activeDrawerSupplierId = null;
+
+  function supplierDetailHref(id) {
+    return withAdminEmbed('admin_supplier_qual_detail.html?id=' + encodeURIComponent(id));
+  }
+  function supplierAuditHref(id) {
+    return withAdminEmbed('admin_supplier_settle.html?id=' + encodeURIComponent(id));
+  }
+  function supplierNeedsAudit(s) {
+    if (['reviewing', 'pending'].includes(s.onlineStatus)) return true;
+    return s.onlineStatus === 'offline' && s.aiResult !== 'pass';
+  }
+  function supplierCanOnline(s) {
+    return s.onlineStatus === 'offline' && s.aiResult === 'pass';
+  }
+
+  function maskMobile(m) {
+    var d = String(m || '').replace(/\D/g, '');
+    if (d.length !== 11) return m || '—';
+    return d.slice(0, 3) + '****' + d.slice(-4);
+  }
+
+  function formatContactCell(s) {
+    return (s.contact || '—') + ' ' + maskMobile(s.applicantMobile);
+  }
 
   // ===== 徽章生成 =====
   function getQualBadge(status) {
@@ -581,37 +520,45 @@
 
   function getOnlineBadge(status) {
     const map = {
-      online:    '<span class="mini-badge badge-success"><i class="fas fa-circle"></i>已上线</span>',
-      offline:   '<span class="mini-badge badge-neutral"><i class="fas fa-circle"></i>已下线</span>',
+      online:    '<span class="mini-badge badge-success"><i class="fas fa-circle"></i>已上架</span>',
+      offline:   '<span class="mini-badge badge-neutral"><i class="fas fa-circle"></i>已下架</span>',
       reviewing: '<span class="mini-badge badge-progress"><i class="fas fa-spinner fa-spin"></i>审核中</span>',
-      pending:   '<span class="mini-badge badge-warn"><i class="fas fa-clock"></i>待整改上线</span>',
-      rejected:  '<span class="mini-badge badge-fail"><i class="fas fa-ban"></i>已拒绝</span>',
+      pending:   '<span class="mini-badge badge-warn"><i class="fas fa-wrench"></i>待整改</span>',
     };
     return map[status] || map.offline;
   }
 
-  function getFileBadge(status) {
-    const map = {
-      pass:     '<span class="mini-badge badge-success" style="padding:3px 8px;font-size:11px;"><i class="fas fa-check"></i>通过</span>',
-      warn:     '<span class="mini-badge badge-warn" style="padding:3px 8px;font-size:11px;"><i class="fas fa-wrench"></i>待整改</span>',
-      fail:     '<span class="mini-badge badge-fail" style="padding:3px 8px;font-size:11px;"><i class="fas fa-xmark"></i>不通过</span>',
-      progress: '<span class="mini-badge badge-progress" style="padding:3px 8px;font-size:11px;"><i class="fas fa-spinner fa-spin"></i>审核中</span>',
-      neutral:  '<span class="mini-badge badge-neutral" style="padding:3px 8px;font-size:11px;"><i class="fas fa-minus"></i>待上传</span>',
+  function refreshStatCounts() {
+    var all = suppliersData.length;
+    var pending = 0, reviewing = 0, online = 0, offline = 0;
+    suppliersData.forEach(function (s) {
+      if (s.onlineStatus === 'pending') pending++;
+      else if (s.onlineStatus === 'reviewing') reviewing++;
+      else if (s.onlineStatus === 'online') online++;
+      else if (s.onlineStatus === 'offline') offline++;
+    });
+    var set = function (id, v) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = String(v);
     };
-    return map[status] || map.neutral;
+    set('statCountAll', all);
+    set('statCountPending', pending);
+    set('statCountReviewing', reviewing);
+    set('statCountOnline', online);
+    set('statCountOffline', offline);
   }
 
   // ===== 操作按钮 =====
   function getOperationCell(supplier) {
-    let btns = `<button class="table-op-btn" onclick="openDrawer('${supplier.id}')"><i class="fas fa-eye"></i>查看详情</button>`;
+    let btns = `<button type="button" class="table-op-btn" onclick="window.location.href='${supplierDetailHref(supplier.id)}'"><i class="fas fa-file-lines"></i>查看详情</button>`;
+    if (supplierNeedsAudit(supplier)) {
+      btns += `<button type="button" class="table-op-btn" onclick="window.location.href='${supplierAuditHref(supplier.id)}'" style="border-color:#fed7aa;background:#fff7ed;color:#c2410c;"><i class="fas fa-clipboard-check"></i>审核</button>`;
+    }
     if (supplier.onlineStatus === 'online') {
-      btns += `<button class="table-op-btn danger" onclick="confirmOffline('${supplier.id}')"><i class="fas fa-arrow-down"></i>下线</button>`;
+      btns += `<button type="button" class="table-op-btn danger" onclick="confirmOffline('${supplier.id}')"><i class="fas fa-arrow-down"></i>下架</button>`;
     }
-    if (supplier.onlineStatus === 'pending' || supplier.onlineStatus === 'rejected') {
-      btns += `<button class="table-op-btn" onclick="openAiAssist('${supplier.id}')" style="border-color:#bfdbfe;background:#eff6ff;color:#1d4ed8;"><i class="fas fa-robot"></i>AI审核助手</button>`;
-    }
-    if (supplier.onlineStatus === 'reviewing') {
-      btns += `<button class="table-op-btn" style="cursor:not-allowed;opacity:.6;" disabled><i class="fas fa-spinner fa-spin"></i>审核中</button>`;
+    if (supplierCanOnline(supplier)) {
+      btns += `<button type="button" class="table-op-btn success" onclick="confirmOnline('${supplier.id}')"><i class="fas fa-arrow-up"></i>上架</button>`;
     }
     return `<div class="flex flex-wrap gap-1.5">${btns}</div>`;
   }
@@ -624,7 +571,7 @@
     if (!filteredData.length) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="8" class="empty-state">
+          <td colspan="10" class="empty-state">
             <div class="icon-wrap"><i class="fas fa-store-slash"></i></div>
             <div class="text-base font-semibold text-slate-700 mb-2">暂无匹配供应商</div>
             <div class="text-sm">请调整筛选条件，或点击"供应商入驻"添加新供应商。</div>
@@ -642,10 +589,12 @@
         </td>
         <td class="px-4 py-4">
           <div class="font-semibold text-slate-900">${s.name}</div>
-          <div class="text-xs text-slate-400 mt-0.5">${s.id} · 联系人：${s.contact}</div>
+          <div class="text-xs text-slate-400 mt-0.5">${s.id}</div>
         </td>
+        <td class="px-4 py-4 text-slate-700 font-mono text-[13px] tracking-tight">${s.creditCode || '—'}</td>
+        <td class="px-4 py-4 text-slate-700">${formatContactCell(s)}</td>
         <td class="px-4 py-4">
-          <span class="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">${s.category}</span>
+          <span class="inline-flex px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">${s.station}</span>
         </td>
         <td class="px-4 py-4 text-slate-600">${s.settleDate}</td>
         <td class="px-4 py-4">${getQualBadge(s.qualStatus)}</td>
@@ -658,14 +607,15 @@
 
   // ===== 筛选 =====
   function applyFilter() {
-    const keyword  = document.getElementById('searchInput').value.trim().toLowerCase();
-    const category = document.getElementById('categoryFilter').value;
-    const status   = document.getElementById('statusFilter').value;
-    const ai       = document.getElementById('aiFilter').value;
+    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+    const status  = document.getElementById('statusFilter').value;
+    const ai      = document.getElementById('aiFilter').value;
 
     filteredData = suppliersData.filter(s => {
-      if (keyword && !s.name.toLowerCase().includes(keyword)) return false;
-      if (category && s.category !== category) return false;
+      if (keyword) {
+        const blob = `${s.name} ${s.id} ${s.creditCode} ${s.contact} ${s.applicantMobile} ${s.station}`.toLowerCase();
+        if (!blob.includes(keyword)) return false;
+      }
       if (status && s.onlineStatus !== status) return false;
       if (ai && s.aiResult !== ai) return false;
       return true;
@@ -675,7 +625,6 @@
 
   function resetFilter() {
     document.getElementById('searchInput').value = '';
-    document.getElementById('categoryFilter').value = '';
     document.getElementById('statusFilter').value = '';
     document.getElementById('aiFilter').value = '';
     filteredData = [...suppliersData];
@@ -707,10 +656,10 @@
 
   function batchOffline() {
     showDialog({
-      title: '批量下线确认',
-      message: `已选择 ${selectedIds.size} 家供应商，确定批量下线吗？\n下线后供应商商品将不可被采购方搜索到。`,
+      title: '批量下架确认',
+      message: `已选择 ${selectedIds.size} 家供应商，确定批量下架吗？\n下架后供应商商品将不可被采购方搜索到。`,
       type: 'warn',
-      confirmText: '确认下线',
+      confirmText: '确认下架',
       cancelText: '取消',
       onConfirm: () => {
         selectedIds.forEach(id => {
@@ -720,140 +669,50 @@
         selectedIds.clear();
         filteredData = [...suppliersData];
         renderTable();
-        showDialog({ title: '操作成功', message: '已成功下线所选供应商。', type: 'success', confirmText: '确定' });
+        refreshStatCounts();
+        showDialog({ title: '操作成功', message: '已成功下架所选供应商。', type: 'success', confirmText: '确定' });
       }
     });
   }
 
-  // ===== 单个下线 =====
+  // ===== 单个下架 =====
   function confirmOffline(id) {
     const s = suppliersData.find(x => x.id === id);
     if (!s) return;
     showDialog({
-      title: '下线确认',
-      message: `确定将【${s.name}】下线吗？\n下线后该供应商商品将不可被搜索到。`,
+      title: '下架确认',
+      message: `确定将【${s.name}】下架吗？\n下架后该供应商商品将不可被搜索到。`,
       type: 'warn',
-      confirmText: '确认下线',
+      confirmText: '确认下架',
       cancelText: '取消',
       onConfirm: () => {
         s.onlineStatus = 'offline';
         filteredData = [...suppliersData];
         renderTable();
-        showDialog({ title: '已下线', message: `【${s.name}】已成功下线。`, type: 'success', confirmText: '确定' });
+        refreshStatCounts();
+        showDialog({ title: '已下架', message: `【${s.name}】已成功下架。`, type: 'success', confirmText: '确定' });
       }
     });
   }
 
-  // ===== AI 审核助手（简单提示跳转） =====
-  function openAiAssist(id) {
+  // ===== 单个上架 =====
+  function confirmOnline(id) {
     const s = suppliersData.find(x => x.id === id);
     if (!s) return;
     showDialog({
-      title: 'AI 审核助手',
-      message: `【${s.name}】存在待整改或不通过的资质项。\n请进入入驻详情页，使用 AI 审核助手查看整改建议并重新提交。`,
+      title: '上架确认',
+      message: `确定将【${s.name}】上架吗？\n上架后采购方将可检索到该供应商商品（演示）。`,
       type: 'info',
-      confirmText: '前往整改',
-      cancelText: '稍后处理',
-      onConfirm: () => { window.location.href = withAdminEmbed('admin_supplier_settle.html'); }
+      confirmText: '确认上架',
+      cancelText: '取消',
+      onConfirm: () => {
+        s.onlineStatus = 'online';
+        filteredData = [...suppliersData];
+        renderTable();
+        refreshStatCounts();
+        showDialog({ title: '已上架', message: `【${s.name}】已成功上架。`, type: 'success', confirmText: '确定' });
+      }
     });
-  }
-
-  // ===== 供应商详情侧滑 =====
-  function openDrawer(id) {
-    const s = suppliersData.find(x => x.id === id);
-    if (!s) return;
-    activeDrawerSupplierId = id;
-
-    document.getElementById('drawerTitle').textContent = s.name;
-    document.getElementById('drawerStatusBadge').innerHTML = getOnlineBadge(s.onlineStatus);
-
-    const actionBtn = document.getElementById('drawerActionBtn');
-    if (s.onlineStatus === 'online') {
-      actionBtn.textContent = '下线此供应商';
-      actionBtn.style.background = 'linear-gradient(135deg,#f97316,#ea580c)';
-    } else if (s.onlineStatus === 'pending' || s.onlineStatus === 'rejected') {
-      actionBtn.textContent = 'AI 整改助手';
-      actionBtn.style.background = 'linear-gradient(135deg,#3b82f6,#1d4ed8)';
-    } else {
-      actionBtn.textContent = '查看进度';
-      actionBtn.style.background = 'linear-gradient(135deg,#64748b,#475569)';
-    }
-
-    const qualIconMap = {
-      pass: { bg: 'bg-green-100', color: 'text-green-600', icon: 'fa-file-circle-check' },
-      warn: { bg: 'bg-amber-100', color: 'text-amber-600', icon: 'fa-file-circle-exclamation' },
-      fail: { bg: 'bg-red-100',   color: 'text-red-600',   icon: 'fa-file-circle-xmark' },
-      progress: { bg: 'bg-blue-100', color: 'text-blue-600', icon: 'fa-file-circle-question' },
-      neutral:  { bg: 'bg-slate-100', color: 'text-slate-400', icon: 'fa-file-circle-minus' },
-    };
-
-    document.getElementById('drawerBody').innerHTML = `
-      <div class="info-section">
-        <div class="info-section-title"><i class="fas fa-circle-info"></i>基本信息</div>
-        <div class="info-grid">
-          <div class="info-item"><div class="info-item-label">供应商编号</div><div class="info-item-value">${s.id}</div></div>
-          <div class="info-item"><div class="info-item-label">主营类目</div><div class="info-item-value">${s.category}</div></div>
-          <div class="info-item"><div class="info-item-label">统一社会信用代码</div><div class="info-item-value">${s.creditCode}</div></div>
-          <div class="info-item"><div class="info-item-label">入驻时间</div><div class="info-item-value">${s.settleDate}</div></div>
-          <div class="info-item"><div class="info-item-label">联系人</div><div class="info-item-value">${s.contact}</div></div>
-          <div class="info-item"><div class="info-item-label">联系电话</div><div class="info-item-value">${s.phone}</div></div>
-          <div class="info-item" style="grid-column:1/-1;"><div class="info-item-label">企业地址</div><div class="info-item-value">${s.address}</div></div>
-        </div>
-      </div>
-
-      <div class="info-section">
-        <div class="info-section-title"><i class="fas fa-folder-open"></i>资质文件审核情况</div>
-        ${s.qualFiles.map(f => {
-          const ic = qualIconMap[f.status] || qualIconMap.neutral;
-          return `
-          <div class="qual-file-row">
-            <div class="flex items-center gap-3">
-              <div class="qual-file-icon ${ic.bg} ${ic.color}"><i class="fas ${ic.icon}"></i></div>
-              <span class="text-sm font-medium text-slate-700">${f.type}</span>
-            </div>
-            ${getFileBadge(f.status)}
-          </div>`;
-        }).join('')}
-      </div>
-
-      <div class="info-section">
-        <div class="info-section-title"><i class="fas fa-robot"></i>AI综合审核结论</div>
-        <div class="rounded-xl p-4 text-sm leading-7 ${
-          s.aiResult === 'pass' ? 'bg-green-50 border border-green-100 text-green-800' :
-          s.aiResult === 'warn' ? 'bg-amber-50 border border-amber-100 text-amber-800' :
-          s.aiResult === 'fail' ? 'bg-red-50 border border-red-100 text-red-800' :
-          'bg-slate-50 border border-slate-200 text-slate-600'
-        }">
-          ${s.aiResult === 'pass' ? '<i class="fas fa-circle-check mr-2"></i>AI审核通过，所有资质文件均符合平台要求，供应商可正常运营。' :
-            s.aiResult === 'warn' ? '<i class="fas fa-triangle-exclamation mr-2"></i>AI发现部分资质需整改，建议联系供应商补充材料后重新审核。行业资质证书的经营范围覆盖不完整，需补充相关认证证明。' :
-            s.aiResult === 'fail' ? '<i class="fas fa-circle-xmark mr-2"></i>AI审核发现关键资质缺失或造假风险，建议拒绝此供应商入驻，或要求重新提交完整资质材料。' :
-            '<i class="fas fa-clock mr-2"></i>AI正在逐项审核资质文件，请稍候查看结果。'}
-        </div>
-      </div>
-    `;
-
-    document.getElementById('drawerBackdrop').classList.add('show');
-    document.getElementById('detailDrawer').classList.add('open');
-  }
-
-  function closeDrawer() {
-    document.getElementById('drawerBackdrop').classList.remove('show');
-    document.getElementById('detailDrawer').classList.remove('open');
-    activeDrawerSupplierId = null;
-  }
-
-  function drawerAction() {
-    if (!activeDrawerSupplierId) return;
-    const s = suppliersData.find(x => x.id === activeDrawerSupplierId);
-    if (!s) return;
-    closeDrawer();
-    if (s.onlineStatus === 'online') {
-      confirmOffline(s.id);
-    } else if (s.onlineStatus === 'pending' || s.onlineStatus === 'rejected') {
-      openAiAssist(s.id);
-    } else {
-      showDialog({ title: '审核进行中', message: 'AI正在逐项审核该供应商的资质文件，请稍后刷新查看结果。', type: 'info', confirmText: '我知道了' });
-    }
   }
 
   // ===== 对话框 =====
@@ -907,6 +766,7 @@
       document.getElementById('adminSidebar').classList.add('collapsed');
       document.getElementById('sidebarToggleIcon').classList.replace('fa-chevron-left', 'fa-chevron-right');
     }
+    refreshStatCounts();
     renderTable();
   });
 </script>

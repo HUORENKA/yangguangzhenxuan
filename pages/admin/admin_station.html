@@ -9,52 +9,651 @@
   <link rel="stylesheet" href="../../assets/custom.css">
   <style>
     @layer utilities { .text-primary{color:#E2231A}.bg-primary{background-color:#E2231A}.border-primary{border-color:#E2231A} }
-    body{font-family:"Microsoft YaHei",sans-serif;background:#f8fafc;color:#334155}.admin-content{min-height:100vh}.stat-card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:18px}.action-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px;font-weight:600}.action-btn-primary{background:#E2231A;color:white}.action-btn-secondary{background:white;color:#334155;border:1px solid #cbd5e1}.table-wrap{overflow-x:auto;border:1px solid #e2e8f0;border-radius:14px;background:white}th{background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;padding:12px 16px;white-space:nowrap;text-align:left}td{padding:13px 16px;border-top:1px solid #f1f5f9;font-size:14px;white-space:nowrap}.link-btn{color:#2563eb;font-size:13px;margin-right:10px}.danger{color:#dc2626}
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); color: #0f172a; }
+    .admin-sidebar {
+      position: fixed; left: 0; top: 0; width: 240px; height: 100vh;
+      background: #1e293b; color: white; z-index: 100; overflow-y: auto;
+      transition: width 0.3s ease; overflow-x: hidden;
+    }
+    .admin-sidebar-header {
+      padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-sidebar.collapsed { width: 64px; }
+    .admin-sidebar.collapsed .admin-sidebar-logo span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-sidebar.collapsed .admin-menu-item span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-sidebar-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; white-space: nowrap; }
+    .admin-sidebar-toggle {
+      background: rgba(255,255,255,0.1); border: none; color: white;
+      width: 32px; height: 32px; border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .admin-menu { padding: 10px 0; }
+    .admin-menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+      color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.2s;
+    }
+    .admin-menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
+    .admin-menu-item.active {
+      background: rgba(226,35,26,0.2); color: white; border-left: 3px solid #E2231A;
+    }
+    .admin-menu-item i { width: 20px; text-align: center; }
+    .admin-content { margin-left: 240px; min-height: 100vh; transition: margin-left 0.3s ease; }
+    .admin-sidebar.collapsed ~ .admin-content { margin-left: 64px; }
+    .action-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 12px; padding: 10px 16px; font-size: 14px; font-weight: 600;
+      cursor: pointer; border: none; transition: transform 0.2s;
+    }
+    .action-btn:hover { transform: translateY(-1px); }
+    .action-btn-primary {
+      color: #fff; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 20px rgba(239,68,68,0.22);
+    }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .stat-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px;
+    }
+    .table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 14px; background: #fff; }
+    th { background: #f8fafc; color: #64748b; font-size: 13px; font-weight: 700; padding: 12px 16px; text-align: left; white-space: nowrap; }
+    td { padding: 13px 16px; border-top: 1px solid #f1f5f9; font-size: 14px; }
+    .link-btn { color: #2563eb; font-size: 13px; margin-right: 10px; cursor: pointer; background: none; border: none; padding: 0; font-weight: 600; }
+    .link-btn:hover { text-decoration: underline; }
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-panel {
+      background: #fff; border-radius: 16px; box-shadow: 0 24px 48px rgba(15,23,42,0.2);
+      width: 100%; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column;
+    }
+    .modal-panel.w-md { max-width: 520px; }
+    .modal-panel.w-lg { max-width: 960px; }
+    .modal-head {
+      padding: 16px 20px; border-bottom: 1px solid #e2e8f0;
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+    }
+    .modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+    .modal-foot {
+      padding: 12px 20px; border-top: 1px solid #e2e8f0;
+      display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0;
+    }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+    .form-input, .form-textarea, .form-select {
+      width: 100%; border: 1px solid #e2e8f0; border-radius: 10px; padding: 9px 12px; font-size: 14px;
+    }
+    .form-textarea { min-height: 80px; resize: vertical; }
+    .form-row { margin-bottom: 14px; }
+    .pagination-bar {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0;
+    }
+    .page-btns button {
+      min-width: 32px; height: 32px; margin: 0 2px; border-radius: 8px; border: 1px solid #e2e8f0;
+      background: #fff; cursor: pointer; font-size: 13px;
+    }
+    .page-btns button.active { background: #E2231A; color: #fff; border-color: #E2231A; }
+    .page-btns button:disabled { opacity: 0.4; cursor: not-allowed; }
+    html.admin-embed-mode .admin-sidebar { display: none !important; }
+    html.admin-embed-mode .admin-content { margin-left: 0 !important; }
   </style>
 </head>
 <body>
-  <main class="admin-content">
-    <div class="p-6 max-w-[1680px] mx-auto">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">分站管理</span></div>
-          <h1 class="text-2xl font-bold text-slate-900">分站管理</h1>
-          <p class="text-sm text-slate-500 mt-1">维护平台分站信息，并查看各分站下入驻供应商与采购方。</p>
-        </div>
-        <div class="flex gap-3">
-          <button class="action-btn action-btn-secondary"><i class="fas fa-download"></i>导出数据</button>
-          <button class="action-btn action-btn-primary"><i class="fas fa-plus"></i>新增分站</button>
-        </div>
-      </div>
+<script>
+(function () {
+  var embedded = new URLSearchParams(location.search).get('embed') === '1';
+  if (embedded) {
+    document.documentElement.classList.add('admin-embed-mode');
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var h = a.getAttribute('href');
+      if (!h || /^https?:\/\//i.test(h) || h.indexOf('javascript:') === 0 || h.charAt(0) === '#') return;
+      if (h.indexOf('embed=') !== -1) return;
+      if (h.indexOf('.html') === -1) return;
+      a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+    });
+  }
+  window.withAdminEmbed = function (href) {
+    if (!embedded) return href;
+    var q = href.indexOf('?');
+    var base = q === -1 ? href : href.slice(0, q);
+    var params = new URLSearchParams(q === -1 ? '' : href.slice(q + 1));
+    params.set('embed', '1');
+    var s = params.toString();
+    return s ? base + '?' + s : base + '?embed=1';
+  };
+})();
+function toggleSidebar() {
+  document.getElementById('adminSidebar').classList.toggle('collapsed');
+}
+</script>
 
-      <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="搜索分站名称/编码">
-          <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部区域</option><option>华北</option><option>华东</option><option>行业专区</option></select>
-          <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>启用</option><option>停用</option></select>
-          <button class="action-btn action-btn-primary justify-center"><i class="fas fa-search"></i>查询</button>
-        </div>
-      </div>
+<div class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-header">
+    <div class="admin-sidebar-logo"><i class="fas fa-cog"></i><span>管理后台</span></div>
+    <button type="button" class="admin-sidebar-toggle" onclick="toggleSidebar()" title="收起/展开"><i class="fas fa-bars"></i></button>
+  </div>
+  <nav class="admin-menu">
+    <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>工作台首页</span></a>
+    <a href="admin_station.html" class="admin-menu-item active"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
+    <a href="admin_supplier_manage.html" class="admin-menu-item"><i class="fas fa-store"></i><span>供应商管理</span></a>
+    <a href="admin_buyer_manage.html" class="admin-menu-item"><i class="fas fa-users"></i><span>采购商管理</span></a>
+    <a href="admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a>
+    <a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a>
+    <a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
+    <a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a>
+    <a href="admin_settlement.html" class="admin-menu-item"><i class="fas fa-calculator"></i><span>结算管理</span></a>
+  </nav>
+</div>
 
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
-        <div class="stat-card"><div class="text-sm text-slate-500">分站总数</div><div class="text-3xl font-bold text-slate-900 mt-2">36</div></div>
-        <div class="stat-card"><div class="text-sm text-slate-500">启用分站</div><div class="text-3xl font-bold text-green-600 mt-2">32</div></div>
-        <div class="stat-card"><div class="text-sm text-slate-500">入驻供应商</div><div class="text-3xl font-bold text-blue-600 mt-2">1,286</div></div>
-        <div class="stat-card"><div class="text-sm text-slate-500">入驻采购方</div><div class="text-3xl font-bold text-purple-600 mt-2">3,420</div></div>
+<div class="admin-content">
+  <div class="p-6 max-w-[1680px] mx-auto">
+    <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+      <div>
+        <div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">分站管理</span></div>
+        <h1 class="text-2xl font-bold text-slate-900">分站管理</h1>
+        <p class="text-sm text-slate-500 mt-1">维护平台分站信息，并查看各分站下入驻供应商与采购方。分站编码由系统自动生成；新建分站默认启用。</p>
       </div>
-
-      <div class="table-wrap">
-        <table class="w-full">
-          <thead><tr><th>分站名称</th><th>分站编码</th><th>所属区域</th><th>供应商数</th><th>采购方数</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
-          <tbody>
-            <tr><td>北京分站</td><td>BJ-STATION</td><td>华北 / 北京</td><td><button class="link-btn">查看 236 家</button></td><td><button class="link-btn">查看 586 家</button></td><td><span class="text-green-600">启用</span></td><td>2026-01-12</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
-            <tr><td>医疗卫生专区</td><td>MED-ZONE</td><td>行业专区</td><td><button class="link-btn">查看 152 家</button></td><td><button class="link-btn">查看 348 家</button></td><td><span class="text-green-600">启用</span></td><td>2026-02-08</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
-            <tr><td>上海分站</td><td>SH-STATION</td><td>华东 / 上海</td><td><button class="link-btn">查看 198 家</button></td><td><button class="link-btn">查看 410 家</button></td><td><span class="text-green-600">启用</span></td><td>2026-02-20</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
-            <tr><td>教育装备专区</td><td>EDU-ZONE</td><td>行业专区</td><td><button class="link-btn">查看 96 家</button></td><td><button class="link-btn">查看 224 家</button></td><td><span class="text-slate-500">停用</span></td><td>2026-03-01</td><td><button class="link-btn">查看</button><button class="link-btn">编辑</button><button class="link-btn danger">删除</button></td></tr>
-          </tbody>
-        </table>
+      <div class="flex gap-3">
+        <button type="button" class="action-btn action-btn-secondary" onclick="exportMainList()"><i class="fas fa-download"></i>导出数据</button>
+        <button type="button" class="action-btn action-btn-primary" onclick="openAddModal()"><i class="fas fa-plus"></i>新增分站</button>
       </div>
     </div>
-  </main>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="text" id="filterKeyword" class="border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="搜索分站名称/编码">
+        <select id="filterStatus" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="">全部状态</option>
+          <option value="on">启用</option>
+          <option value="off">停用</option>
+        </select>
+        <button type="button" class="action-btn action-btn-primary justify-center" onclick="applyMainFilter()"><i class="fas fa-search"></i>查询</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+      <div class="stat-card"><div class="text-sm text-slate-500">分站总数</div><div id="statTotal" class="text-3xl font-bold text-slate-900 mt-2">—</div></div>
+      <div class="stat-card"><div class="text-sm text-slate-500">启用分站</div><div id="statOn" class="text-3xl font-bold text-green-600 mt-2">—</div></div>
+      <div class="stat-card"><div class="text-sm text-slate-500">入驻供应商</div><div id="statSup" class="text-3xl font-bold text-blue-600 mt-2">—</div></div>
+      <div class="stat-card"><div class="text-sm text-slate-500">入驻采购方</div><div id="statBuy" class="text-3xl font-bold text-purple-600 mt-2">—</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th>分站名称</th>
+            <th>分站编码</th>
+            <th>供应商数</th>
+            <th>采购方数</th>
+            <th>状态</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="stationTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 新增分站 -->
+<div id="modalAdd" class="modal-overlay" aria-hidden="true">
+  <div class="modal-panel w-md">
+    <div class="modal-head">
+      <h2 class="text-lg font-bold text-slate-900">新增分站</h2>
+      <button type="button" class="text-slate-400 hover:text-slate-700" onclick="closeModal('modalAdd')"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="text-xs text-slate-500 mb-3">分站编码将在创建成功后由系统自动生成。手机号作为管理员唯一登录账号。</p>
+      <div class="form-row">
+        <label class="form-label">站点名称 <span class="text-red-500">*</span></label>
+        <input type="text" id="addName" class="form-input" placeholder="请输入分站名称">
+      </div>
+      <div class="form-row">
+        <label class="form-label">站点介绍 <span class="text-red-500">*</span></label>
+        <textarea id="addIntro" class="form-textarea" placeholder="简要介绍分站定位与服务范围"></textarea>
+      </div>
+      <div class="form-row">
+        <label class="form-label">管理员姓名 <span class="text-red-500">*</span></label>
+        <input type="text" id="addAdminName" class="form-input" placeholder="管理员真实姓名">
+      </div>
+      <div class="form-row">
+        <label class="form-label">电话号码 <span class="text-red-500">*</span></label>
+        <input type="tel" id="addPhone" class="form-input" placeholder="11 位手机号，唯一" maxlength="11">
+      </div>
+      <div class="form-row flex gap-2">
+        <div class="flex-1">
+          <label class="form-label">验证码 <span class="text-red-500">*</span></label>
+          <input type="text" id="addCaptcha" class="form-input" placeholder="短信验证码" maxlength="6">
+        </div>
+        <div class="flex items-end pb-1">
+          <button type="button" id="btnSendCode" class="action-btn action-btn-secondary whitespace-nowrap text-sm py-2 px-3" onclick="sendSmsCode()">获取验证码</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">登录密码 <span class="text-red-500">*</span></label>
+        <input type="password" id="addPwd" class="form-input" placeholder="不少于 8 位，建议含字母与数字" autocomplete="new-password">
+      </div>
+      <div class="form-row">
+        <label class="form-label">确认密码 <span class="text-red-500">*</span></label>
+        <input type="password" id="addPwd2" class="form-input" placeholder="再次输入密码" autocomplete="new-password">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="action-btn action-btn-secondary" onclick="closeModal('modalAdd')">取消</button>
+      <button type="button" class="action-btn action-btn-primary" onclick="submitAddStation()">创建分站</button>
+    </div>
+  </div>
+</div>
+
+<!-- 供应商 / 采购方 列表 -->
+<div id="modalEntityList" class="modal-overlay" aria-hidden="true">
+  <div class="modal-panel w-lg">
+    <div class="modal-head">
+      <h2 id="entityListTitle" class="text-lg font-bold text-slate-900">列表</h2>
+      <button type="button" class="text-slate-400 hover:text-slate-700" onclick="closeModal('modalEntityList')"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="table-wrap border-0">
+        <table class="w-full text-sm">
+          <thead id="entityTableHead"></thead>
+          <tbody id="entityTableBody"></tbody>
+        </table>
+      </div>
+      <div class="pagination-bar">
+        <div class="text-sm text-slate-500"><span id="entityPageInfo"></span></div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button type="button" class="action-btn action-btn-secondary text-sm py-2 px-3" onclick="exportEntityPage()"><i class="fas fa-file-export"></i>导出当前页</button>
+          <button type="button" class="action-btn action-btn-secondary text-sm py-2 px-3" onclick="exportEntityAll()"><i class="fas fa-file-archive"></i>导出全部</button>
+          <div class="page-btns" id="entityPagination"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="action-btn action-btn-primary" onclick="closeModal('modalEntityList')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var CODE_SEQ = 100;
+  function genStationCode() {
+    CODE_SEQ++;
+    return 'ST-' + Date.now().toString(36).toUpperCase().slice(-4) + '-' + String(CODE_SEQ).padStart(4, '0');
+  }
+
+  window._stationState = {
+    stations: [
+      { id: 'st1', name: '北京分站', code: 'BJ-STATION', supplierCount: 236, buyerCount: 586, status: 'on', created: '2026-01-12' },
+      { id: 'st2', name: '医疗卫生专区', code: 'MED-ZONE', supplierCount: 152, buyerCount: 348, status: 'on', created: '2026-02-08' },
+      { id: 'st3', name: '上海分站', code: 'SH-STATION', supplierCount: 198, buyerCount: 410, status: 'on', created: '2026-02-20' },
+      { id: 'st4', name: '教育装备专区', code: 'EDU-ZONE', supplierCount: 96, buyerCount: 224, status: 'off', created: '2026-03-01' }
+    ],
+    genStationCode: genStationCode,
+    filterKeyword: '',
+    filterStatus: '',
+    listModal: {
+      type: '', // 'supplier' | 'buyer'
+      stationId: '',
+      stationName: '',
+      page: 1,
+      pageSize: 8,
+      rows: []
+    },
+    smsTimer: null
+  };
+
+  function syncStationsToSession() {
+    try {
+      sessionStorage.setItem('gc_admin_stations', JSON.stringify(window._stationState.stations));
+    } catch (e) {}
+  }
+
+  function nameSeed(str) {
+    var h = 0;
+    for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+    return Math.abs(h);
+  }
+
+  function isPhoneTaken(phone, exceptStationId) {
+    return window._stationState.stations.some(function (s) {
+      if (exceptStationId && s.id === exceptStationId) return false;
+      return s.adminPhone === phone;
+    });
+  }
+
+  function buildSupplierRows(stationId) {
+    var n = window._stationState.stations.find(function (s) { return s.id === stationId; });
+    var total = n ? n.supplierCount : 10;
+    var rows = [];
+    var seed = nameSeed(stationId);
+    for (var i = 0; i < total; i++) {
+      rows.push({
+        company: '示例供应商 ' + (seed + i + 1) + ' 有限公司',
+        creditCode: '91110000MA' + String(1000000 + seed + i).slice(-6) + 'X',
+        contact: ['张', '李', '王', '刘', '陈'][i % 5] + '经理',
+        phone: '138' + String(10000000 + (seed + i) * 13).slice(-8)
+      });
+    }
+    return rows;
+  }
+
+  function buildBuyerRows(stationId) {
+    var n = window._stationState.stations.find(function (s) { return s.id === stationId; });
+    var total = n ? n.buyerCount : 10;
+    var industries = ['政府机关', '医疗卫生', '教育科研', '国有企业', '社会组织', '其他事业单位'];
+    var rows = [];
+    var seed = nameSeed(stationId + '-b');
+    for (var i = 0; i < total; i++) {
+      rows.push({
+        company: '采购单位 ' + (seed + i + 1) + '（演示）',
+        creditCode: '91110000MB' + String(1000000 + seed + i).slice(-6) + 'D',
+        contact: ['赵', '钱', '孙', '周'][i % 4] + '主任',
+        phone: '139' + String(10000000 + (seed + i) * 11).slice(-8),
+        industry: industries[i % industries.length]
+      });
+    }
+    return rows;
+  }
+
+  function updateStats() {
+    var st = window._stationState.stations;
+    var total = st.length;
+    var onC = st.filter(function (s) { return s.status === 'on'; }).length;
+    var sup = st.reduce(function (a, s) { return a + s.supplierCount; }, 0);
+    var buy = st.reduce(function (a, s) { return a + s.buyerCount; }, 0);
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statOn').textContent = onC;
+    document.getElementById('statSup').textContent = sup.toLocaleString();
+    document.getElementById('statBuy').textContent = buy.toLocaleString();
+  }
+
+  function renderTable() {
+    var kw = (window._stationState.filterKeyword || '').trim().toLowerCase();
+    var fs = window._stationState.filterStatus;
+    var st = window._stationState.stations.filter(function (s) {
+      if (fs && s.status !== fs) return false;
+      if (!kw) return true;
+      return (s.name + ' ' + s.code).toLowerCase().indexOf(kw) >= 0;
+    });
+    var tb = document.getElementById('stationTableBody');
+    tb.innerHTML = st.map(function (s) {
+      var statusHtml = s.status === 'on'
+        ? '<span class="text-green-600 font-semibold">启用</span>'
+        : '<span class="text-slate-500">停用</span>';
+      var toggleLabel = s.status === 'on' ? '禁用' : '启用';
+      return '<tr data-id="' + s.id + '">' +
+        '<td class="font-medium">' + escapeHtml(s.name) + '</td>' +
+        '<td><code class="text-xs bg-slate-100 px-2 py-0.5 rounded">' + escapeHtml(s.code) + '</code></td>' +
+        '<td><button type="button" class="link-btn" onclick="openEntityList(\'supplier\',\'' + s.id + '\')">查看 ' + s.supplierCount + ' 家</button></td>' +
+        '<td><button type="button" class="link-btn" onclick="openEntityList(\'buyer\',\'' + s.id + '\')">查看 ' + s.buyerCount + ' 家</button></td>' +
+        '<td>' + statusHtml + '</td>' +
+        '<td>' + escapeHtml(s.created) + '</td>' +
+        '<td nowrap>' +
+        '<button type="button" class="link-btn" onclick="previewStation(\'' + s.id + '\')">预览</button>' +
+        '<button type="button" class="link-btn" onclick="openConfig(\'' + s.id + '\')">配置站点</button>' +
+        '<button type="button" class="link-btn" onclick="toggleStation(\'' + s.id + '\')">' + toggleLabel + '</button>' +
+        '</td></tr>';
+    }).join('');
+  }
+
+  function escapeHtml(t) {
+    var d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+  }
+
+  window.applyMainFilter = function () {
+    window._stationState.filterKeyword = document.getElementById('filterKeyword').value;
+    window._stationState.filterStatus = document.getElementById('filterStatus').value;
+    renderTable();
+  };
+
+  window.exportMainList = function () {
+    var lines = ['分站名称,分站编码,供应商数,采购方数,状态,创建时间'];
+    window._stationState.stations.forEach(function (s) {
+      lines.push([s.name, s.code, s.supplierCount, s.buyerCount, s.status === 'on' ? '启用' : '停用', s.created].join(','));
+    });
+    downloadCsv('分站列表.csv', lines.join('\n'));
+  };
+
+  window.openAddModal = function () {
+    document.getElementById('addName').value = '';
+    document.getElementById('addIntro').value = '';
+    document.getElementById('addAdminName').value = '';
+    document.getElementById('addPhone').value = '';
+    document.getElementById('addCaptcha').value = '';
+    document.getElementById('addPwd').value = '';
+    document.getElementById('addPwd2').value = '';
+    openModal('modalAdd');
+  };
+
+  window.sendSmsCode = function () {
+    var btn = document.getElementById('btnSendCode');
+    if (btn.disabled) return;
+    var sec = 60;
+    btn.disabled = true;
+    btn.textContent = sec + 's';
+    window._stationState.smsTimer = setInterval(function () {
+      sec--;
+      btn.textContent = sec > 0 ? sec + 's' : '获取验证码';
+      if (sec <= 0) {
+        clearInterval(window._stationState.smsTimer);
+        btn.disabled = false;
+      }
+    }, 1000);
+    alert('演示：验证码已发送（实际环境接入短信网关）');
+  };
+
+  window.submitAddStation = function () {
+    var name = document.getElementById('addName').value.trim();
+    var intro = document.getElementById('addIntro').value.trim();
+    var adminName = document.getElementById('addAdminName').value.trim();
+    var phone = document.getElementById('addPhone').value.trim();
+    var captcha = document.getElementById('addCaptcha').value.trim();
+    var pwd = document.getElementById('addPwd').value;
+    var pwd2 = document.getElementById('addPwd2').value;
+    if (!name || !intro || !adminName || !phone || !captcha || !pwd || !pwd2) {
+      alert('请填写所有必填项');
+      return;
+    }
+    if (!/^1\d{10}$/.test(phone)) {
+      alert('请输入正确的 11 位手机号');
+      return;
+    }
+    if (isPhoneTaken(phone)) {
+      alert('该手机号已被其他分站管理员使用');
+      return;
+    }
+    if (pwd.length < 8) {
+      alert('密码长度不少于 8 位');
+      return;
+    }
+    if (pwd !== pwd2) {
+      alert('两次输入的密码不一致');
+      return;
+    }
+    var code = window._stationState.genStationCode();
+    var id = 'st' + Date.now();
+    window._stationState.stations.unshift({
+      id: id,
+      name: name,
+      code: code,
+      supplierCount: 0,
+      buyerCount: 0,
+      status: 'on',
+      created: new Date().toISOString().slice(0, 10),
+      adminPhone: phone
+    });
+    updateStats();
+    renderTable();
+    syncStationsToSession();
+    closeModal('modalAdd');
+    alert('分站创建成功。\n分站编码：' + code + '\n默认状态：启用。');
+  };
+
+  window.openEntityList = function (type, stationId) {
+    var st = window._stationState.stations.find(function (s) { return s.id === stationId; });
+    if (!st) return;
+    var lm = window._stationState.listModal;
+    lm.type = type;
+    lm.stationId = stationId;
+    lm.stationName = st.name;
+    lm.page = 1;
+    lm.rows = type === 'supplier' ? buildSupplierRows(stationId) : buildBuyerRows(stationId);
+    document.getElementById('entityListTitle').textContent =
+      st.name + ' — ' + (type === 'supplier' ? '入驻供应商' : '入驻采购方');
+    renderEntityTable();
+    openModal('modalEntityList');
+  };
+
+  function renderEntityTable() {
+    var lm = window._stationState.listModal;
+    var head = document.getElementById('entityTableHead');
+    var body = document.getElementById('entityTableBody');
+    if (lm.type === 'supplier') {
+      head.innerHTML = '<tr><th>企业名称</th><th>统一社会信用代码</th><th>联系人</th><th>联系电话</th></tr>';
+      var start = (lm.page - 1) * lm.pageSize;
+      var slice = lm.rows.slice(start, start + lm.pageSize);
+      body.innerHTML = slice.map(function (r) {
+        return '<tr><td>' + escapeHtml(r.company) + '</td><td>' + escapeHtml(r.creditCode) + '</td><td>' + escapeHtml(r.contact) + '</td><td>' + escapeHtml(r.phone) + '</td></tr>';
+      }).join('');
+    } else {
+      head.innerHTML = '<tr><th>单位名称</th><th>统一社会信用代码</th><th>联系人</th><th>联系电话</th><th>所属行业</th></tr>';
+      var start2 = (lm.page - 1) * lm.pageSize;
+      var slice2 = lm.rows.slice(start2, start2 + lm.pageSize);
+      body.innerHTML = slice2.map(function (r) {
+        return '<tr><td>' + escapeHtml(r.company) + '</td><td>' + escapeHtml(r.creditCode) + '</td><td>' + escapeHtml(r.contact) + '</td><td>' + escapeHtml(r.phone) + '</td><td><span class="tag inline-block bg-violet-50 text-violet-800 text-xs px-2 py-0.5 rounded font-medium">' + escapeHtml(r.industry) + '</span></td></tr>';
+      }).join('');
+    }
+    var total = lm.rows.length;
+    var pages = Math.max(1, Math.ceil(total / lm.pageSize));
+    if (lm.page > pages) lm.page = pages;
+    document.getElementById('entityPageInfo').textContent =
+      '共 ' + total + ' 条 · 第 ' + lm.page + ' / ' + pages + ' 页';
+    var pag = document.getElementById('entityPagination');
+    var html = '';
+    html += '<button type="button" ' + (lm.page <= 1 ? 'disabled' : '') + ' onclick="entityGoPage(' + (lm.page - 1) + ')">&laquo;</button>';
+    var win = 5;
+    var start = Math.max(1, Math.min(lm.page - 2, pages - win + 1));
+    var end = Math.min(pages, start + win - 1);
+    if (start > 1) {
+      html += '<button type="button" onclick="entityGoPage(1)">1</button>';
+      if (start > 2) html += '<span class="px-1 text-slate-400">…</span>';
+    }
+    for (var p = start; p <= end; p++) {
+      html += '<button type="button" class="' + (p === lm.page ? 'active' : '') + '" onclick="entityGoPage(' + p + ')">' + p + '</button>';
+    }
+    if (end < pages) {
+      if (end < pages - 1) html += '<span class="px-1 text-slate-400">…</span>';
+      html += '<button type="button" onclick="entityGoPage(' + pages + ')">' + pages + '</button>';
+    }
+    html += '<button type="button" ' + (lm.page >= pages ? 'disabled' : '') + ' onclick="entityGoPage(' + (lm.page + 1) + ')">&raquo;</button>';
+    pag.innerHTML = html;
+  }
+
+  window.entityGoPage = function (p) {
+    window._stationState.listModal.page = p;
+    renderEntityTable();
+  };
+
+  window.exportEntityPage = function () {
+    var lm = window._stationState.listModal;
+    var start = (lm.page - 1) * lm.pageSize;
+    var slice = lm.rows.slice(start, start + lm.pageSize);
+    var fname = lm.stationName + '_' + (lm.type === 'supplier' ? '供应商' : '采购方') + '_第' + lm.page + '页.csv';
+    var lines = [];
+    if (lm.type === 'supplier') {
+      lines.push('企业名称,统一社会信用代码,联系人,联系电话');
+      slice.forEach(function (r) {
+        lines.push([r.company, r.creditCode, r.contact, r.phone].join(','));
+      });
+    } else {
+      lines.push('单位名称,统一社会信用代码,联系人,联系电话,所属行业');
+      slice.forEach(function (r) {
+        lines.push([r.company, r.creditCode, r.contact, r.phone, r.industry].join(','));
+      });
+    }
+    downloadCsv(fname, '\ufeff' + lines.join('\n'));
+  };
+
+  window.exportEntityAll = function () {
+    var lm = window._stationState.listModal;
+    var fname = lm.stationName + '_' + (lm.type === 'supplier' ? '供应商' : '采购方') + '_全部.csv';
+    var lines = [];
+    if (lm.type === 'supplier') {
+      lines.push('企业名称,统一社会信用代码,联系人,联系电话');
+      lm.rows.forEach(function (r) {
+        lines.push([r.company, r.creditCode, r.contact, r.phone].join(','));
+      });
+    } else {
+      lines.push('单位名称,统一社会信用代码,联系人,联系电话,所属行业');
+      lm.rows.forEach(function (r) {
+        lines.push([r.company, r.creditCode, r.contact, r.phone, r.industry].join(','));
+      });
+    }
+    downloadCsv(fname, '\ufeff' + lines.join('\n'));
+  };
+
+  function downloadCsv(filename, content) {
+    var blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  window.previewStation = function (id) {
+    alert('预览入口已预留（演示未接前台页面）。分站 ID：' + id);
+  };
+
+  window.toggleStation = function (id) {
+    var st = window._stationState.stations.find(function (s) { return s.id === id; });
+    if (!st) return;
+    var next = st.status === 'on' ? 'off' : 'on';
+    var msg = next === 'off'
+      ? '禁用后，该分站前台入口将隐藏。是否继续？'
+      : '启用后，该分站将对用户可见。是否继续？';
+    if (!confirm(msg)) return;
+    st.status = next;
+    updateStats();
+    renderTable();
+    syncStationsToSession();
+  };
+
+  window.openConfig = function (stationId) {
+    syncStationsToSession();
+    var q = 'id=' + encodeURIComponent(stationId);
+    if (new URLSearchParams(location.search).get('embed') === '1') q += '&embed=1';
+    location.href = 'admin_station_config.html?' + q;
+  };
+
+  function openModal(id) {
+    var m = document.getElementById(id);
+    m.classList.add('show');
+    m.setAttribute('aria-hidden', 'false');
+  }
+
+  window.closeModal = function (id) {
+    var m = document.getElementById(id);
+    m.classList.remove('show');
+    m.setAttribute('aria-hidden', 'true');
+  };
+
+  document.querySelectorAll('.modal-overlay').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      if (e.target === el) closeModal(el.id);
+    });
+  });
+
+  updateStats();
+  renderTable();
+  syncStationsToSession();
+})();
+</script>
 </body>
 </html>

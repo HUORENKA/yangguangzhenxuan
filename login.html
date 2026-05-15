@@ -14,12 +14,9 @@
       --line: #e5e7eb;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
@@ -27,10 +24,7 @@
       background: #f4f8ff;
     }
 
-    .login-layout {
-      display: flex;
-      min-height: 100vh;
-    }
+    .login-layout { display: flex; min-height: 100vh; }
 
     .visual-area {
       position: relative;
@@ -66,10 +60,7 @@
       font-size: 42px;
     }
 
-    .brand-logo span {
-      font-size: 44px;
-      letter-spacing: 2px;
-    }
+    .brand-logo span { font-size: 44px; letter-spacing: 2px; }
 
     .cart-showcase {
       position: absolute;
@@ -82,9 +73,7 @@
 
     .platform {
       position: absolute;
-      left: 8%;
-      right: 8%;
-      bottom: 0;
+      left: 8%; right: 8%; bottom: 0;
       height: 25%;
       border-radius: 24px;
       background: linear-gradient(180deg, #3ab4ff 0%, #1d89ff 70%, #1163ca 100%);
@@ -94,9 +83,7 @@
     .platform::after {
       content: "";
       position: absolute;
-      left: 6%;
-      right: 6%;
-      bottom: -8%;
+      left: 6%; right: 6%; bottom: -8%;
       height: 26%;
       border-radius: 22px;
       background: rgba(255, 255, 255, 0.55);
@@ -105,10 +92,8 @@
 
     .cart-box {
       position: absolute;
-      left: 22%;
-      bottom: 20%;
-      width: 56%;
-      height: 50%;
+      left: 22%; bottom: 20%;
+      width: 56%; height: 50%;
       border-radius: 30px 30px 26px 26px;
       background: linear-gradient(180deg, #e8f7ff 0%, #cdeeff 100%);
       border: 3px solid rgba(44, 140, 255, 0.46);
@@ -118,10 +103,8 @@
     .cart-box::before {
       content: "";
       position: absolute;
-      left: 12%;
-      top: -18%;
-      width: 72%;
-      height: 34%;
+      left: 12%; top: -18%;
+      width: 72%; height: 34%;
       border: 5px solid #2e9bff;
       border-bottom: none;
       border-radius: 40px 40px 0 0;
@@ -130,32 +113,23 @@
     .wheel {
       position: absolute;
       bottom: 10%;
-      width: 11%;
-      aspect-ratio: 1 / 1;
+      width: 11%; aspect-ratio: 1 / 1;
       border-radius: 50%;
       background: #2093ff;
       border: 6px solid #bce6ff;
       box-shadow: 0 8px 14px rgba(16, 104, 196, 0.3);
     }
-
-    .wheel.left {
-      left: 24%;
-    }
-
-    .wheel.right {
-      right: 24%;
-    }
+    .wheel.left { left: 24%; }
+    .wheel.right { right: 24%; }
 
     .floating-cube {
       position: absolute;
-      width: 34px;
-      height: 34px;
+      width: 34px; height: 34px;
       border-radius: 8px;
       background: linear-gradient(135deg, #68ccff 0%, #1f98ff 100%);
       box-shadow: 0 10px 20px rgba(20, 120, 219, 0.18);
       z-index: 2;
     }
-
     .cube-1 { top: 26%; left: 18%; }
     .cube-2 { top: 20%; right: 22%; }
     .cube-3 { top: 52%; right: 14%; }
@@ -170,49 +144,49 @@
       padding: 24px;
     }
 
-    .login-card {
-      width: 100%;
-      max-width: 430px;
-      padding: 14px 8px;
-    }
+    .login-card { width: 100%; max-width: 430px; padding: 14px 8px; }
 
-    .login-title {
-      margin: 0;
-      font-size: 40px;
-      font-weight: 800;
-      line-height: 1.15;
-    }
+    .login-title { margin: 0; font-size: 40px; font-weight: 800; line-height: 1.15; }
+    .login-subtitle { margin: 10px 0 22px; color: var(--text-soft); font-size: 19px; font-weight: 600; }
 
-    .login-subtitle {
-      margin: 10px 0 30px;
-      color: var(--text-soft);
-      font-size: 19px;
-      font-weight: 600;
+    .segmented {
+      display: flex;
+      margin-bottom: 18px;
+      border-radius: 8px;
+      background: #f3f6fb;
+      padding: 4px;
+      gap: 4px;
+    }
+    .segmented button {
+      flex: 1;
+      border: none;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: #64748b;
+      transition: background 0.2s, color 0.2s;
+      font-family: inherit;
+    }
+    .segmented button.active {
+      background: #fff;
+      color: var(--brand-blue);
+      box-shadow: 0 2px 8px rgba(32, 136, 255, 0.12);
     }
 
     .tab-label {
-      position: relative;
-      display: inline-block;
-      margin-bottom: 18px;
-      font-size: 16px;
+      margin-bottom: 12px;
+      font-size: 15px;
       color: var(--brand-blue);
       font-weight: 700;
-      padding-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--brand-blue);
+      display: inline-block;
     }
 
-    .tab-label::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 2px;
-      background: var(--brand-blue);
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
+    .field { margin-bottom: 14px; }
 
     .input-box {
       height: 48px;
@@ -224,18 +198,25 @@
       padding: 0 12px;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-
     .input-box:focus-within {
       border-color: #7cb8ff;
       box-shadow: 0 0 0 3px rgba(32, 136, 255, 0.12);
     }
-
     .input-box i {
       color: #9ca3af;
       margin-right: 10px;
       font-size: 14px;
+      flex-shrink: 0;
     }
-
+    .input-box input {
+      flex: 1;
+      height: 100%;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      font-family: inherit;
+    }
+    .input-box input::placeholder { color: #9ca3af; }
     .input-box select {
       width: 100%;
       height: 100%;
@@ -248,12 +229,29 @@
       cursor: pointer;
     }
 
-    .role-tip {
-      min-height: 20px;
-      margin-bottom: 20px;
-      font-size: 13px;
-      color: #6b7280;
+    .row-code { display: flex; gap: 10px; }
+    .row-code .input-box { flex: 1; min-width: 0; }
+    .btn-send {
+      flex-shrink: 0;
+      min-width: 118px;
+      height: 48px;
+      border: 1px solid var(--brand-blue);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--brand-blue);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
     }
+    .btn-send:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      border-color: #cbd5e1;
+      color: #94a3b8;
+    }
+    .btn-send:not(:disabled):hover { background: #eff6ff; }
 
     .login-btn {
       width: 100%;
@@ -266,59 +264,96 @@
       font-weight: 700;
       letter-spacing: 2px;
       cursor: pointer;
+      margin-top: 6px;
       transition: transform 0.16s, box-shadow 0.16s;
+      font-family: inherit;
     }
-
     .login-btn:hover {
       transform: translateY(-1px);
       box-shadow: 0 8px 18px rgba(32, 136, 255, 0.32);
       background: linear-gradient(90deg, var(--brand-blue-dark) 0%, #1f89ec 100%);
     }
 
-    .login-btn:active {
-      transform: translateY(0);
+    .form-footer {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
     }
+    .form-footer a {
+      color: var(--brand-blue);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .form-footer a:hover { text-decoration: underline; }
+
+    .hint-subtle {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* Forgot password overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      width: 100%;
+      max-width: 400px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+      padding: 24px;
+    }
+    .modal-title { font-size: 18px; font-weight: 800; margin: 0 0 8px; }
+    .modal-desc { font-size: 13px; color: #64748b; margin: 0 0 18px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-actions button {
+      flex: 1;
+      height: 42px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+    }
+    .modal-actions button.primary {
+      border: none;
+      background: linear-gradient(90deg, var(--brand-blue) 0%, #2494ff 100%);
+      color: #fff;
+    }
+
+    .login-panel.hidden { display: none; }
 
     @media (max-width: 1200px) {
-      .brand-logo {
-        font-size: 36px;
-      }
-
-      .brand-logo span {
-        font-size: 38px;
-      }
+      .brand-logo { font-size: 36px; }
+      .brand-logo span { font-size: 38px; }
     }
-
     @media (max-width: 980px) {
-      .login-layout {
-        flex-direction: column;
-      }
-
-      .visual-area {
-        flex: none;
-        height: 34vh;
-        min-height: 280px;
-      }
-
-      .brand-logo {
-        left: 20px;
-        top: 18px;
-      }
-
-      .brand-logo span {
-        font-size: 32px;
-      }
-
+      .login-layout { flex-direction: column; }
+      .visual-area { flex: none; height: 34vh; min-height: 280px; }
+      .brand-logo { left: 20px; top: 18px; }
+      .brand-logo span { font-size: 32px; }
       .cart-showcase {
         left: 50%;
         bottom: 8px;
         transform: translateX(-50%) scale(0.86);
         width: 82%;
       }
-
-      .form-area {
-        flex: 1;
-      }
+      .form-area { flex: 1; }
     }
   </style>
 </head>
@@ -346,8 +381,12 @@
         <h1 class="login-title">登录</h1>
         <p class="login-subtitle">欢迎来到国采e购平台！</p>
 
-        <div class="tab-label">用户角色登录</div>
+        <div class="segmented" role="tablist">
+          <button type="button" role="tab" id="tabPwd" class="active" aria-selected="true">密码登录</button>
+          <button type="button" role="tab" id="tabCode" aria-selected="false">验证码登录</button>
+        </div>
 
+        <div class="tab-label">用户角色</div>
         <div class="field">
           <div class="input-box">
             <i class="fa-regular fa-user"></i>
@@ -356,71 +395,244 @@
               <option value="buyer">采购方</option>
               <option value="supplier">供应商</option>
               <option value="operator">运营商</option>
+              <option value="buyer_reject">采购商-不通过</option>
+              <option value="supplier_reject">供应商-不通过</option>
             </select>
           </div>
         </div>
 
-        <div class="role-tip" id="roleTip">请选择角色后登录</div>
+        <div id="panelPwd" class="login-panel">
+          <div class="field">
+            <div class="input-box">
+              <i class="fa-solid fa-mobile-screen"></i>
+              <input type="tel" id="pwdPhone" autocomplete="tel" maxlength="11" placeholder="演示可留空（真实系统为手机号登录）">
+            </div>
+          </div>
+          <div class="field">
+            <div class="input-box">
+              <i class="fa-solid fa-lock"></i>
+              <input type="password" id="pwdPass" autocomplete="current-password" placeholder="演示可留空">
+            </div>
+          </div>
+        </div>
 
-        <button class="login-btn" type="button" onclick="handleLogin()">登 录</button>
+        <div id="panelCode" class="login-panel hidden">
+          <div class="field">
+            <div class="input-box">
+              <i class="fa-solid fa-mobile-screen"></i>
+              <input type="tel" id="codePhone" autocomplete="tel" maxlength="11" placeholder="演示可留空">
+            </div>
+          </div>
+          <div class="field row-code">
+            <div class="input-box">
+              <i class="fa-solid fa-shield"></i>
+              <input type="text" id="codeSms" inputmode="numeric" maxlength="6" placeholder="演示可留空">
+            </div>
+            <button type="button" class="btn-send" id="btnSendLogin">发送验证码</button>
+          </div>
+        </div>
+
+        <button class="login-btn" type="button" id="btnLogin">登 录</button>
+
+        <div class="form-footer">
+          <a role="button" tabindex="0" id="openForgot">忘记密码</a>
+          <a href="./pages/auth/register_hub.html">注册入驻</a>
+        </div>
+        <p class="hint-subtle"><strong>演示</strong>：选择角色后点击「登录」即可进入，无需填写手机号与密码（真实系统将校验凭证）。<br>注册入驻仅面向供应商与采购单位。<strong>采购商-不通过 / 供应商-不通过</strong>用于审核驳回后修改资料并再次提交。<br>忘记密码与各角色共用同一弹窗流程（示意）。</p>
       </div>
     </section>
   </main>
 
-  <script>
-    const roleSelect = document.getElementById('roleSelect');
-    const roleTip = document.getElementById('roleTip');
+  <div class="modal-overlay" id="forgotModal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-labelledby="forgotTitle">
+      <h2 class="modal-title" id="forgotTitle">忘记密码</h2>
+      <p class="modal-desc">通过手机号与短信验证码重置登录密码（所有角色统一）。</p>
+      <div class="field">
+        <div class="input-box">
+          <i class="fa-solid fa-mobile-screen"></i>
+          <input type="tel" id="forgotPhone" maxlength="11" placeholder="手机号">
+        </div>
+      </div>
+      <div class="field row-code">
+        <div class="input-box">
+          <i class="fa-solid fa-shield"></i>
+          <input type="text" id="forgotSms" inputmode="numeric" maxlength="6" placeholder="短信验证码">
+        </div>
+        <button type="button" class="btn-send" id="btnSendReset">发送验证码</button>
+      </div>
+      <div class="field">
+        <div class="input-box">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="forgotPwd1" placeholder="新密码">
+        </div>
+      </div>
+      <div class="field">
+        <div class="input-box">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="forgotPwd2" placeholder="确认新密码">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="forgotCancel">取消</button>
+        <button type="button" class="primary" id="forgotConfirm">确认重置</button>
+      </div>
+    </div>
+  </div>
 
-    const roleMap = {
-      buyer: {
-        label: '采购方',
+  <script>
+    var roleSelect = document.getElementById('roleSelect');
+    var tabPwd = document.getElementById('tabPwd');
+    var tabCode = document.getElementById('tabCode');
+    var panelPwd = document.getElementById('panelPwd');
+    var panelCode = document.getElementById('panelCode');
+
+    var roleMap = {
+      buyer: { label: '采购方', localRole: 'buyer', target: './pages/merged_home.html' },
+      supplier: { label: '供应商', localRole: 'supplier', target: './pages/workbench/workbench_home.html' },
+      operator: { label: '运营商', localRole: 'admin', target: './pages/admin/admin_dashboard.html' },
+      buyer_reject: {
+        label: '采购商-不通过',
         localRole: 'buyer',
-        target: './pages/merged_home.html'
+        target: './pages/auth/buyer_resubmit_edit.html'
       },
-      supplier: {
-        label: '供应商',
+      supplier_reject: {
+        label: '供应商-不通过',
         localRole: 'supplier',
-        target: './pages/workbench/workbench_home.html'
-      },
-      operator: {
-        label: '运营商',
-        localRole: 'admin',
-        target: './pages/admin/admin_dashboard.html'
+        target: './pages/auth/supplier_resubmit_edit.html'
       }
     };
 
-    roleSelect.addEventListener('change', function () {
-      const selected = roleMap[this.value];
-      if (!selected) {
-        roleTip.textContent = '请选择角色后登录';
-        return;
-      }
-      roleTip.textContent = '当前将以“' + selected.label + '”身份进入演示系统';
+    function isPhone(v) {
+      return /^1\d{10}$/.test((v || '').trim());
+    }
+
+    function runCountdown(btn, seconds) {
+      var n = seconds;
+      btn.disabled = true;
+      btn.dataset.label = btn.textContent;
+      btn.textContent = n + 's';
+      var t = setInterval(function () {
+        n--;
+        if (n <= 0) {
+          clearInterval(t);
+          btn.disabled = false;
+          btn.textContent = btn.dataset.label || '发送验证码';
+        } else {
+          btn.textContent = n + 's';
+        }
+      }, 1000);
+    }
+
+    tabPwd.addEventListener('click', function () {
+      tabPwd.classList.add('active');
+      tabCode.classList.remove('active');
+      tabPwd.setAttribute('aria-selected', 'true');
+      tabCode.setAttribute('aria-selected', 'false');
+      panelPwd.classList.remove('hidden');
+      panelCode.classList.add('hidden');
+    });
+    tabCode.addEventListener('click', function () {
+      tabCode.classList.add('active');
+      tabPwd.classList.remove('active');
+      tabCode.setAttribute('aria-selected', 'true');
+      tabPwd.setAttribute('aria-selected', 'false');
+      panelCode.classList.remove('hidden');
+      panelPwd.classList.add('hidden');
     });
 
-    function handleLogin() {
-      const selected = roleMap[roleSelect.value];
-      if (!selected) {
-        window.alert('请先选择登录角色');
+    document.getElementById('btnSendLogin').addEventListener('click', function () {
+      var p = document.getElementById('codePhone').value.trim();
+      if (!isPhone(p)) {
+        alert('请输入正确的手机号');
         return;
       }
+      alert('演示：已向 ' + p + ' 发送登录验证码');
+      runCountdown(this, 60);
+    });
 
+    function doLogin(selected) {
       localStorage.setItem('role', selected.localRole);
       localStorage.setItem('loginRoleLabel', selected.label);
       localStorage.setItem('gc_auth', '1');
-      const redirect = new URLSearchParams(window.location.search).get('redirect');
-      /* 按角色跳转为主；采购方保留回登录前页面能力 */
-      if (selected.localRole === 'buyer' && redirect) {
+      localStorage.removeItem('gc_resubmit_mode');
+      var redirect = new URLSearchParams(window.location.search).get('redirect');
+      var roleKey = roleSelect.value;
+      if (selected.localRole === 'buyer' && redirect && roleKey === 'buyer') {
         window.location.href = decodeURIComponent(redirect);
       } else {
         window.location.href = selected.target;
       }
     }
 
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        handleLogin();
+    document.getElementById('btnLogin').addEventListener('click', function () {
+      var selected = roleMap[roleSelect.value];
+      if (!selected) {
+        alert('请先选择登录角色');
+        return;
       }
+      /* 演示原型：不校验账号密码/验证码，直接进入 */
+      doLogin(selected);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') document.getElementById('btnLogin').click();
+    });
+
+    /* Forgot modal */
+    var forgotModal = document.getElementById('forgotModal');
+    document.getElementById('openForgot').addEventListener('click', function (e) {
+      e.preventDefault();
+      forgotModal.classList.add('show');
+      forgotModal.setAttribute('aria-hidden', 'false');
+    });
+    document.getElementById('openForgot').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        forgotModal.classList.add('show');
+      }
+    });
+    document.getElementById('forgotCancel').addEventListener('click', function () {
+      forgotModal.classList.remove('show');
+      forgotModal.setAttribute('aria-hidden', 'true');
+    });
+    forgotModal.addEventListener('click', function (e) {
+      if (e.target === forgotModal) {
+        forgotModal.classList.remove('show');
+        forgotModal.setAttribute('aria-hidden', 'true');
+      }
+    });
+    document.getElementById('btnSendReset').addEventListener('click', function () {
+      var p = document.getElementById('forgotPhone').value.trim();
+      if (!isPhone(p)) {
+        alert('请输入正确的手机号');
+        return;
+      }
+      alert('演示：已向该手机号发送重置密码验证码');
+      runCountdown(this, 60);
+    });
+    document.getElementById('forgotConfirm').addEventListener('click', function () {
+      var ph = document.getElementById('forgotPhone').value.trim();
+      var sm = document.getElementById('forgotSms').value.trim();
+      var p1 = document.getElementById('forgotPwd1').value;
+      var p2 = document.getElementById('forgotPwd2').value;
+      if (!isPhone(ph)) {
+        alert('请输入正确的手机号');
+        return;
+      }
+      if (!/^\d{4,6}$/.test(sm)) {
+        alert('请输入短信验证码');
+        return;
+      }
+      if (!p1 || p1.length < 6) {
+        alert('新密码至少 6 位（原型校验）');
+        return;
+      }
+      if (p1 !== p2) {
+        alert('两次输入的新密码不一致');
+        return;
+      }
+      alert('演示：密码已重置，请使用新密码登录。');
+      forgotModal.classList.remove('show');
     });
   </script>
 </body>

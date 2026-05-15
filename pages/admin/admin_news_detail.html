@@ -29,7 +29,6 @@
           <span id="detailStatus" class="tag bg-green-100 text-green-700">已上架</span>
         </div>
         <div id="detailMeta" class="text-sm text-slate-500 mt-4 flex flex-wrap gap-x-6 gap-y-2"></div>
-        <p id="detailSummary" class="text-sm text-slate-500 mt-2">摘要：本次升级聚焦结算时效、商品审核协同与消息触达能力，详见正文。</p>
         <div id="detailBody" class="detail-body">尊敬的各入驻单位：\n\n为持续保障交易合规与体验，平台将于近期分批上线结算节点可视化、商品上架 AI 预警说明与站内信模板优化等功能。具体排期以站内公告为准。\n\n（本文为静态原型示意文案。）</div>
       </div>
     </div>
@@ -41,24 +40,21 @@
           title: '国采平台 2026 年服务升级说明',
           statusClass: 'tag bg-green-100 text-green-700',
           statusText: '已上架',
-          meta: '发布范围：全平台　上架时间：2026-04-18 09:00　阅读量：12,560',
-          summary: '摘要：本次升级聚焦结算时效、商品审核协同与消息触达能力，详见正文。',
+          meta: '资讯分类：平台动态　发布范围：全平台　发布时间：2026-04-18 09:00　阅读量：12,560',
           body: '尊敬的各入驻单位：\n\n为持续保障交易合规与体验，平台将于近期分批上线结算节点可视化、商品上架 AI 预警说明与站内信模板优化等功能。\n\n（静态原型示意。）'
         },
         'draft-1': {
           title: '区域分站供应链数字化实践（草稿）',
           statusClass: 'tag bg-slate-100 text-slate-600',
           statusText: '草稿',
-          meta: '发布范围：华东分站　尚未上架',
-          summary: '摘要：草稿态示例，可在编辑页修改后保存或上架。',
+          meta: '资讯分类：行业观察　发布范围：华东分站　尚未发布',
           body: '此处为草稿正文占位，保存草稿后运营可随时继续编辑。'
         },
         'offline-1': {
           title: '采购商常见问题与合规要点汇编',
           statusClass: 'tag bg-amber-100 text-amber-800',
           statusText: '已下架',
-          meta: '发布范围：全平台　原上架：2026-03-10 11:20　阅读量：3,210',
-          summary: '摘要：已下架内容可重新编辑并再次上架。',
+          meta: '资讯分类：操作指引　发布范围：全平台　原发布时间：2026-03-10 11:20　阅读量：3,210',
           body: '下架后前台不可见；运营可编辑后重新上架。（静态原型。）'
         }
       };
@@ -69,7 +65,6 @@
       st.className = d.statusClass;
       st.textContent = d.statusText;
       document.getElementById('detailMeta').textContent = d.meta;
-      document.getElementById('detailSummary').textContent = d.summary;
       document.getElementById('detailBody').textContent = d.body;
 
       if (new URLSearchParams(location.search).get('embed') === '1') {

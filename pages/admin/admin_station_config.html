@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>配置站点 | 分站管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities { .text-primary{color:#E2231A}.bg-primary{background-color:#E2231A} }
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); color: #0f172a; }
+    .admin-sidebar {
+      position: fixed; left: 0; top: 0; width: 240px; height: 100vh;
+      background: #1e293b; color: white; z-index: 100; overflow-y: auto;
+      transition: width 0.3s ease; overflow-x: hidden;
+    }
+    .admin-sidebar.collapsed { width: 64px; }
+    .admin-sidebar.collapsed .admin-sidebar-logo span,
+    .admin-sidebar.collapsed .admin-menu-item span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-sidebar-header {
+      padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-sidebar-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; white-space: nowrap; }
+    .admin-sidebar-toggle {
+      background: rgba(255,255,255,0.1); border: none; color: white;
+      width: 32px; height: 32px; border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .admin-menu { padding: 10px 0; }
+    .admin-menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+      color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.2s;
+    }
+    .admin-menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
+    .admin-menu-item.active {
+      background: rgba(226,35,26,0.2); color: white; border-left: 3px solid #E2231A;
+    }
+    .admin-menu-item i { width: 20px; text-align: center; }
+    .admin-content { margin-left: 240px; min-height: 100vh; transition: margin-left 0.3s ease; }
+    .admin-sidebar.collapsed ~ .admin-content { margin-left: 64px; }
+    .action-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 12px; padding: 10px 18px; font-size: 14px; font-weight: 600;
+      cursor: pointer; border: none; transition: transform 0.2s;
+    }
+    .action-btn:hover { transform: translateY(-1px); }
+    .action-btn-primary {
+      color: #fff; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 20px rgba(239,68,68,0.22);
+    }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .section-card {
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(15,23,42,0.04); margin-bottom: 20px; overflow: hidden;
+    }
+    .section-card-head {
+      padding: 16px 20px; border-bottom: 1px solid #f1f5f9;
+      background: linear-gradient(180deg, #fafafa 0%, #fff 100%);
+    }
+    .section-card-title { font-size: 16px; font-weight: 800; color: #0f172a; }
+    .section-card-desc { font-size: 12px; color: #64748b; margin-top: 4px; }
+    .section-card-body { padding: 20px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; font-size: 14px;
+    }
+    .logo-preview-box {
+      width: 160px; height: 160px; border: 2px dashed #cbd5e1; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; background: #f8fafc;
+      color: #94a3b8; font-size: 13px; text-align: center; padding: 12px;
+    }
+    .theme-preview-bar {
+      height: 8px; border-radius: 999px; margin-top: 10px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+    }
+    .theme-preview-mock {
+      display: flex; gap: 8px; margin-top: 12px; align-items: center;
+    }
+    .theme-preview-mock .btn-mock {
+      padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #fff;
+    }
+    .cat-tree { border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; max-height: 280px; overflow-y: auto; font-size: 13px; background: #fafafa; }
+    .cat-l1 { font-weight: 700; color: #334155; margin-top: 10px; }
+    .cat-l1:first-child { margin-top: 0; }
+    .cat-l2 { margin-left: 16px; color: #475569; margin-top: 8px; font-weight: 600; }
+    .cat-l3 { margin-left: 32px; margin-top: 6px; display: flex; align-items: center; gap: 8px; }
+    .banner-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .banner-item-card {
+      position: relative; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden;
+      background: #fff; box-shadow: 0 2px 12px rgba(15,23,42,0.06);
+    }
+    .banner-item-card.banner-drag-active {
+      opacity: 0.88;
+      box-shadow: 0 12px 32px rgba(226,35,26,0.18);
+      outline: 2px solid rgba(226,35,26,0.35);
+    }
+    .banner-drag-strip {
+      display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border-bottom: 1px solid #e2e8f0; cursor: grab; user-select: none;
+    }
+    .banner-drag-strip:active { cursor: grabbing; }
+    .banner-item-card .banner-del {
+      position: absolute; top: 8px; right: 8px; z-index: 2;
+      width: 32px; height: 32px; border-radius: 999px; border: none; cursor: pointer;
+      background: rgba(15,23,42,0.55); color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; transition: background 0.15s;
+    }
+    .banner-item-card .banner-del:hover { background: rgba(220,38,38,0.9); }
+    .banner-item-card .banner-img-wrap {
+      aspect-ratio: 21 / 9; background: #f1f5f9; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .banner-item-card .banner-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .banner-item-card .banner-meta {
+      padding: 12px 14px; border-top: 1px solid #f1f5f9;
+    }
+    .banner-item-card .banner-seq {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 28px; height: 28px; padding: 0 8px; border-radius: 8px;
+      background: #f1f5f9; color: #475569; font-size: 12px; font-weight: 800;
+    }
+    .reco-card {
+      border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin-bottom: 14px;
+      background: linear-gradient(180deg, #fcfcfd 0%, #fff 100%);
+    }
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 300; padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-sheet {
+      background: #fff; border-radius: 16px; max-width: 560px; width: 100%; max-height: 88vh;
+      display: flex; flex-direction: column; box-shadow: 0 24px 48px rgba(15,23,42,0.2);
+    }
+    .modal-sheet.w-wide { max-width: 640px; }
+    .modal-sheet.w-pick { max-width: 900px; width: 100%; }
+    .modal-sheet-head { padding: 16px 20px; border-bottom: 1px solid #e2e8f0; font-weight: 800; color: #0f172a; }
+    .modal-sheet-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+    .modal-sheet-foot { padding: 12px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; }
+    .reco-picked-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+      gap: 12px;
+      min-height: 48px;
+      padding: 12px;
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      background: rgba(248,250,252,0.9);
+    }
+    .reco-picked-grid:empty { min-height: 80px; }
+    .reco-mini-card {
+      position: relative; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;
+      background: #fff; box-shadow: 0 2px 8px rgba(15,23,42,0.05);
+    }
+    .reco-mini-card.reco-mini-drag-active {
+      opacity: 0.88;
+      outline: 2px solid rgba(226,35,26,0.35);
+      box-shadow: 0 10px 28px rgba(226,35,26,0.15);
+    }
+    .reco-mini-drag {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 6px 8px; font-size: 11px; font-weight: 600; color: #64748b;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border-bottom: 1px solid #e2e8f0; cursor: grab; user-select: none;
+    }
+    .reco-mini-drag:active { cursor: grabbing; }
+    .reco-mini-remove {
+      position: absolute; top: 36px; right: 6px; z-index: 2;
+      width: 26px; height: 26px; border-radius: 999px; border: none;
+      background: rgba(15,23,42,0.55); color: #fff; cursor: pointer; font-size: 15px; line-height: 1;
+    }
+    .reco-mini-remove:hover { background: rgba(220,38,38,0.95); }
+    .reco-mini-img {
+      aspect-ratio: 1; background: #f1f5f9; overflow: hidden;
+    }
+    .reco-mini-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .reco-mini-body { padding: 8px 10px 10px; }
+    .reco-mini-seq {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 22px; height: 22px; padding: 0 6px; margin-bottom: 4px;
+      border-radius: 6px; background: #f1f5f9; font-size: 11px; font-weight: 800; color: #64748b;
+    }
+    .reco-mini-name { font-size: 12px; font-weight: 600; color: #0f172a; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em; }
+    .reco-mini-price { font-size: 13px; font-weight: 800; color: #dc2626; margin-top: 4px; }
+    .reco-mini-supplier { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .pick-prod-row {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 12px; align-items: center;
+      padding: 12px 14px; border-bottom: 1px solid #f1f5f9; font-size: 13px;
+    }
+    .pick-prod-row:last-child { border-bottom: none; }
+    .pick-prod-thumb {
+      width: 72px; height: 72px; border-radius: 10px; border: 1px solid #e2e8f0;
+      background: #f8fafc; object-fit: cover;
+    }
+    .pick-prod-btn {
+      padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 700; white-space: nowrap;
+      border: none; cursor: pointer; transition: opacity 0.15s;
+    }
+    .pick-prod-btn.primary { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; }
+    .pick-prod-btn.done { background: #f1f5f9; color: #64748b; cursor: default; }
+    .sticky-actions {
+      position: sticky; bottom: 0; z-index: 50;
+      margin: 24px -6px -6px; padding: 14px 20px;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+      border: 1px solid #e2e8f0; border-radius: 14px;
+      box-shadow: 0 -8px 32px rgba(15,23,42,0.06);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    html.admin-embed-mode .admin-sidebar { display: none !important; }
+    html.admin-embed-mode .admin-content { margin-left: 0 !important; }
+  </style>
+</head>
+<body>
+<script>
+(function () {
+  var embedded = new URLSearchParams(location.search).get('embed') === '1';
+  if (embedded) {
+    document.documentElement.classList.add('admin-embed-mode');
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var h = a.getAttribute('href');
+      if (!h || /^https?:\/\//i.test(h) || h.indexOf('javascript:') === 0 || h.charAt(0) === '#') return;
+      if (h.indexOf('embed=') !== -1) return;
+      if (h.indexOf('.html') === -1) return;
+      a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+    });
+  }
+  window.withAdminEmbed = function (href) {
+    if (!embedded) return href;
+    var q = href.indexOf('?');
+    var base = q === -1 ? href : href.slice(0, q);
+    var params = new URLSearchParams(q === -1 ? '' : href.slice(q + 1));
+    params.set('embed', '1');
+    var s = params.toString();
+    return s ? base + '?' + s : base + '?embed=1';
+  };
+})();
+function toggleSidebar() {
+  document.getElementById('adminSidebar').classList.toggle('collapsed');
+}
+</script>
+
+<div class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-header">
+    <div class="admin-sidebar-logo"><i class="fas fa-cog"></i><span>管理后台</span></div>
+    <button type="button" class="admin-sidebar-toggle" onclick="toggleSidebar()" title="收起/展开"><i class="fas fa-bars"></i></button>
+  </div>
+  <nav class="admin-menu">
+    <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>工作台首页</span></a>
+    <a href="admin_station.html" class="admin-menu-item active"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
+    <a href="admin_supplier_manage.html" class="admin-menu-item"><i class="fas fa-store"></i><span>供应商管理</span></a>
+    <a href="admin_buyer_manage.html" class="admin-menu-item"><i class="fas fa-users"></i><span>采购商管理</span></a>
+    <a href="admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a>
+    <a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a>
+    <a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
+    <a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a>
+    <a href="admin_settlement.html" class="admin-menu-item"><i class="fas fa-calculator"></i><span>结算管理</span></a>
+  </nav>
+</div>
+
+<div class="admin-content">
+  <div class="p-6 max-w-[960px] mx-auto pb-28">
+    <div class="mb-6">
+      <div class="text-sm text-slate-500 mb-1">
+        <a href="admin_station.html" id="crumbList" class="text-primary font-medium hover:underline">分站管理</a>
+        <span class="mx-2">/</span>
+        <span class="text-slate-800 font-medium">配置站点</span>
+      </div>
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-slate-900">配置站点</h1>
+          <p class="text-sm text-slate-500 mt-1" id="stationSubtitle">加载中…</p>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <span id="statusPill" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600"></span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+        <!-- 1 品牌与访问 -->
+        <section id="sec-brand" class="section-card scroll-mt-24">
+          <div class="section-card-head">
+            <div class="section-card-title"><i class="fas fa-id-card-clip text-primary mr-2"></i>品牌与访问</div>
+            <p class="section-card-desc">站点对外标识与独立访问域名（上线前请完成备案与 HTTPS 配置）。</p>
+          </div>
+          <div class="section-card-body">
+            <div class="mb-6">
+              <label class="form-label">站点名称 <span class="text-red-500">*</span></label>
+              <input type="text" id="cfgSiteName" class="form-input max-w-xl" placeholder="请输入分站展示名称">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="form-label">站点 Logo</label>
+                <div class="flex flex-col sm:flex-row gap-4 items-start">
+                  <div class="logo-preview-box" id="logoPreview">预览区<br>上传后显示</div>
+                  <div class="flex-1 w-full">
+                    <input type="file" id="cfgLogo" accept="image/*" class="form-input text-sm py-2">
+                    <p class="text-xs text-slate-500 mt-2">建议正方形 PNG/SVG，不小于 256×256。</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="form-label">独立域名</label>
+                <input type="text" id="cfgDomain" class="form-input mb-3" placeholder="例如：bj.example-mall.com">
+                <p class="text-xs text-slate-500 leading-relaxed">解析至平台统一入口后，用户可通过该域名访问本分站前台。无需带协议前缀。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2 主题 -->
+        <section id="sec-theme" class="section-card scroll-mt-24">
+          <div class="section-card-head">
+            <div class="section-card-title"><i class="fas fa-palette text-primary mr-2"></i>主题与氛围</div>
+            <p class="section-card-desc">主题色将应用于分站顶栏、主按钮等关键界面元素。</p>
+          </div>
+          <div class="section-card-body">
+            <label class="form-label">主题色</label>
+            <div class="flex flex-wrap items-center gap-4">
+              <input type="color" id="cfgTheme" value="#E2231A" class="h-12 w-24 rounded-lg border border-slate-200 cursor-pointer p-1 bg-white">
+              <input type="text" id="cfgThemeHex" class="form-input w-36 font-mono text-sm" value="#E2231A" maxlength="7">
+              <div class="flex gap-2">
+                <button type="button" class="w-8 h-8 rounded-full border-2 border-white shadow ring-2 ring-slate-200" style="background:#E2231A" onclick="setThemePreset('#E2231A')" title="平台红"></button>
+                <button type="button" class="w-8 h-8 rounded-full border-2 border-white shadow ring-2 ring-slate-200" style="background:#2563eb" onclick="setThemePreset('#2563eb')" title="品牌蓝"></button>
+                <button type="button" class="w-8 h-8 rounded-full border-2 border-white shadow ring-2 ring-slate-200" style="background:#059669" onclick="setThemePreset('#059669')" title="绿色"></button>
+                <button type="button" class="w-8 h-8 rounded-full border-2 border-white shadow ring-2 ring-slate-200" style="background:#7c3aed" onclick="setThemePreset('#7c3aed')" title="紫色"></button>
+              </div>
+            </div>
+            <div class="theme-preview-mock">
+              <span class="text-xs text-slate-500 w-20">预览</span>
+              <div class="flex-1">
+                <div class="theme-preview-bar" id="themeBar"></div>
+                <div class="flex gap-2 mt-2">
+                  <span class="btn-mock" id="themeBtnMock">主按钮</span>
+                  <span class="text-xs text-slate-400 self-center">仅示意，非真实前台页面</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3 Banner -->
+        <section id="sec-banner" class="section-card scroll-mt-24">
+          <div class="section-card-head flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <div class="section-card-title"><i class="fas fa-panorama text-primary mr-2"></i>首页 Banner</div>
+              <p class="section-card-desc">支持多张轮播图；可拖动卡片排序，配置标题与点击跳转链接；图片区域右下角可更换素材。</p>
+            </div>
+            <button type="button" class="action-btn action-btn-primary text-sm py-2 px-4" onclick="addBannerRow()"><i class="fas fa-plus"></i>添加 Banner 图</button>
+          </div>
+          <div class="section-card-body">
+            <div id="bannerList" class="banner-grid"></div>
+            <p id="bannerEmpty" class="text-sm text-slate-400 text-center py-8 border border-dashed border-slate-200 rounded-xl">暂无 Banner，点击上方按钮添加</p>
+          </div>
+        </section>
+
+        <!-- 4 品类 -->
+        <section id="sec-category" class="section-card scroll-mt-24">
+          <div class="section-card-head">
+            <div class="section-card-title"><i class="fas fa-sitemap text-primary mr-2"></i>商品品类范围</div>
+            <p class="section-card-desc">在品类架构中勾选本分站允许经营的末级品类（三级），用于前台筛选与招商规则。</p>
+          </div>
+          <div class="section-card-body">
+            <button type="button" id="btnOpenCategoryModal" class="action-btn action-btn-secondary border border-slate-200" onclick="openCategoryModal()">
+              <i class="fas fa-folder-tree"></i><span id="catBtnLabel">配置品类（已选 0 类）</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 5 推荐类目 -->
+        <section id="sec-reco" class="section-card scroll-mt-24">
+          <div class="section-card-head flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <div class="section-card-title"><i class="fas fa-star text-primary mr-2"></i>推荐类目与商品</div>
+              <p class="section-card-desc">配置首页楼层：每个推荐类目包含主题图与一组推荐商品。</p>
+            </div>
+            <button type="button" class="action-btn action-btn-secondary text-sm py-2 px-4 border border-primary text-primary" onclick="addRecoCategoryBlock()">
+              <i class="fas fa-layer-group"></i>新增推荐类目
+            </button>
+          </div>
+          <div class="section-card-body">
+            <div id="recoCategoryWrap"></div>
+            <p id="recoEmpty" class="text-sm text-slate-400 text-center py-10 border border-dashed border-slate-200 rounded-xl">暂无推荐类目，点击「新增推荐类目」开始配置</p>
+          </div>
+        </section>
+
+        <div class="sticky-actions">
+          <span class="text-sm text-slate-500">修改完成后点击保存，将同步至分站前台（演示为本地提示）。</span>
+          <div class="flex gap-2">
+            <button type="button" class="action-btn action-btn-secondary" onclick="goBackList()"><i class="fas fa-arrow-left"></i>返回列表</button>
+            <button type="button" class="action-btn action-btn-primary" onclick="saveConfig()"><i class="fas fa-check"></i>保存配置</button>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- 品类架构弹窗 -->
+<div id="modalCategory" class="modal-overlay" aria-hidden="true">
+  <div class="modal-sheet w-wide">
+    <div class="modal-sheet-head"><i class="fas fa-network-wired text-primary mr-2"></i>配置品类架构</div>
+    <div class="modal-sheet-body">
+      <p class="text-xs text-slate-500 mb-3">请勾选末级品类；按钮上将显示已选末级品类数量。</p>
+      <div class="cat-tree" id="categoryTree"></div>
+    </div>
+    <div class="modal-sheet-foot">
+      <button type="button" class="action-btn action-btn-secondary" onclick="closeCategoryModal()">取消</button>
+      <button type="button" class="action-btn action-btn-primary" onclick="confirmCategoryModal()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 增加商品弹窗 -->
+<div id="modalPickProduct" class="modal-overlay" aria-hidden="true">
+  <div class="modal-sheet w-pick">
+    <div class="modal-sheet-head">选择要加入的商品</div>
+    <div class="modal-sheet-body p-0">
+      <div class="px-4 pt-3 pb-2">
+        <div class="relative">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input type="text" id="pickProductSearch" class="form-input pl-10 text-sm" placeholder="搜索商品名称、供应商…">
+        </div>
+      </div>
+      <div class="max-h-[420px] overflow-y-auto border-t border-slate-100 mx-4 rounded-xl border border-slate-100 mb-2" id="pickProductListWrap">
+        <div id="pickProductList"></div>
+        <p id="pickProductEmpty" class="hidden text-sm text-slate-400 text-center py-12">未找到匹配商品，请调整关键词</p>
+      </div>
+      <p class="text-xs text-slate-400 px-4 pb-3">演示数据；实际环境可改为搜索全平台商品库。</p>
+    </div>
+    <div class="modal-sheet-foot">
+      <button type="button" class="action-btn action-btn-secondary" onclick="closePickProductModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var MOCK_PRODUCTS = [
+    { id: 'sku-001', name: '得力复印纸 A4 80g 500张/包', price: '¥128.00', supplier: '得力办公旗舰店', image: 'https://picsum.photos/seed/deli01/120/120' },
+    { id: 'sku-002', name: '惠普激光打印机 M405dn', price: '¥4,899.00', supplier: '华东数码设备有限公司', image: 'https://picsum.photos/seed/hp01/120/120' },
+    { id: 'sku-003', name: '华三交换机 S5024PV5-EI', price: '¥2,680.00', supplier: '华三网络专营店', image: 'https://picsum.photos/seed/h3c01/120/120' },
+    { id: 'sku-004', name: '格之格硒鼓 NT-CH228XF', price: '¥198.00', supplier: '格之格官方旗舰店', image: 'https://picsum.photos/seed/gg01/120/120' },
+    { id: 'sku-005', name: '晨光文具办公套装', price: '¥86.00', supplier: '晨光文具企业购', image: 'https://picsum.photos/seed/mg01/120/120' },
+    { id: 'sku-006', name: '鱼跃电子血压计 YE680A', price: '¥299.00', supplier: '鱼跃医疗器械专营店', image: 'https://picsum.photos/seed/yuy01/120/120' },
+    { id: 'sku-007', name: '3M N95 防护口罩', price: '¥156.00', supplier: '3M 防护自营', image: 'https://picsum.photos/seed/3m01/120/120' }
+  ];
+
+  var PRODUCT_BY_ID = {};
+  MOCK_PRODUCTS.forEach(function (p) { PRODUCT_BY_ID[p.id] = p; });
+
+  var CATEGORY_TREE = [
+    {
+      id: 'o1', name: '办公物资',
+      children: [
+        { id: 'o1-1', name: '纸品文具', children: [
+          { id: 'o1-1-1', name: '复印纸' },
+          { id: 'o1-1-2', name: '笔记本' }
+        ]},
+        { id: 'o1-2', name: '打印耗材', children: [
+          { id: 'o1-2-1', name: '硒鼓' },
+          { id: 'o1-2-2', name: '墨盒' }
+        ]}
+      ]
+    },
+    {
+      id: 'm1', name: '医疗设备',
+      children: [
+        { id: 'm1-1', name: '诊断器械', children: [
+          { id: 'm1-1-1', name: '血压计' },
+          { id: 'm1-1-2', name: '体温计' }
+        ]},
+        { id: 'm1-2', name: '护理耗材', children: [
+          { id: 'm1-2-1', name: '一次性手套' },
+          { id: 'm1-2-2', name: '医用口罩' }
+        ]}
+      ]
+    }
+  ];
+
+  var DEFAULT_STATIONS = [
+    { id: 'st1', name: '北京分站', code: 'BJ-STATION', status: 'on' },
+    { id: 'st2', name: '医疗卫生专区', code: 'MED-ZONE', status: 'on' },
+    { id: 'st3', name: '上海分站', code: 'SH-STATION', status: 'on' },
+    { id: 'st4', name: '教育装备专区', code: 'EDU-ZONE', status: 'off' }
+  ];
+
+  var params = new URLSearchParams(location.search);
+  var stationId = params.get('id') || '';
+  var embedded = params.get('embed') === '1';
+
+  function escapeHtml(t) {
+    var d = document.createElement('div');
+    d.textContent = t;
+    return d.innerHTML;
+  }
+
+  function loadStations() {
+    try {
+      var raw = sessionStorage.getItem('gc_admin_stations');
+      if (raw) {
+        var arr = JSON.parse(raw);
+        if (Array.isArray(arr) && arr.length) return arr;
+      }
+    } catch (e) {}
+    return DEFAULT_STATIONS;
+  }
+
+  function syncCrumbList() {
+    var a = document.getElementById('crumbList');
+    var href = 'admin_station.html';
+    if (embedded) href += (href.indexOf('?') > -1 ? '&' : '?') + 'embed=1';
+    a.setAttribute('href', href);
+  }
+
+  function findStation() {
+    return loadStations().find(function (s) { return s.id === stationId; });
+  }
+
+  var _recoProducts = {};
+
+  function renderCategoryTree() {
+    var el = document.getElementById('categoryTree');
+    var html = '';
+    CATEGORY_TREE.forEach(function (l1) {
+      html += '<div class="cat-l1">' + escapeHtml(l1.name) + '</div>';
+      (l1.children || []).forEach(function (l2) {
+        html += '<div class="cat-l2">' + escapeHtml(l2.name) + '</div>';
+        (l2.children || []).forEach(function (l3) {
+          html += '<label class="cat-l3"><input type="checkbox" class="cfg-cat" value="' + escapeHtml(l3.id) + '"> ' + escapeHtml(l3.name) + '</label>';
+        });
+      });
+    });
+    el.innerHTML = html;
+    el.querySelectorAll('.cfg-cat').forEach(function (cb) {
+      cb.addEventListener('change', updateCatButtonLabel);
+    });
+    updateCatButtonLabel();
+  }
+
+  function updateCatButtonLabel() {
+    var n = document.querySelectorAll('#categoryTree .cfg-cat:checked').length;
+    var el = document.getElementById('catBtnLabel');
+    if (el) el.textContent = '配置品类（已选 ' + n + ' 类）';
+  }
+
+  window.openCategoryModal = function () {
+    var m = document.getElementById('modalCategory');
+    m.classList.add('show');
+    m.setAttribute('aria-hidden', 'false');
+  };
+
+  window.closeCategoryModal = function () {
+    var m = document.getElementById('modalCategory');
+    m.classList.remove('show');
+    m.setAttribute('aria-hidden', 'true');
+  };
+
+  window.confirmCategoryModal = function () {
+    updateCatButtonLabel();
+    closeCategoryModal();
+  };
+
+  window.setThemePreset = function (hex) {
+    document.getElementById('cfgTheme').value = hex;
+    document.getElementById('cfgThemeHex').value = hex;
+    applyThemePreview(hex);
+  };
+
+  function applyThemePreview(hex) {
+    document.getElementById('themeBar').style.background = hex;
+    var btn = document.getElementById('themeBtnMock');
+    btn.style.background = hex;
+  }
+
+  function wireThemeInputs() {
+    var color = document.getElementById('cfgTheme');
+    var hexInput = document.getElementById('cfgThemeHex');
+    color.addEventListener('input', function () {
+      hexInput.value = color.value;
+      applyThemePreview(color.value);
+    });
+    hexInput.addEventListener('change', function () {
+      var v = hexInput.value.trim();
+      if (/^#[0-9A-Fa-f]{6}$/.test(v)) {
+        color.value = v;
+        applyThemePreview(v);
+      }
+    });
+  }
+
+  window._bannerIdx = 0;
+
+  function refreshBannerOrder() {
+    var wrap = document.getElementById('bannerList');
+    if (!wrap) return;
+    var cards = wrap.querySelectorAll('.banner-item-card');
+    cards.forEach(function (card, i) {
+      var seq = card.querySelector('.banner-seq');
+      if (seq) seq.textContent = String(i + 1);
+    });
+  }
+
+  function wireBannerListDnD() {
+    var wrap = document.getElementById('bannerList');
+    if (!wrap || wrap.dataset.dndWired === '1') return;
+    wrap.dataset.dndWired = '1';
+    wrap.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+    wrap.addEventListener('drop', function (e) {
+      e.preventDefault();
+      var id = e.dataTransfer.getData('application/x-banner-id') || e.dataTransfer.getData('text/plain');
+      if (!id) return;
+      var dragged = wrap.querySelector('.banner-item-card[data-row-id="' + id + '"]');
+      if (!dragged) return;
+      var y = e.clientY;
+      var all = wrap.querySelectorAll('.banner-item-card');
+      var insertBefore = null;
+      for (var i = 0; i < all.length; i++) {
+        var c = all[i];
+        if (c === dragged) continue;
+        var rect = c.getBoundingClientRect();
+        if (y < rect.top + rect.height / 2) {
+          insertBefore = c;
+          break;
+        }
+      }
+      if (insertBefore) {
+        wrap.insertBefore(dragged, insertBefore);
+      } else {
+        wrap.appendChild(dragged);
+      }
+      refreshBannerOrder();
+    });
+  }
+
+  function refreshBannerEmpty() {
+    var list = document.getElementById('bannerList');
+    document.getElementById('bannerEmpty').style.display = list.children.length ? 'none' : 'block';
+  }
+
+  window.addBannerRow = function () {
+    window._bannerIdx++;
+    var id = 'bn' + window._bannerIdx;
+    var wrap = document.getElementById('bannerList');
+    var card = document.createElement('div');
+    card.className = 'banner-item-card';
+    card.dataset.rowId = id;
+    card.innerHTML =
+      '<div class="banner-drag-strip" title="按住此处拖动排序">' +
+      '<i class="fas fa-grip-vertical text-slate-400"></i>' +
+      '<span class="text-xs text-slate-600 font-semibold">拖动排序</span></div>' +
+      '<div class="relative">' +
+      '<button type="button" class="banner-del" title="删除" aria-label="删除" onclick="removeBannerRow(\'' + id + '\')"><i class="fas fa-trash-alt"></i></button>' +
+      '<div class="banner-img-wrap" data-banner-preview>' +
+      '<span class="text-xs text-slate-400 text-center px-4">预览图<br>上传后显示</span></div></div>' +
+      '<div class="banner-meta">' +
+      '<div class="flex items-center gap-2 min-h-[32px] pb-2 border-b border-slate-100">' +
+      '<span class="banner-seq">1</span>' +
+      '<p class="text-sm text-slate-600 truncate flex-1 min-w-0" data-banner-filename title="">未选择文件</p></div>' +
+      '<div class="mt-3 space-y-3">' +
+      '<div><label class="form-label text-xs mb-1">Banner 标题</label>' +
+      '<input type="text" class="form-input banner-title-input text-sm py-2" placeholder="如：春季采购节 · 全场领券"></div>' +
+      '<div><label class="form-label text-xs mb-1">点击跳转链接</label>' +
+      '<input type="text" class="form-input banner-link-input text-sm py-2" placeholder="https://… 或 /product/123，留空则仅展示"></div>' +
+      '<p class="text-xs text-slate-500 -mt-1">前台用户点击 Banner 区域将打开该链接（演示环境仅保存表单）。</p></div>' +
+      '<label class="mt-3 flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-dashed border-slate-200 text-primary text-sm font-semibold cursor-pointer hover:bg-red-50 transition-colors">' +
+      '<i class="fas fa-upload text-xs"></i> 选择 / 更换图片<input type="file" accept="image/*" class="sr-only banner-file"></label></div>';
+
+    var strip = card.querySelector('.banner-drag-strip');
+    strip.addEventListener('mousedown', function () {
+      card.setAttribute('draggable', 'true');
+    });
+    card.addEventListener('dragend', function () {
+      card.removeAttribute('draggable');
+      card.classList.remove('banner-drag-active');
+    });
+    card.addEventListener('dragstart', function (e) {
+      e.dataTransfer.setData('application/x-banner-id', id);
+      e.dataTransfer.setData('text/plain', id);
+      e.dataTransfer.effectAllowed = 'move';
+      card.classList.add('banner-drag-active');
+    });
+
+    wrap.appendChild(card);
+
+    var fileInput = card.querySelector('.banner-file');
+    var prev = card.querySelector('[data-banner-preview]');
+    var nameEl = card.querySelector('[data-banner-filename]');
+    fileInput.addEventListener('change', function () {
+      var f = this.files && this.files[0];
+      if (!f) {
+        prev.innerHTML = '<span class="text-xs text-slate-400 text-center px-4">预览图<br>上传后显示</span>';
+        nameEl.textContent = '未选择文件';
+        nameEl.removeAttribute('title');
+        return;
+      }
+      var url = URL.createObjectURL(f);
+      prev.innerHTML = '<img src="' + url + '" alt="Banner">';
+      nameEl.textContent = f.name;
+      nameEl.title = f.name;
+    });
+    refreshBannerOrder();
+    refreshBannerEmpty();
+  };
+
+  window.removeBannerRow = function (id) {
+    var wrap = document.getElementById('bannerList');
+    var row = wrap.querySelector('[data-row-id="' + id + '"]');
+    if (row) row.remove();
+    refreshBannerOrder();
+    refreshBannerEmpty();
+  };
+
+  window._recoIdx = 0;
+  function refreshRecoEmpty() {
+    var wrap = document.getElementById('recoCategoryWrap');
+    document.getElementById('recoEmpty').style.display = wrap.children.length ? 'none' : 'block';
+  }
+
+  window.addRecoCategoryBlock = function () {
+    window._recoIdx++;
+    var rid = 'reco' + window._recoIdx;
+    _recoProducts[rid] = [];
+    var wrap = document.getElementById('recoCategoryWrap');
+    var block = document.createElement('div');
+    block.className = 'reco-card';
+    block.dataset.recoId = rid;
+    block.innerHTML =
+      '<div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">' +
+      '<span class="text-sm font-bold text-slate-800">推荐类目 <span class="text-slate-400 font-normal">' + window._recoIdx + '</span></span>' +
+      '<button type="button" class="text-xs text-red-600 font-semibold" onclick="removeRecoBlock(\'' + rid + '\')">移除</button></div>' +
+      '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+      '<div><label class="form-label">推荐类目名称</label><input type="text" class="form-input reco-name" placeholder="如：办公耗材精选"></div>' +
+      '<div><label class="form-label">主题图片</label><input type="file" accept="image/*" class="form-input text-sm py-2 reco-img"></div></div>' +
+      '<div class="mt-4">' +
+      '<label class="form-label">推荐商品</label>' +
+      '<div class="reco-picked-grid" data-reco-picked-grid="' + rid + '"></div>' +
+      '<p class="text-xs text-slate-500 mb-2">已选商品以卡片展示，可拖动卡片排序或点右上角移除。</p>' +
+      '<button type="button" class="action-btn action-btn-secondary text-sm py-2 px-4 border border-primary text-primary" onclick="openPickProductModal(\'' + rid + '\')">' +
+      '<i class="fas fa-plus"></i> 增加商品</button></div>';
+    wrap.appendChild(block);
+    refreshRecoEmpty();
+  };
+
+  window.removeRecoBlock = function (rid) {
+    delete _recoProducts[rid];
+    var b = document.querySelector('.reco-card[data-reco-id="' + rid + '"]');
+    if (b) b.remove();
+    refreshRecoEmpty();
+  };
+
+  function refreshRecoMiniSeq(rid) {
+    var grid = document.querySelector('[data-reco-picked-grid="' + rid + '"]');
+    if (!grid) return;
+    var cards = grid.querySelectorAll('.reco-mini-card .reco-mini-seq');
+    cards.forEach(function (el, i) {
+      el.textContent = String(i + 1);
+    });
+  }
+
+  function wireRecoPickedGridDnD(rid) {
+    var grid = document.querySelector('[data-reco-picked-grid="' + rid + '"]');
+    if (!grid || grid.dataset.recoDndWired === '1') return;
+    grid.dataset.recoDndWired = '1';
+    grid.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+    grid.addEventListener('drop', function (e) {
+      e.preventDefault();
+      var payload = e.dataTransfer.getData('text/x-reco-pick');
+      if (!payload) return;
+      var parts = payload.split('\t');
+      if (parts.length < 2) return;
+      var dragRid = parts[0];
+      var dragPid = parts[1];
+      if (dragRid !== rid) return;
+      var dragged = grid.querySelector('.reco-mini-card[data-product-id="' + dragPid + '"]');
+      if (!dragged) return;
+      var y = e.clientY;
+      var all = grid.querySelectorAll('.reco-mini-card');
+      var insertBefore = null;
+      for (var i = 0; i < all.length; i++) {
+        var c = all[i];
+        if (c === dragged) continue;
+        var rect = c.getBoundingClientRect();
+        if (y < rect.top + rect.height / 2) {
+          insertBefore = c;
+          break;
+        }
+      }
+      if (insertBefore) grid.insertBefore(dragged, insertBefore);
+      else grid.appendChild(dragged);
+      var newIds = [];
+      grid.querySelectorAll('.reco-mini-card[data-product-id]').forEach(function (node) {
+        newIds.push(node.getAttribute('data-product-id'));
+      });
+      _recoProducts[rid] = newIds;
+      refreshRecoMiniSeq(rid);
+    });
+  }
+
+  function renderRecoChips(rid) {
+    var grid = document.querySelector('[data-reco-picked-grid="' + rid + '"]');
+    if (!grid) return;
+    var ids = _recoProducts[rid] || [];
+    grid.innerHTML = '';
+    ids.forEach(function (pid, index) {
+      var p = PRODUCT_BY_ID[pid];
+      if (!p) return;
+      var card = document.createElement('div');
+      card.className = 'reco-mini-card';
+      card.setAttribute('data-product-id', pid);
+      card.setAttribute('draggable', 'false');
+
+      var dragStrip = document.createElement('div');
+      dragStrip.className = 'reco-mini-drag';
+      dragStrip.title = '按住拖动排序';
+      dragStrip.innerHTML = '<i class="fas fa-grip-vertical"></i><span>拖动排序</span>';
+
+      var wrapRel = document.createElement('div');
+      wrapRel.className = 'relative';
+      var btnRm = document.createElement('button');
+      btnRm.type = 'button';
+      btnRm.className = 'reco-mini-remove';
+      btnRm.setAttribute('aria-label', '移除');
+      btnRm.innerHTML = '&times;';
+      var imgBox = document.createElement('div');
+      imgBox.className = 'reco-mini-img';
+      var im = document.createElement('img');
+      im.src = p.image;
+      im.alt = '';
+      imgBox.appendChild(im);
+      wrapRel.appendChild(btnRm);
+      wrapRel.appendChild(imgBox);
+
+      var body = document.createElement('div');
+      body.className = 'reco-mini-body';
+      var seq = document.createElement('span');
+      seq.className = 'reco-mini-seq';
+      seq.textContent = String(index + 1);
+      var nm = document.createElement('p');
+      nm.className = 'reco-mini-name';
+      nm.textContent = p.name;
+      var pr = document.createElement('p');
+      pr.className = 'reco-mini-price';
+      pr.textContent = p.price;
+      var su = document.createElement('p');
+      su.className = 'reco-mini-supplier';
+      su.innerHTML = '<i class="fas fa-store text-slate-400 mr-1"></i>';
+      su.appendChild(document.createTextNode(p.supplier));
+      body.appendChild(seq);
+      body.appendChild(nm);
+      body.appendChild(pr);
+      body.appendChild(su);
+
+      card.appendChild(dragStrip);
+      card.appendChild(wrapRel);
+      card.appendChild(body);
+
+      dragStrip.addEventListener('mousedown', function () {
+        card.setAttribute('draggable', 'true');
+      });
+      card.addEventListener('dragend', function () {
+        card.removeAttribute('draggable');
+        card.classList.remove('reco-mini-drag-active');
+      });
+      card.addEventListener('dragstart', function (e) {
+        e.dataTransfer.setData('text/x-reco-pick', rid + '\t' + pid);
+        e.dataTransfer.effectAllowed = 'move';
+        card.classList.add('reco-mini-drag-active');
+      });
+
+      (function (productId) {
+        btnRm.onclick = function (ev) {
+          ev.stopPropagation();
+          _recoProducts[rid] = (_recoProducts[rid] || []).filter(function (x) { return x !== productId; });
+          renderRecoChips(rid);
+          var pm = document.getElementById('modalPickProduct');
+          if (pm.classList.contains('show')) renderPickProductList();
+        };
+      })(pid);
+
+      grid.appendChild(card);
+    });
+    wireRecoPickedGridDnD(rid);
+    refreshRecoMiniSeq(rid);
+  }
+
+  function filterProductsForPick() {
+    var kw = '';
+    var searchEl = document.getElementById('pickProductSearch');
+    if (searchEl) kw = searchEl.value.trim().toLowerCase();
+    return MOCK_PRODUCTS.filter(function (p) {
+      if (!kw) return true;
+      return (p.name + ' ' + p.supplier + ' ' + p.price).toLowerCase().indexOf(kw) >= 0;
+    });
+  }
+
+  function renderPickProductList() {
+    var rid = window._currentPickRecoId;
+    if (!rid) return;
+    var picked = _recoProducts[rid] || [];
+    var listEl = document.getElementById('pickProductList');
+    var emptyEl = document.getElementById('pickProductEmpty');
+    listEl.innerHTML = '';
+    var items = filterProductsForPick();
+    if (items.length === 0) {
+      emptyEl.classList.remove('hidden');
+    } else {
+      emptyEl.classList.add('hidden');
+    }
+    items.forEach(function (p) {
+      var already = picked.indexOf(p.id) >= 0;
+      var row = document.createElement('div');
+      row.className = 'pick-prod-row';
+
+      var img = document.createElement('img');
+      img.className = 'pick-prod-thumb';
+      img.src = p.image;
+      img.alt = '';
+
+      var mid = document.createElement('div');
+      mid.className = 'min-w-0';
+      var t1 = document.createElement('div');
+      t1.className = 'font-semibold text-slate-800 text-sm leading-snug line-clamp-2';
+      t1.textContent = p.name;
+      var t2 = document.createElement('div');
+      t2.className = 'text-red-600 font-bold text-sm mt-1';
+      t2.textContent = p.price;
+      var t3 = document.createElement('div');
+      t3.className = 'text-xs text-slate-500 mt-0.5 flex items-center gap-1';
+      t3.innerHTML = '<i class="fas fa-store text-slate-400"></i> ';
+      t3.appendChild(document.createTextNode(p.supplier));
+      mid.appendChild(t1);
+      mid.appendChild(t2);
+      mid.appendChild(t3);
+
+      var btnCell = document.createElement('div');
+      btnCell.className = 'flex justify-end items-center';
+      if (already) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'pick-prod-btn done';
+        b.disabled = true;
+        b.textContent = '已推荐';
+        btnCell.appendChild(b);
+      } else {
+        var b2 = document.createElement('button');
+        b2.type = 'button';
+        b2.className = 'pick-prod-btn primary';
+        b2.textContent = '选择推荐';
+        (function (productId) {
+          b2.onclick = function () {
+            if (_recoProducts[rid].indexOf(productId) < 0) _recoProducts[rid].push(productId);
+            renderRecoChips(rid);
+            renderPickProductList();
+          };
+        })(p.id);
+        btnCell.appendChild(b2);
+      }
+
+      row.appendChild(img);
+      row.appendChild(mid);
+      row.appendChild(btnCell);
+      listEl.appendChild(row);
+    });
+  }
+
+  window.openPickProductModal = function (rid) {
+    window._currentPickRecoId = rid;
+    if (!_recoProducts[rid]) _recoProducts[rid] = [];
+    var searchEl = document.getElementById('pickProductSearch');
+    if (searchEl) searchEl.value = '';
+    renderPickProductList();
+    var m = document.getElementById('modalPickProduct');
+    m.classList.add('show');
+    m.setAttribute('aria-hidden', 'false');
+    if (searchEl) searchEl.focus();
+  };
+
+  window.closePickProductModal = function () {
+    var m = document.getElementById('modalPickProduct');
+    m.classList.remove('show');
+    m.setAttribute('aria-hidden', 'true');
+    window._currentPickRecoId = null;
+  };
+
+  document.getElementById('cfgLogo').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    var box = document.getElementById('logoPreview');
+    if (!f) {
+      box.innerHTML = '预览区<br>上传后显示';
+      return;
+    }
+    var url = URL.createObjectURL(f);
+    box.innerHTML = '<img src="' + url + '" alt="" class="max-h-full max-w-full object-contain rounded-lg" style="max-height:144px">';
+  });
+
+  window.goBackList = function () {
+    var href = 'admin_station.html';
+    if (embedded) href += '?embed=1';
+    location.href = href;
+  };
+
+  window.saveConfig = function () {
+    var siteName = document.getElementById('cfgSiteName').value.trim();
+    var cats = document.querySelectorAll('#categoryTree .cfg-cat:checked');
+    var recoBlocks = document.querySelectorAll('.reco-card');
+    var totalRecoProducts = 0;
+    Object.keys(_recoProducts).forEach(function (k) {
+      totalRecoProducts += (_recoProducts[k] || []).length;
+    });
+    var bannerLines = [];
+    document.querySelectorAll('#bannerList .banner-item-card').forEach(function (card, idx) {
+      var tIn = card.querySelector('.banner-title-input');
+      var lIn = card.querySelector('.banner-link-input');
+      var fn = card.querySelector('[data-banner-filename]');
+      bannerLines.push(
+        (idx + 1) + ') 标题「' + (tIn && tIn.value ? tIn.value : '（未填）') + '」 链接「' + (lIn && lIn.value ? lIn.value : '（未填）') + '」 文件「' + (fn ? fn.textContent : '') + '」'
+      );
+    });
+    var bannerSummary = bannerLines.length ? bannerLines.join('\n') : '（无）';
+    alert('配置已保存（演示）。\n' +
+      '站点名称：' + (siteName || '（未填写）') + '\n' +
+      '已选末级品类：' + cats.length + ' 类\n' +
+      'Banner 数量：' + bannerLines.length + '\n' + bannerSummary + '\n' +
+      '推荐类目卡片：' + recoBlocks.length + ' 个\n' +
+      '推荐商品（全部类目累计）：' + totalRecoProducts + ' 件');
+  };
+
+  function init() {
+    syncCrumbList();
+    wireThemeInputs();
+    applyThemePreview(document.getElementById('cfgTheme').value);
+    renderCategoryTree();
+    wireBannerListDnD();
+
+    var st = findStation();
+    if (!stationId || !st) {
+      document.getElementById('stationSubtitle').innerHTML = '<span class="text-red-600">未找到分站，请从分站列表进入。</span>';
+      document.getElementById('statusPill').textContent = '—';
+      document.getElementById('cfgSiteName').disabled = true;
+      return;
+    }
+    document.getElementById('stationSubtitle').textContent = st.name + ' · 编码 ' + st.code;
+    document.getElementById('cfgSiteName').value = st.name;
+    var pill = document.getElementById('statusPill');
+    if (st.status === 'on') {
+      pill.textContent = '启用中';
+      pill.className = 'text-xs font-semibold px-3 py-1 rounded-full bg-green-50 text-green-700';
+    } else {
+      pill.textContent = '已停用 · 前台入口隐藏';
+      pill.className = 'text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600';
+    }
+  }
+
+  document.getElementById('modalCategory').addEventListener('click', function (e) {
+    if (e.target === this) closeCategoryModal();
+  });
+  document.getElementById('modalPickProduct').addEventListener('click', function (e) {
+    if (e.target === this) closePickProductModal();
+  });
+
+  document.getElementById('pickProductSearch').addEventListener('input', function () {
+    var m = document.getElementById('modalPickProduct');
+    if (m.classList.contains('show')) renderPickProductList();
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

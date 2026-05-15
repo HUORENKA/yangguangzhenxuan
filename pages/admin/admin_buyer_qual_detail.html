@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购商资质详情 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    body {
+      background: linear-gradient(180deg, #faf5ff 0%, #f8fafc 18%, #f1f5f9 100%);
+      color: #0f172a;
+    }
+    .admin-sidebar {
+      position: fixed; left: 0; top: 0; width: 240px; height: 100vh;
+      background: #1e293b; color: white; transition: width 0.3s ease;
+      z-index: 100; overflow-y: auto; overflow-x: hidden;
+    }
+    .admin-sidebar.collapsed { width: 64px; }
+    .admin-sidebar-header {
+      padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-sidebar-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; white-space: nowrap; }
+    .admin-sidebar.collapsed .admin-sidebar-logo span { opacity:0; width:0; overflow:hidden; }
+    .admin-sidebar-toggle {
+      background: rgba(255,255,255,0.1); border: none; color: white;
+      width: 32px; height: 32px; border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .admin-menu { padding: 10px 0; }
+    .admin-menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+      color: rgba(255,255,255,0.8); text-decoration: none; white-space: nowrap;
+    }
+    .admin-menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
+    .admin-menu-item.active { background: rgba(226,35,26,0.2); color: white; border-left: 3px solid #E2231A; }
+    .admin-menu-item i { width: 20px; text-align: center; flex-shrink: 0; }
+    .admin-sidebar.collapsed .admin-menu-item span { opacity:0; width:0; overflow:hidden; }
+    .admin-content { margin-left: 240px; transition: margin-left 0.3s ease; min-height: 100vh; }
+    .admin-sidebar.collapsed ~ .admin-content { margin-left: 64px; }
+
+    .page-card {
+      background: #ffffff;
+      border: 1px solid rgba(15,23,42,0.06);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(15,23,42,0.05);
+    }
+    .action-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; border-radius: 12px; padding: 10px 16px;
+      font-size: 14px; font-weight: 600; cursor: pointer; border: none;
+      transition: all 0.2s ease; white-space: nowrap;
+    }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .action-btn-secondary:hover { background: #f8fafc; }
+    .action-btn-blue { color: #fff; background: linear-gradient(135deg,#7c3aed,#6d28d9); box-shadow: 0 10px 20px rgba(124,58,237,0.22); }
+
+    .mini-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    }
+    .badge-neutral  { background: #e2e8f0; color: #475569; }
+    .badge-progress { background: #dbeafe; color: #1d4ed8; }
+    .badge-success  { background: #dcfce7; color: #166534; }
+    .badge-warn     { background: #fef3c7; color: #b45309; }
+
+    .detail-label { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 4px; }
+    .detail-value { font-size: 14px; color: #0f172a; font-weight: 600; }
+
+    html.admin-embed-mode .admin-sidebar { display: none !important; }
+    html.admin-embed-mode .admin-content { margin-left: 0 !important; }
+
+    .text-primary { color: #E2231A; }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeInUp 0.45s ease-out; }
+  </style>
+</head>
+<body class="text-slate-800">
+<script>
+  (function () {
+    var embedded = new URLSearchParams(location.search).get('embed') === '1';
+    if (embedded) {
+      document.documentElement.classList.add('admin-embed-mode');
+      document.querySelectorAll('a[href]').forEach(function (a) {
+        var h = a.getAttribute('href');
+        if (!h || /^https?:\/\//i.test(h) || h.indexOf('javascript:') === 0 || h.charAt(0) === '#') return;
+        if (h.indexOf('embed=') !== -1) return;
+        if (h.indexOf('.html') === -1) return;
+        a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+      });
+    }
+    window.withAdminEmbed = function (href) {
+      if (!embedded) return href;
+      var q = href.indexOf('?');
+      var base = q === -1 ? href : href.slice(0, q);
+      var params = new URLSearchParams(q === -1 ? '' : href.slice(q + 1));
+      params.set('embed', '1');
+      var s = params.toString();
+      return s ? base + '?' + s : base + '?embed=1';
+    };
+  })();
+</script>
+
+<div class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-header">
+    <div class="admin-sidebar-logo"><i class="fas fa-cog"></i><span>管理后台</span></div>
+    <button type="button" class="admin-sidebar-toggle" onclick="toggleSidebar()" title="收起/展开"><i class="fas fa-chevron-left" id="sidebarToggleIcon"></i></button>
+  </div>
+  <nav class="admin-menu">
+    <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>工作台首页</span></a>
+    <a href="admin_station.html" class="admin-menu-item"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
+    <a href="admin_supplier_manage.html" class="admin-menu-item"><i class="fas fa-store"></i><span>供应商管理</span></a>
+    <a href="admin_buyer_manage.html" class="admin-menu-item active"><i class="fas fa-users"></i><span>采购商管理</span></a>
+    <a href="admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a>
+    <a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a>
+    <a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
+    <a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a>
+    <a href="admin_settlement.html" class="admin-menu-item"><i class="fas fa-calculator"></i><span>结算管理</span></a>
+    <a href="admin_cockpit.html" class="admin-menu-item" target="_blank"><i class="fas fa-tachometer-alt"></i><span>数据驾驶舱</span></a>
+  </nav>
+</div>
+
+<div class="admin-content">
+  <div class="max-w-[1680px] mx-auto p-5">
+    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
+      <div>
+        <div class="text-sm text-slate-500 mb-2">
+          <a href="admin_dashboard.html" class="hover:text-primary transition-colors">管理后台</a>
+          <span class="mx-2">/</span>
+          <a href="admin_buyer_manage.html" class="hover:text-primary transition-colors">采购商管理</a>
+          <span class="mx-2">/</span>
+          <span>资质详情</span>
+        </div>
+        <div class="flex items-start gap-4 flex-wrap">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 text-white flex items-center justify-center shadow-lg">
+            <i class="fas fa-building-columns text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-slate-900" id="pageTitle">采购商资质详情</h1>
+            <div class="flex flex-wrap items-center gap-2 mt-2" id="pageBadges"></div>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button type="button" class="action-btn action-btn-secondary" onclick="location.href=withAdminEmbed('admin_buyer_manage.html')">
+          <i class="fas fa-list"></i><span>返回列表</span>
+        </button>
+        <button type="button" class="action-btn action-btn-blue hidden" id="btnAudit" onclick="goAudit()">
+          <i class="fas fa-clipboard-check"></i><span>审核</span>
+        </button>
+        <button type="button" class="action-btn action-btn-secondary hidden border-red-200 text-red-700 hover:bg-red-50" id="btnOffline" onclick="doOffline()">
+          <i class="fas fa-arrow-down"></i><span>下线</span>
+        </button>
+        <button type="button" class="action-btn hidden text-white" id="btnOnline" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="doOnline()">
+          <i class="fas fa-arrow-up"></i><span>上线</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="missingBox" class="page-card p-10 text-center text-slate-500 hidden fade-in">
+      <i class="fas fa-folder-open text-4xl mb-4 text-slate-300"></i>
+      <p class="font-semibold text-slate-700">未找到采购商</p>
+      <p class="text-sm mt-2">请从列表点击「查看详情」进入。</p>
+      <button type="button" class="action-btn action-btn-secondary mt-6" onclick="location.href=withAdminEmbed('admin_buyer_manage.html')">返回列表</button>
+    </div>
+
+    <div id="detailMain" class="hidden">
+      <div class="page-card p-5 mb-5 fade-in">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
+            <i class="fas fa-user-lock"></i>
+          </div>
+          <h2 class="text-lg font-bold text-slate-900">账号信息登记</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4" id="accountGrid"></div>
+      </div>
+
+      <div class="page-card p-5 mb-5 fade-in">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+            <i class="fas fa-id-card"></i>
+          </div>
+          <h2 class="text-lg font-bold text-slate-900">采购主体信息</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4" id="subjectGrid"></div>
+      </div>
+
+      <div class="page-card p-5 mb-5 fade-in">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <i class="fas fa-file-lines"></i>
+          </div>
+          <h2 class="text-lg font-bold text-slate-900">采购单位证明材料</h2>
+        </div>
+        <div class="rounded-xl border border-slate-100 bg-slate-50 p-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="font-semibold text-slate-900">营业执照</div>
+            <div class="text-sm text-slate-500 mt-1">入驻必填，演示页展示归档状态</div>
+          </div>
+          <div id="licenseBadge"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const BUYER_DETAIL_DB = {
+    'BY-001': {
+      id: 'BY-001', name: '北京市某某局采购中心', station: '北京分站', buyerType: '政府机关',
+      creditCode: '91110000MA0012345X', contact: '王主任', entPhone: '13800102334',
+      applicantName: '王建国', applicantMobile: '13800102334',
+      settleDate: '2025-09-01', onlineStatus: 'online', auditPass: true, licenseUploaded: true,
+    },
+    'BY-002': {
+      id: 'BY-002', name: '某某公立医院', station: '医疗卫生专区', buyerType: '医院',
+      creditCode: '52110000MJ1234567A', contact: '李老师', entPhone: '13600101028',
+      applicantName: '李芳', applicantMobile: '13600101028',
+      settleDate: '2025-10-15', onlineStatus: 'online', auditPass: true, licenseUploaded: true,
+    },
+    'BY-003': {
+      id: 'BY-003', name: '海淀区某某高级中学', station: '教育装备专区', buyerType: '学校',
+      creditCode: '12110000MB9876543B', contact: '赵老师', entPhone: '13500108820',
+      applicantName: '赵敏', applicantMobile: '13500108820',
+      settleDate: '2026-02-20', onlineStatus: 'pending', auditPass: false, licenseUploaded: true,
+    },
+    'BY-004': {
+      id: 'BY-004', name: '华东某某职业技术学院', station: '华东分站', buyerType: '学校',
+      creditCode: '91310000MB4455667C', contact: '钱老师', entPhone: '13900109900',
+      applicantName: '钱伟', applicantMobile: '13900109900',
+      settleDate: '2026-05-01', onlineStatus: 'reviewing', auditPass: false, licenseUploaded: false,
+    },
+    'BY-005': {
+      id: 'BY-005', name: '某某区文化中心', station: '北京分站', buyerType: '其他事业单位',
+      creditCode: '91110000MB8899001D', contact: '孙老师', entPhone: '13700106677',
+      applicantName: '孙磊', applicantMobile: '13700106677',
+      settleDate: '2025-08-12', onlineStatus: 'offline', auditPass: true, licenseUploaded: true,
+    },
+    'BY-006': {
+      id: 'BY-006', name: '某某民营医院筹备组', station: '医疗卫生专区', buyerType: '医院',
+      creditCode: '52110000MJ9988776E', contact: '周老师', entPhone: '13300105544',
+      applicantName: '周杰', applicantMobile: '13300105544',
+      settleDate: '2026-03-08', onlineStatus: 'offline', auditPass: false, licenseUploaded: true,
+    },
+  };
+
+  let currentId = null;
+
+  function getOnlineBadge(st) {
+    const map = {
+      online: '<span class="mini-badge badge-success"><i class="fas fa-circle"></i>已上线</span>',
+      offline: '<span class="mini-badge badge-neutral"><i class="fas fa-circle"></i>已下线</span>',
+      reviewing: '<span class="mini-badge badge-progress"><i class="fas fa-spinner fa-spin"></i>审核中</span>',
+      pending: '<span class="mini-badge badge-warn"><i class="fas fa-clock"></i>待整改上线</span>',
+    };
+    return map[st] || map.offline;
+  }
+
+  function needsAudit(b) {
+    if (['reviewing', 'pending'].includes(b.onlineStatus)) return true;
+    return b.onlineStatus === 'offline' && !b.auditPass;
+  }
+
+  function renderDetail(id) {
+    const b = BUYER_DETAIL_DB[id];
+    currentId = id;
+    if (!b) {
+      document.getElementById('missingBox').classList.remove('hidden');
+      document.getElementById('detailMain').classList.add('hidden');
+      return;
+    }
+    document.getElementById('missingBox').classList.add('hidden');
+    document.getElementById('detailMain').classList.remove('hidden');
+
+    document.getElementById('pageTitle').textContent = b.name;
+    document.getElementById('pageBadges').innerHTML =
+      `<span class="text-xs text-slate-500">${b.id}</span>` +
+      `<span class="inline-flex ml-2">${getOnlineBadge(b.onlineStatus)}</span>`;
+
+    document.getElementById('btnAudit').classList.toggle('hidden', !needsAudit(b));
+    document.getElementById('btnOffline').classList.toggle('hidden', b.onlineStatus !== 'online');
+    const showOn = b.onlineStatus === 'offline' && b.auditPass === true;
+    document.getElementById('btnOnline').classList.toggle('hidden', !showOn);
+
+    document.getElementById('accountGrid').innerHTML = [
+      ['入驻分站', b.station],
+      ['申请人姓名', b.applicantName],
+      ['申请人手机号', b.applicantMobile],
+    ].map(([l, v]) => `<div><div class="detail-label">${l}</div><div class="detail-value">${v}</div></div>`).join('');
+
+    document.getElementById('subjectGrid').innerHTML = [
+      ['采购商名称', b.name],
+      ['采购商类型', b.buyerType],
+      ['统一社会信用代码', b.creditCode],
+      ['企业联系人', b.contact],
+      ['企业联系电话', b.entPhone],
+      ['入驻时间', b.settleDate],
+    ].map(([l, v]) => `<div><div class="detail-label">${l}</div><div class="detail-value">${v}</div></div>`).join('');
+
+    document.getElementById('licenseBadge').innerHTML = b.licenseUploaded
+      ? '<span class="mini-badge badge-success"><i class="fas fa-circle-check"></i>已归档</span>'
+      : '<span class="mini-badge badge-neutral"><i class="fas fa-clock"></i>待补充</span>';
+  }
+
+  function goAudit() {
+    if (!currentId) return;
+    location.href = withAdminEmbed('admin_buyer_settle.html?id=' + encodeURIComponent(currentId));
+  }
+
+  function doOffline() {
+    if (!currentId || !confirm('确定将该采购商下线吗？')) return;
+    const b = BUYER_DETAIL_DB[currentId];
+    if (b) { b.onlineStatus = 'offline'; renderDetail(currentId); }
+    alert('演示：已下线。返回列表可同步查看（原型独立缓存）。');
+  }
+
+  function doOnline() {
+    if (!currentId || !confirm('确定将该采购商上线吗？')) return;
+    const b = BUYER_DETAIL_DB[currentId];
+    if (b) { b.onlineStatus = 'online'; renderDetail(currentId); }
+    alert('演示：已上线。');
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    const icon = document.getElementById('sidebarToggleIcon');
+    sidebar.classList.toggle('collapsed');
+    icon.classList.toggle('fa-chevron-left');
+    icon.classList.toggle('fa-chevron-right');
+    localStorage.setItem('adminSidebarCollapsed', sidebar.classList.contains('collapsed'));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('adminSidebarCollapsed');
+    if (saved === 'true') {
+      document.getElementById('adminSidebar').classList.add('collapsed');
+      document.getElementById('sidebarToggleIcon').classList.replace('fa-chevron-left', 'fa-chevron-right');
+    }
+    const id = new URLSearchParams(location.search).get('id');
+    renderDetail(id || '');
+  });
+</script>
+</body>
+</html>

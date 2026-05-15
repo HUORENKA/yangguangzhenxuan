@@ -348,8 +348,7 @@
       </div>
       <nav class="main-tabs" aria-label="采购主功能导航">
         <a class="main-tab" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
-        <a class="main-tab" href="./bidding_inquiry.html"><i class="fa-solid fa-gavel"></i> 撮合/竞价</a>
-        <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 智选方案</a>
+        <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 最价方案</a>
         <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
         <a class="main-tab active" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a>
       </nav>
@@ -424,24 +423,24 @@
       <div class="modal-head">
         <div>
           <h3 class="modal-title">采购合规助手</h3>
-          <p class="modal-subtitle">针对智选方案、流程节点和合同条款进行 AI 咨询与风险提示。</p>
+          <p class="modal-subtitle">针对最价方案、流程节点和合同条款进行 AI 咨询与风险提示。</p>
         </div>
         <button class="modal-close" type="button" onclick="closeComplianceModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="quick-asks">
-        <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我检查这份智选方案的合规风险')">检查智选方案</button>
+        <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我检查这份最价方案的合规风险')">检查最价方案</button>
         <button class="quick-ask" type="button" onclick="fillComplianceQuestion('询价流程需要注意哪些合规节点？')">询价流程节点</button>
         <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我审阅合同中的付款条款风险')">审阅付款条款</button>
       </div>
       <div id="complianceChatBody" class="chat-body">
         <div class="chat-item ai">
           <div class="chat-avatar ai">AI</div>
-          <div class="chat-bubble">您好，我是采购合规助手。您可以直接输入智选方案、询价流程或合同条款相关问题，我会给出风险提示和处理建议。</div>
+          <div class="chat-bubble">您好，我是采购合规助手。您可以直接输入最价方案、询价流程或合同条款相关问题，我会给出风险提示和处理建议。</div>
         </div>
       </div>
       <div class="chat-input-wrap">
         <div class="chat-input-row">
-          <textarea id="complianceInput" class="chat-textarea" placeholder="请输入您的问题，例如：请帮我检查这份智选方案是否存在单一来源采购风险"></textarea>
+          <textarea id="complianceInput" class="chat-textarea" placeholder="请输入您的问题，例如：请帮我检查这份最价方案是否存在单一来源采购风险"></textarea>
           <button class="feature-button orange" type="button" onclick="sendComplianceMessage()">发送咨询 <i class="fa-solid fa-paper-plane"></i></button>
         </div>
       </div>

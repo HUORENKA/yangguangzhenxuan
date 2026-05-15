@@ -2424,21 +2424,21 @@
                 </div>
               </section>
 
-              <!-- ③ 智选方案 -->
+              <!-- ③ 最价方案 -->
               <section class="feature-card green">
                 <div class="card-head">
                   <div class="card-title-wrap">
                     <div class="feature-icon green"><i class="fa-regular fa-file-lines"></i></div>
                     <div class="card-main">
                       <div class="title-row">
-                        <h2 class="feature-name">智选方案</h2>
+                        <h2 class="feature-name">最价方案</h2>
                         <div class="title-tags">
                           <span class="highlight-chip">自动拆解需求</span>
                           <span class="highlight-chip">模板生成</span>
                           <span class="highlight-chip">一键导出</span>
                         </div>
                       </div>
-                      <p class="feature-desc">AI自动拆解采购目标、识别关键参数与预算边界，输出可直接复用的智选方案与流程建议，大幅减少编制时间。</p>
+                      <p class="feature-desc">AI自动拆解采购目标、识别关键参数与预算边界，输出可直接复用的最价方案与流程建议，大幅减少编制时间。</p>
                       <input id="planFileInput" class="hidden-input" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
                       <div class="plan-action-row">
                         <button id="planFileButton" class="action-button" type="button" onclick="handlePlanFileClick()"><i class="fa-solid fa-upload"></i> 上传采购文件</button>
@@ -2621,7 +2621,7 @@
                 <i class="fa-solid fa-shield-halved"></i>
               </div>
               <h3>合规保障</h3>
-              <p>覆盖智选方案、流程节点和文本条款的智能审核，实时识别关键风险并输出整改建议。</p>
+              <p>覆盖最价方案、流程节点和文本条款的智能审核，实时识别关键风险并输出整改建议。</p>
               <p>有效降低采购违规风险，提升审查效率与管理透明度。</p>
               <a class="advantage-link" href="./ai_assistant.html">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
             </article>
@@ -2686,24 +2686,24 @@
         <div class="modal-head">
           <div>
             <h3 class="modal-title">采购合规助手</h3>
-            <p class="modal-subtitle">针对智选方案、流程节点和合同条款进行 AI 咨询与风险提示。</p>
+            <p class="modal-subtitle">针对最价方案、流程节点和合同条款进行 AI 咨询与风险提示。</p>
           </div>
           <button class="modal-close" type="button" onclick="closeComplianceModal()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="quick-asks">
-          <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我检查这份智选方案的合规风险')">检查智选方案</button>
+          <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我检查这份最价方案的合规风险')">检查最价方案</button>
           <button class="quick-ask" type="button" onclick="fillComplianceQuestion('询价流程需要注意哪些合规节点？')">询价流程节点</button>
           <button class="quick-ask" type="button" onclick="fillComplianceQuestion('请帮我审阅合同中的付款条款风险')">审阅付款条款</button>
         </div>
         <div id="complianceChatBody" class="chat-body">
           <div class="chat-item ai">
             <div class="chat-avatar ai">AI</div>
-            <div class="chat-bubble">您好，我是采购合规助手。您可以直接输入智选方案、询价流程或合同条款相关问题，我会给出风险提示和处理建议。</div>
+            <div class="chat-bubble">您好，我是采购合规助手。您可以直接输入最价方案、询价流程或合同条款相关问题，我会给出风险提示和处理建议。</div>
           </div>
         </div>
         <div class="chat-input-wrap">
           <div class="chat-input-row">
-            <textarea id="complianceInput" class="chat-textarea" placeholder="请输入您的问题，例如：请帮我检查这份智选方案是否存在单一来源采购风险"></textarea>
+            <textarea id="complianceInput" class="chat-textarea" placeholder="请输入您的问题，例如：请帮我检查这份最价方案是否存在单一来源采购风险"></textarea>
             <button class="feature-button orange" type="button" onclick="sendComplianceMessage()">发送咨询 <i class="fa-solid fa-paper-plane"></i></button>
           </div>
         </div>

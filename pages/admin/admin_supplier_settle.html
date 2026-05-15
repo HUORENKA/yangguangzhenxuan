@@ -442,6 +442,19 @@
     .dialog-btn-confirm { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; }
     .dialog-btn-confirm:hover { filter: brightness(0.95); }
 
+    .reject-textarea {
+      width: 100%; margin-top: 8px; padding: 10px 12px;
+      border: 1px solid #e2e8f0; border-radius: 10px;
+      font-size: 14px; min-height: 120px; resize: vertical;
+      font-family: inherit; color: #334155; line-height: 1.6;
+      box-sizing: border-box;
+    }
+    .reject-textarea:focus {
+      outline: none; border-color: #E2231A;
+      box-shadow: 0 0 0 3px rgba(226,35,26,0.1);
+    }
+    .reject-textarea::placeholder { color: #94a3b8; }
+
     @media (max-width: 1100px) { .compliance-body { grid-template-columns: 1fr; } }
     @media (max-width: 1000px) { .assistant-body { grid-template-columns: 1fr; } .assistant-left { border-right: none; border-bottom: 1px solid #e2e8f0; } }
     @media (max-width: 768px) { .compliance-head { flex-direction: column; } }
@@ -521,7 +534,7 @@
           </div>
           <div>
             <h1 class="text-3xl font-bold text-slate-900">供应商入驻</h1>
-            <p class="text-sm text-slate-500 mt-1">填写供应商信息并上传资质文件，AI将对每项资质逐条审查，全部通过后方可正式上线。</p>
+            <p id="supplierEditHint" class="text-sm text-amber-700 mt-2 hidden"></p>
           </div>
         </div>
       </div>
@@ -532,7 +545,7 @@
       </div>
     </div>
 
-    <!-- 审核规则说明 -->
+    <!-- 资质审核规则说明（置顶：位于账号信息登记之前） -->
     <div class="page-card p-5 mb-5 fade-in">
       <div class="flex items-center gap-3 mb-4">
         <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
@@ -540,7 +553,6 @@
         </div>
         <div>
           <h2 class="text-lg font-bold text-slate-900">资质审核规则说明</h2>
-          <p class="text-sm text-slate-500 mt-1">上传资质文件后，AI 将按以下四项规则对每份文件逐条核验，全部通过后方可确认入驻。</p>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -567,6 +579,55 @@
       </div>
     </div>
 
+    <!-- 账号信息登记（原「入驻分站与管理员账号」，与前台字段同步） -->
+    <div class="page-card p-5 mb-5 fade-in">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-violet-50 text-violet-500 flex items-center justify-center">
+          <i class="fas fa-user-lock"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">账号信息登记</h2>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4">
+        <div class="md:col-span-2 xl:col-span-3">
+          <label class="form-label">入驻分站<span class="required">*</span></label>
+          <select class="form-select" id="settleStation">
+            <option value="">请选择入驻分站（必选）</option>
+            <option>北京分站</option>
+            <option>医疗卫生专区</option>
+            <option>教育装备专区</option>
+            <option>华东分站</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">申请人姓名<span class="required">*</span></label>
+          <input class="form-input" type="text" placeholder="管理员 / 申请人真实姓名" id="applicantName">
+        </div>
+        <div>
+          <label class="form-label">申请人手机号<span class="required">*</span></label>
+          <input class="form-input" type="tel" maxlength="11" placeholder="11位手机号，作为登录账号" id="applicantMobile">
+        </div>
+        <div class="md:col-span-2 xl:col-span-1">
+          <label class="form-label">短信验证码<span class="required">*</span></label>
+          <div class="flex gap-3">
+            <input class="form-input flex-1 min-w-0" type="text" maxlength="8" placeholder="请输入验证码" id="applicantSmsCode">
+            <button type="button" class="action-btn action-btn-secondary whitespace-nowrap px-4 shrink-0" id="btnSendSmsRegisterVendor" onclick="sendRegisterSmsVendor()">
+              <i class="fas fa-paper-plane"></i><span>发送验证码</span>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="form-label">登录密码<span class="required">*</span></label>
+          <input class="form-input" type="password" placeholder="设置初始登录密码" id="applicantPwd" autocomplete="new-password">
+        </div>
+        <div>
+          <label class="form-label">确认密码<span class="required">*</span></label>
+          <input class="form-input" type="password" placeholder="再次输入密码" id="applicantPwdConfirm" autocomplete="new-password">
+        </div>
+      </div>
+    </div>
+
     <!-- 基本信息填写 -->
     <div class="page-card p-5 mb-5 fade-in">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
@@ -576,7 +637,6 @@
           </div>
           <div>
             <h2 class="text-lg font-bold text-slate-900">供应商基本信息</h2>
-            <p class="text-sm text-slate-500 mt-0.5">请按营业执照填写，信息将与上传资质进行一致性比对。</p>
           </div>
         </div>
         <button class="action-btn action-btn-blue" onclick="openOneLicenseModal()">
@@ -632,20 +692,16 @@
           </div>
           <div>
             <h2 class="text-lg font-bold text-slate-900">待审核资质文件</h2>
-            <p class="text-sm text-slate-500 mt-0.5">请上传以下全部资质文件，上传后点击"AI资质审核"，系统将逐项核查。</p>
           </div>
         </div>
         <div class="flex flex-wrap gap-3">
-          <button class="action-btn action-btn-blue" id="aiAuditBtn" onclick="startAiAudit()">
+          <button type="button" class="action-btn action-btn-blue" id="aiAuditBtn" onclick="startAiAudit()">
             <i class="fas fa-shield-halved"></i><span>AI资质审核</span>
-          </button>
-          <button class="action-btn action-btn-primary" id="confirmSettleBtn" onclick="confirmSettle()">
-            <i class="fas fa-check-circle"></i><span>确认入驻</span>
           </button>
         </div>
       </div>
 
-      <div class="text-sm text-slate-500 mb-4" id="uploadSummary">当前暂未上传任何资质文件，请点击"一证登记"上传营业执照，或逐项上传资质文件。</div>
+      <div class="text-sm text-slate-500 mb-4 min-h-[1.25rem]" id="uploadSummary"></div>
 
       <div class="table-shell">
         <div class="overflow-x-auto">
@@ -664,6 +720,18 @@
           </table>
         </div>
       </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+        <button type="button" class="action-btn action-btn-secondary border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300"
+          onclick="openRejectSettleModal()">
+          <i class="fas fa-ban"></i><span>驳回入驻申请</span>
+        </button>
+        <button type="button" class="action-btn"
+          style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 10px 20px rgba(16,185,129,0.22);"
+          onclick="passSettleApplication()">
+          <i class="fas fa-circle-check"></i><span>通过入驻申请</span>
+        </button>
+      </div>
     </div>
 
     <!-- AI审核结果汇总（审核完成后显示） -->
@@ -671,7 +739,6 @@
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
         <div>
           <h2 class="text-lg font-bold text-slate-900">AI 审核结果汇总</h2>
-          <p class="text-sm text-slate-500 mt-1">系统已对本次提交的全部资质文件逐条核验，以下为汇总结果。</p>
         </div>
         <div class="text-sm text-slate-500" id="resultSummaryText">本次共提交 0 份资质</div>
       </div>
@@ -825,7 +892,6 @@
       <div class="dialog-icon info"><i class="fas fa-id-card"></i></div>
       <div>
         <div class="dialog-title">一证登记</div>
-        <div class="text-sm text-slate-500 mt-1">上传营业执照后，系统将识别企业信息并自动回填基本资料。</div>
       </div>
     </div>
 
@@ -874,6 +940,25 @@
   </div>
 </div>
 
+<!-- ===== 驳回入驻申请（填写理由） ===== -->
+<div class="dialog-overlay" id="rejectOverlay" onclick="if (event.target === this) closeRejectSettleModal()">
+  <div class="dialog-card" style="width:min(520px,92vw);" onclick="event.stopPropagation()">
+    <div class="dialog-head">
+      <div class="dialog-icon warn"><i class="fas fa-ban"></i></div>
+      <div class="dialog-title">驳回入驻申请</div>
+    </div>
+    <div class="dialog-body" style="white-space:normal;">
+      <label for="rejectReasonInput" class="text-sm font-bold text-slate-700">驳回理由<span style="color:#E2231A;margin-left:4px;">*</span></label>
+      <textarea id="rejectReasonInput" class="reject-textarea" maxlength="500" placeholder="请填写驳回原因，提交后将通知供应商并按理由整改后重新提交。"></textarea>
+      <div class="text-xs text-slate-400 mt-2 text-right"><span id="rejectReasonCount">0</span>/500</div>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="dialog-btn dialog-btn-cancel" onclick="closeRejectSettleModal()">取消</button>
+      <button type="button" class="dialog-btn dialog-btn-confirm" onclick="submitRejectSettle()">提交驳回</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // ===== 资质文件模拟数据 =====
   const qualFilesTemplate = [
@@ -917,54 +1002,22 @@
       ]
     },
     {
-      id: 'QF-003', type: '行业资质证书', required: false,
-      requirement: '按主营类目上传相应证书（如ISO、3C、生产许可等）',
+      id: 'QF-003', type: '供应商基本信用认证证书', required: true,
+      requirement: 'JPG/PDF，≤5MB，需清晰显示证书编号、公示主体、信用等级及有效期',
       uploadStatus: 'neutral', aiResult: '', summary: '', issues: [],
       aiResultFinal: 'pass',
-      finalSummary: '行业资质证书与主营类目"办公设备"匹配，ISO 9001认证有效，审核通过。',
-      aiRecognized: '证书类型：ISO 9001 质量管理体系认证\n颁发机构：中国质量认证中心\n覆盖范围：办公设备的设计、制造、销售\n有效期至：2027-06-30',
+      finalSummary: '供应商基本信用认证证书真实有效，公示主体与营业执照一致，信用等级满足准入要求。',
+      aiRecognized: '证书编号：XYZ-CRED-2025-001\n公示主体：XX科技有限公司\n统一社会信用代码：91110000123456789X\n信用等级：A\n公示有效期至：2026-12-31',
       checks: [
-        { title: '证书真实性', desc: '通过认证机构公开数据库核验，证书真实有效。', finalStatus: 'pass' },
-        { title: '类目匹配度', desc: '证书覆盖范围"办公设备"与主营类目完全匹配。', finalStatus: 'pass' },
-        { title: '有效期验证', desc: '证书有效期至2027-06-30，距到期日充足。', finalStatus: 'pass' },
-        { title: '颁发机构核验', desc: '颁发机构"中国质量认证中心"为官方认可机构。', finalStatus: 'pass' },
+        { title: '证书与公示核验', desc: '与公示平台数据比对，证书真实且在有效期内。', finalStatus: 'pass' },
+        { title: '主体一致性', desc: '公示主体名称、信用代码与营业执照一致。', finalStatus: 'pass' },
+        { title: '评级符合性', desc: '信用等级达到平台供应商准入底线要求。', finalStatus: 'pass' },
+        { title: '证书清晰度', desc: '扫描件清晰可识别关键字段。', finalStatus: 'pass' },
       ],
       aiIssues: []
     },
     {
-      id: 'QF-004', type: '开户行许可证', required: true,
-      requirement: 'JPG/PDF，≤5MB，需显示完整账户信息',
-      uploadStatus: 'neutral', aiResult: '', summary: '', issues: [],
-      aiResultFinal: 'fail',
-      finalSummary: '开户行许可证存在两项阻断问题：账户信息因图片模糊无法识别，且许可证有效期已过期，系统建议驳回并要求重新上传。',
-      aiRecognized: '开户银行：--（图片模糊，识别失败）\n银行账号：--（图片模糊，识别失败）\n有效期至：2024-12-31（已过期）',
-      checks: [
-        { title: '账户信息识别', desc: '图片分辨率过低，账户名称、账号及开户行信息均无法有效识别。', finalStatus: 'block' },
-        { title: '有效期验证', desc: '识别到有效期"2024-12-31"，已超过当前日期，证件已失效。', finalStatus: 'block' },
-        { title: '信息一致性', desc: '因账号识别失败，无法完成与营业执照企业名称的一致性比对。', finalStatus: 'block' },
-        { title: '防伪标识识别', desc: '图片模糊，防伪标识区域无法识别，存在风险。', finalStatus: 'warn' },
-      ],
-      aiIssues: [
-        {
-          id: 'ISS-Q4-1', field: '文件图片质量', level: 'fail',
-          problem: '上传图片分辨率过低（< 300 DPI），账户名称、账号、开户行等关键信息均识别失败，无法完成核验。',
-          rule: '供应商入驻规则 · 文件上传质量要求',
-          originalValue: '当前文件：低分辨率JPG，关键字段无法识别',
-          suggestedValue: '请重新上传分辨率≥300DPI的清晰图片，确保账号、开户行、有效期等信息清晰可读。',
-          adopted: true
-        },
-        {
-          id: 'ISS-Q4-2', field: '证件有效期', level: 'fail',
-          problem: 'AI识别到开户行许可证有效期为2024-12-31，已过期，当前不符合入驻要求。',
-          rule: '供应商入驻规则 · 资质有效性要求',
-          originalValue: '有效期至：2024-12-31（已过期）',
-          suggestedValue: '请向开户银行申请补办或更新开户行许可证，并在有效期内重新上传。',
-          adopted: true
-        }
-      ]
-    },
-    {
-      id: 'QF-005', type: '法人身份证（正反面）', required: true,
+      id: 'QF-004', type: '法人身份证（正反面）', required: true,
       requirement: '正反面各一张，JPG，≤2MB/张',
       uploadStatus: 'neutral', aiResult: '', summary: '', issues: [],
       aiResultFinal: 'pass',
@@ -1596,10 +1649,107 @@
     }
   }
 
-  // ===== 确认入驻 =====
-  function confirmSettle() {
+  function validateVendorAccountBlock() {
+    const station = (document.getElementById('settleStation').value || '').trim();
+    if (!station) {
+      showDialog({ title: '提示', message: '请选择入驻分站（必选）。', type: 'warn', confirmText: '确定' });
+      return false;
+    }
+    const nm = (document.getElementById('applicantName').value || '').trim();
+    if (!nm) {
+      showDialog({ title: '提示', message: '请填写申请人姓名。', type: 'warn', confirmText: '确定' });
+      return false;
+    }
+    const mb = (document.getElementById('applicantMobile').value || '').trim();
+    if (!/^1\d{10}$/.test(mb)) {
+      showDialog({ title: '提示', message: '请填写正确的申请人手机号（11位）。', type: 'warn', confirmText: '确定' });
+      return false;
+    }
+    const code = (document.getElementById('applicantSmsCode').value || '').trim();
+    if (!code) {
+      showDialog({ title: '提示', message: '请填写短信验证码。', type: 'warn', confirmText: '确定' });
+      return false;
+    }
+    const p1 = document.getElementById('applicantPwd').value || '';
+    const p2 = document.getElementById('applicantPwdConfirm').value || '';
+    if (p1.length < 6) {
+      showDialog({ title: '提示', message: '请设置不少于 6 位的登录密码。', type: 'warn', confirmText: '确定' });
+      return false;
+    }
+    if (p1 !== p2) {
+      showDialog({ title: '提示', message: '两次输入的登录密码不一致。', type: 'warn', confirmText: '确定' });
+      return false;
+    }
+    return true;
+  }
+
+  function sendRegisterSmsVendor() {
+    const mb = (document.getElementById('applicantMobile').value || '').trim();
+    if (!/^1\d{10}$/.test(mb)) {
+      showDialog({ title: '提示', message: '请先填写正确的申请人手机号。', type: 'warn', confirmText: '确定' });
+      return;
+    }
+    const btn = document.getElementById('btnSendSmsRegisterVendor');
+    if (btn.dataset.counting === '1') return;
+    btn.dataset.counting = '1';
+    let sec = 60;
+    btn.disabled = true;
+    const label = () => { btn.innerHTML = `<i class="fas fa-paper-plane"></i><span>${sec}s</span>`; };
+    label();
+    if (btn._smsTimer) clearInterval(btn._smsTimer);
+    btn._smsTimer = setInterval(() => {
+      sec--;
+      if (sec <= 0) {
+        clearInterval(btn._smsTimer);
+        btn._smsTimer = null;
+        btn.dataset.counting = '';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i><span>发送验证码</span>';
+      } else {
+        label();
+      }
+    }, 1000);
+    showDialog({ title: '演示', message: '已向手机号 ' + mb + ' 发送注册场景验证码（静态原型）。', type: 'info', confirmText: '确定' });
+  }
+
+  // ===== 运营商审核：驳回 / 通过入驻申请 =====
+  function openRejectSettleModal() {
+    const ta = document.getElementById('rejectReasonInput');
+    if (ta) ta.value = '';
+    updateRejectReasonCount();
+    document.getElementById('rejectOverlay').classList.add('show');
+  }
+
+  function closeRejectSettleModal() {
+    document.getElementById('rejectOverlay').classList.remove('show');
+  }
+
+  function updateRejectReasonCount() {
+    const ta = document.getElementById('rejectReasonInput');
+    const el = document.getElementById('rejectReasonCount');
+    if (ta && el) el.textContent = String((ta.value || '').length);
+  }
+
+  function submitRejectSettle() {
+    const v = document.getElementById('rejectReasonInput').value.trim();
+    if (!v) {
+      showDialog({ title: '提示', message: '请填写驳回理由。', type: 'warn', confirmText: '确定' });
+      return;
+    }
+    closeRejectSettleModal();
+    showDialog({
+      title: '已驳回入驻申请',
+      message: '已向供应商发送驳回通知（演示）。\n\n驳回理由：\n' + v,
+      type: 'info',
+      confirmText: '返回供应商列表',
+      onConfirm: () => { window.location.href = withAdminEmbed('admin_supplier_manage.html'); }
+    });
+  }
+
+  function passSettleApplication() {
+    if (!validateVendorAccountBlock()) return;
     if (!qualFiles.length) {
-      showDialog({ title: '提示', message: '请先上传资质文件并完成 AI 审核，再确认入驻。', type: 'warn', confirmText: '确定' });
+      showDialog({ title: '提示', message: '请先上传资质文件并完成 AI 审核，再通过入驻申请。', type: 'warn', confirmText: '确定' });
       return;
     }
     const passCount = qualFiles.filter(f => f.aiResult === 'pass').length;
@@ -1608,28 +1758,28 @@
     const noAudit   = qualFiles.filter(f => !f.aiResult && f.required).length;
 
     if (noAudit) {
-      showDialog({ title: '提示', message: `还有 ${noAudit} 份必须上传的资质尚未完成AI审核，请先完成全部审核。`, type: 'warn', confirmText: '确定' });
+      showDialog({ title: '提示', message: `还有 ${noAudit} 份必须上传的资质尚未完成 AI 审核，请先完成全部审核。`, type: 'warn', confirmText: '确定' });
       return;
     }
     if (failCount) {
-      showDialog({ title: '无法入驻', message: `当前有 ${failCount} 份资质审核不通过，请先处理后再确认入驻。`, type: 'error', confirmText: '确定' });
+      showDialog({ title: '无法通过', message: `当前有 ${failCount} 份资质审核不通过，请先处理后再通过入驻申请。`, type: 'error', confirmText: '确定' });
       return;
     }
 
     let msg = `AI 审核结果：${passCount} 份通过`;
     if (warnCount) msg += `，${warnCount} 份待整改`;
-    msg += `。\n确认入驻后该供应商将正式上线，可被采购方搜索到商品。`;
+    msg += `。\n确认通过后该供应商将正式上线，可被采购方检索（演示）。`;
 
     showDialog({
-      title: '确认入驻',
+      title: '通过入驻申请',
       message: msg,
       type: warnCount ? 'warn' : 'info',
-      confirmText: '确认入驻上线',
+      confirmText: '确认通过',
       cancelText: '取消',
       onConfirm: () => {
         showDialog({
-          title: '入驻成功',
-          message: '供应商已成功入驻并上线！\n供应商账号将自动激活，可登录供应商工作台开始上架商品。',
+          title: '审核已通过',
+          message: '已通过入驻申请并完成上线（演示）。\n供应商账号将激活，可登录供应商工作台。',
           type: 'success',
           confirmText: '返回供应商列表',
           onConfirm: () => { window.location.href = withAdminEmbed('admin_supplier_manage.html'); }
@@ -1679,6 +1829,18 @@
     }
     qualFiles = cloneQualFiles();
     renderQualTable();
+
+    const sid = new URLSearchParams(location.search).get('id');
+    const hintEl = document.getElementById('supplierEditHint');
+    if (sid && hintEl) {
+      hintEl.textContent = '演示：办理供应商 ' + sid + ' 的入驻审核（真实环境将加载对应资料）。';
+      hintEl.classList.remove('hidden');
+    }
+
+    const rejectTa = document.getElementById('rejectReasonInput');
+    if (rejectTa) {
+      rejectTa.addEventListener('input', updateRejectReasonCount);
+    }
   });
 </script>
 </body>

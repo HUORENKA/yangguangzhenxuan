@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>商品预览 | 上架商品</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="../../assets/custom.css" />
+  <style>
+    body {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      color: #0f172a;
+    }
+    .preview-card {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .spec-table th,
+    .spec-table td {
+      border: 1px solid #e2e8f0;
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+    .spec-table th {
+      background: #f8fafc;
+      width: 28%;
+      text-align: left;
+      font-weight: 600;
+      color: #475569;
+    }
+  </style>
+</head>
+<body class="text-slate-800 min-h-screen p-6">
+  <div class="max-w-[1000px] mx-auto mb-6 flex items-center justify-between gap-4">
+    <div>
+      <p id="previewFlowLabel" class="text-sm text-slate-500 mb-1">上架流程 · 新页快照</p>
+      <h1 id="previewTitleBar" class="text-2xl font-bold text-slate-900">商品预览</h1>
+    </div>
+    <button type="button" onclick="window.close()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">
+      <i class="fas fa-times mr-2"></i>关闭窗口
+    </button>
+  </div>
+
+  <div id="emptyWrap" class="preview-card p-16 text-center text-slate-500 hidden">
+    <i class="fas fa-folder-open text-4xl mb-4 text-slate-300"></i>
+    <p>未检测到快照数据。</p>
+    <p class="text-sm mt-2">请从供应商端「上架商品」待提交列表，或运营后台「商品审核列表」中的<strong>预览 / 去审核</strong>打开本页。</p>
+  </div>
+
+  <div id="previewCard" class="preview-card overflow-hidden hidden">
+    <div class="flex flex-col md:flex-row gap-8 p-8">
+      <div class="md:w-[360px] flex-shrink-0 space-y-3">
+        <div id="mainWrap" class="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden aspect-square flex items-center justify-center p-4">
+          <img id="mainImg" alt="主图" class="hidden max-h-full max-w-full object-contain" />
+          <span id="mainFallback" class="text-sm text-slate-400 text-center hidden">未提供主图</span>
+        </div>
+        <div id="subGallery" class="grid grid-cols-4 gap-2"></div>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h2 id="pName" class="text-xl font-bold text-slate-900 leading-snug mb-4"></h2>
+        <div id="pricePill" class="inline-flex items-baseline gap-2 rounded-xl bg-red-50 border border-red-100 px-4 py-3 mb-4">
+          <span class="text-red-600 text-sm font-semibold">￥</span>
+          <span id="pPrice" class="text-3xl font-extrabold text-red-600 tabular-nums"></span>
+          <span id="pUnit" class="text-sm text-red-700/90 font-medium ml-2"></span>
+        </div>
+        <p id="catPath" class="text-sm text-slate-500 mb-6"></p>
+        <table class="spec-table w-full border-collapse rounded-xl overflow-hidden mb-6">
+          <tbody id="specBody"></tbody>
+        </table>
+        <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-700">
+          <div class="font-bold text-slate-800 mb-2">仓库与库存（按仓）</div>
+          <div class="overflow-x-auto">
+            <table class="spec-table w-full border-collapse rounded-lg overflow-hidden min-w-[280px]">
+              <thead>
+                <tr>
+                  <th class="bg-slate-100">仓库</th>
+                  <th class="bg-slate-100">库存（整数）</th>
+                </tr>
+              </thead>
+              <tbody id="whStockBody"></tbody>
+            </table>
+          </div>
+          <div class="text-xs text-slate-500 mt-3">
+            <span>合计：<strong id="totalStockText" class="text-slate-700">—</strong></span>
+            <span class="ml-4 text-slate-400">预览状态：<span id="stageText"></span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-slate-200 px-8 py-6 bg-slate-50">
+      <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2"><i class="fas fa-images text-purple-600"></i>详情图片（非必填）</h3>
+      <div id="detailGallery" class="flex flex-wrap gap-3"></div>
+    </div>
+  </div>
+
+  <script>
+    function renderEmpty() {
+      document.getElementById('emptyWrap').classList.remove('hidden');
+      document.getElementById('previewCard').classList.add('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const qp = new URLSearchParams(window.location.search);
+      if (qp.get('ctx') === 'audit') {
+        const lbl = document.getElementById('previewFlowLabel');
+        if (lbl) lbl.textContent = '运营审核 · 供应商提报快照';
+      }
+
+      let payload = null;
+      try {
+        const raw = sessionStorage.getItem('PRODUCT_UPLOAD_PREVIEW');
+        if (raw) payload = JSON.parse(raw);
+      } catch {
+        payload = null;
+      }
+
+      if (!payload || !payload.name) {
+        renderEmpty();
+        return;
+      }
+
+      const STANDARD_WH = ['华东一号仓', '华北物流中心', '华南保税仓', '西南协同仓', '华中中心仓'];
+
+      document.getElementById('previewTitleBar').textContent = payload.name;
+      document.getElementById('emptyWrap').classList.add('hidden');
+      document.getElementById('previewCard').classList.remove('hidden');
+
+      document.getElementById('pName').textContent = payload.name;
+      const pr = Number(payload.price);
+      document.getElementById('pPrice').textContent = Number.isFinite(pr) ? pr.toFixed(2) : '—';
+      document.getElementById('pUnit').textContent = '/' + (payload.unit || '—');
+
+      document.getElementById('catPath').textContent = Array.isArray(payload.catPath)
+        ? payload.catPath.filter(Boolean).join(' / ')
+        : '—';
+
+      const tbody = document.getElementById('specBody');
+      tbody.innerHTML = '';
+      const specs = payload.specs || {};
+      Object.keys(specs).forEach(k => {
+        const tr = document.createElement('tr');
+        const th = document.createElement('th');
+        const td = document.createElement('td');
+        th.textContent = k;
+        td.textContent = specs[k];
+        tr.appendChild(th);
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('stageText').textContent = payload.stage || '—';
+
+      const mainImgEl = document.getElementById('mainImg');
+      const tbodyWh = document.getElementById('whStockBody');
+      tbodyWh.innerHTML = '';
+      const ws = payload.warehouseStocks || {};
+      let sumAll = 0;
+      STANDARD_WH.forEach(k => {
+        const rawQ = ws[k];
+        let q = 0;
+        if (typeof rawQ === 'number' && Number.isFinite(rawQ)) q = rawQ;
+        else if (rawQ !== '' && rawQ !== undefined && rawQ !== null && !Number.isNaN(Number(rawQ))) q = Number(rawQ);
+        sumAll += q;
+        const tr = document.createElement('tr');
+        const th = document.createElement('th');
+        const td = document.createElement('td');
+        th.textContent = k;
+        td.textContent = String(q);
+        tr.appendChild(th);
+        tr.appendChild(td);
+        tbodyWh.appendChild(tr);
+      });
+      document.getElementById('totalStockText').textContent = String(sumAll);
+
+      const fb = document.getElementById('mainFallback');
+      if (payload.mainImage) {
+        mainImgEl.classList.remove('hidden');
+        mainImgEl.src = payload.mainImage;
+        fb.classList.add('hidden');
+      } else {
+        mainImgEl.classList.add('hidden');
+        fb.classList.remove('hidden');
+      }
+
+      const subG = document.getElementById('subGallery');
+      subG.innerHTML = '';
+      (payload.subImages || []).forEach((src, idx) => {
+        if (!src) return;
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = 'rounded-lg border border-slate-200 overflow-hidden aspect-square bg-white';
+        const im = document.createElement('img');
+        im.alt = `副图${idx + 1}`;
+        im.className = 'w-full h-full object-cover';
+        im.src = src;
+        cell.appendChild(im);
+        subG.appendChild(cell);
+      });
+      if (!(payload.subImages && payload.subImages.length)) {
+        subG.innerHTML = '<span class="text-xs text-slate-400 col-span-4">未上传商品副图</span>';
+      }
+
+      const det = document.getElementById('detailGallery');
+      det.innerHTML = '';
+      (payload.detailImages || []).forEach((src, idx) => {
+        if (!src) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'w-36 h-28 rounded-xl border border-white shadow-sm overflow-hidden bg-white';
+        const im = document.createElement('img');
+        im.className = 'w-full h-full object-cover cursor-zoom-in';
+        im.alt = `详情${idx + 1}`;
+        im.src = src;
+        wrap.appendChild(im);
+        det.appendChild(wrap);
+      });
+      if (!(payload.detailImages && payload.detailImages.length)) {
+        det.innerHTML = '<span class="text-sm text-slate-400">未上传详情图</span>';
+      }
+    });
+  </script>
+</body>
+</html>

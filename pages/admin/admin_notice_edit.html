@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>编辑资讯 | 管理后台</title>
+  <title>编辑公告 | 管理后台</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../../assets/custom.css">
@@ -24,65 +24,58 @@
     .scope-chip:has(input:checked) { border-color: #fb923c; background: #fff7f7; box-shadow: 0 0 0 1px rgba(226, 35, 26, 0.15); }
     .scope-chip input { width: 1rem; height: 1rem; border-radius: 4px; accent-color: #E2231A; flex-shrink: 0; }
     .scope-chip span { font-size: 13px; font-weight: 600; color: #334155; }
-    @media (min-width: 480px) { .scope-multi-grid .scope-chip:nth-child(4) { grid-column: 1 / -1; } }
+    @media (min-width: 480px) { .scope-multi-grid .scope-chip:nth-child(5) { grid-column: 1 / -1; } }
   </style>
 </head>
 <body>
   <main class="admin-content">
     <div class="p-6 max-w-[900px] mx-auto">
-      <div class="flex items-center gap-4 mb-6">
-        <a id="backList" href="admin_news_list.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 no-underline">
+      <div class="flex flex-wrap items-center gap-3 mb-6">
+        <a id="backList" href="admin_notice.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 no-underline">
           <i class="fas fa-arrow-left"></i>返回列表
         </a>
         <span id="pageModeLabel" class="text-sm text-slate-500"></span>
       </div>
 
       <div id="lockBanner" class="warn-banner hidden">
-        <i class="fas fa-lock mr-1"></i><strong>已上架</strong>的资讯不可编辑。请先在列表中执行「下架」，再返回编辑。
+        <i class="fas fa-lock mr-1"></i><strong>已发布</strong>的公告不可编辑。请先在列表中执行「下线」，再返回编辑。
       </div>
 
       <div class="form-card">
-        <h1 id="formTitle" class="text-lg font-bold text-slate-900 mb-6">发布资讯</h1>
+        <h1 id="formTitle" class="text-lg font-bold text-slate-900 mb-6">发布公告</h1>
 
         <div class="space-y-5">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">标题 <span class="text-red-500">*</span></label>
-            <input id="fieldTitle" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="请输入资讯标题">
+            <label class="block text-sm font-medium text-slate-700 mb-1">公告标题 <span class="text-red-500">*</span></label>
+            <input id="fieldTitle" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="请输入公告标题">
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1">资讯分类 <span class="text-red-500">*</span></label>
-              <select id="fieldCategory" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-                <option>平台动态</option>
-                <option>行业观察</option>
-                <option>政策法规</option>
-                <option>操作指引</option>
-              </select>
-            </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">公告类型 <span class="text-red-500">*</span></label>
+            <select id="fieldType" class="w-full max-w-md border border-slate-300 rounded-lg px-3 py-2 text-sm">
+              <option>平台通知</option>
+              <option>活动通知</option>
+              <option>政策公告</option>
+            </select>
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">发布范围 <span class="text-red-500">*</span></label>
             <div id="fieldScopeGroup" class="scope-multi-wrap">
               <p class="text-xs text-slate-500 mb-3 flex items-start gap-1.5 leading-relaxed">
                 <i class="fas fa-map-location-dot text-[#E2231A] mt-0.5 shrink-0" aria-hidden="true"></i>
-                <span>支持<strong>多选</strong>；面向多个分站或专区同步展示时，请勾选全部适用范围。</span>
+                <span>支持<strong>多选</strong>，可同时勾选多个分站或专区；与列表筛选项口径一致。</span>
               </p>
               <div class="scope-multi-grid">
                 <label class="scope-chip"><input type="checkbox" name="fieldScope" value="全平台"><span>全平台</span></label>
+                <label class="scope-chip"><input type="checkbox" name="fieldScope" value="北京分站"><span>北京分站</span></label>
                 <label class="scope-chip"><input type="checkbox" name="fieldScope" value="华东分站"><span>华东分站</span></label>
                 <label class="scope-chip"><input type="checkbox" name="fieldScope" value="华北分站"><span>华北分站</span></label>
                 <label class="scope-chip"><input type="checkbox" name="fieldScope" value="医疗卫生专区"><span>医疗卫生专区</span></label>
               </div>
             </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">封面图（可选）</label>
-            <input id="fieldCover" type="file" accept="image/*" class="block w-full max-w-md text-sm text-slate-600 file:mr-3 file:rounded-lg file:border file:border-slate-300 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium">
-            <p class="mt-1 text-xs text-slate-500">正式系统可限制格式与大小；原型仅示意本地上传。</p>
-          </div>
           <div class="flex items-center gap-2">
             <input id="fieldPin" type="checkbox" class="rounded border-slate-300 text-red-600 focus:ring-red-500">
-            <label for="fieldPin" class="text-sm font-medium text-slate-700">置顶展示（同发布范围内与其他置顶资讯共同参与排序）</label>
+            <label for="fieldPin" class="text-sm font-medium text-slate-700">置顶展示（同发布范围内与其他置顶公告共同参与排序）</label>
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">正文 <span class="text-red-500">*</span></label>
@@ -92,14 +85,14 @@
 
         <div id="formActions" class="mt-8 flex flex-wrap gap-3">
           <button type="button" class="action-btn action-btn-secondary" onclick="alert('原型：已保存草稿')"><i class="fas fa-save"></i>保存草稿</button>
-          <button type="button" class="action-btn action-btn-secondary" onclick="openNewsEditPreviewModal()"><i class="fas fa-eye"></i>预览</button>
-          <button type="button" class="action-btn action-btn-primary" onclick="alert('原型：已提交并上架')"><i class="fas fa-cloud-arrow-up"></i>保存并上架</button>
+          <button type="button" class="action-btn action-btn-secondary" onclick="openNoticeEditPreviewModal()"><i class="fas fa-eye"></i>预览</button>
+          <button type="button" class="action-btn action-btn-primary" onclick="alert('原型：已提交并发布')"><i class="fas fa-paper-plane"></i>保存并发布</button>
         </div>
       </div>
     </div>
 
-    <div id="newsEditPreviewModal" class="fixed inset-0 z-[100] hidden" aria-modal="true" role="dialog" aria-labelledby="newsEditPreviewHeading">
-      <div class="absolute inset-0 bg-slate-900/45" onclick="closeNewsEditPreviewModal()"></div>
+    <div id="noticeEditPreviewModal" class="fixed inset-0 z-[100] hidden" aria-modal="true" role="dialog" aria-labelledby="noticeEditPreviewHeading">
+      <div class="absolute inset-0 bg-slate-900/45" onclick="closeNoticeEditPreviewModal()"></div>
       <div class="absolute left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 px-4">
         <div class="relative rounded-xl bg-white shadow-xl border border-slate-200 p-6">
           <div class="flex items-start gap-3">
@@ -107,13 +100,13 @@
               <i class="fas fa-window-restore text-lg"></i>
             </div>
             <div class="min-w-0 flex-1">
-              <h2 id="newsEditPreviewHeading" class="text-lg font-bold text-slate-900">预览说明</h2>
-              <p class="mt-3 text-sm leading-relaxed text-slate-600">正式环境中，「预览」将在<strong class="text-slate-800">新窗口或新标签页</strong>打开前台<strong>资讯详情页</strong>，以当前编辑内容（含标题、分类、封面、正文等）渲染展示效果。</p>
+              <h2 id="noticeEditPreviewHeading" class="text-lg font-bold text-slate-900">预览说明</h2>
+              <p class="mt-3 text-sm leading-relaxed text-slate-600">正式环境中，「预览」将在<strong class="text-slate-800">新窗口或新标签页</strong>打开前台<strong>公告详情页</strong>，以当前编辑内容渲染展示效果。</p>
               <p class="mt-2 text-xs text-slate-500">本页为静态原型，此处用弹窗仅演示交互，不实际跳转。</p>
             </div>
           </div>
           <div class="mt-6 flex justify-end">
-            <button type="button" class="action-btn action-btn-primary justify-center px-5" onclick="closeNewsEditPreviewModal()">知道了</button>
+            <button type="button" class="action-btn action-btn-primary justify-center px-5" onclick="closeNoticeEditPreviewModal()">知道了</button>
           </div>
         </div>
       </div>
@@ -121,22 +114,22 @@
   </main>
   <script>
     (function () {
+      window.openNoticeEditPreviewModal = function () {
+        document.getElementById('noticeEditPreviewModal').classList.remove('hidden');
+      };
+      window.closeNoticeEditPreviewModal = function () {
+        document.getElementById('noticeEditPreviewModal').classList.add('hidden');
+      };
+
       var params = new URLSearchParams(location.search);
       var id = params.get('id');
 
       var draftData = {
-        title: '区域分站供应链数字化实践（草稿）',
-        category: '行业观察',
-        scope: ['华东分站', '华北分站'],
+        title: '医疗专区供应商资质复核提醒',
+        type: '政策公告',
+        scope: ['医疗卫生专区'],
         pin: false,
-        body: '此处为草稿正文占位，保存草稿后运营可随时继续编辑。'
-      };
-      var offlineData = {
-        title: '采购商常见问题与合规要点汇编',
-        category: '操作指引',
-        scope: ['全平台'],
-        pin: false,
-        body: '下架后前台不可见；运营可编辑后重新上架。（静态原型。）'
+        body: '请各供应商在专区公示期内完成资质材料更新（原型占位）。'
       };
 
       var lockBanner = document.getElementById('lockBanner');
@@ -154,60 +147,49 @@
         });
       }
 
-      function disableAllFields() {
-        ['fieldTitle', 'fieldCategory', 'fieldBody', 'fieldPin', 'fieldCover'].forEach(function (fid) {
-          var el = document.getElementById(fid);
-          if (el) el.disabled = true;
+      function disableForm() {
+        ['fieldTitle', 'fieldType', 'fieldBody', 'fieldPin'].forEach(function (fid) {
+          document.getElementById(fid).disabled = true;
         });
         disableScopeChecks();
       }
 
-      window.openNewsEditPreviewModal = function () {
-        document.getElementById('newsEditPreviewModal').classList.remove('hidden');
-      };
-      window.closeNewsEditPreviewModal = function () {
-        document.getElementById('newsEditPreviewModal').classList.add('hidden');
-      };
-
       if (!id) {
-        document.getElementById('formTitle').textContent = '发布资讯';
+        document.getElementById('formTitle').textContent = '发布公告';
         pageModeLabel.textContent = '新建';
         return;
       }
 
-      if (id === 'published-1') {
-        document.getElementById('formTitle').textContent = '编辑资讯（不可编辑）';
-        pageModeLabel.textContent = '已上架 · 只读';
+      if (id === 'n1-published' || id === 'n2-published') {
+        document.getElementById('formTitle').textContent = '编辑公告（不可编辑）';
+        pageModeLabel.textContent = '已发布 · 只读';
         lockBanner.classList.remove('hidden');
-        document.getElementById('fieldTitle').value = '国采平台 2026 年服务升级说明';
-        document.getElementById('fieldCategory').value = '平台动态';
-        setScopeChecks(['全平台']);
-        document.getElementById('fieldPin').checked = true;
-        document.getElementById('fieldBody').value = '（已上架内容不可修改，请先下架。）';
-        disableAllFields();
-        formActions.innerHTML = '<button type="button" class="action-btn action-btn-secondary" onclick="openNewsEditPreviewModal()"><i class="fas fa-eye"></i>预览</button><span class="text-sm text-slate-500 py-2">无可执行操作，请返回列表下架后再编辑。</span>';
+        if (id === 'n1-published') {
+          document.getElementById('fieldTitle').value = '关于五一期间物流时效调整的通知';
+          document.getElementById('fieldType').value = '平台通知';
+          setScopeChecks(['全平台']);
+          document.getElementById('fieldPin').checked = true;
+          document.getElementById('fieldBody').value = '（已发布公告不可修改，请先下线。）';
+        } else {
+          document.getElementById('fieldTitle').value = '北京分站办公耗材专项采购活动';
+          document.getElementById('fieldType').value = '活动通知';
+          setScopeChecks(['北京分站']);
+          document.getElementById('fieldPin').checked = false;
+          document.getElementById('fieldBody').value = '（已发布公告不可修改，请先下线。）';
+        }
+        disableForm();
+        formActions.innerHTML = '<button type="button" class="action-btn action-btn-secondary" onclick="openNoticeEditPreviewModal()"><i class="fas fa-eye"></i>预览</button><span class="text-sm text-slate-500 py-2">无可执行操作，请返回列表下线后再编辑。</span>';
         return;
       }
 
-      if (id === 'draft-1') {
-        document.getElementById('formTitle').textContent = '编辑资讯';
+      if (id === 'n3-draft') {
+        document.getElementById('formTitle').textContent = '编辑公告';
         pageModeLabel.textContent = '草稿 · 可编辑';
         document.getElementById('fieldTitle').value = draftData.title;
-        document.getElementById('fieldCategory').value = draftData.category;
+        document.getElementById('fieldType').value = draftData.type;
         setScopeChecks(draftData.scope);
         document.getElementById('fieldPin').checked = draftData.pin;
         document.getElementById('fieldBody').value = draftData.body;
-        return;
-      }
-
-      if (id === 'offline-1') {
-        document.getElementById('formTitle').textContent = '编辑资讯';
-        pageModeLabel.textContent = '已下架 · 可编辑';
-        document.getElementById('fieldTitle').value = offlineData.title;
-        document.getElementById('fieldCategory').value = offlineData.category;
-        setScopeChecks(offlineData.scope);
-        document.getElementById('fieldPin').checked = offlineData.pin;
-        document.getElementById('fieldBody').value = offlineData.body;
         return;
       }
 

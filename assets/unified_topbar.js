@@ -18,7 +18,7 @@
       var tab = q.get("tab");
       return tab === "mall" ? "mall" : "home";
     }
-    if (path.endsWith("/bidding_inquiry.html")) return "bidding";
+    if (path.endsWith("/bidding_inquiry.html")) return "plan";
     if (path.endsWith("/plan_result.html")) return "plan";
     if (path.endsWith("/smart_compare.html")) return "compare";
     return "";
@@ -52,8 +52,6 @@
 
   function buildTopbarHtml(active) {
     var isLogin = getAuth() === "1";
-    var isMergedHome = (window.location.pathname || "").toLowerCase().endsWith("/merged_home.html");
-    var biddingLabel = isMergedHome ? "最价撮合" : "撮合/竞价";
     function tab(key, href, icon, label) {
       var cls = "main-tab" + (active === key ? " active" : "");
       return '<a class="' + cls + '" href="' + href + '"><i class="' + icon + '"></i> ' + label + "</a>";
@@ -65,8 +63,7 @@
       + '  <nav class="main-tabs" aria-label="采购主功能导航">'
       + tab("home", "./merged_home.html?tab=home", "fa-solid fa-house", "首页")
       + tab("mall", "./merged_home.html?tab=mall", "fa-solid fa-store", "国采搜品")
-      + tab("bidding", "./bidding_inquiry.html", "fa-solid fa-gavel", biddingLabel)
-      + tab("plan", "./plan_result.html", "fa-regular fa-file-lines", "智选方案")
+      + tab("plan", "./plan_result.html", "fa-regular fa-file-lines", "最价方案")
       + tab("compare", "./smart_compare.html", "fa-solid fa-magnifying-glass", "全网寻品")
       + "  </nav>"
       + '  <div class="topbar-actions">'

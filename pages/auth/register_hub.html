@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册入驻 | 国采e购</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { --blue: #2088ff; --blue-dark: #0f6fe2; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(160deg, #f4f8ff 0%, #eef4ff 50%, #e8f0ff 100%);
+      color: #111827;
+    }
+    header {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 20px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header a.logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--blue);
+      text-decoration: none;
+    }
+    header .back {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--blue);
+      text-decoration: none;
+    }
+    header .back:hover { text-decoration: underline; }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+    }
+    .intro {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .intro h1 { font-size: 28px; margin: 0 0 10px; }
+    .intro p { margin: 0; font-size: 15px; color: #64748b; line-height: 1.6; }
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      border: 1px solid rgba(32, 136, 255, 0.12);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 22px 50px rgba(32, 136, 255, 0.12);
+      border-color: rgba(32, 136, 255, 0.28);
+    }
+    .card .icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+    .card.supplier .icon { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1d4ed8; }
+    .card.buyer .icon { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #5b21b6; }
+    .card h2 { margin: 0 0 10px; font-size: 20px; }
+    .card p { flex: 1; margin: 0 0 22px; font-size: 14px; color: #64748b; line-height: 1.6; }
+    .card .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 44px;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--blue) 0%, #2494ff 100%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    footer.note {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="../../login.html"><i class="fa-solid fa-gem"></i>国采e购</a>
+    <a class="back" href="../../login.html"><i class="fa-solid fa-arrow-left"></i> 返回登录</a>
+  </header>
+  <main>
+    <div class="intro">
+      <h1>请选择入驻类型</h1>
+      <p>以下入口面向<strong>供应商</strong>与<strong>采购单位</strong>自主提交资料。<br>平台运营人员账号由管理员分配，请通过手机号密码或验证码登录。</p>
+    </div>
+    <div class="cards">
+      <a class="card supplier" href="supplier_onboarding.html">
+        <div class="icon"><i class="fa-solid fa-store"></i></div>
+        <h2>供应商入驻</h2>
+        <p>提交企业信息与资质文件，分站必选，审核通过后可上架商品、参与询价与接单结算。</p>
+        <span class="cta">开始入驻 <i class="fa-solid fa-arrow-right"></i></span>
+      </a>
+      <a class="card buyer" href="buyer_onboarding.html">
+        <div class="icon"><i class="fa-solid fa-building-columns"></i></div>
+        <h2>采购商入驻</h2>
+        <p>提交采购主体资料与对接人账号信息，分站必选，审核通过后使用采购工作台开展采购业务。</p>
+        <span class="cta">开始入驻 <i class="fa-solid fa-arrow-right"></i></span>
+      </a>
+    </div>
+    <footer class="note">静态原型 · 表单提交仅为演示脚本，不产生真实账号</footer>
+  </main>
+</body>
+</html>

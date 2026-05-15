@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购商入驻 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    :root {
+      --primary: #E2231A;
+    }
+    body {
+      background: linear-gradient(180deg, #faf5ff 0%, #f8fafc 18%, #f1f5f9 100%);
+      color: #0f172a;
+    }
+    .admin-sidebar {
+      position: fixed; left: 0; top: 0; width: 240px; height: 100vh;
+      background: #1e293b; color: white; transition: width 0.3s ease;
+      z-index: 100; overflow-y: auto; overflow-x: hidden;
+    }
+    .admin-sidebar.collapsed { width: 64px; }
+    .admin-sidebar-header {
+      padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-sidebar-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; white-space: nowrap; }
+    .admin-sidebar.collapsed .admin-sidebar-logo span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-sidebar-toggle {
+      background: rgba(255,255,255,0.1); border: none; color: white; width: 32px; height: 32px;
+      border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .admin-menu { padding: 10px 0; }
+    .admin-menu-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+      color: rgba(255,255,255,0.8); cursor: pointer; transition: all 0.2s;
+      text-decoration: none; white-space: nowrap;
+    }
+    .admin-menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
+    .admin-menu-item.active { background: rgba(226,35,26,0.2); color: white; border-left: 3px solid #E2231A; }
+    .admin-menu-item i { width: 20px; text-align: center; flex-shrink: 0; }
+    .admin-sidebar.collapsed .admin-menu-item span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-content { margin-left: 240px; transition: margin-left 0.3s ease; min-height: 100vh; }
+    .admin-sidebar.collapsed ~ .admin-content { margin-left: 64px; }
+    .page-card {
+      background: #ffffff;
+      border: 1px solid rgba(15,23,42,0.06);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(15,23,42,0.05);
+    }
+    .action-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; border-radius: 12px; padding: 10px 16px;
+      font-size: 14px; font-weight: 600; transition: all 0.2s ease;
+      cursor: pointer; border: none;
+    }
+    .action-btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 20px rgba(239,68,68,0.22);
+    }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .form-input {
+      width: 100%; height: 40px; padding: 0 12px;
+      border: 1px solid #e2e8f0; border-radius: 10px;
+      font-size: 13px; color: #334155; outline: none;
+    }
+    .form-input:focus { border-color: #E2231A; box-shadow: 0 0 0 3px rgba(226,35,26,0.1); }
+    .form-label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 4px; display: block; }
+    .form-label .required { color: #E2231A; margin-left: 2px; }
+    .form-select {
+      width: 100%; height: 40px; padding: 0 12px;
+      border: 1px solid #e2e8f0; border-radius: 10px;
+      font-size: 13px; color: #334155; outline: none;
+      appearance: none;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+    }
+    .upload-zone {
+      border: 2px dashed #cbd5e1; border-radius: 14px;
+      padding: 28px; text-align: center; font-size: 14px; color: #64748b;
+      background: #f8fafc;
+    }
+    .dialog-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.48);
+      display: none; align-items: center; justify-content: center; padding: 20px; z-index: 160;
+    }
+    .dialog-overlay.show { display: flex; }
+    .dialog-card { width: min(480px,92vw); background: #fff; border-radius: 18px;
+      border: 1px solid #e2e8f0; box-shadow: 0 26px 48px rgba(15,23,42,0.24); overflow: hidden;
+    }
+    .dialog-head { display: flex; align-items: center; gap: 12px; padding: 18px 20px 14px;
+      border-bottom: 1px solid #f1f5f9; background: linear-gradient(180deg,#faf5ff 0%,#fff 100%);
+    }
+    .dialog-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+    }
+    .dialog-icon.info { background: #eef2ff; color: #4f46e5; }
+    .dialog-icon.success { background: #ecfdf5; color: #16a34a; }
+    .dialog-icon.warn { background: #fffbeb; color: #d97706; }
+    .dialog-icon.error { background: #fef2f2; color: #dc2626; }
+    .dialog-title { font-size: 16px; font-weight: 800; color: #111827; }
+    .dialog-body { padding: 16px 20px; font-size: 14px; line-height: 1.85; color: #475569; white-space: pre-line; }
+    .dialog-actions { padding: 0 20px 18px; display: flex; justify-content: flex-end; gap: 10px; }
+    .dialog-btn {
+      height: 38px; padding: 0 16px; border-radius: 10px;
+      font-size: 13px; font-weight: 700; border: none; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .dialog-btn-cancel { border: 1px solid #dbe2ea; background: #fff; color: #475569; }
+    .dialog-btn-confirm { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; }
+
+    .reject-textarea {
+      width: 100%; margin-top: 8px; padding: 10px 12px;
+      border: 1px solid #e2e8f0; border-radius: 10px;
+      font-size: 14px; min-height: 120px; resize: vertical;
+      font-family: inherit; color: #334155; line-height: 1.6;
+      box-sizing: border-box;
+    }
+    .reject-textarea:focus {
+      outline: none; border-color: #E2231A;
+      box-shadow: 0 0 0 3px rgba(226,35,26,0.1);
+    }
+    .reject-textarea::placeholder { color: #94a3b8; }
+
+    html.admin-embed-mode .admin-sidebar { display: none !important; }
+    html.admin-embed-mode .admin-content { margin-left: 0 !important; }
+    .text-primary { color: #E2231A; }
+  </style>
+</head>
+<body class="text-slate-800">
+<script>
+(function () {
+  var embedded = new URLSearchParams(location.search).get('embed') === '1';
+  if (embedded) {
+    document.documentElement.classList.add('admin-embed-mode');
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var h = a.getAttribute('href');
+      if (!h || /^https?:\/\//i.test(h) || h.indexOf('javascript:') === 0 || h.charAt(0) === '#') return;
+      if (h.indexOf('.html') === -1) return;
+      if (h.indexOf('embed=') !== -1) return;
+      a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+    });
+  }
+  window.withAdminEmbed = function (href) {
+    if (!embedded) return href;
+    var q = href.indexOf('?');
+    var base = q === -1 ? href : href.slice(0, q);
+    var params = new URLSearchParams(q === -1 ? '' : href.slice(q + 1));
+    params.set('embed', '1');
+    var s = params.toString();
+    return s ? base + '?' + s : base + '?embed=1';
+  };
+})();
+</script>
+
+<div class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-header">
+    <div class="admin-sidebar-logo"><i class="fas fa-cog"></i><span>管理后台</span></div>
+    <button class="admin-sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="sidebarToggleIcon"></i></button>
+  </div>
+  <nav class="admin-menu">
+    <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>工作台首页</span></a>
+    <a href="admin_station.html" class="admin-menu-item"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
+    <a href="admin_supplier_manage.html" class="admin-menu-item"><i class="fas fa-store"></i><span>供应商管理</span></a>
+    <a href="admin_buyer_manage.html" class="admin-menu-item active"><i class="fas fa-users"></i><span>采购商管理</span></a>
+    <a href="admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a>
+    <a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a>
+    <a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
+    <a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a>
+    <a href="admin_settlement.html" class="admin-menu-item"><i class="fas fa-calculator"></i><span>结算管理</span></a>
+    <a href="admin_cockpit.html" class="admin-menu-item" target="_blank"><i class="fas fa-tachometer-alt"></i><span>数据驾驶舱</span></a>
+  </nav>
+</div>
+
+<div class="admin-content">
+  <div class="max-w-[1680px] mx-auto p-5">
+    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
+      <div>
+        <div class="text-sm text-slate-500 mb-2">
+          <a href="admin_dashboard.html" class="hover:text-primary transition-colors">管理后台</a>
+          <span class="mx-2">/</span>
+          <a href="admin_buyer_manage.html" class="hover:text-primary transition-colors">采购商管理</a>
+          <span class="mx-2">/</span>
+          <span>采购商入驻</span>
+        </div>
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 text-white flex items-center justify-center shadow-lg">
+            <i class="fas fa-building-columns text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-slate-900">采购商入驻</h1>
+            <p id="buyerEditHint" class="text-sm text-amber-700 mt-2 hidden"></p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button type="button" class="action-btn action-btn-secondary" onclick="window.location.href=withAdminEmbed('admin_buyer_manage.html')">
+          <i class="fas fa-list"></i><span>返回列表</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="page-card p-5 mb-5">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
+          <i class="fas fa-user-lock"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">账号信息登记</h2>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4">
+        <div class="md:col-span-2 xl:col-span-3">
+          <label class="form-label">入驻分站<span class="required">*</span></label>
+          <select class="form-select" id="settleStation">
+            <option value="">请选择入驻分站（必选）</option>
+            <option>北京分站</option>
+            <option>医疗卫生专区</option>
+            <option>教育装备专区</option>
+            <option>华东分站</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">申请人姓名<span class="required">*</span></label>
+          <input class="form-input" type="text" id="applicantName" placeholder="管理员 / 申请人">
+        </div>
+        <div>
+          <label class="form-label">申请人手机号<span class="required">*</span></label>
+          <input class="form-input" type="tel" maxlength="11" id="applicantMobile" placeholder="登录手机号">
+        </div>
+        <div class="md:col-span-2 xl:col-span-1">
+          <label class="form-label">短信验证码<span class="required">*</span></label>
+          <div class="flex gap-3">
+            <input class="form-input flex-1 min-w-0" type="text" id="applicantSmsCode" placeholder="验证码" maxlength="8">
+            <button type="button" class="action-btn action-btn-secondary whitespace-nowrap px-4 shrink-0" id="btnSendSmsRegisterBuyer" onclick="sendRegisterSmsBuyer()">
+              <i class="fas fa-paper-plane"></i><span>发送验证码</span>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="form-label">登录密码<span class="required">*</span></label>
+          <input class="form-input" type="password" id="applicantPwd" autocomplete="new-password">
+        </div>
+        <div>
+          <label class="form-label">确认密码<span class="required">*</span></label>
+          <input class="form-input" type="password" id="applicantPwdConfirm" autocomplete="new-password">
+        </div>
+      </div>
+    </div>
+
+    <div class="page-card p-5 mb-5">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+          <i class="fas fa-id-card"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">采购主体信息</h2>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4">
+        <div class="md:col-span-2 xl:col-span-3">
+          <label class="form-label">采购商名称<span class="required">*</span></label>
+          <input class="form-input" type="text" id="buyerOrgName" placeholder="采购单位全称">
+        </div>
+        <div>
+          <label class="form-label">采购商类型<span class="required">*</span></label>
+          <select class="form-select" id="buyerType">
+            <option value="">请选择</option>
+            <option>政府机关</option>
+            <option>医院</option>
+            <option>学校</option>
+            <option>其他事业单位</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">统一社会信用代码<span class="required">*</span></label>
+          <input class="form-input" type="text" maxlength="18" id="buyerCreditCode">
+        </div>
+        <div>
+          <label class="form-label">企业联系人<span class="required">*</span></label>
+          <input class="form-input" type="text" id="entContact">
+        </div>
+        <div>
+          <label class="form-label">企业联系电话<span class="required">*</span></label>
+          <input class="form-input" type="tel" maxlength="11" id="entPhone">
+        </div>
+      </div>
+    </div>
+
+    <div class="page-card p-5 mb-5">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+          <i class="fas fa-id-card"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">采购单位证明材料</h2>
+        </div>
+      </div>
+      <label class="form-label">营业执照<span class="required">*</span></label>
+      <div class="upload-zone cursor-pointer hover:border-blue-300 transition-colors" id="buyerLicenseZone" onclick="markBuyerLicenseUploaded()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')markBuyerLicenseUploaded()">
+        <i class="fas fa-cloud-arrow-up text-3xl text-slate-300 mb-3 block"></i>
+        <span class="text-slate-700 font-semibold">点击上传营业执照</span>
+        <div class="text-sm text-slate-500 mt-2">支持 JPG / PNG / PDF，单文件 ≤ 5MB（请点击上传区域标记已上传）</div>
+      </div>
+      <p class="text-sm mt-3" id="buyerLicenseHint"><span class="text-slate-400">尚未上传</span></p>
+      <button type="button" class="action-btn action-btn-primary mt-4" id="buyerSubmitDraftBtn" onclick="submitBuyerOnboarding()">
+        <i class="fas fa-check"></i><span>提交采购商入驻审核</span>
+      </button>
+      <div id="buyerAuditActions" class="hidden flex-col sm:flex-row sm:items-center sm:justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+        <button type="button" class="action-btn action-btn-secondary border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300" onclick="openRejectBuyerModal()">
+          <i class="fas fa-ban"></i><span>驳回入驻申请</span>
+        </button>
+        <button type="button" class="action-btn text-white" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 10px 20px rgba(16,185,129,0.22);" onclick="passBuyerApplication()">
+          <i class="fas fa-circle-check"></i><span>通过入驻申请</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-overlay" id="dialogOverlay">
+  <div class="dialog-card">
+    <div class="dialog-head">
+      <div class="dialog-icon info" id="dialogIcon"><i class="fas fa-circle-info"></i></div>
+      <div class="dialog-title" id="dialogTitle">提示</div>
+    </div>
+    <div class="dialog-body" id="dialogBody"></div>
+    <div class="dialog-actions">
+      <button type="button" class="dialog-btn dialog-btn-cancel" id="dialogCancelBtn" style="display:none" onclick="closeDialog()">取消</button>
+      <button type="button" class="dialog-btn dialog-btn-confirm" id="dialogConfirmBtn">确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-overlay" id="rejectBuyerOverlay" onclick="if (event.target === this) closeRejectBuyerModal()">
+  <div class="dialog-card" style="width:min(520px,92vw);" onclick="event.stopPropagation()">
+    <div class="dialog-head">
+      <div class="dialog-icon warn"><i class="fas fa-ban"></i></div>
+      <div class="dialog-title">驳回入驻申请</div>
+    </div>
+    <div class="dialog-body" style="white-space:normal;">
+      <label for="rejectBuyerReasonInput" class="text-sm font-bold text-slate-700">驳回理由<span style="color:#E2231A;margin-left:4px;">*</span></label>
+      <textarea id="rejectBuyerReasonInput" class="reject-textarea" maxlength="500" placeholder="请填写驳回原因，提交后将通知采购单位按理由补充材料。"></textarea>
+      <div class="text-xs text-slate-400 mt-2 text-right"><span id="rejectBuyerReasonCount">0</span>/500</div>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="dialog-btn dialog-btn-cancel" onclick="closeRejectBuyerModal()">取消</button>
+      <button type="button" class="dialog-btn dialog-btn-confirm" onclick="submitRejectBuyer()">提交驳回</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let dialogConfirmHandler = null;
+var buyerLicenseUploaded = false;
+
+function markBuyerLicenseUploaded() {
+  buyerLicenseUploaded = true;
+  var hint = document.getElementById('buyerLicenseHint');
+  hint.innerHTML = '<span class="text-green-600 font-semibold"><i class="fas fa-circle-check"></i> 演示：已标记营业执照已上传</span>';
+  var z = document.getElementById('buyerLicenseZone');
+  z.style.borderColor = '#86efac';
+  z.style.background = '#f0fdf4';
+}
+
+function showDialog(opts) {
+  var title = opts.title || '提示';
+  var message = opts.message || '';
+  var type = opts.type || 'info';
+  var cancelText = opts.cancelText || '';
+  var confirmText = opts.confirmText || '确定';
+  var icons = {
+    info: ['info', 'fa-circle-info'],
+    success: ['success', 'fa-circle-check'],
+    warn: ['warn', 'fa-triangle-exclamation'],
+    error: ['warn', 'fa-circle-xmark']
+  };
+  var ic = icons[type] || icons.info;
+  document.getElementById('dialogIcon').className = 'dialog-icon ' + ic[0];
+  document.getElementById('dialogIcon').innerHTML = '<i class="fas ' + ic[1] + '"></i>';
+  document.getElementById('dialogTitle').textContent = title;
+  document.getElementById('dialogBody').textContent = message;
+  document.getElementById('dialogConfirmBtn').textContent = confirmText;
+  var c = document.getElementById('dialogCancelBtn');
+  if (cancelText) {
+    c.style.display = 'inline-flex';
+    c.textContent = cancelText;
+  } else {
+    c.style.display = 'none';
+  }
+  dialogConfirmHandler = opts.onConfirm || null;
+  document.getElementById('dialogOverlay').classList.add('show');
+}
+
+function closeDialog(confirmed) {
+  document.getElementById('dialogOverlay').classList.remove('show');
+  if (confirmed && typeof dialogConfirmHandler === 'function') {
+    dialogConfirmHandler();
+  }
+  dialogConfirmHandler = null;
+}
+
+document.getElementById('dialogCancelBtn').onclick = function () {
+  dialogConfirmHandler = null;
+  document.getElementById('dialogOverlay').classList.remove('show');
+};
+
+function toggleSidebar() {
+  var sidebar = document.getElementById('adminSidebar');
+  var icon = document.getElementById('sidebarToggleIcon');
+  sidebar.classList.toggle('collapsed');
+  icon.classList.toggle('fa-chevron-left');
+  icon.classList.toggle('fa-chevron-right');
+  localStorage.setItem('adminSidebarCollapsed', sidebar.classList.contains('collapsed'));
+}
+
+function validateBuyerAccountBlock() {
+  if (!(document.getElementById('settleStation').value || '').trim()) {
+    showDialog({ title: '提示', message: '请选择入驻分站（必选）。', type: 'warn' });
+    return false;
+  }
+  var nm = (document.getElementById('applicantName').value || '').trim();
+  if (!nm) {
+    showDialog({ title: '提示', message: '请填写申请人姓名。', type: 'warn' });
+    return false;
+  }
+  var mb = (document.getElementById('applicantMobile').value || '').trim();
+  if (!/^1\d{10}$/.test(mb)) {
+    showDialog({ title: '提示', message: '请填写正确的申请人手机号（11位）。', type: 'warn' });
+    return false;
+  }
+  if (!(document.getElementById('applicantSmsCode').value || '').trim()) {
+    showDialog({ title: '提示', message: '请填写短信验证码。', type: 'warn' });
+    return false;
+  }
+  var p1 = document.getElementById('applicantPwd').value || '';
+  var p2 = document.getElementById('applicantPwdConfirm').value || '';
+  if (p1.length < 6) {
+    showDialog({ title: '提示', message: '请设置不少于 6 位的登录密码。', type: 'warn' });
+    return false;
+  }
+  if (p1 !== p2) {
+    showDialog({ title: '提示', message: '两次输入的登录密码不一致。', type: 'warn' });
+    return false;
+  }
+  if (!(document.getElementById('buyerOrgName').value || '').trim()) {
+    showDialog({ title: '提示', message: '请填写采购商名称。', type: 'warn' });
+    return false;
+  }
+  if (!(document.getElementById('buyerType').value || '').trim()) {
+    showDialog({ title: '提示', message: '请选择采购商类型。', type: 'warn' });
+    return false;
+  }
+  if (!(document.getElementById('buyerCreditCode').value || '').trim()) {
+    showDialog({ title: '提示', message: '请填写统一社会信用代码。', type: 'warn' });
+    return false;
+  }
+  if (!(document.getElementById('entContact').value || '').trim()) {
+    showDialog({ title: '提示', message: '请填写企业联系人。', type: 'warn' });
+    return false;
+  }
+  if (!/^1\d{10}$/.test((document.getElementById('entPhone').value || '').trim())) {
+    showDialog({ title: '提示', message: '请填写正确的企业联系电话（11位）。', type: 'warn' });
+    return false;
+  }
+  return true;
+}
+
+function sendRegisterSmsBuyer() {
+  var mb = (document.getElementById('applicantMobile').value || '').trim();
+  if (!/^1\d{10}$/.test(mb)) {
+    showDialog({ title: '提示', message: '请先填写正确的申请人手机号。', type: 'warn' });
+    return;
+  }
+  var btn = document.getElementById('btnSendSmsRegisterBuyer');
+  if (btn.dataset.counting === '1') return;
+  btn.dataset.counting = '1';
+  var sec = 60;
+  btn.disabled = true;
+  if (btn._smsTimer) clearInterval(btn._smsTimer);
+  var tick = function () {
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i><span>' + sec + 's</span>';
+    sec--;
+    if (sec <= 0) {
+      clearInterval(btn._smsTimer);
+      btn._smsTimer = null;
+      btn.dataset.counting = '';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i><span>发送验证码</span>';
+    }
+  };
+  tick();
+  btn._smsTimer = setInterval(tick, 1000);
+  showDialog({ title: '演示', message: '已向手机号 ' + mb + ' 发送采购商注册场景验证码（静态原型）。', type: 'info' });
+}
+
+function submitBuyerOnboarding() {
+  if (!validateBuyerAccountBlock()) return;
+  if (!buyerLicenseUploaded) {
+    showDialog({ title: '提示', message: '请先上传采购单位营业执照（点击上传区域模拟）。', type: 'warn' });
+    return;
+  }
+  showDialog({
+    title: '确认提交',
+    message: '将以当前内容提交采购商入驻审核，确认后继续。',
+    type: 'info',
+    cancelText: '取消',
+    confirmText: '确认提交',
+    onConfirm: function () {
+      showDialog({
+        title: '已提交',
+        message: '采购商入驻资料已记入运营侧待审队列。\n前台用户需待审核通过后，方可使用手机号与密码登录。',
+        type: 'success',
+        onConfirm: function () {
+          window.location.href = withAdminEmbed('admin_buyer_manage.html');
+        }
+      });
+    }
+  });
+}
+
+function openRejectBuyerModal() {
+  var ta = document.getElementById('rejectBuyerReasonInput');
+  if (ta) ta.value = '';
+  updateRejectBuyerReasonCount();
+  document.getElementById('rejectBuyerOverlay').classList.add('show');
+}
+
+function closeRejectBuyerModal() {
+  document.getElementById('rejectBuyerOverlay').classList.remove('show');
+}
+
+function updateRejectBuyerReasonCount() {
+  var ta = document.getElementById('rejectBuyerReasonInput');
+  var el = document.getElementById('rejectBuyerReasonCount');
+  if (ta && el) el.textContent = String((ta.value || '').length);
+}
+
+function submitRejectBuyer() {
+  var v = document.getElementById('rejectBuyerReasonInput').value.trim();
+  if (!v) {
+    showDialog({ title: '提示', message: '请填写驳回理由。', type: 'warn' });
+    return;
+  }
+  closeRejectBuyerModal();
+  showDialog({
+    title: '已驳回入驻申请',
+    message: '已向采购单位发送驳回通知（演示）。\n\n驳回理由：\n' + v,
+    type: 'info',
+    confirmText: '返回采购商列表',
+    onConfirm: function () {
+      window.location.href = withAdminEmbed('admin_buyer_manage.html');
+    }
+  });
+}
+
+function passBuyerApplication() {
+  if (!validateBuyerAccountBlock()) return;
+  if (!buyerLicenseUploaded) {
+    showDialog({ title: '提示', message: '请先确认采购单位营业执照已上传后再通过入驻申请。', type: 'warn' });
+    return;
+  }
+  showDialog({
+    title: '通过入驻申请',
+    message: '确认通过后该采购单位将正式上线，可使用注册手机号登录采购端（演示）。',
+    type: 'info',
+    cancelText: '取消',
+    confirmText: '确认通过',
+    onConfirm: function () {
+      showDialog({
+        title: '审核已通过',
+        message: '已通过采购商入驻申请（演示）。',
+        type: 'success',
+        confirmText: '返回采购商列表',
+        onConfirm: function () {
+          window.location.href = withAdminEmbed('admin_buyer_manage.html');
+        }
+      });
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  var saved = localStorage.getItem('adminSidebarCollapsed');
+  if (saved === 'true') {
+    document.getElementById('adminSidebar').classList.add('collapsed');
+    document.getElementById('sidebarToggleIcon').classList.replace('fa-chevron-left', 'fa-chevron-right');
+  }
+  var bid = new URLSearchParams(location.search).get('id');
+  var hintEl = document.getElementById('buyerEditHint');
+  if (bid && hintEl) {
+    hintEl.textContent = '演示：办理采购商 ' + bid + ' 的入驻审核（真实环境将加载对应资料）。';
+    hintEl.classList.remove('hidden');
+  }
+  var auditBar = document.getElementById('buyerAuditActions');
+  var draftBtn = document.getElementById('buyerSubmitDraftBtn');
+  if (bid && auditBar && draftBtn) {
+    draftBtn.classList.add('hidden');
+    auditBar.classList.remove('hidden');
+    auditBar.classList.add('flex');
+  }
+  var rta = document.getElementById('rejectBuyerReasonInput');
+  if (rta) rta.addEventListener('input', updateRejectBuyerReasonCount);
+});
+
+document.getElementById('dialogOverlay').addEventListener('click', function (e) {
+  if (e.target.id === 'dialogOverlay') dialogConfirmHandler = null, this.classList.remove('show');
+});
+
+document.getElementById('dialogConfirmBtn').onclick = function () {
+  var fn = dialogConfirmHandler;
+  document.getElementById('dialogOverlay').classList.remove('show');
+  dialogConfirmHandler = null;
+  if (typeof fn === 'function') fn();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购商资料修改（审核驳回）| 国采e购</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { --blue: #2088ff; --line: #e5e7eb; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: #f8fafc;
+      color: #111827;
+    }
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header a { color: var(--blue); font-weight: 700; text-decoration: none; font-size: 14px; }
+    header a:hover { text-decoration: underline; }
+    .brand { font-size: 18px; font-weight: 800; color: var(--blue); display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .shell { max-width: 920px; margin: 24px auto; padding: 0 20px 48px; }
+    h1 { font-size: 26px; margin: 8px 0 22px; }
+    .resubmit-banner {
+      background: linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%);
+      border: 1px solid #fcd34d;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      color: #92400e;
+      line-height: 1.55;
+    }
+    .resubmit-banner strong { color: #b45309; }
+    .section {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 22px 22px 8px;
+      margin-bottom: 18px;
+    }
+    .section h2 { font-size: 16px; margin: 0 0 16px; display: flex; align-items: center; gap: 8px; }
+    .section h2 i { color: var(--blue); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px 18px;
+    }
+    @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+    .full { grid-column: 1 / -1; }
+    .grid-account {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px 18px;
+    }
+    @media (min-width: 720px) {
+      .grid-account { grid-template-columns: repeat(3, 1fr); }
+    }
+    .grid-account .full { grid-column: 1 / -1; }
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .req { color: #dc2626; margin-left: 2px; }
+    .hint-lock { font-size: 12px; color: #94a3b8; font-weight: 500; margin-left: 6px; }
+    input, select {
+      width: 100%;
+      height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    input.field-locked, select.account-lock:disabled {
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      cursor: not-allowed;
+      border-color: #e2e8f0 !important;
+    }
+    select.account-lock:disabled { opacity: 1; }
+    input:not(.field-locked):focus, select:not(:disabled):focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(32, 136, 255, 0.12);
+    }
+    .upload-zone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+      font-size: 14px;
+      color: #64748b;
+      background: #f8fafc;
+      margin-bottom: 14px;
+    }
+    .btn-submit {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--blue) 0%, #2494ff 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 8px;
+    }
+    .footnote { margin-top: 16px; font-size: 12px; color: #94a3b8; text-align: center; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="../../login.html"><i class="fa-solid fa-gem"></i>国采e购</a>
+    <div>
+      <a href="../../login.html">« 返回登录</a>
+    </div>
+  </header>
+  <div class="shell">
+    <h1>采购商入驻资料修改（审核未通过）</h1>
+    <div class="resubmit-banner">
+      <strong><i class="fa-solid fa-circle-info"></i> 审核未通过</strong>：账号与分站信息已锁定。请根据驳回意见修改采购单位信息与证明材料，核对无误后点击「再次提交申请」。
+    </div>
+
+    <form id="f" onsubmit="return false;">
+      <section class="section">
+        <h2><i class="fa-solid fa-user-lock"></i>账号信息登记<span class="hint-lock">（注册时已确认，不可修改）</span></h2>
+        <div class="grid-account">
+          <div class="full">
+            <label for="settleStation">入驻分站<span class="req">*</span></label>
+            <select id="settleStation" class="account-lock" disabled aria-readonly="true" title="不可修改">
+              <option selected>北京分站</option>
+            </select>
+          </div>
+          <div>
+            <label for="applicantName">申请人姓名<span class="req">*</span></label>
+            <input type="text" id="applicantName" class="field-locked" readonly value="王经办" title="不可修改" autocomplete="name">
+          </div>
+          <div>
+            <label for="applicantMobile">申请人手机号<span class="req">*</span></label>
+            <input type="tel" id="applicantMobile" class="field-locked" readonly value="13800138888" maxlength="11" title="不可修改" autocomplete="tel">
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2><i class="fa-solid fa-building-columns"></i>采购单位信息（示意）</h2>
+        <div class="grid">
+          <div class="full">
+            <label for="buyerName">采购商名称<span class="req">*</span></label>
+            <input type="text" id="buyerName" placeholder="单位全称">
+          </div>
+          <div>
+            <label for="buyerType">采购商类型<span class="req">*</span></label>
+            <select id="buyerType">
+              <option value="">请选择</option>
+              <option>政府机关</option>
+              <option>医院</option>
+              <option>学校</option>
+              <option>其他事业单位</option>
+            </select>
+          </div>
+          <div>
+            <label for="buyerCreditCode">统一社会信用代码<span class="req">*</span></label>
+            <input type="text" id="buyerCreditCode" maxlength="18" placeholder="法人主体代码">
+          </div>
+          <div>
+            <label for="entContact">企业联系人<span class="req">*</span></label>
+            <input type="text" id="entContact" placeholder="对外联系人姓名">
+          </div>
+          <div>
+            <label for="entPhone">企业联系电话<span class="req">*</span></label>
+            <input type="tel" id="entPhone" maxlength="11" placeholder="可与申请人手机号不同">
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2><i class="fa-solid fa-id-card"></i>采购单位证明材料</h2>
+        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">营业执照<span class="req">*</span></div>
+        <div class="upload-zone" id="licenseUploadZone" role="button" tabindex="0" title="演示：点击模拟上传">
+          <i class="fa-regular fa-file-pdf" style="font-size:28px;display:block;color:#94a3b8;margin-bottom:8px;"></i>
+          点击此处上传或更换营业执照（演示环境不产生真实文件）
+        </div>
+        <p id="licenseStatus" style="margin:10px 0 0;font-size:13px;color:#94a3b8;">尚未上传</p>
+      </section>
+
+      <button type="button" class="btn-submit" id="btnSubmit">再次提交申请</button>
+      <p class="footnote">演示：本页独立于注册入驻流程；提交后将跳转登录页（不产生真实审核队列）。</p>
+    </form>
+  </div>
+  <script>
+    function isPhone(v) { return /^1\d{10}$/.test((v || '').trim()); }
+    var buyerLicenseUploaded = false;
+
+    function markBuyerLicenseUploaded() {
+      buyerLicenseUploaded = true;
+      var el = document.getElementById('licenseStatus');
+      el.textContent = '演示：已标记营业执照已上传（非真实文件）。';
+      el.style.color = '#059669';
+      document.getElementById('licenseUploadZone').style.borderColor = '#86efac';
+      document.getElementById('licenseUploadZone').style.background = '#f0fdf4';
+    }
+    document.getElementById('licenseUploadZone').addEventListener('click', markBuyerLicenseUploaded);
+    document.getElementById('licenseUploadZone').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        markBuyerLicenseUploaded();
+      }
+    });
+
+    document.getElementById('btnSubmit').addEventListener('click', function () {
+      if (!(document.getElementById('buyerName').value || '').trim()) {
+        alert('请填写采购商名称');
+        return;
+      }
+      if (!(document.getElementById('buyerType').value || '').trim()) {
+        alert('请选择采购商类型');
+        return;
+      }
+      if (!(document.getElementById('buyerCreditCode').value || '').trim()) {
+        alert('请填写统一社会信用代码');
+        return;
+      }
+      if (!(document.getElementById('entContact').value || '').trim()) {
+        alert('请填写企业联系人');
+        return;
+      }
+      if (!isPhone(document.getElementById('entPhone').value)) {
+        alert('请填写正确的企业联系电话');
+        return;
+      }
+      if (!buyerLicenseUploaded) {
+        alert('请上传采购单位营业执照');
+        return;
+      }
+      alert('演示：修改后的采购商入驻资料已重新提交，将进入审核队列（不产生真实账号）。');
+      location.href = '../../login.html';
+    });
+  </script>
+</body>
+</html>
