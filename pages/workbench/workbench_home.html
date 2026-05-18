@@ -883,6 +883,9 @@
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="messages" onclick="openMessageModal()">
           <i class="fas fa-envelope"></i><span>我的消息</span>
         </a>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="warehouse" onclick="openWorkbenchSubPage('../product/warehouse_manage.html', 'warehouse', '仓库管理')">
+          <i class="fas fa-warehouse"></i><span>仓库管理</span>
+        </a>
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="my-goods" onclick="openWorkbenchSubPage('../product/my_products.html', 'my-goods', '我的商品')">
           <i class="fas fa-boxes-stacked"></i><span>我的商品</span>
         </a>
@@ -2902,7 +2905,7 @@
     }
 
     function goToProcurementMode() {
-      window.location.href = '../home.html';
+      window.location.href = '../merged_home.html';
     }
     
     // ========== 页面加载时初始化 ==========

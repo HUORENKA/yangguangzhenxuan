@@ -18,7 +18,6 @@
       var tab = q.get("tab");
       return tab === "mall" ? "mall" : "home";
     }
-    if (path.endsWith("/bidding_inquiry.html")) return "plan";
     if (path.endsWith("/plan_result.html")) return "plan";
     if (path.endsWith("/smart_compare.html")) return "compare";
     return "";

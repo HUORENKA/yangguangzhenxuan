@@ -1060,7 +1060,7 @@
     .scene-op-btn.primary { background: linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%); color:#fff; border:none; box-shadow:0 6px 14px rgba(22,163,74,0.24); }
     .scene-op-btn.primary:hover { transform:translateY(-2px); }
 
-    /* ─── 嵌入：竞价采购助手（样式对齐 bidding_inquiry） ─── */
+    /* ─── 嵌入：竞价采购助手 ─── */
     .bi-guide-bar.bi-guide-bar-inline {
       background: linear-gradient(180deg,#f0fdfa 0%,#ecfeff 100%);
       border: 1px dashed #99f6e4;
@@ -1445,7 +1445,6 @@
       <a class="main-tab" href="./merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
       <a class="main-tab active" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 最价方案</a>
       <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
-      <a class="main-tab" href="./compliance_home.html"><i class="fa-solid fa-shield-halved"></i> 合规助手</a>
     </nav>
     <div class="topbar-actions">
       <span class="top-chip hidden-source-chip" id="sourceChip"><i class="fa-solid fa-file-waveform"></i> 演示样例</span>
@@ -1593,7 +1592,7 @@
 
   <input id="planBidAssistantFile" class="hidden-input" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx">
 
-  <!-- 模块3：竞价采购助手（与 bidding_inquiry 同源界面） -->
+  <!-- 模块3：竞价采购助手 -->
   <div class="bi-assistant-card" id="bidAssistantAnchor">
     <div class="bi-assistant-top">
       <div class="bi-at-brand">
@@ -2789,7 +2788,8 @@
     var f = document.getElementById('planBidAssistantFile');
     if (f) {
       f.addEventListener('change', function () {
-        window.location.href = './bidding_inquiry.html#bidAssistantAnchor';
+        var anchor = document.getElementById('bidAssistantAnchor');
+        if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
   });

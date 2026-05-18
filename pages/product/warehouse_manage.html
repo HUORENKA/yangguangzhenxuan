@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>仓库管理 | 阳光甄选</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    @layer utilities {
+      .text-primary { color: #E2231A; }
+      .bg-primary { background-color: #E2231A; }
+    }
+    body {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+    .page-card {
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+    .wh-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.25rem 1.35rem;
+      background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 220px;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .wh-card:hover {
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      transform: translateY(-2px);
+    }
+    .wh-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .wh-card-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+    .wh-icon-btn {
+      border: none;
+      background: #f1f5f9;
+      color: #64748b;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .wh-icon-btn:hover {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .wh-card-addr {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.55;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .wh-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 13px;
+      padding-top: 0.25rem;
+      border-top: 1px solid #f1f5f9;
+    }
+    .wh-card-meta strong {
+      display: block;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+    }
+    .wh-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .wh-status-on {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .wh-status-off {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+    .wh-card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+    .wh-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .wh-btn-primary {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #fff;
+    }
+    .wh-btn-secondary {
+      border: 1px solid #dbe2ea;
+      background: #fff;
+      color: #475569;
+    }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.48);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 80;
+    }
+    .modal-overlay.show {
+      display: flex;
+    }
+    .modal-sheet {
+      width: min(920px, 100%);
+      max-height: min(92vh, 900px);
+      min-width: 0;
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-sheet-head {
+      flex-shrink: 0;
+      padding: 18px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .modal-sheet-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      min-height: 0;
+      min-width: 0;
+    }
+    /* 纵向 flex 子项默认 min-width:auto，会被“最宽内容”顶住，连带把三栏撑出横向溢出 */
+    .modal-sheet-body > .modal-field {
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .modal-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .modal-field input,
+    .modal-field select,
+    .modal-field textarea {
+      width: 100%;
+      border: 1px solid #dbe2ea;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .modal-field textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+    .modal-sheet-foot {
+      flex-shrink: 0;
+      padding: 14px 20px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    /* 配送范围：避免 flex/grid 子项 min-width:auto 撑破窄列导致横向滚动与文字错位 */
+    .wh-region-field {
+      min-width: 0;
+      width: 100%;
+    }
+    .wh-region-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+      min-width: 0;
+    }
+    @media (max-width: 720px) {
+      .wh-region-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .wh-region-col {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #f8fafc;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 200px;
+      max-height: 260px;
+      min-width: 0;
+    }
+    .wh-region-col-title {
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .wh-region-list {
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 6px;
+      flex: 1;
+      min-height: 0;
+      min-width: 0;
+    }
+    /*
+      关键：用 Grid 第二列 minmax(0,1fr) 强制文字列可收缩；
+      不用原生 button（易被 UA/Tailwind 撑出 min-content 宽度导致整栏横向错位）。
+    */
+    .wh-region-row {
+      display: grid;
+      grid-template-columns: 1.125rem minmax(0, 1fr);
+      column-gap: 8px;
+      align-items: start;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.45;
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    label.wh-region-row {
+      cursor: pointer;
+      margin: 0;
+    }
+    .wh-region-row:hover {
+      background: #ffffff;
+    }
+    .wh-region-row input[type='checkbox'] {
+      width: 1.125rem;
+      height: 1.125rem;
+      margin: 3px 0 0 0;
+      padding: 0;
+      flex-shrink: 0;
+      accent-color: #dc2626;
+    }
+    .wh-region-text {
+      display: block;
+      min-width: 0;
+      max-width: 100%;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      white-space: normal;
+      text-align: left;
+    }
+    .wh-region-focus-label {
+      cursor: pointer;
+      color: inherit;
+      outline: none;
+    }
+    .wh-region-focus-label:hover {
+      color: #b91c1c;
+      text-decoration: underline;
+    }
+    .wh-region-focus-label:focus-visible {
+      border-radius: 4px;
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px #dc2626;
+    }
+    .wh-region-row-active {
+      background: #ffffff;
+      box-shadow: inset 0 0 0 1px #fecaca;
+    }
+    .wh-region-empty {
+      padding: 14px 10px;
+      font-size: 12px;
+      color: #94a3b8;
+      text-align: center;
+    }
+    .modal-foot-btn {
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+    .modal-foot-cancel {
+      background: #fff;
+      border: 1px solid #dbe2ea;
+      color: #475569;
+    }
+    .modal-foot-save {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="text-slate-800">
+  <div class="max-w-[1600px] mx-auto p-5">
+    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
+      <div>
+        <div class="text-sm text-slate-500 mb-2">
+          <a href="../workbench/workbench_home.html" class="hover:text-primary transition-colors">工作台</a>
+          <span class="mx-2">/</span>
+          <span>仓库管理</span>
+        </div>
+        <h1 class="text-3xl font-bold text-slate-900">仓库管理</h1>
+        <p class="text-sm text-slate-500 mt-1">维护平台五仓及扩展仓库；库内库存为原型演示数据，不与「我的商品」页联动回写。</p>
+      </div>
+      <button type="button" id="whAddBtn" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-br from-rose-500 to-red-600 shadow-lg">
+        <i class="fas fa-plus"></i>
+        <span>新增仓库</span>
+      </button>
+    </div>
+
+    <div id="whCardGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <!-- cards -->
+    </div>
+  </div>
+
+  <div id="whEditOverlay" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-sheet" onclick="event.stopPropagation()">
+      <div class="modal-sheet-head" id="whModalTitle">编辑仓库</div>
+      <div class="modal-sheet-body" id="whEditModalBody">
+        <input type="hidden" id="whModalHiddenId" value="" />
+        <div class="modal-field">
+          <label for="whModalName">仓库名称</label>
+          <input id="whModalName" type="text" maxlength="80" placeholder="如：华东一号仓" />
+        </div>
+        <div class="modal-field">
+          <label for="whModalAddress">仓库地址</label>
+          <textarea id="whModalAddress" placeholder="省市区街道门牌等"></textarea>
+        </div>
+        <div class="modal-field">
+          <label for="whModalStatus">仓库状态</label>
+          <select id="whModalStatus">
+            <option value="1">启用</option>
+            <option value="0">禁用</option>
+          </select>
+        </div>
+        <div class="modal-field wh-region-field">
+          <label>配送范围</label>
+          <p class="text-[11px] text-slate-500 mb-2 leading-relaxed">
+            点击<strong class="text-slate-600">省 / 直辖市</strong>或<strong class="text-slate-600">市</strong>名称，右侧仅展示其下属列表。勾选省份将默认选中该省下全部区县；可在右侧再取消部分区县。
+          </p>
+          <div class="wh-region-grid">
+            <div class="wh-region-col">
+              <div class="wh-region-col-title">省 / 直辖市</div>
+              <div class="wh-region-list" id="whRegionProvinces"></div>
+            </div>
+            <div class="wh-region-col">
+              <div class="wh-region-col-title">市</div>
+              <div class="wh-region-list" id="whRegionCities"></div>
+            </div>
+            <div class="wh-region-col">
+              <div class="wh-region-col-title">区 / 县</div>
+              <div class="wh-region-list" id="whRegionDistricts"></div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2" id="whRegionSummary">已选 0 个区县</p>
+        </div>
+      </div>
+      <div class="modal-sheet-foot">
+        <button type="button" class="modal-foot-btn modal-foot-cancel" id="whModalCancel">取消</button>
+        <button type="button" class="modal-foot-btn modal-foot-save" id="whModalSave">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./division_data_sample.js"></script>
+  <script src="./warehouse_store.js"></script>
+  <script src="./warehouse_manage_app.js"></script>
+</body>
+</html>

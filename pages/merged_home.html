@@ -2644,11 +2644,11 @@
     </div>
   </div>
 
-  <!-- 采购计划 · 关联订单详情（叠于采购计划弹窗之上） -->
+  <!-- 采购计划 · 关联采购单详情（叠于采购计划弹窗之上） -->
   <div class="gm-overlay" id="planOrderDetailModal" style="z-index:2100;" onclick="closePlanOrderDetail(event)">
     <div class="gm-box" style="max-width:440px;width:92%;" onclick="event.stopPropagation()">
       <div class="gm-head">
-        <span class="gm-title" id="planOrderDetailHeadTitle">订单详情</span>
+        <span class="gm-title" id="planOrderDetailHeadTitle">采购单详情</span>
         <button type="button" class="gm-close" onclick="closePlanOrderDetail()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="gm-body" id="planOrderDetailBody"></div>
@@ -2717,11 +2717,11 @@
     </div>
   </div>
 
-  <!-- 预算管理 · 关联订单详情 -->
+  <!-- 预算管理 · 关联采购单详情 -->
   <div class="gm-overlay" id="budgetOrderDetailModal" style="z-index:2100;" onclick="closeBudgetOrderDetail(event)">
     <div class="gm-box" style="max-width:440px;width:92%;" onclick="event.stopPropagation()">
       <div class="gm-head">
-        <span class="gm-title" id="budgetOrderDetailHeadTitle">订单详情</span>
+        <span class="gm-title" id="budgetOrderDetailHeadTitle">采购单详情</span>
         <button type="button" class="gm-close" onclick="closeBudgetOrderDetail()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="gm-body" id="budgetOrderDetailBody"></div>
@@ -2990,7 +2990,7 @@
       }
     }
 
-    /* 推荐商品 Mock 数据 —— 与 shopping.html 保持一致，每区 11 件 */
+    /* 推荐商品 Mock 数据 —— 每区 11 件 */
     var recoMock = {
       /* ── 0：采购计划推荐（办公/打印类） ── */
       0: [
@@ -3080,7 +3080,7 @@
     }
 
     /* =====================================================================
-       功能区 JS（来自 home.html）
+       功能区 JS（合并首页 mall 区）
     ===================================================================== */
     var FINDER_COMPARE_STORAGE_KEY = 'finderCompareDemo';
     var finderImageInput = document.getElementById('finderImageInput');
@@ -3204,17 +3204,34 @@
     ===================================================================== */
     var currentPlanFilter = 'all';
     var planIdSeed = 4;
+    function procurementOrderAuditLabel(o){
+      var st=o&&o.auditStatus;
+      if(st==='rejected') return '审核不通过（不计入金额）';
+      if(st==='approved') return '审核通过';
+      return '审核中';
+    }
+    function procurementOrderCountsTowardUsed(o){
+      return !(o&&o.auditStatus==='rejected');
+    }
+    function sumProcurementOrdersCounted(orders){
+      return (orders||[]).reduce(function(s,o){ return s+(procurementOrderCountsTowardUsed(o)?(Number(o.amt)||0):0); },0);
+    }
+    function planEffectiveUsed(p){ return (p&&p.orders&&p.orders.length)?sumProcurementOrdersCounted(p.orders):(Number(p&&p.used)||0); }
+    function budgetEffectiveUsed(c){ return (c&&c.orders&&c.orders.length)?sumProcurementOrdersCounted(c.orders):(Number(c&&c.used)||0); }
+
     var plans = [
       { id:1, name:'2026年办公设备更新采购计划', amount:200000, used:148900, deadline:'2026-12-31', cat:'笔记本电脑、显示器、打印机', status:'active', fileName:'办公设备采购需求说明.pdf', fileUrl:'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', orders:[
-        { no:'PO20260401', goods:'华为显示器×5', amt:16495, status:'已收货', placedAt:'2026-04-01 09:32', supplier:'华为授权经销商（华北区）', receiver:'采购部 张工', payMethod:'账期支付（30天）' },
-        { no:'PO20260318', goods:'罗技键鼠套装×10', amt:2990, status:'已收货', placedAt:'2026-03-18 14:05', supplier:'京东企业业务', receiver:'行政中心', payMethod:'对公转账' },
-        { no:'PO20260305', goods:'联想笔记本×3', amt:19497, status:'待发货', placedAt:'2026-03-05 11:20', supplier:'联想官方旗舰店（政企）', receiver:'信息技术处', payMethod:'账期支付（45天）' }
+        { no:'PO20260401', goods:'华为显示器×5', amt:80000, auditStatus:'approved', placedAt:'2026-04-01 09:32', supplier:'华为授权经销商（华北区）', receiver:'采购部 张工', payMethod:'账期支付（30天）' },
+        { no:'PO20260318', goods:'罗技键鼠套装×10', amt:50000, auditStatus:'approved', placedAt:'2026-03-18 14:05', supplier:'京东企业业务', receiver:'行政中心', payMethod:'对公转账' },
+        { no:'PO20260305', goods:'联想笔记本×3', amt:18900, auditStatus:'pending', placedAt:'2026-03-05 11:20', supplier:'联想官方旗舰店（政企）', receiver:'信息技术处', payMethod:'账期支付（45天）' },
+        { no:'PO20260302', goods:'备选供货商备货（未获批）', amt:99999, auditStatus:'rejected', placedAt:'2026-03-02 08:00', supplier:'—', receiver:'—', payMethod:'—' }
       ]},
       { id:2, name:'年货采购计划 2026', amount:30000, used:28450, deadline:'2026-02-01', cat:'食品礼品、节庆物资', status:'done', orders:[
-        { no:'PO20260110', goods:'坚果礼盒×80', amt:9600, status:'已收货', placedAt:'2026-01-10 16:40', supplier:'三江优品食品专营店', receiver:'工会办公室', payMethod:'预付 50%' }
+        { no:'PO20260110', goods:'坚果礼盒×80', amt:28450, auditStatus:'approved', placedAt:'2026-01-10 16:40', supplier:'三江优品食品专营店', receiver:'工会办公室', payMethod:'预付 50%' }
       ]},
       { id:3, name:'Q2 打印耗材补货计划', amount:50000, used:49000, deadline:'2026-06-10', cat:'碳粉盒、墨盒、A4纸', status:'active', orders:[
-        { no:'PO20260410', goods:'得力碳粉盒×50', amt:4450, status:'已收货', placedAt:'2026-04-10 10:00', supplier:'得力办公集采服务商', receiver:'文印室', payMethod:'账期支付（30天）' }
+        { no:'PO20260410', goods:'得力碳粉盒×50', amt:4450, auditStatus:'approved', placedAt:'2026-04-10 10:00', supplier:'得力办公集采服务商', receiver:'文印室', payMethod:'账期支付（30天）' },
+        { no:'PO20260408', goods:'备选供货商备货（未获批）', amt:45250, auditStatus:'rejected', placedAt:'2026-04-08 15:30', supplier:'—', receiver:'—', payMethod:'—' }
       ]}
     ];
     function openProcPlanModal(){ renderPlans(); document.getElementById('procPlanModal').classList.add('open'); document.body.style.overflow='hidden'; }
@@ -3234,12 +3251,13 @@
       var con=document.getElementById('planListContainer');
       if(!list.length){ con.innerHTML='<div style="text-align:center;color:#94a3b8;padding:28px;font-size:14px;">暂无符合条件的采购计划</div>'; return; }
       con.innerHTML=list.map(function(p){
-        var pct=Math.min(100,Math.round(p.used/p.amount*100));
+        var usedSum=planEffectiveUsed(p);
+        var pct=Math.min(100,Math.round(usedSum/p.amount*100));
         var isOverdue=p.status==='active'&&new Date(p.deadline)<new Date();
         var pill=p.status==='done'?'<span class="status-pill green">✅ 已完成</span>':isOverdue?'<span class="status-pill red">⚠ 已逾期</span>':pct>=90?'<span class="status-pill yellow">🟡 预算预警</span>':'<span class="status-pill blue">🔵 进行中</span>';
         return '<div class="list-item" id="plan-'+p.id+'">'
           +'<div class="list-item-head"><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span class="list-item-title">'+p.name+'</span>'+pill+'</div>'
-          +'<div class="list-item-meta">计划金额 ¥'+p.amount.toLocaleString()+' · 已执行 ¥'+p.used.toLocaleString()+' · 截止 '+p.deadline+(p.cat?' · '+p.cat:'')+'</div>'
+          +'<div class="list-item-meta">计划金额 ¥'+p.amount.toLocaleString()+' · 已执行 ¥'+usedSum.toLocaleString()+' · 截止 '+p.deadline+(p.cat?' · '+p.cat:'')+'</div>'
           +'<div class="prog-bar" style="margin-top:6px;"><div class="prog-fill '+(pct>=90?'danger':pct>=70?'warn':'safe')+'" style="width:'+pct+'%;"></div></div>'
           +'<div style="font-size:11px;color:#94a3b8;margin-top:2px;">执行进度 '+pct+'%</div></div>'
           +(p.status!=='done'?'<button class="ai-reco-btn" style="margin:14px 14px 0 0;align-self:flex-start;" onclick="openAiRecoModal(\''+p.name.replace(/'/g,"\\'")+'\',\'procPlanModal\')" title="AI推荐采购方式"><i class="fa-solid fa-wand-magic-sparkles"></i> AI推荐采购</button>':'')
@@ -3247,24 +3265,24 @@
           +'<div style="padding:0 14px 11px;display:flex;gap:6px;flex-wrap:wrap;">'
           +(p.status!=='done'?'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="completePlan('+p.id+')"><i class="fa-solid fa-check"></i> 标注完成</button>':'')
           +(p.fileName&&(p.fileUrl||p.fileData)?'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="viewPlanFile('+p.id+')" title="'+(p.fileName||'').replace(/"/g,'&quot;')+'"><i class="fa-solid fa-file-lines"></i> 查看文件</button>':'')
-          +'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="togglePlanOrders('+p.id+',this)"><i class="fa-solid fa-link"></i> 关联订单 ('+p.orders.length+')</button>'
+          +'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="togglePlanOrders('+p.id+',this)"><i class="fa-solid fa-link"></i> 关联采购单 ('+p.orders.length+')</button>'
           +'<button class="gm-btn gm-btn-danger gm-btn-sm" onclick="deletePlan('+p.id+')"><i class="fa-solid fa-trash"></i> 删除</button></div>'
           +'<div id="planOrders-'+p.id+'" style="display:none;padding:0 14px 11px;">'
-          +'<div class="inline-expand"><div class="inline-expand-inner"><table class="gm-table"><thead><tr><th>订单号</th><th>商品</th><th>金额</th><th>状态</th><th style="min-width:100px;">操作</th></tr></thead><tbody>'
-          +p.orders.map(function(o,oi){ return '<tr><td>'+o.no+'</td><td>'+o.goods+'</td><td>¥'+o.amt.toLocaleString()+'</td><td>'+o.status+'</td><td><button type="button" class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openPlanOrderDetail('+p.id+','+oi+')"><i class="fa-solid fa-file-invoice"></i> 查看订单详情</button></td></tr>'; }).join('')
+          +'<div class="inline-expand"><div class="inline-expand-inner"><table class="gm-table"><thead><tr><th>采购单号</th><th>商品</th><th>金额</th><th>状态</th><th style="min-width:100px;">操作</th></tr></thead><tbody>'
+          +p.orders.map(function(o,oi){ return '<tr><td>'+o.no+'</td><td>'+o.goods+'</td><td>¥'+o.amt.toLocaleString()+'</td><td>'+procurementOrderAuditLabel(o)+'</td><td><button type="button" class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openPlanOrderDetail('+p.id+','+oi+')"><i class="fa-solid fa-file-invoice"></i> 查看采购单详情</button></td></tr>'; }).join('')
           +'</tbody></table></div></div></div></div>';
       }).join('');
     }
     function togglePlanOrders(id,btn){
       var el=document.getElementById('planOrders-'+id); var vis=el.style.display!=='none';
       el.style.display=vis?'none':'block';
-      btn.innerHTML=vis?'<i class="fa-solid fa-link"></i> 关联订单 ('+plans.find(function(p){return p.id===id;}).orders.length+')':'<i class="fa-solid fa-chevron-up"></i> 收起订单';
+      btn.innerHTML=vis?'<i class="fa-solid fa-link"></i> 关联采购单 ('+plans.find(function(p){return p.id===id;}).orders.length+')':'<i class="fa-solid fa-chevron-up"></i> 收起采购单';
     }
     function openPlanOrderDetail(planId, orderIdx){
       var plan=plans.find(function(x){return x.id===planId;});
       if(!plan||!plan.orders||orderIdx<0||orderIdx>=plan.orders.length) return;
       var o=plan.orders[orderIdx];
-      document.getElementById('planOrderDetailHeadTitle').textContent='订单详情 · '+o.no;
+      document.getElementById('planOrderDetailHeadTitle').textContent='采购单详情 · '+o.no;
       var placed=o.placedAt||'—';
       var supplier=o.supplier||'—';
       var receiver=o.receiver||'—';
@@ -3274,16 +3292,16 @@
         '<div style="font-size:13px;line-height:1.75;color:#334155;">'
         +'<div style="display:grid;gap:10px;">'
         +'<div><span style="font-weight:700;color:#0f172a;">所属采购计划</span><span style="margin-left:8px;">'+escapeAttr(plan.name)+'</span></div>'
-        +'<div><span style="font-weight:700;color:#0f172a;">订单号</span><span style="margin-left:8px;">'+escapeAttr(o.no)+'</span></div>'
+        +'<div><span style="font-weight:700;color:#0f172a;">采购单号</span><span style="margin-left:8px;">'+escapeAttr(o.no)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">商品明细</span><span style="margin-left:8px;">'+escapeAttr(o.goods)+'</span></div>'
-        +'<div><span style="font-weight:700;color:#0f172a;">订单金额</span><span style="margin-left:8px;">¥'+o.amt.toLocaleString()+'</span></div>'
-        +'<div><span style="font-weight:700;color:#0f172a;">订单状态</span><span style="margin-left:8px;">'+escapeAttr(o.status)+'</span></div>'
+        +'<div><span style="font-weight:700;color:#0f172a;">采购单金额</span><span style="margin-left:8px;">¥'+o.amt.toLocaleString()+'</span></div>'
+        +'<div><span style="font-weight:700;color:#0f172a;">审核状态</span><span style="margin-left:8px;">'+escapeAttr(procurementOrderAuditLabel(o))+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">下单时间</span><span style="margin-left:8px;">'+escapeAttr(placed)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">供应商</span><span style="margin-left:8px;">'+escapeAttr(supplier)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">收货部门/联系人</span><span style="margin-left:8px;">'+escapeAttr(receiver)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">付款方式</span><span style="margin-left:8px;">'+escapeAttr(payMethod)+'</span></div>'
         +'</div>'
-        +'<p style="margin:14px 0 0;font-size:11px;color:#94a3b8;">以上为示例汇总，正式发布后由订单中心接口同步。</p></div>';
+        +'<p style="margin:14px 0 0;font-size:11px;color:#94a3b8;">以上为示例汇总，正式发布后由采购单中心接口同步。</p></div>';
       document.getElementById('planOrderDetailModal').classList.add('open');
     }
     function closePlanOrderDetail(e){
@@ -3361,16 +3379,25 @@
     ===================================================================== */
     var budgetIdSeed=4;
     var budgetCats=[
-      {id:'office',name:'办公用品',budget:100000,used:72000,deadline:'2026-12-31',cat:'文具、低值易耗',note:'',adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260301',goods:'晨光文具套装×20',amt:3200,status:'已收货',placedAt:'2026-03-01 10:15',supplier:'晨光集采专营店',receiver:'行政中心',payMethod:'账期支付（30天）'}]},
-      {id:'device',name:'电子设备',budget:200000,used:148900,deadline:'2026-12-31',cat:'笔记本电脑、显示器、机房设备',note:'',fileName:'电子设备预算批复.pdf',fileUrl:'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260401',goods:'华为显示器×5',amt:16495,status:'已收货',placedAt:'2026-04-01 09:32',supplier:'华为授权经销商（华北区）',receiver:'采购部 张工',payMethod:'账期支付（30天）'}]},
-      {id:'logistics',name:'后勤保障',budget:80000,used:31000,deadline:'2026-09-30',cat:'保洁、绿化、小型维修',note:'',adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260410',goods:'清洁套装×30',amt:5040,status:'已收货',placedAt:'2026-04-10 11:00',supplier:'保洁供应链服务',receiver:'物业办',payMethod:'对公转账'}]},
-      {id:'print',name:'打印耗材',budget:50000,used:49000,deadline:'2026-06-30',cat:'碳粉盒、墨盒、A4纸',note:'',adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260410',goods:'得力碳粉盒×50',amt:4450,status:'已收货',placedAt:'2026-04-10 10:00',supplier:'得力办公集采服务商',receiver:'文印室',payMethod:'账期支付（30天）'}]}
+      {id:'office',name:'办公用品',budget:100000,used:72000,deadline:'2026-12-31',cat:'文具、低值易耗',note:'',adjustOpen:false,ordersOpen:false,orders:[
+        {no:'PO20260301',goods:'晨光文具套装×20',amt:32000,auditStatus:'approved',placedAt:'2026-03-01 10:15',supplier:'晨光集采专营店',receiver:'行政中心',payMethod:'账期支付（30天）'},
+        {no:'PO20260302',goods:'复印纸集中采购',amt:40000,auditStatus:'pending',placedAt:'2026-03-02 14:20',supplier:'晨光集采专营店',receiver:'行政中心',payMethod:'账期支付（30天）'}
+      ]},
+      {id:'device',name:'电子设备',budget:200000,used:148900,deadline:'2026-12-31',cat:'笔记本电脑、显示器、机房设备',note:'',fileName:'电子设备预算批复.pdf',fileUrl:'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',adjustOpen:false,ordersOpen:false,orders:[
+        {no:'PO20260401',goods:'华为显示器×5',amt:108900,auditStatus:'approved',placedAt:'2026-04-01 09:32',supplier:'华为授权经销商（华北区）',receiver:'采购部 张工',payMethod:'账期支付（30天）'},
+        {no:'PO20260318',goods:'罗技键鼠套装×10',amt:40000,auditStatus:'pending',placedAt:'2026-03-18 14:05',supplier:'京东企业业务',receiver:'行政中心',payMethod:'对公转账'}
+      ]},
+      {id:'logistics',name:'后勤保障',budget:80000,used:31000,deadline:'2026-09-30',cat:'保洁、绿化、小型维修',note:'',adjustOpen:false,ordersOpen:false,orders:[{no:'PO20260410',goods:'清洁套装×30',amt:31000,auditStatus:'approved',placedAt:'2026-04-10 11:00',supplier:'保洁供应链服务',receiver:'物业办',payMethod:'对公转账'}]},
+      {id:'print',name:'打印耗材',budget:50000,used:49000,deadline:'2026-06-30',cat:'碳粉盒、墨盒、A4纸',note:'',adjustOpen:false,ordersOpen:false,orders:[
+        {no:'PO20260410',goods:'得力碳粉盒×50',amt:4450,auditStatus:'approved',placedAt:'2026-04-10 10:00',supplier:'得力办公集采服务商',receiver:'文印室',payMethod:'账期支付（30天）'},
+        {no:'PO20260409',goods:'备选供货商备货（未获批）',amt:45250,auditStatus:'rejected',placedAt:'2026-04-09 09:00',supplier:'—',receiver:'—',payMethod:'—'}
+      ]}
     ];
     function openBudgetDrawer(){ renderBudgetOverview(); renderBudgetCats(); document.getElementById('budgetModal').classList.add('open'); document.body.style.overflow='hidden'; }
     function closeBudgetDrawer(e){ if(e&&e.target!==document.getElementById('budgetModal')) return; document.getElementById('budgetModal').classList.remove('open'); document.body.style.overflow=''; }
     function renderBudgetOverview(){
       var total=budgetCats.reduce(function(s,c){return s+c.budget;},0);
-      var used=budgetCats.reduce(function(s,c){return s+c.used;},0);
+      var used=budgetCats.reduce(function(s,c){return s+budgetEffectiveUsed(c);},0);
       var rest=total-used; var pct=Math.min(100,Math.round(used/total*100));
       document.getElementById('budgetOverview').innerHTML=
         '<div class="budget-kpi-item"><div class="num">¥'+(total/10000).toFixed(0)+'万</div><div class="lbl">年度总预算</div></div>'
@@ -3383,21 +3410,22 @@
     function renderBudgetCats(){
       var con=document.getElementById('budgetCatList'); if(!con) return;
       con.innerHTML=budgetCats.map(function(c){
-        var pct=Math.min(100,Math.round(c.used/c.budget*100)); var cls=pct>=90?'danger':pct>=70?'warn':'safe';
+        var usedEff=budgetEffectiveUsed(c);
+        var pct=Math.min(100,Math.round(usedEff/c.budget*100)); var cls=pct>=90?'danger':pct>=70?'warn':'safe';
         var warn=pct>=90?'<div class="warn-tip"><i class="fa-solid fa-triangle-exclamation"></i> '+c.name+'已使用'+pct+'%，接近上限</div>':'';
         var metaLine='<div class="list-item-meta">截止 '+(c.deadline||'—')+(c.cat?' · '+c.cat:'')+'</div>';
         var ordersWrapOpen=c.ordersOpen?'block':'none';
-        var ordersTable='<div id="budgetOrders-'+c.id+'" style="display:'+ordersWrapOpen+';padding:0 12px 11px;"><div class="inline-expand"><div class="inline-expand-inner"><table class="gm-table"><thead><tr><th>订单号</th><th>商品</th><th>金额</th><th>状态</th><th style="min-width:100px;">操作</th></tr></thead><tbody>'
-          +c.orders.map(function(o,oi){ return '<tr><td>'+o.no+'</td><td>'+o.goods+'</td><td>¥'+o.amt.toLocaleString()+'</td><td>'+o.status+'</td><td><button type="button" class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openBudgetOrderDetail(\''+String(c.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\','+oi+')"><i class="fa-solid fa-file-invoice"></i> 查看订单详情</button></td></tr>'; }).join('')
+        var ordersTable='<div id="budgetOrders-'+c.id+'" style="display:'+ordersWrapOpen+';padding:0 12px 11px;"><div class="inline-expand"><div class="inline-expand-inner"><table class="gm-table"><thead><tr><th>采购单号</th><th>商品</th><th>金额</th><th>状态</th><th style="min-width:100px;">操作</th></tr></thead><tbody>'
+          +c.orders.map(function(o,oi){ return '<tr><td>'+o.no+'</td><td>'+o.goods+'</td><td>¥'+o.amt.toLocaleString()+'</td><td>'+procurementOrderAuditLabel(o)+'</td><td><button type="button" class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openBudgetOrderDetail(\''+String(c.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\','+oi+')"><i class="fa-solid fa-file-invoice"></i> 查看采购单详情</button></td></tr>'; }).join('')
           +'</tbody></table></div></div></div>';
-        var adjustHtml=c.adjustOpen?'<div class="budget-adjust-row"><span style="font-size:12px;font-weight:600;color:#475569;">调整已用：</span><input class="budget-num-input" id="adjustInput-'+c.id+'" type="number" value="'+c.used+'" min="0" max="'+c.budget+'"><button class="gm-btn gm-btn-primary gm-btn-sm" onclick="saveBudgetAdjust(\''+c.id+'\')">保存</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetAdjust(\''+c.id+'\')">取消</button></div>':'';
+        var adjustHtml=c.adjustOpen?'<div class="budget-adjust-row"><span style="font-size:12px;font-weight:600;color:#475569;">调整已用：</span><input class="budget-num-input" id="adjustInput-'+c.id+'" type="number" value="'+usedEff+'" min="0" max="'+c.budget+'"><button class="gm-btn gm-btn-primary gm-btn-sm" onclick="saveBudgetAdjust(\''+c.id+'\')">保存</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetAdjust(\''+c.id+'\')">取消</button></div>':'';
         var idJs=String(c.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
         var fileBtn=(c.fileName&&(c.fileUrl||c.fileData))?'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="viewBudgetFile(\''+idJs+'\')" title="'+(c.fileName||'').replace(/"/g,'&quot;')+'"><i class="fa-solid fa-file-lines"></i> 查看文件</button>':'';
-        return '<div class="list-item" style="margin-bottom:8px;"><div class="list-item-head" style="flex-direction:column;align-items:stretch;gap:6px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:14px;font-weight:700;color:#0f172a;flex:1;">'+c.name+'</span><span style="font-size:13px;color:'+(pct>=90?'#dc2626':'#ff6a00')+';font-weight:700;margin-right:2px;">'+pct+'%</span><button class="ai-reco-btn" onclick="openAiRecoModal(\''+c.name.replace(/'/g,"\\'")+'\',\'budgetModal\')" title="AI推荐采购方式"><i class="fa-solid fa-wand-magic-sparkles"></i> AI推荐采购</button></div>'+metaLine+'<div class="prog-bar"><div class="prog-fill '+cls+'" style="width:'+pct+'%;"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;"><span>预算 ¥'+(c.budget/10000).toFixed(0)+'万</span><span>已用 ¥'+(c.used/10000).toFixed(1)+'万</span><span>剩余 ¥'+((c.budget-c.used)/10000).toFixed(1)+'万</span></div>'+warn+'</div>'+adjustHtml+'<div style="padding:0 12px 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetAdjust(\''+c.id+'\')"><i class="fa-solid fa-pen-to-square"></i> 调整</button>'+fileBtn+'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetOrders(\''+idJs+'\',this)">'+(c.ordersOpen?'<i class="fa-solid fa-chevron-up"></i> 收起订单':'<i class="fa-solid fa-link"></i> 关联订单 ('+c.orders.length+')')+'</button><button class="gm-btn gm-btn-danger gm-btn-sm" onclick="deleteBudgetItem(\''+c.id+'\')"><i class="fa-solid fa-trash"></i> 删除</button></div>'+ordersTable+'</div>';
+        return '<div class="list-item" style="margin-bottom:8px;"><div class="list-item-head" style="flex-direction:column;align-items:stretch;gap:6px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:14px;font-weight:700;color:#0f172a;flex:1;">'+c.name+'</span><span style="font-size:13px;color:'+(pct>=90?'#dc2626':'#ff6a00')+';font-weight:700;margin-right:2px;">'+pct+'%</span><button class="ai-reco-btn" onclick="openAiRecoModal(\''+c.name.replace(/'/g,"\\'")+'\',\'budgetModal\')" title="AI推荐采购方式"><i class="fa-solid fa-wand-magic-sparkles"></i> AI推荐采购</button></div>'+metaLine+'<div class="prog-bar"><div class="prog-fill '+cls+'" style="width:'+pct+'%;"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;"><span>预算 ¥'+(c.budget/10000).toFixed(0)+'万</span><span>已用 ¥'+(usedEff/10000).toFixed(1)+'万</span><span>剩余 ¥'+((c.budget-usedEff)/10000).toFixed(1)+'万</span></div>'+warn+'</div>'+adjustHtml+'<div style="padding:0 12px 10px;display:flex;gap:6px;flex-wrap:wrap;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetAdjust(\''+c.id+'\')"><i class="fa-solid fa-pen-to-square"></i> 调整</button>'+fileBtn+'<button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="toggleBudgetOrders(\''+idJs+'\',this)">'+(c.ordersOpen?'<i class="fa-solid fa-chevron-up"></i> 收起采购单':'<i class="fa-solid fa-link"></i> 关联采购单 ('+c.orders.length+')')+'</button><button class="gm-btn gm-btn-danger gm-btn-sm" onclick="deleteBudgetItem(\''+c.id+'\')"><i class="fa-solid fa-trash"></i> 删除</button></div>'+ordersTable+'</div>';
       }).join('');
     }
     function toggleBudgetAdjust(id){ var c=budgetCats.find(function(x){return x.id===id;}); if(c) c.adjustOpen=!c.adjustOpen; renderBudgetCats(); }
-    function saveBudgetAdjust(id){ var c=budgetCats.find(function(x){return x.id===id;}); var v=parseFloat(document.getElementById('adjustInput-'+id)?.value); if(c&&!isNaN(v)&&v>=0){ c.used=Math.min(v,c.budget); c.adjustOpen=false; renderBudgetOverview(); renderBudgetCats(); } }
+    function saveBudgetAdjust(id){ var c=budgetCats.find(function(x){return x.id===id;}); if(c&&c.orders&&c.orders.length){ alert('已有关联采购单时，「已用金额」按审核状态汇总（审核不通过的采购单不计入），无法手动覆盖。'); return; } var v=parseFloat(document.getElementById('adjustInput-'+id)?.value); if(c&&!isNaN(v)&&v>=0){ c.used=Math.min(v,c.budget); c.adjustOpen=false; renderBudgetOverview(); renderBudgetCats(); } }
     function toggleBudgetOrders(id,btn){
       var el=document.getElementById('budgetOrders-'+id);
       var c=budgetCats.find(function(x){return String(x.id)===String(id);});
@@ -3405,7 +3433,7 @@
       var vis=el.style.display!=='none';
       el.style.display=vis?'none':'block';
       c.ordersOpen=!vis;
-      if(btn) btn.innerHTML=!vis?'<i class="fa-solid fa-chevron-up"></i> 收起订单':'<i class="fa-solid fa-link"></i> 关联订单 ('+c.orders.length+')';
+      if(btn) btn.innerHTML=!vis?'<i class="fa-solid fa-chevron-up"></i> 收起采购单':'<i class="fa-solid fa-link"></i> 关联采购单 ('+c.orders.length+')';
     }
     function viewBudgetFile(id){
       var c=budgetCats.find(function(x){return String(x.id)===String(id);});
@@ -3418,7 +3446,7 @@
       var cat=budgetCats.find(function(x){return String(x.id)===String(catId);});
       if(!cat||!cat.orders||orderIdx<0||orderIdx>=cat.orders.length) return;
       var o=cat.orders[orderIdx];
-      document.getElementById('budgetOrderDetailHeadTitle').textContent='订单详情 · '+o.no;
+      document.getElementById('budgetOrderDetailHeadTitle').textContent='采购单详情 · '+o.no;
       var placed=o.placedAt||'—';
       var supplier=o.supplier||'—';
       var receiver=o.receiver||'—';
@@ -3427,16 +3455,16 @@
         '<div style="font-size:13px;line-height:1.75;color:#334155;">'
         +'<div style="display:grid;gap:10px;">'
         +'<div><span style="font-weight:700;color:#0f172a;">所属预算</span><span style="margin-left:8px;">'+escapeAttr(cat.name)+'</span></div>'
-        +'<div><span style="font-weight:700;color:#0f172a;">订单号</span><span style="margin-left:8px;">'+escapeAttr(o.no)+'</span></div>'
+        +'<div><span style="font-weight:700;color:#0f172a;">采购单号</span><span style="margin-left:8px;">'+escapeAttr(o.no)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">商品明细</span><span style="margin-left:8px;">'+escapeAttr(o.goods)+'</span></div>'
-        +'<div><span style="font-weight:700;color:#0f172a;">订单金额</span><span style="margin-left:8px;">¥'+o.amt.toLocaleString()+'</span></div>'
-        +'<div><span style="font-weight:700;color:#0f172a;">订单状态</span><span style="margin-left:8px;">'+escapeAttr(o.status)+'</span></div>'
+        +'<div><span style="font-weight:700;color:#0f172a;">采购单金额</span><span style="margin-left:8px;">¥'+o.amt.toLocaleString()+'</span></div>'
+        +'<div><span style="font-weight:700;color:#0f172a;">审核状态</span><span style="margin-left:8px;">'+escapeAttr(procurementOrderAuditLabel(o))+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">下单时间</span><span style="margin-left:8px;">'+escapeAttr(placed)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">供应商</span><span style="margin-left:8px;">'+escapeAttr(supplier)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">收货部门/联系人</span><span style="margin-left:8px;">'+escapeAttr(receiver)+'</span></div>'
         +'<div><span style="font-weight:700;color:#0f172a;">付款方式</span><span style="margin-left:8px;">'+escapeAttr(payMethod)+'</span></div>'
         +'</div>'
-        +'<p style="margin:14px 0 0;font-size:11px;color:#94a3b8;">以上为示例汇总，正式发布后由订单中心接口同步。</p></div>';
+        +'<p style="margin:14px 0 0;font-size:11px;color:#94a3b8;">以上为示例汇总，正式发布后由采购单中心接口同步。</p></div>';
       document.getElementById('budgetOrderDetailModal').classList.add('open');
     }
     function closeBudgetOrderDetail(e){
@@ -3791,7 +3819,8 @@
     /* 跳转到竞价询价分析界面 */
     function gotoBidding() {
       closeAllModalsForNav();
-      window.location.href = './bidding_inquiry.html?demo=1';
+      try { sessionStorage.setItem('planDemo', JSON.stringify({ file: null, scene: '竞价询价演示' })); } catch(e) {}
+      window.location.href = './plan_result.html#bidAssistantAnchor';
     }
 
     /* ========== AI 智能助手（悬浮球 + 方案A） ========== */

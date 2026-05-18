@@ -1382,6 +1382,45 @@
       line-height: 1.8;
     }
 
+    .basis-summary-tip--ok {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .basis-summary-tip--warn {
+      border-color: #fecaca;
+      background: #fff5f5;
+    }
+
+    .basis-summary-tip--neutral {
+      border-color: #e2e8f0;
+      background: #f8fafc;
+    }
+
+    .basis-summary-main {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .basis-summary-tip--ok .basis-summary-main {
+      color: #14532d;
+    }
+
+    .basis-summary-tip--warn .basis-summary-main {
+      color: #991b1b;
+    }
+
+    .basis-summary-sub {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 400;
+    }
+
+    .basis-item-title-none > span:first-child {
+      color: #dc2626;
+    }
+
     .order-basis-foot {
       padding: 18px 28px;
       border-top: 1px solid #e5e7eb;
@@ -2655,13 +2694,13 @@
     const BASIS_FILE_ACCEPTS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png'];
 
     const defaultProcurementPlans = [
-      { id: 'plan-2026-q2-office', name: '2026年二季度办公耗材集中采购计划', period: '2026Q2', owner: '采购中心' },
-      { id: 'plan-2026-special-it', name: '2026年信息化设备专项采购计划', period: '2026全年', owner: '信息化部' }
+      { id: 'plan-2026-q2-office', name: '2026年二季度办公耗材集中采购计划', period: '2026Q2', owner: '采购中心', planAmount: 280000, planUsed: 279872 },
+      { id: 'plan-2026-special-it', name: '2026年信息化设备专项采购计划', period: '2026全年', owner: '信息化部', planAmount: 1500000, planUsed: 820000 }
     ];
 
     const defaultProcurementBudgets = [
-      { id: 'budget-2026-q2-office', name: '办公耗材预算包', period: '2026Q2', amount: 280000 },
-      { id: 'budget-2026-special-it', name: '信息化设备预算包', period: '2026全年', amount: 1200000 }
+      { id: 'budget-2026-q2-office', name: '办公耗材预算包', period: '2026Q2', amount: 280000, used: 279872 },
+      { id: 'budget-2026-special-it', name: '信息化设备预算包', period: '2026全年', amount: 1200000, used: 820000 }
     ];
 
     const productPool = [
@@ -3510,6 +3549,9 @@
       const next = currentQty + step;
       currentQty = Math.max(currentProduct.minOrder, next);
       syncQtyInputs();
+      if (document.getElementById('orderBasisOverlay').classList.contains('show')) {
+        renderOrderBasisModal();
+      }
     }
 
     function syncQtyInputs() {
@@ -3555,21 +3597,19 @@
     function renderBasisItems(type, list, selectedId) {
       const selectHandler = type === 'plan' ? 'selectOrderPlan' : 'selectOrderBudget';
       const noneTitle = type === 'plan' ? '本次不关联采购计划' : '本次不关联采购预算';
-      const noneMeta = type === 'plan' ? '可先下单，后续在订单里补充关联计划。' : '可先下单，后续在订单里补充关联预算。';
       const noneRow = `
         <button class="basis-item basis-item-none ${selectedId ? '' : 'active'}" type="button" onclick="${selectHandler}('')">
-          <div class="basis-item-title">
+          <div class="basis-item-title basis-item-title-none">
             <span>${noneTitle}</span>
             <span class="basis-selected-dot"><i class="fa-solid fa-check"></i></span>
           </div>
-          <div class="basis-item-meta">${noneMeta}</div>
         </button>
       `;
       const rows = list.map(item => {
         const isSelected = selectedId === item.id;
         const meta = type === 'plan'
-          ? `计划周期：${escapeBasisText(item.period || '未填写')} · 提报部门：${escapeBasisText(item.owner || '未填写')}`
-          : `预算周期：${escapeBasisText(item.period || '未填写')} · 预算金额：¥${Number(item.amount || 0).toLocaleString('zh-CN')}`;
+          ? `计划周期：${escapeBasisText(item.period || '未填写')} · 提报部门：${escapeBasisText(item.owner || '未填写')} · 计划总额：¥${Number(item.planAmount ?? 0).toLocaleString('zh-CN')}`
+          : `预算周期：${escapeBasisText(item.period || '未填写')} · 预算金额：¥${Number(item.amount || 0).toLocaleString('zh-CN')} · 已执行：¥${Number(item.used ?? 0).toLocaleString('zh-CN')}`;
         return `
           <button class="basis-item ${isSelected ? 'active' : ''}" type="button" onclick="${selectHandler}('${escapeBasisText(item.id)}')">
             <div class="basis-item-title">
@@ -3586,6 +3626,91 @@
     function getBasisById(type, id) {
       const list = type === 'plan' ? procurementPlanOptions : procurementBudgetOptions;
       return (list || []).find(item => item.id === id) || null;
+    }
+
+    function formatBasisMoney(n) {
+      const v = Number(n || 0);
+      return `¥${v.toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+    }
+
+    function getOrderLineAmount() {
+      if (!currentProduct) return 0;
+      const qty = Math.max(currentQty || 1, currentProduct.minOrder || 1);
+      return Number(currentProduct.price || 0) * qty;
+    }
+
+    function buildBasisAssociationFootnote() {
+      const selectedPlan = getBasisById('plan', selectedPlanId);
+      const selectedBudget = getBasisById('budget', selectedBudgetId);
+      const planLabel = selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联';
+      const budgetLabel = selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联';
+      return `关联概况：采购计划【${planLabel}】；采购预算【${budgetLabel}】；采购依据文件【${uploadedBasisFiles.length}个】`;
+    }
+
+    function renderBasisSelectedSummary() {
+      const el = document.getElementById('basisSelectedSummary');
+      const orderAmt = getOrderLineAmount();
+      const foot = `<div class="basis-summary-sub">${buildBasisAssociationFootnote()}</div>`;
+
+      if (orderBasisStep === 1) {
+        const selectedPlan = getBasisById('plan', selectedPlanId);
+        if (!selectedPlanId || !selectedPlan) {
+          el.className = 'basis-summary-tip basis-summary-tip--neutral';
+          el.innerHTML = `<div class="basis-summary-main">未关联采购计划，不做计划额度校验。</div>${foot}`;
+          return;
+        }
+        const total = Number(selectedPlan.planAmount ?? 0);
+        const used = Number(selectedPlan.planUsed ?? 0);
+        if (!total || total <= 0) {
+          el.className = 'basis-summary-tip basis-summary-tip--neutral';
+          el.innerHTML = `<div class="basis-summary-main">当前采购计划未维护计划总额，无法进行额度校验。</div>${foot}`;
+          return;
+        }
+        const after = used + orderAmt;
+        const over = after - total;
+        const remain = total - after;
+        if (after <= total) {
+          el.className = 'basis-summary-tip basis-summary-tip--ok';
+          el.innerHTML = `<div class="basis-summary-main">当前选中采购计划总额 ${formatBasisMoney(total)}（已执行 ${formatBasisMoney(used)}）。本单金额 ${formatBasisMoney(orderAmt)}，计入后合计 ${formatBasisMoney(after)}，未超过计划总额；剩余可用约 ${formatBasisMoney(remain)}。</div>${foot}`;
+        } else {
+          el.className = 'basis-summary-tip basis-summary-tip--warn';
+          el.innerHTML = `<div class="basis-summary-main">当前选中采购计划总额 ${formatBasisMoney(total)}（已执行 ${formatBasisMoney(used)}）。本单金额 ${formatBasisMoney(orderAmt)}，计入后合计 ${formatBasisMoney(after)}，已超过计划总额，超支 ${formatBasisMoney(over)}。</div>${foot}`;
+        }
+        return;
+      }
+
+      if (orderBasisStep === 2) {
+        const selectedBudget = getBasisById('budget', selectedBudgetId);
+        if (!selectedBudgetId || !selectedBudget) {
+          el.className = 'basis-summary-tip basis-summary-tip--neutral';
+          el.innerHTML = `<div class="basis-summary-main">未关联采购预算，不做预算额度校验。</div>${foot}`;
+          return;
+        }
+        const total = Number(selectedBudget.amount ?? 0);
+        const used = Number(selectedBudget.used ?? 0);
+        if (!total || total <= 0) {
+          el.className = 'basis-summary-tip basis-summary-tip--neutral';
+          el.innerHTML = `<div class="basis-summary-main">当前采购预算未维护预算金额，无法进行额度校验。</div>${foot}`;
+          return;
+        }
+        const after = used + orderAmt;
+        const over = after - total;
+        const remain = total - after;
+        if (after <= total) {
+          el.className = 'basis-summary-tip basis-summary-tip--ok';
+          el.innerHTML = `<div class="basis-summary-main">当前选中采购预算总额 ${formatBasisMoney(total)}（已执行 ${formatBasisMoney(used)}）。本单金额 ${formatBasisMoney(orderAmt)}，计入后合计 ${formatBasisMoney(after)}，未超过预算总额；剩余可用约 ${formatBasisMoney(remain)}。</div>${foot}`;
+        } else {
+          el.className = 'basis-summary-tip basis-summary-tip--warn';
+          el.innerHTML = `<div class="basis-summary-main">当前选中采购预算总额 ${formatBasisMoney(total)}（已执行 ${formatBasisMoney(used)}）。本单金额 ${formatBasisMoney(orderAmt)}，计入后合计 ${formatBasisMoney(after)}，已超过预算总额，超支 ${formatBasisMoney(over)}。</div>${foot}`;
+        }
+        return;
+      }
+
+      const selectedPlan = getBasisById('plan', selectedPlanId);
+      const selectedBudget = getBasisById('budget', selectedBudgetId);
+      const line = `当前关联：采购计划【${selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联'}】；采购预算【${selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联'}】；采购依据文件【${uploadedBasisFiles.length}个】`;
+      el.className = 'basis-summary-tip';
+      el.innerHTML = `<div class="basis-summary-main">${line}</div>`;
     }
 
     function formatBasisFileSize(size) {
@@ -3647,9 +3772,7 @@
         nav.classList.toggle('completed', step < orderBasisStep);
         panel.classList.toggle('active', step === orderBasisStep);
       });
-      const selectedPlan = getBasisById('plan', selectedPlanId);
-      const selectedBudget = getBasisById('budget', selectedBudgetId);
-      document.getElementById('basisSelectedSummary').textContent = `当前关联：采购计划【${selectedPlan ? selectedPlan.name : '未关联'}】；采购预算【${selectedBudget ? selectedBudget.name : '未关联'}】；采购依据文件【${uploadedBasisFiles.length}个】`;
+      renderBasisSelectedSummary();
       renderOrderBasisFooter();
     }
 
@@ -3728,11 +3851,17 @@
       if (!name || !name.trim()) return;
       const period = window.prompt('请输入计划周期（如：2026Q3）', '2026Q3') || '未填写';
       const owner = window.prompt('请输入提报部门', '采购中心') || '采购中心';
+      const planAmountRaw = window.prompt('请输入计划总金额（数字）', '300000');
+      const planUsedRaw = window.prompt('请输入计划已执行金额（数字）', '0');
+      const planAmount = Number(String(planAmountRaw || '').replace(/,/g, '').trim());
+      const planUsed = Number(String(planUsedRaw || '').replace(/,/g, '').trim());
       const item = {
         id: `plan-${Date.now()}`,
         name: name.trim(),
         period: period.trim(),
-        owner: owner.trim()
+        owner: owner.trim(),
+        planAmount: Number.isFinite(planAmount) && planAmount > 0 ? planAmount : 0,
+        planUsed: Number.isFinite(planUsed) && planUsed >= 0 ? planUsed : 0
       };
       procurementPlanOptions.unshift(item);
       selectedPlanId = item.id;
@@ -3747,11 +3876,14 @@
       const period = window.prompt('请输入预算周期（如：2026Q3）', '2026Q3') || '未填写';
       const amountInput = window.prompt('请输入预算金额（数字）', '100000');
       const amount = Number((amountInput || '').replace(/,/g, '').trim());
+      const usedInput = window.prompt('请输入预算已执行金额（数字）', '0');
+      const usedAmt = Number(String(usedInput || '').replace(/,/g, '').trim());
       const item = {
         id: `budget-${Date.now()}`,
         name: name.trim(),
         period: period.trim(),
-        amount: Number.isFinite(amount) && amount > 0 ? amount : 0
+        amount: Number.isFinite(amount) && amount > 0 ? amount : 0,
+        used: Number.isFinite(usedAmt) && usedAmt >= 0 ? usedAmt : 0
       };
       procurementBudgetOptions.unshift(item);
       selectedBudgetId = item.id;

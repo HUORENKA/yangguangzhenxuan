@@ -723,7 +723,7 @@ function initHomePageData() {
     { id: 'c4', image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=675&fit=crop', title: '个人防护专场', subTitle: '20+高危场景防护指南', tag: '防护', link: '#', sortOrder: 4 }
   ];
 
-  // ---------- 入驻供应商（与 home.html 卡片数据保持一致） ----------
+  // ---------- 入驻供应商（与合并首页 mall 区卡片数据保持一致） ----------
   homePageData.settledSuppliers = [
     { id: 'store_001', name: '华为技术有限公司', business: '电子设备', goodsCount: 1280, score: 4.9, coverText: 'HUAWEI', coverClass: 'cover-huawei', link: './store/store_detail.html?id=store_001', sortOrder: 1 },
     { id: 'store_002', name: '联想集团', business: '办公设备', goodsCount: 956, score: 4.8, coverText: 'LENOVO', coverClass: 'cover-lenovo', link: './store/store_detail.html?id=store_002', sortOrder: 2 },
