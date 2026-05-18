@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>核对结算单 | 结算订单 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f5f5f5; color:#333; }
+    .page-card { background:#fff; border:1px solid #e8e8e8; border-radius:4px; }
+    .sec-title { font-size:15px; font-weight:700; border-bottom:2px solid #E2231A; padding-bottom:8px; margin-bottom:16px; }
+    .btn { height:32px; padding:0 14px; border-radius:2px; font-size:13px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+    .btn-primary { background:#E2231A; border-color:#E2231A; color:#fff; }
+    .link { color:#E2231A; cursor:pointer; text-decoration:none; }
+    .order-card { border:1px solid #e8e8e8; border-radius:4px; padding:16px; margin-bottom:12px; background:#fafafa; }
+    .label { font-size:12px; color:#888; }
+    th { background:#f7f7f7; font-size:13px; }
+    td, th { border:1px solid #e8e8e8; padding:10px 8px; font-size:13px; }
+    .dialog { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.45); z-index:40; padding:16px; }
+    .dialog.show { display:flex; }
+    .opt { border:2px solid #e5e7eb; border-radius:8px; padding:14px; cursor:pointer; }
+    .opt:hover { border-color:#fecaca; }
+    .opt input { accent-color:#E2231A; }
+    .settle-fields-row-wrapper { overflow-x:auto; margin-top:4px; }
+    .settle-fields-row { display:flex; flex-wrap:nowrap; align-items:flex-end; gap:12px 16px; min-width:min(100%, 980px); }
+    @media (min-width: 1024px) {
+      .settle-fields-row { min-width:0; }
+    }
+    .sf-order { flex:0 0 132px; }
+    .sf-actual { flex:0 0 148px; }
+    .sf-reason { flex:1 1 220px; min-width:160px; }
+    .sf-attach { flex:0 0 220px; }
+    .readonly-val { padding:8px 10px; background:#fff; border:1px solid #e8e8e8; border-radius:2px; font-size:13px; min-height:34px; }
+  </style>
+</head>
+<body class="p-5 max-w-[1200px] mx-auto pb-16">
+  <div class="flex items-center justify-between mb-4">
+    <div class="text-sm text-gray-500"><a class="link" href="buyer_settlement_orders.html">结算订单</a> / 核对结算单</div>
+    <div class="flex gap-2">
+      <button type="button" class="btn" onclick="alert('已驳回供应商（原型）')">驳回</button>
+      <button type="button" class="btn btn-primary" id="btnPass">核对通过</button>
+    </div>
+  </div>
+
+  <div id="methodBanner" class="hidden page-card p-4 mb-4 border-red-100 bg-red-50">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="text-sm"><strong class="text-red-800">已选定顺序：</strong><span id="methodText">—</span></div>
+      <button type="button" class="btn text-xs" id="btnChangeMethod">更改顺序（限未进入执行节点前）</button>
+    </div>
+  </div>
+
+  <div class="page-card p-5 mb-4">
+    <h2 class="sec-title">01 结算单信息</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+      <div><span class="label">结算单编号</span><div class="font-semibold mt-1">JSQD2025100200031</div></div>
+      <div><span class="label">供应商名称</span><div class="font-semibold mt-1">浙江得力办公用品有限公司</div></div>
+      <div><span class="label">采购方名称</span><div class="font-semibold mt-1">北京市政务服务中心（本账号）</div></div>
+      <div><span class="label">合计金额（元）</span><div class="font-bold text-red-600 text-lg mt-1">58,940.00</div><p class="text-xs text-gray-500 mt-1">各订单「实际金额」之和</p></div>
+    </div>
+  </div>
+
+  <div class="page-card p-5 mb-4">
+    <h2 class="sec-title">02 订单信息</h2>
+
+    <div class="order-card">
+      <div class="flex flex-wrap justify-between gap-2 mb-2">
+        <div class="font-bold">订单编号：CG-17591358371501003</div>
+        <div class="text-sm flex flex-wrap items-center gap-x-3">
+          <a class="link" href="#">查看合同</a>
+          <span class="text-gray-300">|</span>
+          <span class="text-gray-600">增值税发票：</span><a class="link" href="#" onclick="alert('该订单归档发票 2 张'); return false;">下载发票（2张）</a>
+        </div>
+      </div>
+      <div class="overflow-x-auto mb-3">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>单价（元）</th>
+              <th>数量</th>
+              <th>小计（元）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>科密碎纸机 C-868</td>
+              <td>3,580.00</td>
+              <td>4</td>
+              <td>14,320.00</td>
+            </tr>
+            <tr>
+              <td>得力财务装订机 3888</td>
+              <td>890.00</td>
+              <td>2</td>
+              <td>1,780.00</td>
+            </tr>
+            <tr>
+              <td>兄弟标签打印机色带 TZ-631</td>
+              <td>5,780.00</td>
+              <td>1</td>
+              <td>5,780.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="border-t border-dashed border-gray-300 pt-3">
+        <div class="settle-fields-row-wrapper">
+          <div class="settle-fields-row">
+            <div class="sf-order"><span class="label block">订单金额（元）</span><div class="readonly-val mt-1 font-semibold order-amt">21,880.00</div></div>
+            <div class="sf-actual"><span class="label block">实际金额（元）</span><div class="readonly-val mt-1 font-semibold text-red-600">21,500.00</div></div>
+            <div class="sf-reason"><span class="label block">金额差异原因（非必填）</span><div class="readonly-val mt-1 text-gray-700">含税价与合同分项调整</div></div>
+            <div class="sf-attach"><span class="label block">佐证附件</span><div class="readonly-val mt-1"><a class="link" href="#">分项报价说明.pdf</a></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card">
+      <div class="flex flex-wrap justify-between gap-2 mb-2">
+        <div class="font-bold">订单编号：CG-17591358371501006</div>
+        <div class="text-sm flex flex-wrap items-center gap-x-3">
+          <a class="link" href="#">查看合同</a>
+          <span class="text-gray-300">|</span>
+          <span class="text-gray-600">增值税发票：</span><span class="text-orange-700 font-semibold">未提交</span>
+        </div>
+      </div>
+      <div class="overflow-x-auto mb-3">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>单价（元）</th>
+              <th>数量</th>
+              <th>小计（元）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>钢制档案柜（五节柜）</td>
+              <td>12,800.00</td>
+              <td>2</td>
+              <td>25,600.00</td>
+            </tr>
+            <tr>
+              <td>防火档案箱 A4（示例）</td>
+              <td>4,200.00</td>
+              <td>1</td>
+              <td>4,200.00</td>
+            </tr>
+            <tr>
+              <td>电子防潮柜 160L</td>
+              <td>7,260.00</td>
+              <td>1</td>
+              <td>7,260.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="border-t border-dashed border-gray-300 pt-3">
+        <div class="settle-fields-row-wrapper">
+          <div class="settle-fields-row">
+            <div class="sf-order"><span class="label block">订单金额（元）</span><div class="readonly-val mt-1 font-semibold order-amt">37,060.00</div></div>
+            <div class="sf-actual"><span class="label block">实际金额（元）</span><div class="readonly-val mt-1 font-semibold text-red-600">37,060.00</div></div>
+            <div class="sf-reason"><span class="label block">金额差异原因（非必填）</span><div class="readonly-val mt-1 text-gray-400">—</div></div>
+            <div class="sf-attach"><span class="label block">佐证附件</span><div class="readonly-val mt-1 text-xs text-gray-400">无差额可不传</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card">
+      <div class="flex flex-wrap justify-between gap-2 mb-2">
+        <div class="font-bold">订单编号：CG-17591358371501008</div>
+        <div class="text-sm flex flex-wrap items-center gap-x-3">
+          <a class="link" href="#">查看合同</a>
+          <span class="text-gray-300">|</span>
+          <span class="text-gray-600">增值税发票：</span><a class="link" href="#" onclick="alert('该订单归档发票 3 张'); return false;">下载发票（3张）</a>
+        </div>
+      </div>
+      <div class="overflow-x-auto mb-3">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>单价（元）</th>
+              <th>数量</th>
+              <th>小计（元）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>打印耗材包（墨盒+硒鼓套装）</td>
+              <td>200.00</td>
+              <td>1</td>
+              <td>200.00</td>
+            </tr>
+            <tr>
+              <td>A4 复印纸 80g（8 包/箱）</td>
+              <td>180.00</td>
+              <td>1</td>
+              <td>180.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="border-t border-dashed border-gray-300 pt-3">
+        <div class="settle-fields-row-wrapper">
+          <div class="settle-fields-row">
+            <div class="sf-order"><span class="label block">订单金额（元）</span><div class="readonly-val mt-1 font-semibold order-amt">380.00</div></div>
+            <div class="sf-actual"><span class="label block">实际金额（元）</span><div class="readonly-val mt-1 font-semibold text-red-600">380.00</div></div>
+            <div class="sf-reason"><span class="label block">金额差异原因（非必填）</span><div class="readonly-val mt-1 text-gray-400">—</div></div>
+            <div class="sf-attach"><span class="label block">佐证附件</span><div class="readonly-val mt-1 text-xs text-gray-400">无差额可不传</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-card p-5 mb-4">
+    <h2 class="sec-title">03 付款信息</h2>
+    <div class="grid md:grid-cols-2 gap-4 text-sm">
+      <div>
+        <span class="label">付款状态</span>
+        <div class="mt-2"><span class="px-2 py-1 bg-amber-50 text-amber-800 rounded">未付款</span></div>
+      </div>
+      <div>
+        <span class="label">付款凭证（仅采购方可上传）</span>
+        <div class="mt-2 flex gap-2">
+          <button type="button" class="btn" onclick="alert('选择文件上传（原型）')"><i class="fas fa-upload mr-1"></i>上传凭证</button>
+          <span class="text-xs text-gray-500 self-center">PDF / JPG / PNG，≤20MB/文件</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-card p-5 mb-4">
+    <h2 class="sec-title">04 处理历史</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th>步骤</th><th>办理人员</th><th>收到时间</th><th>处理时间</th><th>处理意见</th><th>处理耗时</th><th>是否已阅</th><th>已阅时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>结算单发起</td>
+            <td>张 XX【浙江得力办公用品有限公司】</td>
+            <td>2025-10-02 11:42</td>
+            <td>2025-10-02 11:50</td>
+            <td>请核对三笔订单实际金额及附件</td>
+            <td>0天0小时8分钟</td>
+            <td>是</td>
+            <td>2025-10-02 11:44</td>
+          </tr>
+          <tr class="bg-orange-50/40">
+            <td>采购人核对</td>
+            <td><a class="text-blue-600" href="#">商城采购人</a></td>
+            <td>2025-10-02 11:50</td>
+            <td>--</td>
+            <td>待办理</td>
+            <td>--</td>
+            <td>是</td>
+            <td>2025-10-02 11:52</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="dialog" id="methodDialog">
+    <div class="page-card p-6 w-full max-w-lg">
+      <h3 class="text-lg font-bold mb-2">请选择付款与开票顺序</h3>
+      <p class="text-sm text-gray-600 mb-4">仅在<strong>采购方核对订单通过</strong>后设置；系统将据此推进「待开票 / 待付款」节点。</p>
+      <label class="opt block mb-3">
+        <div class="flex items-start gap-3">
+          <input type="radio" name="pm" value="invoice_first" class="mt-1" checked>
+          <div>
+            <div class="font-semibold">先开发票后付款</div>
+            <div class="text-xs text-gray-500 mt-1">供应商先提交发票归档 → 下载以「发票（N张）」为准 → 采购方再付款。</div>
+          </div>
+        </div>
+      </label>
+      <label class="opt block mb-6">
+        <div class="flex items-start gap-3">
+          <input type="radio" name="pm" value="pay_first" class="mt-1">
+          <div>
+            <div class="font-semibold">先付款后开发票</div>
+            <div class="text-xs text-gray-500 mt-1">采购方先上传付款凭证 → 供应商再完成发票归档与下载。</div>
+          </div>
+        </div>
+      </label>
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn" id="dlgCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="dlgOk">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const dlg = document.getElementById('methodDialog');
+    document.getElementById('btnPass').addEventListener('click', () => dlg.classList.add('show'));
+    document.getElementById('dlgCancel').addEventListener('click', () => dlg.classList.remove('show'));
+    document.getElementById('dlgOk').addEventListener('click', () => {
+      const v = document.querySelector('input[name="pm"]:checked').value;
+      const text = v === 'invoice_first' ? '先开发票后付款' : '先付款后开发票';
+      dlg.classList.remove('show');
+      document.getElementById('methodBanner').classList.remove('hidden');
+      document.getElementById('methodText').textContent = text;
+      document.getElementById('btnPass').disabled = true;
+      document.getElementById('btnPass').textContent = '已通过';
+      document.getElementById('btnPass').classList.add('opacity-60');
+      alert('已核对通过，并已保存「' + text + '」配置（原型）');
+    });
+    document.getElementById('btnChangeMethod').addEventListener('click', () => dlg.classList.add('show'));
+  </script>
+</body>
+</html>

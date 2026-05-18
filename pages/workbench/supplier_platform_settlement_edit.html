@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>平台结算单查看（草稿） | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; }
+    .sec-title { font-size:15px; font-weight:700; border-bottom:2px solid #E2231A; padding-bottom:8px; margin-bottom:16px; }
+    .btn { height:36px; padding:0 16px; border-radius:8px; font-size:13px; border:1px solid #e2e8f0; background:#fff; cursor:pointer; font-weight:600; color:#475569; }
+    .btn-primary { background:#E2231A; border-color:#E2231A; color:#fff; }
+    .label { font-size:12px; color:#64748b; }
+    .link { color:#E2231A; cursor:pointer; text-decoration:none; }
+    th { background:#f7f7f7; font-size:13px; }
+    td, th { border:1px solid #e8e8e8; padding:10px 8px; font-size:13px; }
+    .collapse-hd { cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+    .ro-field { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; font-size:13px; color:#334155; min-height:42px; }
+  </style>
+</head>
+<body class="p-5 max-w-[1000px] mx-auto pb-28">
+  <div class="text-sm text-slate-500 mb-4">
+    <a class="link font-semibold" href="supplier_platform_settlement.html">平台结算管理</a>
+    <span class="mx-1">/</span>
+    <a class="link font-semibold" id="crumbDetail" href="#">平台结算单详情</a>
+    <span class="mx-1">/</span>
+    <span>编辑</span>
+  </div>
+
+  <div class="rounded-lg border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950 mb-5">
+    <strong class="font-semibold">说明：</strong>服务费核定、差异原因及佐证附件由<strong>运营商</strong>在草稿中维护；供应商侧仅可<strong>查看</strong>进度与明细，无需在本页填报。
+  </div>
+
+  <!-- 01 平台结算单详情 -->
+  <div class="page-card p-5 mb-5 border-t-4 border-red-600">
+    <h2 class="sec-title">01 平台结算单详情</h2>
+    <div class="grid sm:grid-cols-2 gap-4 text-sm">
+      <div><span class="label">平台结算单号</span><div class="font-mono font-bold mt-1 text-slate-900" id="ptNo">—</div></div>
+      <div><span class="label">当前状态</span><div class="mt-1"><span class="inline-flex px-2 py-1 rounded-full text-xs font-bold bg-violet-100 text-violet-800" id="ptStatus">编辑中</span></div></div>
+      <div><span class="label">供应商（本账号）</span><div class="font-semibold mt-1" id="ptSup">—</div></div>
+      <div><span class="label">所含采购结算单笔数</span><div class="font-semibold mt-1" id="ptSlipCount">—</div></div>
+    </div>
+  </div>
+
+  <!-- 02 采购结算单信息 -->
+  <div class="page-card p-5 mb-5">
+    <h2 class="sec-title">02 采购结算单信息</h2>
+    <div class="overflow-x-auto mb-4">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th>采购结算单编号</th>
+            <th>金额（元）</th>
+            <th>采购商</th>
+            <th>核对完成</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody id="cgsTbody"></tbody>
+      </table>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm border-t border-dashed border-slate-200 pt-4">
+      <div><span class="label">采购结算单总金额（元）</span><div class="text-lg font-bold text-red-600 mt-1" id="ptAmtSum">—</div></div>
+      <div><span class="label">预计服务金额（元）</span><div class="text-lg font-bold text-slate-900 mt-1" id="ptFeeExpected">—</div></div>
+      <div><span class="label">实际服务金额（元）</span><div class="text-lg font-bold text-slate-900 mt-1" id="ptFeeActual">—</div></div>
+      <div class="sm:col-span-2"><span class="label">差异原因</span><div class="ro-field mt-1 whitespace-pre-wrap" id="ptDiffReason">—</div></div>
+      <div class="sm:col-span-2 lg:col-span-1"><span class="label">佐证附件</span><div class="ro-field mt-1" id="ptEvidence">—</div></div>
+    </div>
+  </div>
+
+  <!-- 03 付款信息 -->
+  <div class="page-card p-5 mb-5">
+    <h2 class="sec-title">03 付款信息</h2>
+    <div class="grid md:grid-cols-2 gap-4 text-sm">
+      <div>
+        <span class="label">付款状态</span>
+        <div class="mt-2" id="payStatusWrap"></div>
+      </div>
+      <div>
+        <span class="label">付款凭证 / 说明</span>
+        <div class="mt-2 text-slate-700" id="payVoucher">—</div>
+      </div>
+      <div class="md:col-span-2">
+        <span class="label">付款流水号（如有）</span>
+        <div class="mt-1 font-mono text-slate-800" id="paySerial">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 处理历史 -->
+  <div class="page-card p-5 mb-6">
+    <div class="collapse-hd sec-title mb-0 border-0 pb-2">
+      <span>04 处理历史</span>
+      <i class="fas fa-chevron-up text-slate-400 text-sm"></i>
+    </div>
+    <div class="overflow-x-auto mt-3">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th>步骤</th>
+            <th>办理人员</th>
+            <th>收到时间</th>
+            <th>处理时间</th>
+            <th>处理意见</th>
+            <th>处理耗时</th>
+          </tr>
+        </thead>
+        <tbody id="histTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_12px_rgba(15,23,42,.06)] z-30">
+    <div class="max-w-[1000px] mx-auto px-5 py-3 flex flex-wrap gap-2 justify-end items-center">
+      <a class="btn inline-flex items-center no-underline btn-primary" id="backDetail" href="#">返回详情</a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var no = new URLSearchParams(location.search).get('no') || 'PT202604210035';
+      var detailHref = 'supplier_platform_settlement_detail.html?no=' + encodeURIComponent(no);
+      document.getElementById('crumbDetail').href = detailHref;
+      document.getElementById('backDetail').href = detailHref;
+
+      var map = {
+        'PT202604210035': {
+          sup: '雨前供应商有限公司', sum: '412,080.00', feeExpected: '12,362.40', feeActual: '12,000.00',
+          diffReason: '活动期间按合同给予费率优惠（由运营商录入草稿）。',
+          evidence: '<span class="text-slate-600">活动审批截图.png · 补充说明.pdf（示例）</span>',
+          slipNote: '3 笔（生成后已锁定）',
+          slips: [
+            { no: 'CGJS202604150021', amt: '156,000.00', buyer: '北京市政务服务中心', verified: '2026-04-16 14:02', lock: '已锁定' },
+            { no: 'CGJS202604160088', amt: '128,080.00', buyer: '通州采购中心', verified: '2026-04-17 09:30', lock: '已锁定' },
+            { no: 'CGJS202604170055', amt: '128,000.00', buyer: '大兴行政中心', verified: '2026-04-18 11:20', lock: '已锁定' }
+          ],
+          pay: { status: '未付款', badge: 'bg-amber-50 text-amber-800 border border-amber-200', voucher: '运营商草稿阶段，暂无付款凭证。', serial: '—' },
+          history: [
+            ['平台结算单生成', '系统自动', '2026-04-19 13:00', '2026-04-19 13:00', '已汇总采购结算单', '—'],
+            ['服务费核定（草稿）', '运营商', '2026-04-19 13:05', '--', '调整实际服务费', '--']
+          ]
+        },
+        'PT202604210036': {
+          sup: '浙江得力办公用品有限公司', sum: '66,500.00', feeExpected: '1,995.00', feeActual: '1,995.00',
+          diffReason: '与测算一致。',
+          evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604200101', amt: '66,500.00', buyer: '顺义区政府采购中心', verified: '2026-04-19 15:00', lock: '已锁定' }],
+          pay: { status: '未付款', badge: 'bg-amber-50 text-amber-800 border border-amber-200', voucher: '草稿阶段', serial: '—' },
+          history: [['服务费核定（草稿）', '运营商', '2026-04-20 09:00', '--', '完善附件后提交', '--']]
+        }
+      };
+
+      var d = JSON.parse(JSON.stringify(map[no] || map['PT202604210035']));
+      document.getElementById('ptNo').textContent = no;
+      document.getElementById('ptSup').textContent = d.sup;
+      document.getElementById('ptSlipCount').textContent = d.slipNote;
+      document.getElementById('ptAmtSum').textContent = d.sum;
+      document.getElementById('ptFeeExpected').textContent = d.feeExpected;
+      document.getElementById('ptFeeActual').textContent = d.feeActual;
+      document.getElementById('ptDiffReason').textContent = d.diffReason;
+      document.getElementById('ptEvidence').innerHTML = d.evidence;
+
+      var tbody = document.getElementById('cgsTbody');
+      tbody.innerHTML = '';
+      (d.slips || []).forEach(function (s) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td class="font-mono font-semibold">' + s.no + '</td>' +
+          '<td class="font-semibold">' + s.amt + '</td>' +
+          '<td>' + (s.buyer || '—') + '</td>' +
+          '<td>' + (s.verified || '—') + '</td>' +
+          '<td><span class="text-xs text-slate-500">' + (s.lock || '已锁定') + '</span></td>';
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('payStatusWrap').innerHTML =
+        '<span class="inline-flex px-2 py-1 rounded text-xs font-semibold ' + (d.pay.badge || '') + '">' + d.pay.status + '</span>';
+      document.getElementById('payVoucher').innerHTML = d.pay.voucher;
+      document.getElementById('paySerial').textContent = d.pay.serial || '—';
+
+      var ht = document.getElementById('histTbody');
+      ht.innerHTML = '';
+      (d.history || []).forEach(function (row, idx) {
+        var tr = document.createElement('tr');
+        if (idx === d.history.length - 1 && String(row[3]).trim() === '--') tr.className = 'bg-blue-50/50';
+        tr.innerHTML = '<td>' + row[0] + '</td><td>' + row[1] + '</td><td>' + row[2] + '</td><td>' + row[3] + '</td><td>' + row[4] + '</td><td>' + row[5] + '</td>';
+        ht.appendChild(tr);
+      });
+    })();
+  </script>
+</body>
+</html>

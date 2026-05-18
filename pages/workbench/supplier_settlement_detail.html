@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>结算单详情/编辑 | 采购订单结算 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f5f5f5; color:#333; }
+    .page-card { background:#fff; border:1px solid #e8e8e8; border-radius:4px; }
+    .sec-title { font-size:15px; font-weight:700; border-bottom:2px solid #E2231A; padding-bottom:8px; margin-bottom:16px; }
+    .btn { height:32px; padding:0 14px; border-radius:2px; font-size:13px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+    .btn-primary { background:#E2231A; border-color:#E2231A; color:#fff; }
+    .link { color:#E2231A; cursor:pointer; text-decoration:none; }
+    .order-card { border:1px solid #e8e8e8; border-radius:4px; padding:16px; margin-bottom:12px; background:#fafafa; }
+    .label { font-size:12px; color:#888; }
+    th { background:#f7f7f7; font-size:13px; }
+    td, th { border:1px solid #e8e8e8; padding:10px 8px; font-size:13px; }
+    .collapse-hd { cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+    /* 实际金额 / 差额原因 / 佐证附件 — 桌面端单行；窄屏横向滚动不换行 */
+    .settle-fields-row-wrapper { overflow-x:auto; margin-top:4px; }
+    .settle-fields-row { display:flex; flex-wrap:nowrap; align-items:flex-end; gap:12px 16px; min-width:min(100%, 980px); }
+    @media (min-width: 1024px) {
+      .settle-fields-row { min-width:0; flex-wrap:nowrap; }
+    }
+    .sf-order { flex:0 0 132px; }
+    .sf-actual { flex:0 0 148px; }
+    .sf-reason { flex:1 1 220px; min-width:160px; }
+    .sf-attach { flex:0 0 200px; }
+  </style>
+</head>
+<body class="p-5 max-w-[1200px] mx-auto pb-16">
+  <div class="flex items-center justify-between mb-4">
+    <div class="text-sm text-gray-500"><a class="link" href="supplier_settlement_orders.html">采购订单结算</a> / 结算单详情</div>
+    <div class="flex gap-2">
+      <button type="button" class="btn">保存草稿</button>
+      <button type="button" class="btn btn-primary" onclick="alert('已提交采购方核对（原型）')">提交核对</button>
+    </div>
+  </div>
+
+  <!-- 1. 结算单信息 -->
+  <div class="page-card p-5 mb-4">
+    <h2 class="sec-title">01 结算单信息</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+      <div><span class="label">结算单编号</span><div class="font-semibold mt-1">JSQD2025101800001</div></div>
+      <div><span class="label">供应商名称</span><div class="font-semibold mt-1">雨前供应商有限公司</div></div>
+      <div><span class="label">采购方名称</span><div class="font-semibold mt-1">北京市政务服务中心</div></div>
+      <div><span class="label">合计金额（元）</span><div class="font-bold text-red-600 text-lg mt-1" id="sumActual">23749.02</div><p class="text-xs text-gray-500 mt-1">各订单「实际金额」之和</p></div>
+    </div>
+  </div>
+
+  <!-- 2. 订单信息（横向卡片） -->
+  <div class="page-card p-5 mb-4">
+    <h2 class="sec-title">02 订单信息</h2>
+
+    <div class="order-card" data-idx="0">
+      <div class="flex flex-wrap gap-4 justify-between items-start mb-3">
+        <div class="font-bold text-gray-900">订单编号：CG-17591358371500001</div>
+        <div class="flex gap-3 text-sm">
+          <a class="link" href="#"><i class="fas fa-file-contract mr-1"></i>查看合同</a>
+          <span class="text-gray-400">|</span>
+          <span class="text-gray-600">增值税发票：</span><a class="link" href="#" onclick="alert('打包下载该订单下已归档的 2 张发票（原型）'); return false;">下载发票（2张）</a>
+        </div>
+      </div>
+      <div class="overflow-x-auto mb-3">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>单价（元）</th>
+              <th>数量</th>
+              <th>小计（元）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>联想台式机 M90t（示例）</td>
+              <td>4,500.00</td>
+              <td>2</td>
+              <td>9,000.00</td>
+            </tr>
+            <tr>
+              <td>戴尔显示器 P2422H（示例）</td>
+              <td>680.00</td>
+              <td>1</td>
+              <td>680.00</td>
+            </tr>
+            <tr>
+              <td>A4 复印纸 70g（500 张/包）</td>
+              <td>120.00</td>
+              <td>1</td>
+              <td>120.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="border-t border-dashed border-gray-300 pt-3">
+        <div class="settle-fields-row-wrapper">
+          <div class="settle-fields-row">
+            <div class="sf-order">
+              <span class="label block">订单金额（元）</span>
+              <div class="mt-1 font-semibold order-amt">9800.00</div>
+            </div>
+            <div class="sf-actual">
+              <label class="label block">实际金额（元）</label>
+              <input type="number" step="0.01" class="actual w-full mt-1 border border-gray-300 rounded px-2 py-1.5 text-sm" value="9800.02">
+            </div>
+            <div class="sf-reason">
+              <label class="label block">金额差异原因（非必填）</label>
+              <input type="text" class="reason w-full mt-1 border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="有差额时建议填写说明" value="利息尾差抹零">
+            </div>
+            <div class="sf-attach">
+              <label class="label block">佐证附件<span class="text-gray-400 font-normal">（无差额可不传）</span></label>
+              <div class="mt-1 flex items-center gap-2 min-h-[32px]" data-attach-cell>
+                <div class="attach-zone flex gap-2 items-center hidden" data-need-diff>
+                  <button type="button" class="btn text-xs py-1 h-8 whitespace-nowrap">上传文件</button>
+                </div>
+                <span class="text-xs text-gray-400 whitespace-nowrap attach-no-diff hidden" data-no-diff-hint>无差额可不传</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-card" data-idx="1">
+      <div class="flex flex-wrap gap-4 justify-between items-start mb-3">
+        <div class="font-bold text-gray-900">订单编号：CG-17591358371500002</div>
+        <div class="flex gap-3 text-sm">
+          <a class="link" href="#">查看合同</a>
+          <span class="text-gray-400">|</span>
+          <span class="text-gray-600">增值税发票：</span><span class="text-orange-700 font-semibold">未提交</span>
+        </div>
+      </div>
+      <div class="overflow-x-auto mb-3">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>单价（元）</th>
+              <th>数量</th>
+              <th>小计（元）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>明基投影仪 EW2880U（4K）</td>
+              <td>10,500.00</td>
+              <td>1</td>
+              <td>10,500.00</td>
+            </tr>
+            <tr>
+              <td>电动吊架套装（示例）</td>
+              <td>980.00</td>
+              <td>1</td>
+              <td>980.00</td>
+            </tr>
+            <tr>
+              <td>HDMI 2.1 高清线 3m</td>
+              <td>42.00</td>
+              <td>10</td>
+              <td>420.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="border-t border-dashed border-gray-300 pt-3">
+        <div class="settle-fields-row-wrapper">
+          <div class="settle-fields-row">
+            <div class="sf-order">
+              <span class="label block">订单金额（元）</span>
+              <div class="mt-1 font-semibold order-amt">11900.00</div>
+            </div>
+            <div class="sf-actual">
+              <label class="label block">实际金额（元）</label>
+              <input type="number" step="0.01" class="actual w-full mt-1 border border-gray-300 rounded px-2 py-1.5 text-sm" value="11850">
+            </div>
+            <div class="sf-reason">
+              <label class="label block">金额差异原因（非必填）</label>
+              <input type="text" class="reason w-full mt-1 border border-gray-300 rounded px-2 py-1.5 text-sm" value="运费按合同扣减">
+            </div>
+            <div class="sf-attach">
+              <label class="label block">佐证附件<span class="text-gray-400 font-normal">（无差额可不传）</span></label>
+              <div class="mt-1 flex items-center gap-2 min-h-[32px]" data-attach-cell>
+                <div class="attach-zone flex gap-2 items-center hidden" data-need-diff>
+                  <button type="button" class="btn text-xs py-1 h-8 whitespace-nowrap border-red-300 text-red-600">凭证1.pdf · 替换</button>
+                </div>
+                <span class="text-xs text-gray-400 whitespace-nowrap attach-no-diff hidden" data-no-diff-hint>无差额可不传</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第三条：演示无差额 → 佐证区仅提示，无上传按钮 -->
+    <div class="order-card" data-idx="2">
+      <div class="flex flex-wrap gap-4 justify-between items-start mb-3">
+        <div class="font-bold text-gray-900">订单编号：CG-17591358371500098</div>
+        <div class="flex gap-3 text-sm">
+          <a class="link" href="#">查看合同</a>
+          <span class="text-gray-400">|</span>
+          <span class="text-gray-600">增值税发票：</span><a class="link" href="#" onclick="alert('打包下载该订单下已归档的 3 张发票（原型）'); return false;">下载发票（3张）</a>
+        </div>
+      </div>
+      <div class="overflow-x-auto mb-3">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>单价（元）</th>
+              <th>数量</th>
+              <th>小计（元）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>惠普激光打印机 NS1020w</td>
+              <td>1,699.00</td>
+              <td>1</td>
+              <td>1,699.00</td>
+            </tr>
+            <tr>
+              <td>原装硒鼓 CF230A</td>
+              <td>400.00</td>
+              <td>1</td>
+              <td>400.00</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="border-t border-dashed border-gray-300 pt-3">
+        <div class="settle-fields-row-wrapper">
+          <div class="settle-fields-row">
+            <div class="sf-order">
+              <span class="label block">订单金额（元）</span>
+              <div class="mt-1 font-semibold order-amt">2099.00</div>
+            </div>
+            <div class="sf-actual">
+              <label class="label block">实际金额（元）</label>
+              <input type="number" step="0.01" class="actual w-full mt-1 border border-gray-300 rounded px-2 py-1.5 text-sm" value="2099">
+            </div>
+            <div class="sf-reason">
+              <label class="label block">金额差异原因（非必填）</label>
+              <input type="text" class="reason w-full mt-1 border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="有差额时建议填写说明">
+            </div>
+            <div class="sf-attach">
+              <label class="label block">佐证附件<span class="text-gray-400 font-normal">（无差额可不传）</span></label>
+              <div class="mt-1 flex items-center gap-2 min-h-[32px]" data-attach-cell>
+                <div class="attach-zone flex gap-2 items-center hidden" data-need-diff>
+                  <button type="button" class="btn text-xs py-1 h-8 whitespace-nowrap">上传文件</button>
+                </div>
+                <span class="text-xs text-gray-400 whitespace-nowrap attach-no-diff hidden" data-no-diff-hint>无差额可不传</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 付款信息（供应商侧只读，凭证由采购方上传） -->
+  <div class="page-card p-5 mb-4">
+    <h2 class="sec-title">03 付款信息</h2>
+    <div class="grid md:grid-cols-2 gap-4 text-sm">
+      <div>
+        <span class="label">付款状态</span>
+        <div class="mt-2"><span class="px-2 py-1 bg-gray-100 rounded text-gray-700">未付款</span></div>
+      </div>
+      <div>
+        <span class="label">付款凭证</span>
+        <div class="mt-2 text-gray-500">由采购方上传后展示预览/下载；当前无。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 处理历史 -->
+  <div class="page-card p-5 mb-4">
+    <div class="collapse-hd sec-title mb-0 border-0 pb-2">
+      <span>04 处理历史</span>
+      <i class="fas fa-chevron-up text-gray-400 text-sm"></i>
+    </div>
+    <div class="overflow-x-auto mt-3">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th>步骤</th>
+            <th>办理人员</th>
+            <th>收到时间</th>
+            <th>处理时间</th>
+            <th>处理意见</th>
+            <th>处理耗时</th>
+            <th>是否已阅</th>
+            <th>已阅时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>结算单发起</td>
+            <td>蔡丰晦【雨前供应商有限公司】</td>
+            <td>2025-10-10 14:41</td>
+            <td>2025-10-10 15:19</td>
+            <td>草稿已保存</td>
+            <td>0天0小时38分14秒</td>
+            <td>是</td>
+            <td>2025-10-10 14:43</td>
+          </tr>
+          <tr class="bg-blue-50/50">
+            <td>采购人核对</td>
+            <td><a class="text-blue-600" href="#">商城采购人</a></td>
+            <td>2025-10-10 15:19</td>
+            <td>--</td>
+            <td>待办理</td>
+            <td>--</td>
+            <td>--</td>
+            <td>--</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function parseNum(el) {
+      const v = parseFloat((el && el.value) ? el.value : '0');
+      return isNaN(v) ? 0 : v;
+    }
+    function fmtMoney(x) {
+      const parts = x.toFixed(2).split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return parts.join('.');
+    }
+    function sumActual() {
+      let s = 0;
+      document.querySelectorAll('.actual').forEach(inp => { s += parseNum(inp); });
+      document.getElementById('sumActual').textContent = fmtMoney(s);
+    }
+    function toggleAttach(card) {
+      const actual = card.querySelector('.actual');
+      const amtEl = card.querySelector('.order-amt');
+      const orderMoney = amtEl ? parseFloat(String(amtEl.textContent).replace(/,/g, '')) : NaN;
+      const actVal = parseNum(actual);
+      const show = amtEl != null && !isNaN(orderMoney) && !isNaN(actVal) && Math.abs(orderMoney - actVal) > 0.009;
+      card.querySelectorAll('[data-need-diff]').forEach(z => z.classList.toggle('hidden', !show));
+      card.querySelectorAll('[data-no-diff-hint]').forEach(h => h.classList.toggle('hidden', show));
+    }
+    document.querySelectorAll('.order-card').forEach(card => {
+      const inp = card.querySelector('.actual');
+      if (inp) {
+        inp.addEventListener('input', () => { sumActual(); toggleAttach(card); });
+        toggleAttach(card);
+      }
+    });
+    sumActual();
+  </script>
+</body>
+</html>

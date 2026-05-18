@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>平台结算管理 | 运营商工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; }
+    .tab { padding:10px 14px; font-size:13px; color:#64748b; border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; }
+    .tab:hover { color:#E2231A; }
+    .tab.active { color:#E2231A; font-weight:700; border-bottom-color:#E2231A; }
+    .btn { height:32px; padding:0 14px; border-radius:8px; font-size:13px; border:1px solid #e2e8f0; background:#fff; cursor:pointer; font-weight:600; color:#475569; }
+    .btn-primary { background:#E2231A; border-color:#E2231A; color:#fff; }
+    .tag { display:inline-flex; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+    .tag-warn { background:#fffbeb; color:#b45309; }
+    .tag-info { background:#eff6ff; color:#1d4ed8; }
+    .tag-primary { background:#fef2f2; color:#b91c1c; }
+    .tag-muted { background:#f1f5f9; color:#64748b; }
+    .tag-success { background:#ecfdf5; color:#047857; }
+    .tag-edit { background:#faf5ff; color:#7c3aed; }
+    .link { color:#E2231A; font-weight:600; cursor:pointer; text-decoration:none; font-size:13px; }
+    .link:hover { text-decoration:underline; }
+    th { background:#f8fafc; font-size:13px; font-weight:700; color:#64748b; }
+    td, th { padding:12px 10px; border:1px solid #e2e8f0; text-align:left; font-size:13px; }
+    .pager { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; padding-top:12px; border-top:1px solid #e2e8f0; font-size:13px; color:#64748b; }
+    .invoice-modal-visible,
+    .receipt-modal-visible { display:flex !important; align-items:center; justify-content:center; }
+  </style>
+</head>
+<body class="p-5 pb-28 max-w-[1680px] mx-auto">
+
+  <div class="page-card mb-4">
+    <div class="flex flex-wrap border-b border-slate-200 px-2 overflow-x-auto" id="tabRow">
+      <button type="button" class="tab active" data-panel="pending">待结算 <span class="text-slate-400 font-normal">(5)</span></button>
+      <button type="button" class="tab" data-panel="all">全部 <span class="text-slate-400 font-normal">(14)</span></button>
+      <button type="button" class="tab" data-panel="edit">编辑中 <span class="text-slate-400 font-normal">(2)</span></button>
+      <button type="button" class="tab" data-panel="check">待核对 <span class="text-slate-400 font-normal">(3)</span></button>
+      <button type="button" class="tab" data-panel="invoice">待开票 <span class="text-slate-400 font-normal">(3)</span></button>
+      <button type="button" class="tab" data-panel="pay">待付款 <span class="text-slate-400 font-normal">(2)</span></button>
+      <button type="button" class="tab" data-panel="recv">待收款 <span class="text-slate-400 font-normal">(1)</span></button>
+      <button type="button" class="tab" data-panel="done">结算完成 <span class="text-slate-400 font-normal">(18)</span></button>
+    </div>
+
+    <!-- 待结算：采购结算单池（勾选生成平台结算单） -->
+    <div class="panel p-4" data-panel="pending">
+      <div class="flex flex-wrap gap-2 mb-4">
+        <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-52" placeholder="采购结算单号">
+        <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-52" placeholder="供应商名称">
+        <button type="button" class="btn btn-primary">查询</button>
+        <button type="button" class="btn">重置</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse platform-table-slip">
+          <thead>
+            <tr>
+              <th class="w-10"><input type="checkbox" id="poolSelAll" title="全选本页" checked></th>
+              <th class="w-12">序</th>
+              <th>采购结算单号</th>
+              <th>供应商</th>
+              <th>采购商</th>
+              <th>采购结算单金额（元）</th>
+              <th>核对完成时间</th>
+              <th>申请状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="poolBody">
+            <tr data-supplier="雨前供应商有限公司">
+              <td><input type="checkbox" class="pool-cb" checked></td>
+              <td>1</td>
+              <td>CGJS202604180001</td>
+              <td>雨前供应商有限公司</td>
+              <td>北京市政务服务中心</td>
+              <td class="font-semibold text-slate-900">237,492.02</td>
+              <td>2026-04-18 15:22</td>
+              <td><span class="tag tag-warn">待结算</span></td>
+              <td>—</td>
+            </tr>
+            <tr data-supplier="雨前供应商有限公司">
+              <td><input type="checkbox" class="pool-cb" checked></td>
+              <td>2</td>
+              <td>CGJS202604190088</td>
+              <td>雨前供应商有限公司</td>
+              <td>海淀区教育装备中心</td>
+              <td class="font-semibold text-slate-900">58,940.00</td>
+              <td>2026-04-19 09:41</td>
+              <td><span class="tag tag-warn">待结算</span></td>
+              <td>—</td>
+            </tr>
+            <tr data-supplier="浙江得力办公用品有限公司">
+              <td><input type="checkbox" class="pool-cb" checked></td>
+              <td>3</td>
+              <td>CGJS202604200031</td>
+              <td>浙江得力办公用品有限公司</td>
+              <td>丰台区数字化服务中心</td>
+              <td class="font-semibold text-slate-900">129,600.00</td>
+              <td>2026-04-20 11:08</td>
+              <td><span class="tag tag-warn">待结算</span></td>
+              <td>—</td>
+            </tr>
+            <tr data-supplier="华北办公用品有限公司">
+              <td><input type="checkbox" class="pool-cb"></td>
+              <td>4</td>
+              <td>CGJS202604160088</td>
+              <td>华北办公用品有限公司</td>
+              <td>西城区政府采购中心</td>
+              <td class="font-semibold text-slate-900">112,400.50</td>
+              <td>2026-04-19 14:20</td>
+              <td><span class="tag tag-warn">待结算</span></td>
+              <td>—</td>
+            </tr>
+            <tr data-supplier="华南后勤服务有限公司">
+              <td><input type="checkbox" class="pool-cb"></td>
+              <td>5</td>
+              <td>CGJS202604170033</td>
+              <td>华南后勤服务有限公司</td>
+              <td>广州市公共资源交易中心</td>
+              <td class="font-semibold text-slate-900">44,120.00</td>
+              <td>2026-04-18 09:05</td>
+              <td><span class="tag tag-warn">待结算</span></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><span>共 <strong class="text-slate-800">5</strong> 条</span><div class="flex items-center gap-2"><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>上一页</button><span>第 <strong>1</strong> / <strong>1</strong> 页</span><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>下一页</button><select class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white"><option>10 条/页</option><option>20 条/页</option></select></div></div>
+      <div id="poolFloatBar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex flex-wrap justify-between items-center gap-3 shadow-[0_-4px_12px_rgba(15,23,42,.06)] z-10">
+        <div class="text-sm text-slate-600">已选 <span id="poolN" class="font-bold text-slate-900">3</span> 笔 · <span id="poolSupLine" class="font-semibold text-slate-900"></span></div>
+        <div class="flex gap-2">
+          <button type="button" class="btn" id="poolClear">清空勾选</button>
+          <button type="button" class="btn btn-primary" id="poolGen">生成平台结算单</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 以下 Tab：平台结算单统一 9 列（与供应商端一致） -->
+    <div class="panel p-4 hidden" data-panel="all">
+      <div class="flex flex-wrap gap-2 mb-4 items-end">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-slate-500">平台结算单号</label>
+          <input type="text" id="allFilterPt" class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-48" placeholder="支持模糊">
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-slate-500">供应商</label>
+          <input type="text" id="allFilterSup" class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-48" placeholder="支持模糊">
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-slate-500">申请状态</label>
+          <select id="allFilterStatus" class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-40 bg-white">
+            <option value="">全部状态</option>
+            <option>待核对</option>
+            <option>编辑中</option>
+            <option>待开票</option>
+            <option>待付款</option>
+            <option>待收款</option>
+            <option>结算完成</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-primary" id="allFilterApply">查询</button>
+        <button type="button" class="btn" id="allFilterReset">重置</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="w-12">序</th>
+              <th>平台结算单号</th>
+              <th>所含采购结算单</th>
+              <th>供应商</th>
+              <th>申请时间</th>
+              <th>采购结算单金额（合计·元）</th>
+              <th>平台服务费（元）</th>
+              <th>申请状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="allFilterBody">
+            <tr class="all-filter-row" data-pt="PT202604210010" data-supplier="雨前供应商有限公司" data-status="待核对"><td class="all-seq">1</td><td class="font-mono font-semibold">PT202604210010</td><td>CGJS202604180001 等 2 笔</td><td>雨前供应商有限公司</td><td>2026-04-21 10:12</td><td class="font-bold text-red-600">296,432.02</td><td class="font-semibold">8,892.96</td><td><span class="tag tag-muted">待核对</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210010">查看</a></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604210022" data-supplier="浙江得力办公用品有限公司" data-status="待开票"><td class="all-seq">2</td><td class="font-mono font-semibold">PT202604210022</td><td>CGJS202604200031</td><td>浙江得力办公用品有限公司</td><td>2026-04-21 14:30</td><td class="font-bold text-red-600">129,600.00</td><td class="font-semibold">3,888.00</td><td><span class="tag tag-primary">待开票</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210022">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-modal-open text-[13px]" data-pt-no="PT202604210022">上传发票</button></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604210015" data-supplier="华北办公用品有限公司" data-status="待核对"><td class="all-seq">3</td><td class="font-mono font-semibold">PT202604210015</td><td>CGJS202604150021 等 2 笔</td><td>华北办公用品有限公司</td><td>2026-04-20 09:05</td><td class="font-bold text-red-600">286,000.00</td><td class="font-semibold">8,580.00</td><td><span class="tag tag-muted">待核对</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210015">查看</a></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604210099" data-supplier="华北办公用品有限公司" data-status="待核对"><td class="all-seq">4</td><td class="font-mono font-semibold">PT202604210099</td><td>CGJS202604160088</td><td>华北办公用品有限公司</td><td>2026-04-20 11:30</td><td class="font-bold text-red-600">112,400.50</td><td class="font-semibold">3,372.02</td><td><span class="tag tag-muted">待核对</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210099">查看</a></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604210035" data-supplier="雨前供应商有限公司" data-status="编辑中"><td class="all-seq">5</td><td class="font-mono font-semibold">PT202604210035</td><td>CGJS202604190050 等 2 笔</td><td>雨前供应商有限公司</td><td>2026-04-21 16:02</td><td class="font-bold text-red-600">412,080.00</td><td class="font-semibold">12,362.40</td><td><span class="tag tag-edit">编辑中</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210035">查看</a> · <a class="link" href="operator_platform_settlement_edit.html?no=PT202604210035">编辑</a></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604210036" data-supplier="浙江得力办公用品有限公司" data-status="编辑中"><td class="all-seq">6</td><td class="font-mono font-semibold">PT202604210036</td><td>CGJS202604200101</td><td>浙江得力办公用品有限公司</td><td>2026-04-21 17:18</td><td class="font-bold text-red-600">66,500.00</td><td class="font-semibold">1,995.00</td><td><span class="tag tag-edit">编辑中</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210036">查看</a> · <a class="link" href="operator_platform_settlement_edit.html?no=PT202604210036">编辑</a></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604200201" data-supplier="雨前供应商有限公司" data-status="待开票"><td class="all-seq">7</td><td class="font-mono font-semibold">PT202604200201</td><td>CGJS202604190077 等 2 笔</td><td>雨前供应商有限公司</td><td>2026-04-20 13:45</td><td class="font-bold text-red-600">198,200.00</td><td class="font-semibold">5,946.00</td><td><span class="tag tag-primary">待开票</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604200201">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-modal-open text-[13px]" data-pt-no="PT202604200201">上传发票</button></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604190088" data-supplier="华南后勤服务有限公司" data-status="待开票"><td class="all-seq">8</td><td class="font-mono font-semibold">PT202604190088</td><td>CGJS202604170033</td><td>华南后勤服务有限公司</td><td>2026-04-19 09:12</td><td class="font-bold text-red-600">44,120.00</td><td class="font-semibold">1,323.60</td><td><span class="tag tag-primary">待开票</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604190088">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-modal-open text-[13px]" data-pt-no="PT202604190088">上传发票</button></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604200088" data-supplier="华南后勤服务有限公司" data-status="待付款"><td class="all-seq">9</td><td class="font-mono font-semibold">PT202604200088</td><td>CGJS202604180099</td><td>华南后勤服务有限公司</td><td>2026-04-20 10:05</td><td class="font-bold text-red-600">76,000.00</td><td class="font-semibold">2,280.00</td><td><span class="tag tag-warn">待付款</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604200088">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604200088">下载发票</button></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604200091" data-supplier="华东数码设备有限公司" data-status="待付款"><td class="all-seq">10</td><td class="font-mono font-semibold">PT202604200091</td><td>CGJS202604180102</td><td>华东数码设备有限公司</td><td>2026-04-20 15:22</td><td class="font-bold text-red-600">53,280.00</td><td class="font-semibold">1,598.40</td><td><span class="tag tag-warn">待付款</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604200091">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604200091">下载发票</button></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604180055" data-supplier="华东数码设备有限公司" data-status="待收款"><td class="all-seq">11</td><td class="font-mono font-semibold">PT202604180055</td><td>CGJS202604120008</td><td>华东数码设备有限公司</td><td>2026-04-18 16:40</td><td class="font-bold text-red-600">92,000.00</td><td class="font-semibold">2,760.00</td><td><span class="tag tag-info">待收款</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604180055">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604180055">下载发票</button> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer receipt-modal-open text-[13px]" data-pt-no="PT202604180055" data-supplier="华东数码设备有限公司" data-pay-time="2026-04-19 11:22" data-serial="B2B-20260419-883021" data-pay-amount="2,760.00" data-voucher-name="银行回单.pdf" data-voucher-note="付款方：国采平台结算专户 · 收款方：华东数码设备有限公司">确认收款</button></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604100001" data-supplier="华东数码设备有限公司" data-status="结算完成"><td class="all-seq">12</td><td class="font-mono font-semibold">PT202604100001</td><td>CGJS202604080022</td><td>华东数码设备有限公司</td><td>2026-04-10 11:20</td><td class="font-bold text-red-600">80,000.00</td><td class="font-semibold">2,400.00</td><td><span class="tag tag-success">结算完成</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604100001">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604100001">下载发票</button></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604090012" data-supplier="华北办公用品有限公司" data-status="结算完成"><td class="all-seq">13</td><td class="font-mono font-semibold">PT202604090012</td><td>CGJS202604070015 等 3 笔</td><td>华北办公用品有限公司</td><td>2026-04-09 14:08</td><td class="font-bold text-red-600">215,600.00</td><td class="font-semibold">6,468.00</td><td><span class="tag tag-success">结算完成</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604090012">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604090012">下载发票</button></td></tr>
+            <tr class="all-filter-row" data-pt="PT202604080045" data-supplier="华南后勤服务有限公司" data-status="结算完成"><td class="all-seq">14</td><td class="font-mono font-semibold">PT202604080045</td><td>CGJS202604050011</td><td>华南后勤服务有限公司</td><td>2026-04-08 09:55</td><td class="font-bold text-red-600">61,800.00</td><td class="font-semibold">1,854.00</td><td><span class="tag tag-success">结算完成</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604080045">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604080045">下载发票</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><span>共 <strong id="allFilterTotal" class="text-slate-800">14</strong> 条</span><div class="flex items-center gap-2"><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>上一页</button><span>第 <strong>1</strong> / <strong>1</strong> 页</span><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>下一页</button><select class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white"><option>20 条/页</option></select></div></div>
+    </div>
+
+    <div class="panel p-4 hidden" data-panel="edit">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="w-12">序</th>
+              <th>平台结算单号</th>
+              <th>所含采购结算单</th>
+              <th>供应商</th>
+              <th>申请时间</th>
+              <th>采购结算单金额（合计·元）</th>
+              <th>平台服务费（元）</th>
+              <th>申请状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="font-mono font-semibold">PT202604210035</td><td>CGJS202604190050 等 2 笔</td><td>雨前供应商有限公司</td><td>2026-04-21 16:02</td><td class="font-bold text-red-600">412,080.00</td><td class="font-semibold">12,362.40</td><td><span class="tag tag-edit">编辑中</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210035">查看</a> · <a class="link" href="operator_platform_settlement_edit.html?no=PT202604210035">编辑</a></td></tr>
+            <tr><td>2</td><td class="font-mono font-semibold">PT202604210036</td><td>CGJS202604200101</td><td>浙江得力办公用品有限公司</td><td>2026-04-21 17:18</td><td class="font-bold text-red-600">66,500.00</td><td class="font-semibold">1,995.00</td><td><span class="tag tag-edit">编辑中</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210036">查看</a> · <a class="link" href="operator_platform_settlement_edit.html?no=PT202604210036">编辑</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><span>共 <strong>2</strong> 条</span><div class="flex items-center gap-2"><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>上一页</button><span>第 <strong>1</strong> / <strong>1</strong> 页</span><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>下一页</button><select class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white"><option>10 条/页</option></select></div></div>
+    </div>
+
+    <div class="panel p-4 hidden" data-panel="check">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="w-12">序</th>
+              <th>平台结算单号</th>
+              <th>所含采购结算单</th>
+              <th>供应商</th>
+              <th>申请时间</th>
+              <th>采购结算单金额（合计·元）</th>
+              <th>平台服务费（元）</th>
+              <th>申请状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="font-mono font-semibold">PT202604210010</td><td>CGJS202604180001 等 2 笔</td><td>雨前供应商有限公司</td><td>2026-04-21 10:12</td><td class="font-bold text-red-600">296,432.02</td><td class="font-semibold">8,892.96</td><td><span class="tag tag-muted">待核对</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210010">查看</a></td></tr>
+            <tr><td>2</td><td class="font-mono font-semibold">PT202604210015</td><td>CGJS202604150021 等 2 笔</td><td>华北办公用品有限公司</td><td>2026-04-20 09:05</td><td class="font-bold text-red-600">286,000.00</td><td class="font-semibold">8,580.00</td><td><span class="tag tag-muted">待核对</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210015">查看</a></td></tr>
+            <tr><td>3</td><td class="font-mono font-semibold">PT202604210099</td><td>CGJS202604160088</td><td>华北办公用品有限公司</td><td>2026-04-20 11:30</td><td class="font-bold text-red-600">112,400.50</td><td class="font-semibold">3,372.02</td><td><span class="tag tag-muted">待核对</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210099">查看</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><span>共 <strong>3</strong> 条</span><div class="flex items-center gap-2"><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>上一页</button><span>第 <strong>1</strong> / <strong>1</strong> 页</span><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>下一页</button><select class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white"><option>10 条/页</option></select></div></div>
+    </div>
+
+    <div class="panel p-4 hidden" data-panel="invoice">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="w-12">序</th>
+              <th>平台结算单号</th>
+              <th>所含采购结算单</th>
+              <th>供应商</th>
+              <th>申请时间</th>
+              <th>采购结算单金额（合计·元）</th>
+              <th>平台服务费（元）</th>
+              <th>申请状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="font-mono font-semibold">PT202604210022</td><td>CGJS202604200031</td><td>浙江得力办公用品有限公司</td><td>2026-04-21 14:30</td><td class="font-bold text-red-600">129,600.00</td><td class="font-semibold">3,888.00</td><td><span class="tag tag-primary">待开票</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604210022">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-modal-open text-[13px]" data-pt-no="PT202604210022">上传发票</button></td></tr>
+            <tr><td>2</td><td class="font-mono font-semibold">PT202604200201</td><td>CGJS202604190077 等 2 笔</td><td>雨前供应商有限公司</td><td>2026-04-20 13:45</td><td class="font-bold text-red-600">198,200.00</td><td class="font-semibold">5,946.00</td><td><span class="tag tag-primary">待开票</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604200201">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-modal-open text-[13px]" data-pt-no="PT202604200201">上传发票</button></td></tr>
+            <tr><td>3</td><td class="font-mono font-semibold">PT202604190088</td><td>CGJS202604170033</td><td>华南后勤服务有限公司</td><td>2026-04-19 09:12</td><td class="font-bold text-red-600">44,120.00</td><td class="font-semibold">1,323.60</td><td><span class="tag tag-primary">待开票</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604190088">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-modal-open text-[13px]" data-pt-no="PT202604190088">上传发票</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><span>共 <strong>3</strong> 条</span><div class="flex items-center gap-2"><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>上一页</button><span>第 <strong>1</strong> / <strong>1</strong> 页</span><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>下一页</button><select class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white"><option>10 条/页</option></select></div></div>
+    </div>
+
+    <div class="panel p-4 hidden" data-panel="pay">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="w-12">序</th>
+              <th>平台结算单号</th>
+              <th>所含采购结算单</th>
+              <th>供应商</th>
+              <th>申请时间</th>
+              <th>采购结算单金额（合计·元）</th>
+              <th>平台服务费（元）</th>
+              <th>申请状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="font-mono font-semibold">PT202604200088</td><td>CGJS202604180099</td><td>华南后勤服务有限公司</td><td>2026-04-20 10:05</td><td class="font-bold text-red-600">76,000.00</td><td class="font-semibold">2,280.00</td><td><span class="tag tag-warn">待付款</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604200088">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604200088">下载发票</button></td></tr>
+            <tr><td>2</td><td class="font-mono font-semibold">PT202604200091</td><td>CGJS202604180102</td><td>华东数码设备有限公司</td><td>2026-04-20 15:22</td><td class="font-bold text-red-600">53,280.00</td><td class="font-semibold">1,598.40</td><td><span class="tag tag-warn">待付款</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604200091">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604200091">下载发票</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><span>共 <strong>2</strong> 条</span><div class="flex items-center gap-2"><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>上一页</button><span>第 <strong>1</strong> / <strong>1</strong> 页</span><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>下一页</button><select class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white"><option>10 条/页</option></select></div></div>
+    </div>
+
+    <div class="panel p-4 hidden" data-panel="recv">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="w-12">序</th>
+              <th>平台结算单号</th>
+              <th>所含采购结算单</th>
+              <th>供应商</th>
+              <th>申请时间</th>
+              <th>采购结算单金额（合计·元）</th>
+              <th>平台服务费（元）</th>
+              <th>申请状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="font-mono font-semibold">PT202604180055</td><td>CGJS202604120008</td><td>华东数码设备有限公司</td><td>2026-04-18 16:40</td><td class="font-bold text-red-600">92,000.00</td><td class="font-semibold">2,760.00</td><td><span class="tag tag-info">待收款</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604180055">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604180055">下载发票</button> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer receipt-modal-open text-[13px]" data-pt-no="PT202604180055" data-supplier="华东数码设备有限公司" data-pay-time="2026-04-19 11:22" data-serial="B2B-20260419-883021" data-pay-amount="2,760.00" data-voucher-name="银行回单.pdf" data-voucher-note="付款方：国采平台结算专户 · 收款方：华东数码设备有限公司">确认收款</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><span>共 <strong>1</strong> 条</span><div class="flex items-center gap-2"><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>上一页</button><span>第 <strong>1</strong> / <strong>1</strong> 页</span><button type="button" class="btn text-xs py-1 h-8 opacity-50 cursor-not-allowed" disabled>下一页</button><select class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white"><option>10 条/页</option></select></div></div>
+    </div>
+
+    <div class="panel p-4 hidden" data-panel="done">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr>
+              <th class="w-12">序</th>
+              <th>平台结算单号</th>
+              <th>所含采购结算单</th>
+              <th>供应商</th>
+              <th>申请时间</th>
+              <th>采购结算单金额（合计·元）</th>
+              <th>平台服务费（元）</th>
+              <th>申请状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td class="font-mono font-semibold">PT202604100001</td><td>CGJS202604080022</td><td>华东数码设备有限公司</td><td>2026-04-10 11:20</td><td class="font-bold text-red-600">80,000.00</td><td class="font-semibold">2,400.00</td><td><span class="tag tag-success">结算完成</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604100001">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604100001">下载发票</button></td></tr>
+            <tr><td>2</td><td class="font-mono font-semibold">PT202604090012</td><td>CGJS202604070015 等 3 笔</td><td>华北办公用品有限公司</td><td>2026-04-09 14:08</td><td class="font-bold text-red-600">215,600.00</td><td class="font-semibold">6,468.00</td><td><span class="tag tag-success">结算完成</span></td><td><a class="link" href="operator_platform_settlement_detail.html?no=PT202604090012">查看</a> · <button type="button" class="link bg-transparent border-0 p-0 font-semibold cursor-pointer invoice-download text-[13px]" data-pt-no="PT202604090012">下载发票</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager"><span>共 <strong>18</strong> 条</span><div class="flex items-center gap-2"><button type="button" class="btn text-xs py-1 h-8">上一页</button><span>第 <strong>1</strong> / <strong>2</strong> 页</span><button type="button" class="btn text-xs py-1 h-8">下一页</button><select class="border border-slate-300 rounded-lg px-2 py-1 text-xs bg-white"><option>10 条/页</option></select></div></div>
+    </div>
+  </div>
+
+  <div id="confirmReceiptModal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 p-4" aria-modal="true" role="dialog" aria-labelledby="confirmReceiptTitle">
+    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 relative" onclick="event.stopPropagation()">
+      <h3 id="confirmReceiptTitle" class="text-lg font-bold text-slate-900 mb-1">确认收款</h3>
+      <p class="text-sm text-slate-500 mb-5">请核对以下<strong class="text-slate-700">付款凭证</strong>及付款信息，确认无误后点击「确认已收款」。</p>
+      <dl class="grid gap-3 text-sm mb-5 border border-slate-100 rounded-lg p-4 bg-slate-50/80">
+        <div class="flex flex-wrap gap-2 justify-between"><dt class="text-slate-500 shrink-0">平台结算单号</dt><dd class="font-mono font-semibold text-slate-900 text-right" id="receiptModalPtNo">—</dd></div>
+        <div class="flex flex-wrap gap-2 justify-between"><dt class="text-slate-500 shrink-0">供应商</dt><dd class="font-semibold text-slate-900 text-right" id="receiptModalSupplier">—</dd></div>
+        <div class="flex flex-wrap gap-2 justify-between"><dt class="text-slate-500 shrink-0">付款流水号</dt><dd class="font-mono text-slate-900 text-right break-all" id="receiptModalSerial">—</dd></div>
+        <div class="flex flex-wrap gap-2 justify-between"><dt class="text-slate-500 shrink-0">付款时间</dt><dd class="text-slate-900 text-right" id="receiptModalPayTime">—</dd></div>
+        <div class="flex flex-wrap gap-2 justify-between"><dt class="text-slate-500 shrink-0">付款金额（平台服务费·元）</dt><dd class="font-bold text-red-600 text-right" id="receiptModalPayAmount">—</dd></div>
+      </dl>
+      <div class="mb-5">
+        <p class="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">付款凭证</p>
+        <div class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+          <button type="button" id="receiptVoucherPreview" class="w-full aspect-[16/10] bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center gap-2 text-slate-600 hover:from-slate-200 hover:to-slate-300 transition-colors cursor-pointer border-0 p-0">
+            <span class="text-4xl leading-none opacity-80" aria-hidden="true">📄</span>
+            <span class="text-sm font-semibold text-slate-800 px-4 text-center" id="receiptVoucherFileName">—</span>
+            <span class="text-xs text-slate-500">点击预览大图（原型）</span>
+          </button>
+          <div class="px-4 py-3 border-t border-slate-100 text-xs text-slate-600 leading-relaxed" id="receiptVoucherNote">—</div>
+          <div class="px-4 pb-3 flex flex-wrap gap-2 justify-end">
+            <button type="button" class="btn text-xs py-1 h-8" id="receiptVoucherDownload">下载凭证</button>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" class="btn" id="receiptModalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="receiptModalOk">确认已收款</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="invoiceUploadModal" class="fixed inset-0 z-[100] hidden bg-slate-900/50 p-4" aria-modal="true" role="dialog" aria-labelledby="invoiceModalTitle">
+    <div class="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full p-6 relative" onclick="event.stopPropagation()">
+      <h3 id="invoiceModalTitle" class="text-lg font-bold text-slate-900 mb-1">上传发票</h3>
+      <p class="text-sm text-slate-500 mb-4">平台结算单号：<span id="invoiceModalPtNo" class="font-mono font-semibold text-slate-800">—</span></p>
+      <div class="border-2 border-dashed border-slate-200 rounded-lg p-5 text-center bg-slate-50/80 mb-3">
+        <input type="file" id="invoiceModalFile" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.ofd,image/*">
+        <button type="button" class="btn btn-primary" id="invoiceModalPick">选择文件</button>
+        <p id="invoiceModalFileName" class="text-xs text-slate-500 mt-2 break-all">未选择文件</p>
+      </div>
+      <p class="text-xs text-slate-400 mb-5">支持 PDF、图片、OFD；服务费发票整单一次上传（原型演示，不上送服务端）。</p>
+      <div class="flex justify-end gap-2">
+        <button type="button" class="btn" id="invoiceModalCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="invoiceModalOk">确定上传</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function showFloatBar(show) {
+        var bar = document.getElementById('poolFloatBar');
+        if (bar) bar.classList.toggle('hidden', !show);
+      }
+      document.querySelectorAll('#tabRow .tab').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = btn.getAttribute('data-panel');
+          document.querySelectorAll('#tabRow .tab').forEach(function (b) { b.classList.toggle('active', b === btn); });
+          document.querySelectorAll('.panel').forEach(function (p) {
+            p.classList.toggle('hidden', p.getAttribute('data-panel') !== id);
+          });
+          showFloatBar(id === 'pending');
+          document.body.classList.toggle('pb-28', id === 'pending');
+        });
+      });
+      showFloatBar(true);
+
+      function poolRows() { return Array.from(document.querySelectorAll('#poolBody tr')); }
+      function poolChecked() {
+        return poolRows().filter(function (tr) {
+          var cb = tr.querySelector('.pool-cb');
+          return cb && cb.checked;
+        });
+      }
+      function supplierSummary(rows) {
+        if (!rows.length) return '供应商：—';
+        var map = {};
+        rows.forEach(function (r) {
+          var name = r.getAttribute('data-supplier');
+          if (name) map[name] = true;
+        });
+        var names = Object.keys(map);
+        if (names.length === 1) return '供应商：' + names[0] + '（1 家）';
+        var join = names.slice(0, 4).join('、');
+        if (names.length > 4) join += '…';
+        return '涉及 <span class="font-bold text-red-600">' + names.length + '</span> 家供应商：' + join;
+      }
+      function updatePoolBar() {
+        var rows = poolChecked();
+        var n = rows.length;
+        document.getElementById('poolN').textContent = n;
+        document.getElementById('poolSupLine').innerHTML = supplierSummary(rows);
+        var btn = document.getElementById('poolGen');
+        btn.disabled = n < 1;
+        btn.classList.toggle('opacity-50', btn.disabled);
+        btn.classList.toggle('cursor-not-allowed', btn.disabled);
+      }
+      document.getElementById('poolSelAll').addEventListener('change', function (e) {
+        poolRows().forEach(function (tr) {
+          var cb = tr.querySelector('.pool-cb');
+          if (cb) cb.checked = e.target.checked;
+        });
+        updatePoolBar();
+      });
+      document.querySelectorAll('.pool-cb').forEach(function (cb) { cb.addEventListener('change', updatePoolBar); });
+      document.getElementById('poolClear').addEventListener('click', function () {
+        poolRows().forEach(function (tr) {
+          var cb = tr.querySelector('.pool-cb');
+          if (cb) cb.checked = false;
+        });
+        document.getElementById('poolSelAll').checked = false;
+        updatePoolBar();
+      });
+      document.getElementById('poolGen').addEventListener('click', function () {
+        if (this.disabled) { alert('请先勾选至少一笔采购结算单。'); return; }
+        alert('已生成平台结算单草稿（支持跨供应商合并发起，原型）。');
+      });
+      updatePoolBar();
+    })();
+
+    (function () {
+      var body = document.getElementById('allFilterBody');
+      var totalEl = document.getElementById('allFilterTotal');
+      if (!body || !totalEl) return;
+
+      function runFilter() {
+        var pt = (document.getElementById('allFilterPt').value || '').trim().toLowerCase();
+        var sup = (document.getElementById('allFilterSup').value || '').trim().toLowerCase();
+        var st = document.getElementById('allFilterStatus').value;
+        var rows = Array.from(body.querySelectorAll('.all-filter-row'));
+        var n = 0;
+        rows.forEach(function (tr) {
+          var dpt = (tr.getAttribute('data-pt') || '').toLowerCase();
+          var ds = (tr.getAttribute('data-supplier') || '').toLowerCase();
+          var dst = tr.getAttribute('data-status') || '';
+          var ok = true;
+          if (pt && dpt.indexOf(pt) === -1) ok = false;
+          if (sup && ds.indexOf(sup) === -1) ok = false;
+          if (st && dst !== st) ok = false;
+          tr.style.display = ok ? '' : 'none';
+          if (ok) n++;
+        });
+        var seq = 0;
+        rows.forEach(function (tr) {
+          if (tr.style.display === 'none') return;
+          seq++;
+          var cell = tr.querySelector('.all-seq');
+          if (cell) cell.textContent = seq;
+        });
+        totalEl.textContent = n;
+      }
+
+      document.getElementById('allFilterApply').addEventListener('click', runFilter);
+      document.getElementById('allFilterReset').addEventListener('click', function () {
+        document.getElementById('allFilterPt').value = '';
+        document.getElementById('allFilterSup').value = '';
+        document.getElementById('allFilterStatus').value = '';
+        runFilter();
+      });
+      runFilter();
+    })();
+
+    (function () {
+      var modal = document.getElementById('invoiceUploadModal');
+      var ptEl = document.getElementById('invoiceModalPtNo');
+      var fileInput = document.getElementById('invoiceModalFile');
+      var fileNameEl = document.getElementById('invoiceModalFileName');
+      var pickBtn = document.getElementById('invoiceModalPick');
+      var cancelBtn = document.getElementById('invoiceModalCancel');
+      var okBtn = document.getElementById('invoiceModalOk');
+      if (!modal || !fileInput) return;
+
+      function openInvoiceModal(ptNo) {
+        ptEl.textContent = ptNo || '—';
+        fileInput.value = '';
+        fileNameEl.textContent = '未选择文件';
+        modal.classList.remove('hidden');
+        modal.classList.add('invoice-modal-visible');
+      }
+      function closeInvoiceModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('invoice-modal-visible');
+      }
+
+      document.body.addEventListener('click', function (e) {
+        var t = e.target.closest('.invoice-modal-open');
+        if (!t) return;
+        e.preventDefault();
+        openInvoiceModal(t.getAttribute('data-pt-no') || '');
+      });
+
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeInvoiceModal();
+      });
+      pickBtn.addEventListener('click', function () { fileInput.click(); });
+      fileInput.addEventListener('change', function () {
+        var f = this.files && this.files[0];
+        fileNameEl.textContent = f ? f.name : '未选择文件';
+      });
+      cancelBtn.addEventListener('click', closeInvoiceModal);
+      okBtn.addEventListener('click', function () {
+        var f = fileInput.files && fileInput.files[0];
+        var pt = ptEl.textContent.trim();
+        if (!f) {
+          alert('请先选择要上传的发票文件。');
+          return;
+        }
+        alert('平台结算单 ' + pt + '：发票「' + f.name + '」已提交（原型演示）。');
+        closeInvoiceModal();
+      });
+    })();
+
+    (function () {
+      var modal = document.getElementById('confirmReceiptModal');
+      var ptEl = document.getElementById('receiptModalPtNo');
+      var supEl = document.getElementById('receiptModalSupplier');
+      var serialEl = document.getElementById('receiptModalSerial');
+      var timeEl = document.getElementById('receiptModalPayTime');
+      var amtEl = document.getElementById('receiptModalPayAmount');
+      var fnameEl = document.getElementById('receiptVoucherFileName');
+      var noteEl = document.getElementById('receiptVoucherNote');
+      var previewBtn = document.getElementById('receiptVoucherPreview');
+      var dlBtn = document.getElementById('receiptVoucherDownload');
+      var cancelBtn = document.getElementById('receiptModalCancel');
+      var okBtn = document.getElementById('receiptModalOk');
+      if (!modal || !ptEl) return;
+
+      var currentPt = '';
+
+      function openReceiptModal(btn) {
+        var ds = btn.dataset || {};
+        currentPt = ds.ptNo || '';
+        ptEl.textContent = currentPt || '—';
+        supEl.textContent = ds.supplier || '—';
+        serialEl.textContent = ds.serial || '—';
+        timeEl.textContent = ds.payTime || '—';
+        amtEl.textContent = ds.payAmount ? ds.payAmount + ' 元' : '—';
+        fnameEl.textContent = ds.voucherName || '付款凭证';
+        noteEl.textContent = ds.voucherNote || '—';
+        modal.classList.remove('hidden');
+        modal.classList.add('receipt-modal-visible');
+      }
+
+      function closeReceiptModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('receipt-modal-visible');
+      }
+
+      document.body.addEventListener('click', function (e) {
+        var t = e.target.closest('.receipt-modal-open');
+        if (!t) return;
+        e.preventDefault();
+        openReceiptModal(t);
+      });
+
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeReceiptModal();
+      });
+      cancelBtn.addEventListener('click', closeReceiptModal);
+      previewBtn.addEventListener('click', function () {
+        alert('预览付款凭证「' + (fnameEl.textContent || '') + '」（原型不加载真实文件）。\n平台结算单：' + currentPt);
+      });
+      dlBtn.addEventListener('click', function () {
+        alert('下载付款凭证「' + (fnameEl.textContent || '') + '」（原型演示）。');
+      });
+      okBtn.addEventListener('click', function () {
+        alert('已确认收款（原型）：\n平台结算单 ' + currentPt);
+        closeReceiptModal();
+      });
+    })();
+
+    (function () {
+      document.body.addEventListener('click', function (e) {
+        var t = e.target.closest('.invoice-download');
+        if (!t) return;
+        e.preventDefault();
+        var pt = t.getAttribute('data-pt-no') || '';
+        alert('下载平台结算单 ' + pt + ' 已归档服务费发票（原型演示）。');
+      });
+    })();
+  </script>
+</html>

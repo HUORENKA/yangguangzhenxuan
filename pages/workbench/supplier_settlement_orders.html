@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>采购订单结算 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f5f5f5; color:#333; }
+    .page-card { background:#fff; border:1px solid #e8e8e8; border-radius:4px; }
+    .tab { padding:10px 16px; font-size:14px; color:#666; border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; }
+    .tab:hover { color:#E2231A; }
+    .tab.active { color:#E2231A; font-weight:700; border-bottom-color:#E2231A; }
+    .btn { height:32px; padding:0 14px; border-radius:2px; font-size:13px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+    .btn-primary { background:#E2231A; border-color:#E2231A; color:#fff; }
+    .btn-primary:disabled { opacity:.5; cursor:not-allowed; }
+    th { background:#f7f7f7; color:#666; font-size:13px; font-weight:700; border:1px solid #e8e8e8; }
+    td { border:1px solid #e8e8e8; font-size:13px; }
+    td, th { padding:12px 10px; text-align:left; }
+    .link { color:#E2231A; cursor:pointer; text-decoration:none; }
+    .link:hover { text-decoration:underline; }
+    .float-bar { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #e8e8e8; padding:12px 24px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 -4px 12px rgba(0,0,0,.06); z-index:10; }
+    .invoice-dlg-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:50; display:none; align-items:center; justify-content:center; padding:16px; overflow-y:auto; }
+    .invoice-dlg-mask.show { display:flex; }
+    .invoice-dlg-panel { background:#fff; border:1px solid #e8e8e8; border-radius:4px; width:100%; max-width:1000px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,.12); }
+    .invoice-order-card { border:1px solid #e8e8e8; border-radius:4px; background:#fafafa; padding:14px 16px; margin-bottom:12px; }
+    .invoice-order-card:last-child { margin-bottom:0; }
+    .invoice-dlg-scroll { overflow-y:auto; padding:16px 20px 0; flex:1; min-height:0; }
+    .invoice-dlg-hd { padding:14px 20px; border-bottom:1px solid #eee; flex-shrink:0; }
+    .invoice-dlg-ft { padding:12px 20px; border-top:1px solid #eee; flex-shrink:0; display:flex; justify-content:flex-end; gap:8px; background:#fafafa; }
+    .lbl { font-size:12px; color:#888; }
+  </style>
+</head>
+<body>
+  <div class="pb-24 max-w-[1680px] mx-auto p-5">
+    <div class="page-card p-4 mb-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold text-gray-900">采购订单结算</h1>
+      <div class="flex items-center gap-2 text-sm text-gray-500">
+        <input class="border border-gray-300 rounded px-3 py-1.5 w-56" placeholder="请输入订单编号">
+        <button class="btn btn-primary">搜索</button>
+        <a class="link" href="#">高级搜索</a>
+        <button class="btn" title="刷新"><i class="fas fa-rotate"></i></button>
+      </div>
+    </div>
+
+    <!-- Tab：待结算在最前；其后为结算单维度状态 -->
+    <div class="page-card mb-4">
+      <div class="flex flex-wrap border-b border-gray-200 px-2 overflow-x-auto" id="tabs">
+        <button type="button" class="tab active" data-panel="pending">待结算订单 <span class="text-gray-400 font-normal">(6)</span></button>
+        <button type="button" class="tab" data-panel="all">全部 <span class="text-gray-400 font-normal">(12)</span></button>
+        <button type="button" class="tab" data-panel="edit">编辑中 <span class="text-gray-400 font-normal">(2)</span></button>
+        <button type="button" class="tab" data-panel="check">待核对 <span class="text-gray-400 font-normal">(2)</span></button>
+        <button type="button" class="tab" data-panel="invoice">待开票 <span class="text-gray-400 font-normal">(2)</span></button>
+        <button type="button" class="tab" data-panel="pay">待付款 <span class="text-gray-400 font-normal">(2)</span></button>
+        <button type="button" class="tab" data-panel="recv">待收款 <span class="text-gray-400 font-normal">(2)</span></button>
+        <button type="button" class="tab" data-panel="done">结算完成 <span class="text-gray-400 font-normal">(2)</span></button>
+      </div>
+
+      <!-- 待结算：订单粒度，勾选发起 -->
+      <div class="panel p-4" data-panel="pending">
+        <p class="text-sm text-gray-500 mb-3"><i class="fas fa-circle-info text-blue-500 mr-1"></i>仅展示未进入结算流程的订单。勾选后发起结算；若涉及多个采购商，将自动拆分为多张结算单。</p>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr>
+                <th class="w-10"><input type="checkbox" id="selAll" title="全选本页"></th>
+                <th>序</th>
+                <th>订单编号</th>
+                <th>采购商</th>
+                <th>下单时间</th>
+                <th>订单金额（元）</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" class="row-cb" data-buyer="北京市政务服务中心"></td>
+                <td>1</td>
+                <td>CG-17591358371500001</td>
+                <td>北京市政务服务中心</td>
+                <td>2025-09-28 10:20</td>
+                <td class="font-semibold">13,500.00</td>
+                <td><a class="link" href="#">订单详情</a></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-cb" data-buyer="北京市政务服务中心"></td>
+                <td>2</td>
+                <td>CG-17591358371500002</td>
+                <td>北京市政务服务中心</td>
+                <td>2025-09-28 11:05</td>
+                <td class="font-semibold">8,200.00</td>
+                <td><a class="link" href="#">订单详情</a></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-cb" data-buyer="海淀区教育装备中心"></td>
+                <td>3</td>
+                <td>CG-17591358371500003</td>
+                <td>海淀区教育装备中心</td>
+                <td>2025-09-29 09:12</td>
+                <td class="font-semibold">22,000.00</td>
+                <td><a class="link" href="#">订单详情</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 结算单列表（全部/编辑中等共用样式，原型仅示例「全部」） -->
+      <div class="panel p-4 hidden" data-panel="all">
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr>
+                <th>序</th>
+                <th>结算编号</th>
+                <th>订单编号</th>
+                <th>采购商</th>
+                <th>申请时间</th>
+                <th>合计金额（元）</th>
+                <th>申请状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>JSQD2025092900001</td>
+                <td>CG-17591358371500001 等2笔</td>
+                <td>北京市政务服务中心</td>
+                <td>2025-09-29 14:20</td>
+                <td class="text-red-600 font-bold">21,700.00</td>
+                <td>编辑中</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a> <a class="link" href="supplier_settlement_detail.html">编辑</a></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>JSQD2025092800166</td>
+                <td>CG-17591358371500888</td>
+                <td>石景山区集中采购中心</td>
+                <td>2025-09-28 09:08</td>
+                <td class="text-red-600 font-bold">3,289.60</td>
+                <td>编辑中</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a> <a class="link" href="supplier_settlement_detail.html">编辑</a></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>JSQD2025100200031</td>
+                <td>CG-17591358371501003 等3笔</td>
+                <td>海淀区教育装备中心</td>
+                <td>2025-10-02 11:42</td>
+                <td class="text-red-600 font-bold">58,940.00</td>
+                <td>待核对</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a></td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>JSQD2025092900002</td>
+                <td>CG-17591358371500003</td>
+                <td>通州区机关事务服务中心</td>
+                <td>2025-09-29 16:03</td>
+                <td class="text-red-600 font-bold">22,000.00</td>
+                <td>待核对</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a></td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>JSQD2025100800045</td>
+                <td>CG-17591358371502001</td>
+                <td>丰台区数字化服务中心</td>
+                <td>2025-10-08 10:05</td>
+                <td class="text-red-600 font-bold">129,600.00</td>
+                <td>待开票</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a> <a class="link js-open-invoice-upload" href="#" role="button" data-slip-no="JSQD2025100800045">上传发票</a></td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>JSQD2025100911022</td>
+                <td>CG-17591358371502056 等2笔</td>
+                <td>延庆区行政服务中心</td>
+                <td>2025-10-09 14:51</td>
+                <td class="text-red-600 font-bold">7,056.80</td>
+                <td>待开票</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a> <a class="link js-open-invoice-upload" href="#" role="button" data-slip-no="JSQD2025100911022">上传发票</a></td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>JSQD2025100900077</td>
+                <td>CG-17591358371501990</td>
+                <td>密云区采购中心</td>
+                <td>2025-10-07 09:36</td>
+                <td class="text-red-600 font-bold">46,328.50</td>
+                <td>待付款</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a></td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>JSQD2025100500062</td>
+                <td>CG-17591358371501822</td>
+                <td>朝阳区行政服务局</td>
+                <td>2025-10-05 16:27</td>
+                <td class="text-red-600 font-bold">15,688.00</td>
+                <td>待付款</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a></td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>JSQD2025093000055</td>
+                <td>CG-17591358371501201</td>
+                <td>怀柔区政务服务中心</td>
+                <td>2025-09-30 13:09</td>
+                <td class="text-red-600 font-bold">96,020.00</td>
+                <td>待收款</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a> <a class="link" href="#" onclick="alert('已确认收款（原型）'); return false;">确认收款</a></td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>JSQD2025091800041</td>
+                <td>CG-17591358371500901 等4笔</td>
+                <td>大兴区人民政府采购办公室</td>
+                <td>2025-09-18 11:58</td>
+                <td class="text-red-600 font-bold">203,455.70</td>
+                <td>待收款</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a> <a class="link" href="#">确认收款</a></td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td>JSQD2025091200028</td>
+                <td>CG-17591358371500666</td>
+                <td>昌平区集中采购中心</td>
+                <td>2025-09-12 15:41</td>
+                <td class="text-red-600 font-bold">12,088.90</td>
+                <td>结算完成</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a></td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>JSQD2025082900015</td>
+                <td>CG-17591358371500543 等6笔</td>
+                <td>门头沟区政府采购中心</td>
+                <td>2025-08-29 10:12</td>
+                <td class="text-red-600 font-bold">341,902.36</td>
+                <td>结算完成</td>
+                <td><a class="link" href="supplier_settlement_detail.html">查看</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel p-4 hidden text-sm text-gray-500" data-panel="edit">与「全部」相同列表结构，筛选状态为「编辑中」。<a class="link" href="#tabs">返回待结算</a></div>
+      <div class="panel p-4 hidden text-sm text-gray-500" data-panel="check">与「全部」相同列表结构，筛选「待核对」。</div>
+      <div class="panel p-4 hidden text-sm text-gray-500" data-panel="invoice">与「全部」相同列表结构，筛选「待开票」。</div>
+      <div class="panel p-4 hidden text-sm text-gray-500" data-panel="pay">与「全部」相同列表结构，筛选「待付款」。</div>
+      <div class="panel p-4 hidden text-sm text-gray-500" data-panel="recv">与「全部」相同列表结构，筛选「待收款」。</div>
+      <div class="panel p-4 hidden text-sm text-gray-500" data-panel="done">与「全部」相同列表结构，筛选「结算完成」。</div>
+    </div>
+  </div>
+
+  <!-- 上传发票（按结算单打开；每订单商品行独立上传增值税发票影像） -->
+  <div id="invoiceUploadDlg" class="invoice-dlg-mask" aria-hidden="true">
+    <div class="invoice-dlg-panel" role="dialog" aria-labelledby="invoiceDlgTitle">
+      <div class="invoice-dlg-hd flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 id="invoiceDlgTitle" class="text-base font-bold text-gray-900">上传发票 · 结算单明细</h3>
+          <p class="text-sm text-gray-500 mt-1">
+            <span class="lbl">结算编号</span> <strong id="invDlgSlipNo" class="text-gray-800 font-semibold">—</strong>
+            <span class="mx-2 text-gray-300">|</span>
+            <span class="lbl">采购商</span> <strong id="invDlgBuyer" class="text-gray-800 font-semibold">—</strong>
+            <span class="mx-2 text-gray-300">|</span>
+            <span class="lbl">合计金额（元）</span> <strong id="invDlgTotal" class="text-red-600">—</strong>
+          </p>
+          <p class="text-xs text-gray-400 mt-2">请将<strong class="text-gray-600">每笔商品</strong>与对应增值税专用发票影像一一对应上传（可多文件合并为该行发票包，原型中为逐行占位）。</p>
+        </div>
+        <button type="button" class="btn" id="invDlgCloseX" aria-label="关闭">&times;</button>
+      </div>
+      <div class="invoice-dlg-scroll text-sm" id="invDlgBody"></div>
+      <div class="invoice-dlg-ft">
+        <button type="button" class="btn" id="invDlgCancel">取消</button>
+        <button type="button" class="btn btn-primary" id="invDlgConfirm">提交归档（原型）</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="float-bar max-w-[1680px] mx-auto left-1/2 -translate-x-1/2 right-auto w-full rounded-t-lg" style="max-width:100%">
+    <div class="text-sm text-gray-600">已选 <span id="selCount" class="font-bold text-gray-900">0</span> 笔 · 涉及采购商 <span id="buyerCount" class="font-bold text-gray-900">0</span> 家（将生成 <span id="slipCount" class="font-bold text-red-600">0</span> 张结算单）</div>
+    <div class="flex gap-2">
+      <button type="button" class="btn" id="btnClear">清空选择</button>
+      <a class="btn btn-primary inline-flex items-center pointer-events-none opacity-50" id="btnStart" href="supplier_settlement_create_result.html">发起结算</a>
+    </div>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        const id = t.getAttribute('data-panel');
+        tabs.forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        panels.forEach(p => p.classList.toggle('hidden', p.getAttribute('data-panel') !== id));
+      });
+    });
+
+    const cbs = () => Array.from(document.querySelectorAll('.row-cb'));
+    function uniqueBuyers() {
+      const set = new Set();
+      cbs().forEach(cb => { if (cb.checked) set.add(cb.getAttribute('data-buyer')); });
+      return set.size;
+    }
+    function updateBar() {
+      const n = cbs().filter(cb => cb.checked).length;
+      const b = uniqueBuyers();
+      document.getElementById('selCount').textContent = n;
+      document.getElementById('buyerCount').textContent = n ? b : 0;
+      document.getElementById('slipCount').textContent = n ? b : 0;
+      const go = document.getElementById('btnStart');
+      go.classList.toggle('pointer-events-none', !n);
+      go.classList.toggle('opacity-50', !n);
+    }
+    document.getElementById('selAll').addEventListener('change', e => {
+      cbs().forEach(cb => { cb.checked = e.target.checked; });
+      updateBar();
+    });
+    cbs().forEach(cb => cb.addEventListener('change', updateBar));
+    document.getElementById('btnClear').addEventListener('click', () => {
+      cbs().forEach(cb => { cb.checked = false; });
+      document.getElementById('selAll').checked = false;
+      updateBar();
+    });
+    updateBar();
+
+    /* --------- 上传发票弹窗 --------- */
+    (function () {
+      var mask = document.getElementById('invoiceUploadDlg');
+      var body = document.getElementById('invDlgBody');
+
+      /** 原型数据：每笔结算关联多订单时每订单多商品行 */
+      var INVOICE_SLIP_MOCK = {
+        JSQD2025100800045: {
+          buyer: '丰台区数字化服务中心',
+          total: '129,600.00',
+          orders: [{
+            orderNo: 'CG-17591358371502001',
+            lines: [
+              { name: '华为泰山 2288H V7 服务器（示例）', unit: '48,900.00', qty: '2', sub: '97,800.00' },
+              { name: '磁盘阵列扩展单元（左侧柜体）', unit: '7,600.00', qty: '1', sub: '7,600.00' },
+              { name: '磁盘阵列扩展单元（右侧柜体）', unit: '7,600.00', qty: '1', sub: '7,600.00' },
+              { name: '32GB DDR5 ECC 内存条（批次 A）', unit: '970.00', qty: '5', sub: '4,850.00' },
+              { name: '32GB DDR5 ECC 内存条（批次 B）', unit: '970.00', qty: '5', sub: '4,850.00' },
+              { name: '960GB 企业级 SATA SSD（机头盘位）', unit: '920.00', qty: '3', sub: '2,760.00' },
+              { name: '960GB 企业级 SATA SSD（扩展柜冷备）', unit: '690.00', qty: '6', sub: '4,140.00' }
+            ]
+          }]
+        },
+        JSQD2025100911022: {
+          buyer: '延庆区行政服务中心',
+          total: '7,056.80',
+          orders: [
+            {
+              orderNo: 'CG-17591358371502056',
+              lines: [
+                { name: '联想启天 M455 台式机（含键鼠）', unit: '2,988.00', qty: '1', sub: '2,988.00' },
+                { name: '21.5 英寸护眼显示器（1080p）', unit: '758.00', qty: '1', sub: '758.00' },
+                { name: 'RJ45 网线 5m CAT6（整箱备货）', unit: '58.80', qty: '6', sub: '352.80' }
+              ]
+            },
+            {
+              orderNo: 'CG-17591358371502057',
+              lines: [
+                { name: '兄弟标签打印机 TD-4420TN', unit: '1,580.00', qty: '1', sub: '1,580.00' },
+                { name: '原装色带 TZ-731（黑底金字）', unit: '298.00', qty: '2', sub: '596.00' },
+                { name: '线缆收纳盒大号', unit: '128.00', qty: '2', sub: '256.00' },
+                { name: '含税运费及安装辅材摊销', unit: '526.00', qty: '1', sub: '526.00' }
+              ]
+            }
+          ]
+        }
+      };
+
+      function escapeHtml(s) {
+        var d = document.createElement('div');
+        d.textContent = String(s || '');
+        return d.innerHTML;
+      }
+
+      function openInvoiceDlg(slipNo) {
+        var data = INVOICE_SLIP_MOCK[slipNo];
+        if (!data) {
+          alert('暂无该结算单发票上传明细（原型仅维护「待开票」示例两条）。编号：' + slipNo);
+          return;
+        }
+        document.getElementById('invDlgSlipNo').textContent = slipNo;
+        document.getElementById('invDlgBuyer').textContent = data.buyer;
+        document.getElementById('invDlgTotal').textContent = data.total;
+
+        var html = '';
+        data.orders.forEach(function (order) {
+          html += '<div class="invoice-order-card">';
+          html += '<div class="flex flex-wrap justify-between gap-2 mb-3">';
+          html += '<div class="font-bold text-gray-900">订单编号：' + escapeHtml(order.orderNo) + '</div>';
+          html += '<div class="text-xs text-gray-500">';
+          html += '<a class="link mr-3" href="supplier_settlement_detail.html"><i class="fas fa-file-contract mr-1"></i>查看合同</a>';
+          html += '<span class="text-gray-600">增值税发票：</span><span class="text-orange-700 font-semibold">按商品行逐项上传</span>';
+          html += '</div></div>';
+          html += '<div class="overflow-x-auto"><table class="w-full border-collapse">';
+          html += '<thead><tr>';
+          html += '<th class="text-left">序</th><th class="text-left">商品名称</th><th class="text-right">单价（元）</th><th class="text-right">数量</th><th class="text-right">小计（元）</th>';
+          html += '<th class="text-left whitespace-nowrap" style="min-width:132px;">发票影像</th>';
+          html += '</tr></thead><tbody>';
+          order.lines.forEach(function (line, idx) {
+            var lineNo = idx + 1;
+            html += '<tr>';
+            html += '<td>' + lineNo + '</td>';
+            html += '<td>' + escapeHtml(line.name) + '</td>';
+            html += '<td class="text-right">' + escapeHtml(line.unit) + '</td>';
+            html += '<td class="text-right">' + escapeHtml(line.qty) + '</td>';
+            html += '<td class="text-right font-medium">' + escapeHtml(line.sub) + '</td>';
+            html += '<td><button type="button" class="btn text-xs py-1 h-8 whitespace-nowrap js-line-invoice-upload" ';
+            html += 'data-order="' + escapeHtml(order.orderNo) + '" ';
+            html += 'data-line="' + String(lineNo) + '" ';
+            html += 'data-name="' + escapeHtml(line.name) + '">';
+            html += '<i class="fas fa-cloud-arrow-up mr-1"></i>上传发票';
+            html += '</button>';
+            html += '<span class="text-xs text-gray-400 ml-2 line-inv-status hidden" data-upload-status></span>';
+            html += '</td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table></div>';
+          html += '</div>';
+        });
+        body.innerHTML = html;
+
+        body.querySelectorAll('.js-line-invoice-upload').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var nm = btn.getAttribute('data-name') || '该商品';
+            var ord = btn.getAttribute('data-order') || '';
+            var ln = btn.getAttribute('data-line') || '';
+            alert('为订单「' + ord + '」第 ' + ln + ' 行「' + nm + '」选择增值税发票影像（PDF/JPG/OFD，≤20MB/文件）\n此为原型占位。');
+            var st = btn.parentElement.querySelector('[data-upload-status]');
+            if (st) {
+              st.textContent = '已选草稿';
+              st.classList.remove('hidden');
+            }
+          });
+        });
+
+        mask.classList.add('show');
+        mask.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeInvoiceDlg() {
+        mask.classList.remove('show');
+        mask.setAttribute('aria-hidden', 'true');
+      }
+
+      document.querySelectorAll('.js-open-invoice-upload').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var slipNo = a.getAttribute('data-slip-no');
+          if (slipNo) openInvoiceDlg(slipNo);
+        });
+      });
+
+      ['invDlgCancel', 'invDlgCloseX'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('click', closeInvoiceDlg);
+      });
+      mask.addEventListener('click', function (e) {
+        if (e.target === mask) closeInvoiceDlg();
+      });
+      document.getElementById('invDlgConfirm').addEventListener('click', function () {
+        alert('已模拟提交归档：系统将为每行商品关联上传的发票影像（原型）。');
+        closeInvoiceDlg();
+      });
+    })();
+  </script>
+</body>
+</html>

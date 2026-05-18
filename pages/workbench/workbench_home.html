@@ -904,7 +904,7 @@
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="contract" onclick="openWorkbenchSubPage('supplier_contract_list.html', 'contract', '合同签署')">
           <i class="fas fa-file-signature"></i><span>合同签署</span>
         </a>
-        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="settlement" onclick="openWorkbenchSubPage('supplier_settlement_list.html', 'settlement', '采购订单结算')">
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="settlement" onclick="openSettlementFeature()">
           <i class="fas fa-calculator"></i><span>采购订单结算</span>
         </a>
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="platform-settlement" onclick="openWorkbenchSubPage('supplier_platform_settlement.html', 'platform-settlement', '平台结算管理')">
@@ -926,8 +926,8 @@
             <i class="fas fa-briefcase text-white text-xl"></i>
           </div>
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">工作台</h1>
-            <p class="text-sm text-gray-500 mt-0.5">您的工作中心，快速处理待办事项</p>
+            <h1 id="workbenchPageTitle" class="text-2xl font-bold text-gray-900">采购工作台</h1>
+            <p id="workbenchPageDesc" class="text-sm text-gray-500 mt-0.5">您的工作中心，快速处理待办事项</p>
         </div>
         </div>
         <!-- 角色切换下拉框 -->
@@ -1641,7 +1641,7 @@
             <div class="module-icon bg-gradient-to-br from-teal-500 to-teal-600 text-white shadow-sm">
               <i class="fas fa-calculator"></i>
         </div>
-            <h3 class="text-lg font-bold text-gray-800">采购订单结算</h3>
+            <h3 id="settlementModuleTitle" class="text-lg font-bold text-gray-800">结算订单</h3>
           </div>
           <a href="javascript:void(0)" class="view-all-link text-sm text-primary font-medium" onclick="event.stopPropagation(); openSettlementFeature();">查看全部 <i class="fas fa-chevron-right text-xs ml-1"></i></a>
           </div>
@@ -1979,15 +1979,11 @@
       document.body.setAttribute('data-user-role', role);
 
       // 更新页面标题
-      const pageTitle = document.querySelector('h1.text-2xl');
-      const pageDesc = document.querySelector('.text-sm.text-gray-500.mt-0\\.5');
+      const pageTitle = document.getElementById('workbenchPageTitle') || document.querySelector('h1.text-2xl');
+      const pageDesc = document.getElementById('workbenchPageDesc') || document.querySelector('.text-sm.text-gray-500.mt-0\\.5');
       
       if (pageTitle) {
-        if (role === 'supplier') {
-          pageTitle.textContent = '供应商工作台';
-        } else {
-          pageTitle.textContent = '工作台';
-        }
+        pageTitle.textContent = role === 'supplier' ? '供应商工作台' : '采购工作台';
       }
       
       // 更新页面描述
@@ -2012,7 +2008,8 @@
       // 更新按钮显示/隐藏（使用 data-role 属性）
       const roleElements = document.querySelectorAll('[data-role]');
       roleElements.forEach(el => {
-        const allowedRoles = el.getAttribute('data-role').split(',');
+        const rolesAttr = el.getAttribute('data-role');
+        const allowedRoles = (rolesAttr || '').split(',').map(r => r.trim()).filter(Boolean);
         if (allowedRoles.includes(role)) {
           el.style.display = '';
         } else {
@@ -2026,12 +2023,17 @@
         poModuleTitle.textContent = '采购单';
       }
       
-      // 更新"我的审核"文本（仅采购专员显示）
+      // 工作台首页：结算模块标题（供应商「采购订单结算」/ 采购商「结算订单」）
+      const settlementModuleTitle = document.getElementById('settlementModuleTitle');
+      if (settlementModuleTitle) {
+        settlementModuleTitle.textContent = role === 'supplier' ? '采购订单结算' : '结算订单';
+      }
+
       const myAuditLabel = document.getElementById('poMyAuditLabel');
       if (myAuditLabel) {
         myAuditLabel.textContent = '我的审核';
       }
-      
+
       // 更新重要待办显示
       const supplierTodos = document.getElementById('supplierTodos');
       const buyerTodos = document.getElementById('buyerTodos');
@@ -2071,6 +2073,8 @@
       if (subShell && subShell.style.display !== 'none') {
         if (currentWorkbenchMenuKey === 'after-sales') {
           openAfterSalesSubPage();
+        } else if (currentWorkbenchMenuKey === 'settlement') {
+          openSettlementFeature();
         } else if (currentWorkbenchMenuKey === 'my-goods' && role !== 'supplier') {
           showWorkbenchHome();
         } else if (currentWorkbenchMenuKey === 'procurement-law' && role !== 'buyer') {
@@ -2203,9 +2207,9 @@
 
     function openSettlementFeature() {
       if (getCurrentRole() === 'supplier') {
-        openWorkbenchSubPage('supplier_settlement_list.html', 'settlement', '采购订单结算');
+        openWorkbenchSubPage('supplier_settlement_orders.html', 'settlement', '采购订单结算');
       } else {
-        openWorkbenchSubPage('buyer_settlement_list.html', 'settlement', '结算管理');
+        openWorkbenchSubPage('buyer_settlement_orders.html', 'settlement', '结算订单');
       }
     }
 
@@ -2324,7 +2328,9 @@
         const buyerTodo5 = document.getElementById('buyerTodo5'); // 待付款
         
         // 同步数据（从现有模块获取）
-        if (buyerTodo1) buyerTodo1.textContent = document.getElementById('poMyAudit')?.textContent.split('/')[0] || '10';
+        const poMyAuditEl = document.getElementById('poMyAudit');
+        const auditPart = poMyAuditEl?.textContent?.split('/')?.[0]?.trim();
+        if (buyerTodo1) buyerTodo1.textContent = auditPart || '10';
         if (buyerTodo2) buyerTodo2.textContent = document.getElementById('orderReceiving')?.textContent || '15';
         if (buyerTodo3) buyerTodo3.textContent = document.getElementById('afterSaleReturn')?.textContent || '2';
         if (buyerTodo4) buyerTodo4.textContent = document.getElementById('contractApproving')?.textContent || '9';
@@ -2918,10 +2924,10 @@
       
       if (roleSelector) {
         roleSelector.value = savedRole;
-        updateRoleHint(savedRole);
-        updateUserName(savedRole);
-        updatePageByRole(savedRole);
       }
+      updateRoleHint(savedRole);
+      updateUserName(savedRole);
+      updatePageByRole(savedRole);
 
       const savedSidebar = localStorage.getItem('workbenchSidebarCollapsed');
       if (savedSidebar === 'true') {

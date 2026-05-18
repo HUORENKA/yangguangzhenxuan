@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>平台结算单详情 | 运营商工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; }
+    .sec-title { font-size:15px; font-weight:700; border-bottom:2px solid #E2231A; padding-bottom:8px; margin-bottom:16px; }
+    .btn { height:36px; padding:0 16px; border-radius:8px; font-size:13px; border:1px solid #e2e8f0; background:#fff; cursor:pointer; font-weight:600; color:#475569; }
+    .btn-primary { background:#E2231A; border-color:#E2231A; color:#fff; }
+    .label { font-size:12px; color:#64748b; }
+    .link { color:#E2231A; cursor:pointer; text-decoration:none; }
+    th { background:#f7f7f7; font-size:13px; }
+    td, th { border:1px solid #e8e8e8; padding:10px 8px; font-size:13px; }
+    .collapse-hd { cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
+    .embed-hide-title .embed-hidden { display:none; }
+  </style>
+</head>
+<body class="p-5 max-w-[1000px] mx-auto pb-6">
+  <script>
+    (function () {
+      try {
+        if (new URLSearchParams(location.search).get('embed') === '1') {
+          document.body.classList.add('embed-hide-title');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <div class="text-sm text-slate-500 mb-4 embed-hidden">
+    <a class="link font-semibold" href="operator_platform_settlement.html">平台结算管理</a>
+    <span class="mx-1">/</span>
+    <span>平台结算单详情</span>
+  </div>
+
+  <!-- 01 平台结算单信息 -->
+  <div class="page-card p-5 mb-5 border-t-4 border-red-600">
+    <h2 class="sec-title">01 平台结算单信息</h2>
+    <div class="grid sm:grid-cols-2 gap-4 text-sm">
+      <div><span class="label">平台结算单号</span><div class="font-mono font-bold mt-1 text-slate-900" id="ptNo">—</div></div>
+      <div><span class="label">当前状态</span><div class="mt-1"><span class="inline-flex px-2 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700" id="ptStatus">—</span></div></div>
+      <div><span class="label">供应商</span><div class="font-semibold mt-1" id="ptSup">—</div></div>
+      <div><span class="label">所含采购结算单笔数</span><div class="font-semibold mt-1" id="ptSlipCount">—</div></div>
+    </div>
+  </div>
+
+  <!-- 02 采购结算单信息 -->
+  <div class="page-card p-5 mb-5">
+    <h2 class="sec-title">02 采购结算单信息</h2>
+    <div class="overflow-x-auto mb-4">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th>采购结算单编号</th>
+            <th>金额（元）</th>
+            <th>采购商</th>
+            <th>核对完成</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody id="cgsTbody"></tbody>
+      </table>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm border-t border-dashed border-slate-200 pt-4">
+      <div><span class="label">采购结算单总金额（元）</span><div class="text-lg font-bold text-red-600 mt-1" id="ptAmtSum">—</div></div>
+      <div><span class="label">预计服务金额（元）</span><div class="text-lg font-bold text-slate-900 mt-1" id="ptFeeExpected">—</div><p class="text-xs text-slate-500 mt-1">按规则测算，供核对参考</p></div>
+      <div><span class="label">实际服务金额（元）</span><div class="text-lg font-bold text-slate-900 mt-1" id="ptFeeActual">—</div></div>
+      <div class="sm:col-span-2"><span class="label">差异原因</span><div class="mt-1 text-slate-800 whitespace-pre-wrap" id="ptDiffReason">—</div></div>
+      <div class="sm:col-span-2 lg:col-span-1"><span class="label">佐证附件</span><div class="mt-1 text-slate-800" id="ptEvidence">—</div></div>
+    </div>
+  </div>
+
+  <!-- 03 付款信息 -->
+  <div class="page-card p-5 mb-5">
+    <h2 class="sec-title">03 付款信息</h2>
+    <div class="grid md:grid-cols-2 gap-4 text-sm">
+      <div>
+        <span class="label">付款状态</span>
+        <div class="mt-2" id="payStatusWrap"></div>
+      </div>
+      <div>
+        <span class="label">付款凭证 / 说明</span>
+        <div class="mt-2 text-slate-700" id="payVoucher">—</div>
+      </div>
+      <div class="md:col-span-2">
+        <span class="label">付款流水号（如有）</span>
+        <div class="mt-1 font-mono text-slate-800" id="paySerial">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 处理历史 -->
+  <div class="page-card p-5 mb-6">
+    <div class="collapse-hd sec-title mb-0 border-0 pb-2">
+      <span>04 处理历史</span>
+      <i class="fas fa-chevron-up text-slate-400 text-sm"></i>
+    </div>
+    <div class="overflow-x-auto mt-3">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th>步骤</th>
+            <th>办理人员</th>
+            <th>收到时间</th>
+            <th>处理时间</th>
+            <th>处理意见</th>
+            <th>处理耗时</th>
+          </tr>
+        </thead>
+        <tbody id="histTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="detailActionBar" class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_12px_rgba(15,23,42,.06)] z-30 hidden">
+    <div class="max-w-[1000px] mx-auto px-5 py-3 flex flex-wrap gap-2 justify-end items-center" id="detailActionBarInner"></div>
+  </div>
+  <input type="file" id="actionFileInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.ofd,image/*">
+
+  <script>
+    (function () {
+      var fileInput = document.getElementById('actionFileInput');
+      var bar = document.getElementById('detailActionBar');
+      var inner = document.getElementById('detailActionBarInner');
+
+      var no = new URLSearchParams(location.search).get('no') || 'PT202604210015';
+
+      var map = {
+        'PT202604210010': {
+          status: '待核对', sup: '雨前供应商有限公司', sum: '296,432.02', feeExpected: '8,892.96', feeActual: '8,892.96',
+          diffReason: '与系统测算一致，无调减。',
+          evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '2 笔（生成后已锁定）',
+          slips: [
+            { no: 'CGJS202604150021', amt: '156,000.00', buyer: '北京市政务服务中心', verified: '2026-04-16 14:02', lock: '锁定' },
+            { no: 'CGJS202604150036', amt: '130,000.00', buyer: '朝阳区行政服务局', verified: '2026-04-17 10:18', lock: '锁定' }
+          ],
+          pay: { status: '未付款', badge: 'bg-amber-50 text-amber-800 border border-amber-200', voucher: '待平台完成审批及开票后，由财务付款并回传凭证。', serial: '—' },
+          history: [
+            ['平台结算单生成', '系统自动', '2026-04-18 09:12', '2026-04-18 09:12', '已聚合 2 笔采购结算单', '—'],
+            ['待运营商核对', '李思远【运营商】', '2026-04-18 09:12', '--', '待办理', '--']
+          ],
+          op: ['submitApprove']
+        },
+        'PT202604210022': {
+          status: '待开票', sup: '浙江得力办公用品有限公司', sum: '129,600.00', feeExpected: '3,888.00', feeActual: '3,888.00',
+          diffReason: '—', evidence: '<a class="link" href="#">费率说明.pdf</a>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604180012', amt: '129,600.00', buyer: '海淀区采购中心', verified: '2026-04-19 11:05', lock: '锁定' }],
+          pay: { status: '未付款', badge: 'bg-slate-100 text-slate-700 border border-slate-200', voucher: '待上传发票并完成付款审批。', serial: '—' },
+          history: [
+            ['核对通过', '李思远【运营商】', '2026-04-20 10:00', '2026-04-20 10:22', '服务费核对一致', '0天0小时22分'],
+            ['待开票', '王可【运营商财务】', '2026-04-20 10:22', '--', '待上传电子发票', '--']
+          ],
+          op: ['uploadInvoice']
+        },
+        'PT202604210015': {
+          status: '待核对', sup: '华北办公用品有限公司', sum: '286,000.00', feeExpected: '8,580.00', feeActual: '8,580.00',
+          diffReason: '—', evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604200033', amt: '286,000.00', buyer: '丰台区事务中心', verified: '2026-04-20 16:40', lock: '锁定' }],
+          pay: { status: '未付款', badge: 'bg-amber-50 text-amber-800 border border-amber-200', voucher: '当前无', serial: '—' },
+          history: [
+            ['平台结算单生成', '系统自动', '2026-04-21 08:30', '2026-04-21 08:30', '已锁定所含采购结算单', '—']
+          ],
+          op: []
+        },
+        'PT202604210099': {
+          status: '待核对', sup: '华北办公用品有限公司', sum: '112,400.50', feeExpected: '3,372.02', feeActual: '3,372.02',
+          diffReason: '—', evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604210044', amt: '112,400.50', buyer: '石景山采购办', verified: '2026-04-21 09:10', lock: '锁定' }],
+          pay: { status: '未付款', badge: 'bg-amber-50 text-amber-800 border border-amber-200', voucher: '当前无', serial: '—' },
+          history: [['平台结算单生成', '系统自动', '2026-04-21 10:00', '2026-04-21 10:00', '待核对', '—']],
+          op: []
+        },
+        'PT202604210035': {
+          status: '编辑中', sup: '雨前供应商有限公司', sum: '412,080.00', feeExpected: '12,362.40', feeActual: '12,000.00',
+          diffReason: '活动期间按合同给予费率优惠，已附商务审批邮件截图。',
+          evidence: '<a class="link" href="#">活动审批截图.png</a> · <a class="link" href="#">补充说明.pdf</a>',
+          slipNote: '3 笔（生成后已锁定）',
+          slips: [
+            { no: 'CGJS202604150021', amt: '156,000.00', buyer: '北京市政务服务中心', verified: '2026-04-16 14:02', lock: '锁定' },
+            { no: 'CGJS202604160088', amt: '128,080.00', buyer: '通州采购中心', verified: '2026-04-17 09:30', lock: '锁定' },
+            { no: 'CGJS202604170055', amt: '128,000.00', buyer: '大兴行政中心', verified: '2026-04-18 11:20', lock: '锁定' }
+          ],
+          pay: { status: '未付款', badge: 'bg-amber-50 text-amber-800 border border-amber-200', voucher: '草稿阶段，暂无付款凭证。', serial: '—' },
+          history: [
+            ['平台结算单生成', '系统自动', '2026-04-19 13:00', '2026-04-19 13:00', '已汇总采购结算单', '—'],
+            ['编辑服务费', '李思远【运营商】', '2026-04-19 13:05', '--', '调整实际服务费（草稿）', '--']
+          ],
+          op: ['editDraft', 'submitApprove']
+        },
+        'PT202604210036': {
+          status: '编辑中', sup: '浙江得力办公用品有限公司', sum: '66,500.00', feeExpected: '1,995.00', feeActual: '1,995.00',
+          diffReason: '与测算一致。',
+          evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604190077', amt: '66,500.00', buyer: '顺义区政府采购中心', verified: '2026-04-19 15:00', lock: '锁定' }],
+          pay: { status: '未付款', badge: 'bg-amber-50 text-amber-800 border border-amber-200', voucher: '草稿阶段', serial: '—' },
+          history: [['编辑服务费', '王可【运营商】', '2026-04-20 09:00', '--', '完善附件后提交', '--']],
+          op: ['editDraft', 'submitApprove']
+        },
+        'PT202604200201': {
+          status: '待开票', sup: '雨前供应商有限公司', sum: '198,200.00', feeExpected: '5,946.00', feeActual: '5,946.00',
+          diffReason: '—', evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '2 笔（生成后已锁定）',
+          slips: [
+            { no: 'CGJS202604150021', amt: '100,000.00', buyer: '北京市政务服务中心', verified: '2026-04-16 14:02', lock: '锁定' },
+            { no: 'CGJS202604150036', amt: '98,200.00', buyer: '朝阳区行政服务局', verified: '2026-04-17 10:18', lock: '锁定' }
+          ],
+          pay: { status: '未付款', badge: 'bg-slate-100 text-slate-700 border border-slate-200', voucher: '待开票', serial: '—' },
+          history: [['待开票', '财务共享', '2026-04-20 08:00', '--', '请上传发票', '--']],
+          op: ['uploadInvoice']
+        },
+        'PT202604190088': {
+          status: '待开票', sup: '华南后勤服务有限公司', sum: '44,120.00', feeExpected: '1,323.60', feeActual: '1,323.60',
+          diffReason: '—', evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604180099', amt: '44,120.00', buyer: '黄埔区采购中心', verified: '2026-04-18 17:00', lock: '锁定' }],
+          pay: { status: '未付款', badge: 'bg-slate-100 text-slate-700 border border-slate-200', voucher: '待开票', serial: '—' },
+          history: [],
+          op: ['uploadInvoice']
+        },
+        'PT202604200088': {
+          status: '待付款', sup: '华南后勤服务有限公司', sum: '76,000.00', feeExpected: '2,280.00', feeActual: '2,280.00',
+          diffReason: '—', evidence: '<a class="link" href="#">发票 OFD</a>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604195001', amt: '76,000.00', buyer: '广州某单位', verified: '2026-04-19 10:00', lock: '锁定' }],
+          pay: { status: '付款审批中', badge: 'bg-blue-50 text-blue-800 border border-blue-200', voucher: '发票已归档，付款单已提起。', serial: 'FKSP-20260420-0091' },
+          history: [
+            ['开票完成', '王可【运营商财务】', '2026-04-20 09:00', '2026-04-20 09:40', '已上传电子发票', '0天0小时40分'],
+            ['待付款', '出纳组', '2026-04-20 09:40', '--', '等待银企支付', '--']
+          ],
+          op: ['downloadInvoice']
+        },
+        'PT202604200091': {
+          status: '待付款', sup: '华东数码设备有限公司', sum: '53,280.00', feeExpected: '1,598.40', feeActual: '1,598.40',
+          diffReason: '—', evidence: '<a class="link" href="#">发票 PDF</a>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604200012', amt: '53,280.00', buyer: '杭州市采购中心', verified: '2026-04-20 12:00', lock: '锁定' }],
+          pay: { status: '付款审批中', badge: 'bg-blue-50 text-blue-800 border border-blue-200', voucher: '审批流处理中', serial: 'FKSP-20260421-0102' },
+          history: [['待付款', '出纳组', '2026-04-21 08:00', '--', '—', '--']],
+          op: ['downloadInvoice']
+        },
+        'PT202604180055': {
+          status: '待收款', sup: '华东数码设备有限公司', sum: '92,000.00', feeExpected: '2,760.00', feeActual: '2,760.00',
+          diffReason: '—', evidence: '<a class="link" href="#">发票.zip</a>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604175020', amt: '92,000.00', buyer: '宁波市采购中心', verified: '2026-04-17 16:00', lock: '锁定' }],
+          pay: { status: '已付款', badge: 'bg-emerald-50 text-emerald-800 border border-emerald-200', voucher: '<a class="link" href="#">银行回单.pdf</a>', serial: 'B2B-20260419-883021' },
+          history: [
+            ['付款完成', '出纳组', '2026-04-19 10:00', '2026-04-19 11:22', '已完成对公转账', '0天1小时22分'],
+            ['待供应商确认收款', '—', '2026-04-19 11:22', '--', '等待确认', '--']
+          ],
+          op: ['downloadInvoice', 'confirmReceipt']
+        },
+        'PT202604090012': {
+          status: '结算完成', sup: '华北办公用品有限公司', sum: '215,600.00', feeExpected: '6,468.00', feeActual: '6,468.00',
+          diffReason: '—', evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '2 笔（生成后已锁定）',
+          slips: [
+            { no: 'CGJS202604010010', amt: '100,000.00', buyer: '甲方 A', verified: '2026-04-02 10:00', lock: '锁定' },
+            { no: 'CGJS202604010011', amt: '115,600.00', buyer: '甲方 B', verified: '2026-04-03 11:00', lock: '锁定' }
+          ],
+          pay: { status: '已付款', badge: 'bg-emerald-50 text-emerald-800 border border-emerald-200', voucher: '<a class="link" href="#">回单.pdf</a>', serial: 'B2B-20260405-771100' },
+          history: [['流程结束', '系统自动', '2026-04-08 18:00', '2026-04-08 18:00', '结算闭环', '—']],
+          op: ['downloadInvoice']
+        },
+        'PT202604080045': {
+          status: '结算完成', sup: '华南后勤服务有限公司', sum: '61,800.00', feeExpected: '1,854.00', feeActual: '1,854.00',
+          diffReason: '—', evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604050033', amt: '61,800.00', buyer: '深圳某中心', verified: '2026-04-06 09:00', lock: '锁定' }],
+          pay: { status: '已付款', badge: 'bg-emerald-50 text-emerald-800 border border-emerald-200', voucher: '<a class="link" href="#">回单.pdf</a>', serial: 'B2B-20260407-661009' },
+          history: [['结算完成', '系统自动', '2026-04-07 17:30', '2026-04-07 17:30', '—', '—']],
+          op: ['downloadInvoice']
+        },
+        'PT202604100001': {
+          status: '结算完成', sup: '华东数码设备有限公司', sum: '80,000.00', feeExpected: '2,400.00', feeActual: '2,400.00',
+          diffReason: '—', evidence: '<span class="text-slate-500">无附件</span>',
+          slipNote: '1 笔（生成后已锁定）',
+          slips: [{ no: 'CGJS202604080088', amt: '80,000.00', buyer: '温州采购中心', verified: '2026-04-09 14:00', lock: '锁定' }],
+          pay: { status: '已付款', badge: 'bg-emerald-50 text-emerald-800 border border-emerald-200', voucher: '<a class="link" href="#">回单.pdf</a>', serial: 'B2B-20260410-551008' },
+          history: [['结算完成', '系统自动', '2026-04-10 16:00', '2026-04-10 16:00', '—', '—']],
+          op: ['downloadInvoice']
+        }
+      };
+
+      function fallbackRow(sumStr) {
+        return [{ no: 'CGJS（汇总展示）', amt: sumStr, buyer: '—', verified: '—', lock: '锁定' }];
+      }
+
+      var base = map[no] || map['PT202604210015'];
+      var d = JSON.parse(JSON.stringify(base));
+
+      if (!d.slips || !d.slips.length) d.slips = fallbackRow(d.sum);
+      if (!d.slipNote) d.slipNote = d.slips.length + ' 笔（生成后已锁定）';
+      if (d.feeExpected == null && d.fee != null) d.feeExpected = d.fee;
+      if (d.feeActual == null && d.fee != null) d.feeActual = d.fee;
+      if (d.diffReason == null) d.diffReason = '—';
+      if (d.evidence == null) d.evidence = '<span class="text-slate-500">无附件</span>';
+      if (!d.pay) d.pay = { status: '—', badge: 'bg-slate-100 text-slate-700 border border-slate-200', voucher: '—', serial: '—' };
+
+      document.getElementById('ptNo').textContent = no;
+      document.getElementById('ptStatus').textContent = d.status;
+      document.getElementById('ptSup').textContent = d.sup;
+      document.getElementById('ptSlipCount').textContent = d.slipNote;
+      document.getElementById('ptAmtSum').textContent = d.sum;
+      document.getElementById('ptFeeExpected').textContent = d.feeExpected;
+      document.getElementById('ptFeeActual').textContent = d.feeActual;
+      document.getElementById('ptDiffReason').textContent = d.diffReason;
+      document.getElementById('ptEvidence').innerHTML = d.evidence;
+
+      var tbody = document.getElementById('cgsTbody');
+      tbody.innerHTML = '';
+      d.slips.forEach(function (s) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td class="font-mono font-semibold">' + s.no + '</td>' +
+          '<td class="font-semibold">' + s.amt + '</td>' +
+          '<td>' + (s.buyer || '—') + '</td>' +
+          '<td>' + (s.verified || '—') + '</td>' +
+          '<td><span class="text-xs text-slate-500">' + (s.lock || '锁定') + '</span></td>';
+        tbody.appendChild(tr);
+      });
+
+      var pw = document.getElementById('payStatusWrap');
+      pw.innerHTML = '<span class="inline-flex px-2 py-1 rounded text-xs font-semibold ' + (d.pay.badge || 'bg-slate-100 text-slate-700') + '">' + d.pay.status + '</span>';
+      document.getElementById('payVoucher').innerHTML = d.pay.voucher;
+      document.getElementById('paySerial').textContent = d.pay.serial || '—';
+
+      var ht = document.getElementById('histTbody');
+      ht.innerHTML = '';
+      if (!d.history || !d.history.length) {
+        ht.innerHTML = '<tr><td colspan="6" class="text-center text-slate-500 py-6">暂无处理记录</td></tr>';
+      } else {
+        d.history.forEach(function (row, idx) {
+          var tr = document.createElement('tr');
+          if (idx === d.history.length - 1 && String(row[3]).trim() === '--') tr.className = 'bg-blue-50/50';
+          tr.innerHTML = '<td>' + row[0] + '</td><td>' + row[1] + '</td><td>' + row[2] + '</td><td>' + row[3] + '</td><td>' + row[4] + '</td><td>' + row[5] + '</td>';
+          ht.appendChild(tr);
+        });
+      }
+
+      function setBodyPadding(showBar) {
+        document.body.classList.toggle('pb-28', !!showBar);
+        document.body.classList.toggle('pb-6', !showBar);
+      }
+
+      function wireUpload(btn, kind) {
+        btn.addEventListener('click', function () {
+          fileInput.dataset.ptNo = no;
+          fileInput.dataset.kind = kind;
+          fileInput.click();
+        });
+      }
+
+      fileInput.addEventListener('change', function () {
+        var f = this.files && this.files[0];
+        if (!f) return;
+        var label = this.dataset.kind === 'invoice' ? '发票' : '文件';
+        alert('平台结算单 ' + (this.dataset.ptNo || '') + '：已选择' + label + '「' + f.name + '」（原型不上送）');
+        this.value = '';
+      });
+
+      var actions = d.op || [];
+      inner.innerHTML = '';
+      if (!actions.length) {
+        bar.classList.add('hidden');
+        setBodyPadding(false);
+      } else {
+        bar.classList.remove('hidden');
+        setBodyPadding(true);
+        actions.forEach(function (key) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          if (key === 'editDraft') {
+            btn.className = 'btn';
+            btn.textContent = '编辑草稿';
+            btn.addEventListener('click', function () {
+              location.href = 'operator_platform_settlement_edit.html?no=' + encodeURIComponent(no);
+            });
+          } else if (key === 'submitApprove') {
+            btn.className = 'btn btn-primary';
+            btn.textContent = '提交审批';
+            btn.addEventListener('click', function () { alert('已提交审批（原型）'); });
+          } else if (key === 'uploadInvoice') {
+            btn.className = 'btn btn-primary';
+            btn.textContent = '上传发票';
+            wireUpload(btn, 'invoice');
+          } else if (key === 'confirmReceipt') {
+            btn.className = 'btn btn-primary';
+            btn.textContent = '确认收款';
+            btn.addEventListener('click', function () { alert('已确认收款（原型）'); });
+          } else if (key === 'downloadInvoice') {
+            btn.className = 'btn';
+            btn.textContent = '下载发票';
+            btn.addEventListener('click', function () {
+              alert('下载平台结算单 ' + no + ' 已归档服务费发票（原型演示）。');
+            });
+          }
+          inner.appendChild(btn);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>结算单创建结果 | 采购订单结算 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f5f5f5; color:#333; }
+    .page-card { background:#fff; border:1px solid #e8e8e8; border-radius:4px; }
+    .btn { height:32px; padding:0 14px; border-radius:2px; font-size:13px; border:1px solid #ddd; background:#fff; cursor:pointer; }
+    .btn-primary { background:#E2231A; border-color:#E2231A; color:#fff; }
+    .link { color:#E2231A; text-decoration:none; }
+    th { background:#f7f7f7; font-size:13px; border:1px solid #e8e8e8; }
+    td, th { padding:12px 10px; text-align:left; border:1px solid #e8e8e8; font-size:13px; }
+  </style>
+</head>
+<body class="p-5 max-w-[960px] mx-auto">
+  <div class="page-card p-8 mb-4 text-center">
+    <div class="w-16 h-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto mb-4 text-2xl">
+      <i class="fas fa-check"></i>
+    </div>
+    <h1 class="text-xl font-bold mb-2">结算单已生成</h1>
+    <p class="text-sm text-gray-600 leading-relaxed">本次共生成 <span class="font-bold text-red-600">2</span> 张结算单（已按采购商自动拆分）。请分别进入各单完善「实际金额」等信息并提交核对。</p>
+  </div>
+
+  <div class="page-card p-4 mb-4">
+    <h2 class="text-base font-bold border-b border-red-500 pb-2 mb-4 text-gray-900">生成结果一览</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th>结算单编号</th>
+            <th>采购商</th>
+            <th>包含订单数</th>
+            <th>关联订单摘要</th>
+            <th>下一步</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="font-semibold">JSQD2025101800001</td>
+            <td>北京市政务服务中心</td>
+            <td>2</td>
+            <td class="text-gray-600">CG-17591358371500001、CG-17591358371500002</td>
+            <td><a class="link font-bold" href="supplier_settlement_detail.html">去编辑</a></td>
+          </tr>
+          <tr>
+            <td class="font-semibold">JSQD2025101800002</td>
+            <td>海淀区教育装备中心</td>
+            <td>1</td>
+            <td class="text-gray-600">CG-17591358371500003</td>
+            <td><a class="link font-bold" href="supplier_settlement_detail.html">去编辑</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex justify-center gap-3">
+    <a class="btn" href="supplier_settlement_orders.html">返回采购订单结算</a>
+    <a class="btn btn-primary" href="supplier_settlement_detail.html">打开第一张结算单</a>
+  </div>
+</body>
+</html>
