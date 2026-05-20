@@ -1090,6 +1090,10 @@
             <div class="procurement-basis-meta" id="confirmBudgetMeta"></div>
           </div>
         </div>
+        <div class="procurement-files-panel" style="margin-top:14px;">
+          <div class="procurement-basis-label">合同关联（按供应商）</div>
+          <div class="procurement-file-list" id="confirmContractLinkage"></div>
+        </div>
         <div class="procurement-files-panel">
           <div class="procurement-basis-label">采购依据文件</div>
           <div class="procurement-file-list" id="confirmBasisFiles"></div>
@@ -1336,9 +1340,11 @@
           plan: null,
           budget: null,
           files: [],
+          contractLinkage: [],
           hasPlan: false,
           hasBudget: false,
           hasFiles: false,
+          hasContracts: false,
           hasBasis: false
         }
       };
@@ -1353,6 +1359,12 @@
         const parsedFiles = Array.isArray(parsedBasis.files) ? parsedBasis.files.map(item => ({ ...item })) : [];
         const parsedPlan = parsedBasis.plan ? { ...parsedBasis.plan } : null;
         const parsedBudget = parsedBasis.budget ? { ...parsedBasis.budget } : null;
+        const parsedContractLinkage = Array.isArray(parsedBasis.contractLinkage)
+          ? parsedBasis.contractLinkage.map(item => ({ ...item }))
+          : [];
+        const parsedHasContracts = typeof parsedBasis.hasContracts === 'boolean'
+          ? parsedBasis.hasContracts
+          : parsedContractLinkage.length > 0;
         return {
           orderNo: parsed.orderNo || `ORD${Date.now().toString().slice(-8)}`,
           productId: parsed.productId || parsed.id || 'product-order',
@@ -1382,10 +1394,12 @@
             plan: parsedPlan,
             budget: parsedBudget,
             files: parsedFiles,
+            contractLinkage: parsedContractLinkage,
             hasPlan: Boolean(parsedPlan),
             hasBudget: Boolean(parsedBudget),
             hasFiles: parsedFiles.length > 0,
-            hasBasis: Boolean(parsedPlan || parsedBudget || parsedFiles.length)
+            hasContracts: parsedHasContracts,
+            hasBasis: Boolean(parsedPlan || parsedBudget || parsedFiles.length || parsedHasContracts)
           }
         };
       } catch (error) {
@@ -1543,9 +1557,45 @@
         ? `预算周期：${budget.period || '未填写'} · 预算金额：${formatCurrency(budget.amount || 0)}`
         : '本次下单未选择采购预算，可在后续审批或预算核验时补充。';
 
+      const contractBox = document.getElementById('confirmContractLinkage');
+      const linkage = orderData.procurementBasis && Array.isArray(orderData.procurementBasis.contractLinkage)
+        ? orderData.procurementBasis.contractLinkage
+        : [];
+      if (contractBox) {
+        if (!linkage.length) {
+          contractBox.innerHTML = '<div class="procurement-basis-empty">未带回合同关联信息，请从商品详情页「立即下单」完成「关联采购依据」流程。</div>';
+        } else {
+          contractBox.innerHTML = linkage.map(item => {
+            let title = '';
+            let meta = '';
+            if (item.source === 'local_upload' && item.file) {
+              title = `本地上传：${item.file.name}`;
+              meta = `大小 ${item.file.sizeText || '--'} · ${item.file.uploadedAt || '--'}`;
+            } else if (item.source === 'ai') {
+              title = item.contractName ? `AI：${item.contractName}` : 'AI 生成合同';
+              meta = `合同编号 ${item.contractNo || '--'}`;
+            } else {
+              title = '合同关联';
+              meta = '';
+            }
+            const tag = item.source === 'local_upload' ? '本地上传' : 'AI';
+            return `
+              <div class="procurement-file-item">
+                <div>
+                  <div class="procurement-file-name">${escapeHtml(item.supplierName || '供应商')}</div>
+                  <div class="procurement-basis-meta" style="margin-top:4px;">${escapeHtml(title)}</div>
+                  <div class="procurement-file-meta">${escapeHtml(meta)}</div>
+                </div>
+                <span class="procurement-basis-label">${escapeHtml(tag)}</span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
       const fileContainer = document.getElementById('confirmBasisFiles');
       if (!files.length) {
-        fileContainer.innerHTML = '<div class="procurement-basis-empty">暂未上传采购依据文件，本次订单将仅保留计划/预算关联信息。</div>';
+        fileContainer.innerHTML = '<div class="procurement-basis-empty">暂未上传采购依据文件；本次订单仍可提交，建议后续补充留痕材料。</div>';
         return;
       }
       fileContainer.innerHTML = files.map(item => `
@@ -2045,7 +2095,12 @@
       document.getElementById('reportQty').textContent = `${orderData.qty}${orderData.unit}`;
       document.getElementById('reportInvoiceTitle').textContent = `${orderData.invoice.type} / ${orderData.invoice.title}`;
       document.getElementById('reportAddress').textContent = `${orderData.deliveryArea} / ${orderData.receiver}`;
-      document.getElementById('reportBasisSummary').textContent = `采购计划：${orderData.procurementBasis.plan ? orderData.procurementBasis.plan.name : '未关联'}；采购预算：${orderData.procurementBasis.budget ? orderData.procurementBasis.budget.name : '未关联'}`;
+      const pb = orderData.procurementBasis || {};
+      const contractBrief = (pb.contractLinkage || []).map(item => {
+        if (item.source === 'local_upload' && item.file) return `${item.supplierName || ''}：本地上传「${item.file.name}」`;
+        return `${item.supplierName || ''}：AI「${item.contractName || item.contractId || ''}」`;
+      }).join('；') || '未关联';
+      document.getElementById('reportBasisSummary').textContent = `采购计划：${pb.plan ? pb.plan.name : '未关联'}；采购预算：${pb.budget ? pb.budget.name : '未关联'}；合同：${contractBrief}`;
       document.getElementById('reportBasisFiles').textContent = orderData.procurementBasis.files && orderData.procurementBasis.files.length
         ? orderData.procurementBasis.files.map(item => item.name).join('；')
         : '未上传采购依据文件';

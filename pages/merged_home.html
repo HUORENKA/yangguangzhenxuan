@@ -741,6 +741,12 @@
     .gm-tab-pane { display: none; }
     .gm-tab-pane.active { display: block; }
     .gm-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .contract-list-pager { margin-top: 14px; padding-top: 12px; border-top: 1px solid #f1f5f9; flex: none; }
+    .contract-list-pager-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .contract-list-pager-info { font-size: 12px; color: #64748b; }
+    .contract-list-pager-btns { display: flex; align-items: center; gap: 10px; }
+    .contract-list-pager-page { font-size: 13px; font-weight: 600; color: #334155; min-width: 88px; text-align: center; }
+    .contract-list-pager .gm-btn:disabled { opacity: 0.45; cursor: not-allowed; }
     .gm-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 13px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; white-space: nowrap; }
     .gm-btn-primary { background: linear-gradient(135deg,#ff7a18,#ff4d00); color: #fff; }
     .gm-btn-primary:hover { opacity: .9; }
@@ -2764,7 +2770,18 @@
           <div id="tplListContainer"></div>
         </div>
         <div class="gm-tab-pane" id="contractTab-list">
-          <div id="contractListContainer"></div>
+          <div class="gm-toolbar contract-list-toolbar" style="align-items:stretch;">
+            <input type="text" id="contractListKw" class="form-input gm-search" style="flex:1;min-width:200px;padding:8px 12px;" placeholder="关键词：合同名称、合同编号、供应商" onkeydown="if(event.key==='Enter')contractListApplyFilter()">
+            <select id="contractListStatus" class="form-input" style="max-width:150px;padding:8px 12px;">
+              <option value="all">全部状态</option>
+              <option value="signing">签署中</option>
+              <option value="signed">已签署</option>
+            </select>
+            <button type="button" class="gm-btn gm-btn-primary" onclick="contractListApplyFilter()">查询</button>
+            <button type="button" class="gm-btn gm-btn-ghost" onclick="contractListResetFilter()">重置</button>
+          </div>
+          <div id="contractListBody"></div>
+          <div id="contractListPager"></div>
         </div>
         <div class="gm-tab-pane" id="contractTab-seals">
           <div id="sealListContainer"></div>
@@ -3544,11 +3561,33 @@
     /* =====================================================================
        合同管理 Modal
     ===================================================================== */
-    var contracts=[
-      {id:1,name:'IT设备采购框架协议',vendor:'华为技术有限公司',status:'signed',expire:'2027-03-01'},
-      {id:2,name:'办公用品采购合同',vendor:'得力文具有限公司',status:'signing',expire:''},
-      {id:3,name:'后勤物资供应合同',vendor:'保洁供应链股份',status:'expiring',expire:'2026-05-01'},
-      {id:4,name:'打印耗材年框协议',vendor:'得力科技有限公司',status:'archived',expire:'2025-12-31'}
+    var CONTRACT_LIST_PAGE_SIZE = 10;
+    var contractListPage = 1;
+    var contracts = [
+      { id:1, name:'IT设备采购框架协议', vendor:'华为技术有限公司', contractNo:'HT-2026-001', status:'signed' },
+      { id:2, name:'办公用品采购合同', vendor:'得力文具有限公司', contractNo:'HT-2026-002', status:'signing' },
+      { id:3, name:'后勤物资供应合同', vendor:'保洁供应链股份', contractNo:'HT-2026-003', status:'signed' },
+      { id:4, name:'打印耗材年框协议', vendor:'得力科技有限公司', contractNo:'HT-2026-004', status:'signing' },
+      { id:5, name:'计算机网络设备采购合同', vendor:'华为技术有限公司', contractNo:'HT-2026-005', status:'signed' },
+      { id:6, name:'办公家具集中采购协议', vendor:'震旦办公家具', contractNo:'HT-2026-006', status:'signing' },
+      { id:7, name:'物业服务框架协议', vendor:'绿城服务集团', contractNo:'HT-2026-007', status:'signed' },
+      { id:8, name:'复印耗材供货合同', vendor:'佳能授权服务商', contractNo:'HT-2026-008', status:'signed' },
+      { id:9, name:'净水设备及耗材合同', vendor:'碧水源科技', contractNo:'HT-2026-009', status:'signing' },
+      { id:10, name:'门禁安防系统工程合同', vendor:'海康威视', contractNo:'HT-2026-010', status:'signed' },
+      { id:11, name:'会议室音视频采购合同', vendor:'科大讯飞', contractNo:'HT-2026-011', status:'signing' },
+      { id:12, name:'公务用车维保协议', vendor:'一汽大众服务站', contractNo:'HT-2026-012', status:'signed' },
+      { id:13, name:'硒鼓墨盒年度框架', vendor:'惠普企业服务', contractNo:'HT-2026-013', status:'signed' },
+      { id:14, name:'绿植租摆服务合同', vendor:'绿茵园艺', contractNo:'HT-2026-014', status:'signing' },
+      { id:15, name:'档案数字化加工合同', vendor:'紫光档案', contractNo:'HT-2026-015', status:'signed' },
+      { id:16, name:'UPS 电源维护合同', vendor:'施耐德电气', contractNo:'HT-2026-016', status:'signing' },
+      { id:17, name:'食堂食材配送协议', vendor:'中粮我买网政企', contractNo:'HT-2026-017', status:'signed' },
+      { id:18, name:'印刷服务框架协议', vendor:'北京新华印刷', contractNo:'HT-2026-018', status:'signing' },
+      { id:19, name:'软件正版化授权合同', vendor:'微软合作伙伴中心', contractNo:'HT-2026-019', status:'signed' },
+      { id:20, name:'低压配电维保合同', vendor:'施耐德电气', contractNo:'HT-2026-020', status:'signing' },
+      { id:21, name:'机房精密空调维保', vendor:'艾默生网络能源', contractNo:'HT-2026-021', status:'signed' },
+      { id:22, name:'视频会议运维合同', vendor:'Poly 博诣', contractNo:'HT-2026-022', status:'signing' },
+      { id:23, name:'礼品定制采购合同', vendor:'元隆雅图', contractNo:'HT-2026-023', status:'signed' },
+      { id:24, name:'标识标牌制作安装合同', vendor:'集美标识', contractNo:'HT-2026-024', status:'signing' }
     ];
     var templates=[
       {id:1,name:'办公耗材采购合同（默认）',date:'2026-01-20',isDefault:true,analysisOpen:false,analysisData:{high:[],mid:[],low:['付款方式约定清晰','交付周期明确','合同期限合规']}},
@@ -3561,7 +3600,7 @@
     ];
     function openContractModal(){ renderTemplates(); renderContractList(); renderSealList(); document.getElementById('contractModal').classList.add('open'); document.body.style.overflow='hidden'; }
     function closeContractModal(e){ if(e&&e.target!==document.getElementById('contractModal')) return; document.getElementById('contractModal').classList.remove('open'); document.body.style.overflow=''; }
-    function switchContractTab(tab,btn){ document.querySelectorAll('.gm-tab').forEach(function(b){b.classList.remove('active');}); document.querySelectorAll('.gm-tab-pane').forEach(function(p){p.classList.remove('active');}); btn.classList.add('active'); document.getElementById('contractTab-'+tab).classList.add('active'); }
+    function switchContractTab(tab,btn){ document.querySelectorAll('.gm-tab').forEach(function(b){b.classList.remove('active');}); document.querySelectorAll('.gm-tab-pane').forEach(function(p){p.classList.remove('active');}); btn.classList.add('active'); document.getElementById('contractTab-'+tab).classList.add('active'); if(tab==='list') renderContractList(); }
     function renderTemplates(){
       var con=document.getElementById('tplListContainer'); if(!con) return;
       con.innerHTML=templates.map(function(t){
@@ -3586,12 +3625,76 @@
     function deleteTemplate(id){ if(!confirm('确认删除该模板？')) return; var idx=templates.findIndex(function(x){return x.id===id;}); if(idx>=0) templates.splice(idx,1); renderTemplates(); }
     function handleTplFileUpload(input){ if(!input.files[0]) return; var name=input.files[0].name.replace(/\.\w+$/,''); templates.unshift({id:Date.now(),name,date:new Date().toISOString().slice(0,10),isDefault:false,analysisOpen:false,analysisData:{high:[],mid:['建议补充合同编号字段'],low:['格式规范']}}); input.value=''; renderTemplates(); }
     function generateContractTemplate(){ var type=document.getElementById('tplTypeSelect')?.value||''; var txt=document.getElementById('tplGenInput').value.trim(); if(!type&&!txt){alert('请先选择合同类型或输入描述');return;} var typePart=type||txt.slice(0,12); document.getElementById('tplGenLoading').style.display='flex'; setTimeout(function(){ document.getElementById('tplGenLoading').style.display='none'; var name='AI生成_'+typePart.replace(/\s/g,'').slice(0,18)+'_模板'; templates.unshift({id:Date.now(),name,date:new Date().toISOString().slice(0,10),isDefault:false,analysisOpen:false,analysisData:{high:[],mid:[],low:['AI根据需求生成','建议人工复核']}}); var sel=document.getElementById('tplTypeSelect'); if(sel) sel.value='办公用品采购合同'; document.getElementById('tplGenInput').value=''; renderTemplates(); },2400); }
+    function contractPreview(id){ var c=contracts.find(function(x){return x.id===id;}); if(c) alert('预览：'+c.name); }
+    function contractDownload(id){ var c=contracts.find(function(x){return x.id===id;}); if(c) alert('下载：'+c.name); }
+    function contractListMatchesKeyword(c, kw){
+      if(!kw) return true;
+      var blob=(c.name+' '+c.vendor+' '+(c.contractNo||'')).toLowerCase();
+      return blob.indexOf(kw)!==-1;
+    }
+    function contractListFiltered(){
+      var kwEl=document.getElementById('contractListKw');
+      var stEl=document.getElementById('contractListStatus');
+      var kw=(kwEl&&kwEl.value||'').trim().toLowerCase();
+      var st=stEl?stEl.value:'all';
+      return contracts.filter(function(c){
+        if(st!=='all'&&c.status!==st) return false;
+        return contractListMatchesKeyword(c,kw);
+      });
+    }
+    function contractListApplyFilter(){ contractListPage=1; renderContractList(); }
+    function contractListResetFilter(){
+      var kwEl=document.getElementById('contractListKw');
+      var stEl=document.getElementById('contractListStatus');
+      if(kwEl) kwEl.value='';
+      if(stEl) stEl.value='all';
+      contractListPage=1;
+      renderContractList();
+    }
+    function contractListGoPage(nextPage){
+      var filtered=contractListFiltered();
+      var totalPages=Math.max(1,Math.ceil(filtered.length/CONTRACT_LIST_PAGE_SIZE));
+      if(nextPage<1) nextPage=1;
+      if(nextPage>totalPages) nextPage=totalPages;
+      contractListPage=nextPage;
+      renderContractList();
+    }
+    function renderContractListPager(total){
+      var pager=document.getElementById('contractListPager');
+      if(!pager) return;
+      var totalPages=Math.max(1,Math.ceil(total/CONTRACT_LIST_PAGE_SIZE));
+      if(contractListPage>totalPages) contractListPage=totalPages;
+      if(contractListPage<1) contractListPage=1;
+      var page=contractListPage;
+      if(total===0){ pager.innerHTML=''; return; }
+      pager.innerHTML='<div class="contract-list-pager-inner">'
+        +'<span class="contract-list-pager-info">共 '+total+' 条，每页 '+CONTRACT_LIST_PAGE_SIZE+' 条</span>'
+        +'<div class="contract-list-pager-btns">'
+        +'<button type="button" class="gm-btn gm-btn-ghost gm-btn-sm"'+(page<=1?' disabled':'')+' onclick="contractListGoPage('+(page-1)+')">上一页</button>'
+        +'<span class="contract-list-pager-page">第 '+page+' / '+totalPages+' 页</span>'
+        +'<button type="button" class="gm-btn gm-btn-ghost gm-btn-sm"'+(page>=totalPages?' disabled':'')+' onclick="contractListGoPage('+(page+1)+')">下一页</button>'
+        +'</div></div>';
+    }
     function renderContractList(){
-      var con=document.getElementById('contractListContainer'); if(!con) return;
-      var statusMap={'signed':'<span class="status-pill green">✅ 已签署</span>','signing':'<span class="status-pill blue">🔵 签署中</span>','expiring':'<span class="status-pill yellow">⚠ 即将到期</span>','archived':'<span class="status-pill gray">📦 已归档</span>'};
-      con.innerHTML=contracts.map(function(c){
-        return '<div class="list-item"><div class="list-item-head"><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span>📄</span><span class="list-item-title">'+c.name+'</span>'+(statusMap[c.status]||'')+'</div><div class="list-item-meta">供应商：'+c.vendor+(c.expire?' · 到期：'+c.expire:'')+'</div></div></div><div style="padding:0 13px 10px;display:flex;gap:6px;"><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="alert(\'预览合同\')"><i class="fa-solid fa-eye"></i> 预览</button><button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="alert(\'下载合同\')"><i class="fa-solid fa-download"></i> 下载</button></div></div>';
+      var body=document.getElementById('contractListBody'); if(!body) return;
+      var statusMap={ signed:'<span class="status-pill green">✅ 已签署</span>', signing:'<span class="status-pill blue">🔵 签署中</span>' };
+      var filtered=contractListFiltered();
+      var total=filtered.length;
+      var totalPages=Math.max(1,Math.ceil(total/CONTRACT_LIST_PAGE_SIZE));
+      if(contractListPage>totalPages) contractListPage=totalPages;
+      if(contractListPage<1) contractListPage=1;
+      var start=(contractListPage-1)*CONTRACT_LIST_PAGE_SIZE;
+      var pageRows=filtered.slice(start,start+CONTRACT_LIST_PAGE_SIZE);
+      if(!total){
+        body.innerHTML='<div style="text-align:center;color:#94a3b8;padding:36px 16px;font-size:14px;">暂无符合条件的合同<br><span style="font-size:12px;margin-top:8px;display:inline-block;">请调整关键词或状态后重新查询</span></div>';
+        renderContractListPager(0);
+        return;
+      }
+      body.innerHTML=pageRows.map(function(c){
+        var pill=statusMap[c.status]||'';
+        return '<div class="list-item"><div class="list-item-head"><div style="flex:1;"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;"><span>📄</span><span class="list-item-title">'+escapeAttr(c.name)+'</span>'+pill+'</div><div class="list-item-meta">合同编号：'+escapeAttr(c.contractNo||'—')+' · 供应商：'+escapeAttr(c.vendor)+'</div></div></div><div style="padding:0 13px 10px;display:flex;gap:6px;"><button type="button" class="gm-btn gm-btn-ghost gm-btn-sm" onclick="contractPreview('+c.id+')"><i class="fa-solid fa-eye"></i> 预览</button><button type="button" class="gm-btn gm-btn-ghost gm-btn-sm" onclick="contractDownload('+c.id+')"><i class="fa-solid fa-download"></i> 下载</button></div></div>';
       }).join('');
+      renderContractListPager(total);
     }
     function renderSealList(){
       var con=document.getElementById('sealListContainer'); if(!con) return;

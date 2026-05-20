@@ -1148,7 +1148,7 @@
 
     .order-basis-steps {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 18px;
     }
@@ -1565,6 +1565,573 @@
       padding: 0 12px;
       cursor: pointer;
       flex-shrink: 0;
+    }
+
+    .basis-contract-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .basis-contract-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      background: #fafafa;
+      padding: 16px 18px;
+    }
+
+    .basis-contract-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .basis-contract-supplier-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .basis-contract-supplier-hint {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .basis-contract-status-pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #64748b;
+      max-width: 100%;
+      word-break: break-all;
+    }
+
+    .basis-contract-status-pill.is-ok {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+      color: #14532d;
+    }
+
+    .basis-contract-status-pill.is-warn {
+      border-color: #fecaca;
+      background: #fff5f5;
+      color: #991b1b;
+    }
+
+    .basis-contract-group {
+      margin-bottom: 14px;
+    }
+
+    .basis-contract-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .basis-contract-group-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #475569;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .basis-contract-group-label .tag-ai {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #4338ca;
+    }
+
+    .basis-contract-group-label .tag-up {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .basis-contract-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      margin-bottom: 8px;
+    }
+
+    .basis-contract-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .basis-contract-row.is-selected-ai {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+      background: #fff5f5;
+    }
+
+    .basis-contract-row-main {
+      min-width: 0;
+    }
+
+    .basis-contract-row-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.6;
+    }
+
+    .basis-contract-row-meta {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    .basis-contract-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .basis-contract-btn {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #334155;
+      white-space: nowrap;
+    }
+
+    .basis-contract-btn.primary {
+      border-color: #fecaca;
+      background: #fff;
+      color: #dc2626;
+    }
+
+    .basis-contract-btn.primary:hover {
+      background: #fff5f5;
+    }
+
+    .basis-contract-upload-bar {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #cbd5e1;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .basis-contract-picker-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .basis-contract-dropdown {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .basis-contract-dropdown-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .basis-contract-dropdown-trigger:hover {
+      border-color: #94a3b8;
+    }
+
+    .basis-contract-dropdown.is-open .basis-contract-dropdown-trigger {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.12);
+    }
+
+    .basis-contract-dropdown-value {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .basis-contract-dropdown-value.placeholder {
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .basis-contract-dropdown-trigger .fa-chevron-down {
+      font-size: 12px;
+      color: #64748b;
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .basis-contract-dropdown.is-open .basis-contract-dropdown-trigger .fa-chevron-down {
+      transform: rotate(180deg);
+      color: #dc2626;
+    }
+
+    .basis-contract-dropdown-panel {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 6px);
+      z-index: 30;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+    }
+
+    .basis-contract-dropdown.is-open .basis-contract-dropdown-panel {
+      display: block;
+    }
+
+    .basis-contract-table-wrap {
+      max-height: min(320px, 50vh);
+      overflow: auto;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .basis-contract-table {
+      width: 100%;
+      min-width: 0 !important;
+      table-layout: fixed;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .basis-contract-table col.col-contract-name {
+      width: 40%;
+    }
+
+    .basis-contract-table col.col-contract-tag {
+      width: 22%;
+    }
+
+    .basis-contract-table col.col-contract-action {
+      width: 38%;
+    }
+
+    .basis-contract-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 800;
+      color: #475569;
+      background: #f8fafc;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    .basis-contract-table tbody td {
+      padding: 10px 12px;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    .basis-contract-table tbody td:first-child {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .basis-contract-table tbody td:last-child {
+      text-align: right;
+      white-space: normal;
+      vertical-align: middle;
+    }
+
+    .basis-contract-op-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .basis-contract-preview-bar {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .basis-contract-preview-bar-hint {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .order-contract-preview-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 210;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .order-contract-preview-overlay.show {
+      display: flex;
+    }
+
+    .order-contract-preview-modal {
+      width: min(720px, 96vw);
+      max-height: min(86vh, 720px);
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .order-contract-preview-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .order-contract-preview-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .order-contract-preview-meta {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    .order-contract-preview-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #64748b;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .order-contract-preview-body {
+      padding: 18px 20px;
+      overflow: auto;
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.85;
+      color: #334155;
+    }
+
+    .order-contract-preview-doc-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #111827;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .order-contract-preview-doc-no {
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    .order-contract-preview-note {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .order-contract-preview-clauses {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: #fafafa;
+    }
+
+    .order-contract-preview-clauses h4 {
+      margin: 14px 0 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .order-contract-preview-clauses h4:first-child {
+      margin-top: 0;
+    }
+
+    .order-contract-preview-clauses p {
+      margin: 0;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    .order-contract-preview-foot {
+      padding: 14px 20px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fff;
+    }
+
+    .order-contract-preview-foot .btn-main {
+      height: 40px;
+      padding: 0 20px;
+      font-size: 14px;
+    }
+
+    .basis-contract-table .basis-contract-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .basis-contract-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .basis-contract-table tbody tr:hover td {
+      background: #fafafa;
+    }
+
+    .basis-contract-table tbody tr.is-row-selected td {
+      background: #fff5f5;
+    }
+
+    .basis-contract-table .contract-name-main {
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .basis-contract-table .contract-name-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .basis-contract-table .cell-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .basis-contract-table .cell-tag.ai {
+      background: #eef2ff;
+      color: #4338ca;
+    }
+
+    .basis-contract-table .cell-tag.upload {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .basis-contract-picker-upload-wrap {
+      flex-shrink: 0;
+    }
+
+    .basis-contract-picker-upload-wrap .basis-add-btn {
+      height: 42px;
+      padding: 0 18px;
+      white-space: nowrap;
+    }
+
+    .basis-contract-picker-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.7;
+    }
+
+    .basis-contract-local-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      font-size: 13px;
+      color: #14532d;
+      font-weight: 600;
+      max-width: 100%;
+      word-break: break-all;
+    }
+
+    .basis-contract-local-chip button {
+      border: none;
+      background: transparent;
+      color: #dc2626;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 4px;
+      font-size: 12px;
     }
 
     .basis-empty-state {
@@ -2557,7 +3124,7 @@
       <div class="order-basis-head">
         <div>
           <div class="ai-title"><i class="fa-solid fa-link text-indigo-500"></i>关联采购依据</div>
-          <div class="text-sm text-gray-500 mt-1">请按步骤补充本次下单的采购计划、采购预算和采购依据文件，便于后续审计追溯。</div>
+          <div class="text-sm text-gray-500 mt-1">请按步骤补充本次下单的采购计划、采购预算、按供应商关联合同及采购依据文件，便于后续审计追溯。</div>
         </div>
         <button class="order-basis-close" type="button" onclick="closeOrderBasisModal()">
           <i class="fa-solid fa-xmark"></i>
@@ -2581,6 +3148,13 @@
           </div>
           <div class="order-basis-step" id="basisStepNav3">
             <span class="order-basis-step-index">3</span>
+            <div class="order-basis-step-text">
+              <div class="order-basis-step-label">选择合同</div>
+              <div class="order-basis-step-desc">按供应商关联 AI 合同或上传本地合同</div>
+            </div>
+          </div>
+          <div class="order-basis-step" id="basisStepNav4">
+            <span class="order-basis-step-index">4</span>
             <div class="order-basis-step-text">
               <div class="order-basis-step-label">采购依据</div>
               <div class="order-basis-step-desc">上传依据文件并完成下单前留痕</div>
@@ -2621,6 +3195,20 @@
             <div class="basis-step-head">
               <div>
                 <div class="basis-step-kicker">STEP 3</div>
+                <div class="basis-step-title">按供应商选择合同</div>
+                <div class="basis-step-desc-text">每个供应商必须关联一份合同：左侧下拉中可对<strong> AI 生成</strong>合同执行<strong>预览 / 选择</strong>，对<strong>用户上传</strong>归档合同执行<strong>预览 / 下载</strong>；关联成功后仍可点击<strong>预览</strong>核对正文示意。右侧 <strong>上传合同</strong> 提交本地文件。用户上传类归档合同不可作为关联。</div>
+              </div>
+            </div>
+            <div class="basis-contract-stack" id="orderContractSupplierRoot"></div>
+            <input class="basis-upload-input" id="orderContractLocalInput" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleOrderContractLocalUpload(event)">
+          </div>
+        </section>
+
+        <section class="basis-step-panel" id="basisStepPanel4">
+          <div class="basis-step-card">
+            <div class="basis-step-head">
+              <div>
+                <div class="basis-step-kicker">STEP 4</div>
                 <div class="basis-step-title">上传采购依据文件</div>
                 <div class="basis-step-desc-text">支持补充采购申请单、审批单、比价截图、会议纪要等材料，用于订单留痕与后续审计追溯。</div>
               </div>
@@ -2642,13 +3230,31 @@
         <div class="basis-summary-tip" id="basisSelectedSummary"></div>
       </div>
       <div class="order-basis-foot">
-        <div class="order-basis-foot-note">如未关联计划和预算，系统会提示确认是否继续采购。</div>
+        <div class="order-basis-foot-note">采购计划、预算可跳过；<strong>合同按供应商必填</strong>。若计划、预算与依据文件均为空，下单前将二次确认。</div>
         <div class="order-basis-actions">
           <button class="btn-ghost" type="button" onclick="closeOrderBasisModal()">取消</button>
           <button class="btn-ghost" id="orderBasisPrevBtn" type="button" onclick="goPrevOrderBasisStep()">上一步</button>
           <button class="btn-ghost" id="orderBasisSkipBtn" type="button" onclick="skipOrderBasisStep()">跳过</button>
           <button class="btn-main" id="orderBasisNextBtn" type="button" onclick="goNextOrderBasisStep()">下一步</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="order-contract-preview-overlay" id="orderContractPreviewOverlay" onclick="if(event.target===this) closeOrderContractPreview()">
+    <div class="order-contract-preview-modal" onclick="event.stopPropagation()">
+      <div class="order-contract-preview-head">
+        <div>
+          <div class="order-contract-preview-title">合同预览</div>
+          <div class="order-contract-preview-meta" id="orderContractPreviewMeta"></div>
+        </div>
+        <button class="order-contract-preview-close" type="button" onclick="closeOrderContractPreview()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="order-contract-preview-body" id="orderContractPreviewBody"></div>
+      <div class="order-contract-preview-foot">
+        <button class="btn-main" type="button" onclick="closeOrderContractPreview()">关闭</button>
       </div>
     </div>
   </div>
@@ -2688,6 +3294,14 @@
     let selectedPlanId = '';
     let selectedBudgetId = '';
     let uploadedBasisFiles = [];
+    /** 下单关联合同：supplierId -> { aiContractId?, localFile? } */
+    let orderContractSelections = {};
+    let orderContractUploadTargetSupplierId = '';
+    /** STEP3 合同下拉：当前展开的供应商 id */
+    let openContractDropdownSupplierId = null;
+
+    const ORDER_BASIS_TOTAL_STEPS = 4;
+    const ORDER_CONTRACT_FILE_ACCEPTS = ['pdf', 'doc', 'docx'];
 
     const BASIS_FILE_LIMIT = 5;
     const BASIS_FILE_MAX_SIZE = 20 * 1024 * 1024;
@@ -3067,6 +3681,8 @@
       renderServiceBlock();
       syncQtyInputs();
       resetComparePicker();
+      orderContractSelections = {};
+      openContractDropdownSupplierId = null;
     }
 
     function resetPortraitState() {
@@ -3351,7 +3967,8 @@
     function updateBodyScrollLock() {
       const compareOpen = document.getElementById('comparePickerOverlay').classList.contains('show');
       const basisOpen = document.getElementById('orderBasisOverlay').classList.contains('show');
-      document.body.style.overflow = compareOpen || basisOpen ? 'hidden' : '';
+      const previewOpen = document.getElementById('orderContractPreviewOverlay').classList.contains('show');
+      document.body.style.overflow = compareOpen || basisOpen || previewOpen ? 'hidden' : '';
     }
 
     function updateComparePickerSummary() {
@@ -3633,6 +4250,121 @@
       return `¥${v.toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
     }
 
+    function slugSupplierId(name) {
+      let h = 0;
+      const s = String(name || '');
+      for (let i = 0; i < s.length; i += 1) {
+        h = ((h << 5) - h) + s.charCodeAt(i);
+        h |= 0;
+      }
+      return `sup-${Math.abs(h).toString(36)}`;
+    }
+
+    /**
+     * 订单涉及的供应商行（去重）。购物车等多行下单可向 sessionStorage 写入 gcOrderBasisLines：
+     * [{ supplierId?, supplierName, productName? }, ...]
+     */
+    function getOrderContractSupplierLines() {
+      try {
+        const raw = sessionStorage.getItem('gcOrderBasisLines');
+        if (raw) {
+          const lines = JSON.parse(raw);
+          if (Array.isArray(lines) && lines.length) {
+            const map = new Map();
+            lines.forEach((line, idx) => {
+              const name = line.supplierName || line.supplier || '';
+              const id = line.supplierId || slugSupplierId(name || `unknown-${idx}`);
+              if (!map.has(id)) {
+                map.set(id, { supplierId: id, supplierName: name || id, lines: [] });
+              }
+              map.get(id).lines.push(line);
+            });
+            return Array.from(map.values());
+          }
+        }
+      } catch (err) {
+        /* ignore */
+      }
+      if (!currentProduct) return [];
+      const name = currentProduct.supplier || '';
+      return [{
+        supplierId: slugSupplierId(name),
+        supplierName: name,
+        lines: [{ productName: currentProduct.name }]
+      }];
+    }
+
+    function getContractCatalogForSupplier(supplierName) {
+      const key = String(supplierName || '');
+      const catalogs = {
+        晨光政采办公旗舰店: {
+          ai: [
+            { id: 'ai-gc-office-001', name: '办公物资框架协议（AI生成）', contractNo: 'HT-AI-2026-GC-0101' },
+            { id: 'ai-gc-office-002', name: '单次订单标准条款稿（AI生成）', contractNo: 'HT-AI-2026-GC-0102' }
+          ],
+          upload: [
+            { id: 'up-gc-office-701', name: '2025年度盖章框架协议.pdf', contractNo: 'HT-UP-2025-7788' },
+            { id: 'up-gc-office-702', name: '廉洁承诺书附件.docx', contractNo: 'HT-UP-2026-0091' }
+          ]
+        },
+        京东慧采企业专区: {
+          ai: [
+            { id: 'ai-jd-001', name: '平台统一供货合同（AI生成）', contractNo: 'HT-AI-JD-33001' },
+            { id: 'ai-jd-002', name: '政企专属折扣条款稿（AI生成）', contractNo: 'HT-AI-JD-33002' }
+          ],
+          upload: [
+            { id: 'up-jd-880', name: '三方补充协议-已归档.pdf', contractNo: 'HT-UP-JD-8801' }
+          ]
+        }
+      };
+      const fallback = {
+        ai: [
+          { id: 'ai-generic-001', name: '标准采购合同（AI生成）', contractNo: 'HT-AI-GEN-2026-0001' },
+          { id: 'ai-generic-002', name: '框架协议摘要稿（AI生成）', contractNo: 'HT-AI-GEN-2026-0002' }
+        ],
+        upload: [
+          { id: 'up-generic-101', name: '用户归档合同范本A.pdf', contractNo: 'HT-UP-GEN-0101' },
+          { id: 'up-generic-102', name: '用户归档合同范本B.docx', contractNo: 'HT-UP-GEN-0102' }
+        ]
+      };
+      return catalogs[key] || fallback;
+    }
+
+    function getAiContractById(supplierName, contractId) {
+      const cat = getContractCatalogForSupplier(supplierName);
+      return (cat.ai || []).find(c => c.id === contractId) || null;
+    }
+
+    function getUploadContractById(supplierName, contractId) {
+      const cat = getContractCatalogForSupplier(supplierName);
+      return (cat.upload || []).find(c => c.id === contractId) || null;
+    }
+
+    function isSupplierContractComplete(supplierId) {
+      const sel = orderContractSelections[supplierId];
+      if (!sel) return false;
+      if (sel.localFile && sel.localFile.name) return true;
+      if (sel.aiContractId && String(sel.aiContractId).trim()) return true;
+      return false;
+    }
+
+    function formatContractLinkageSummaryFragment() {
+      const suppliers = getOrderContractSupplierLines();
+      if (!suppliers.length) return '合同【无供应商】';
+      const parts = suppliers.map(s => {
+        const ok = isSupplierContractComplete(s.supplierId);
+        const sel = orderContractSelections[s.supplierId];
+        if (!ok) return `${escapeBasisText(s.supplierName)}【未关联】`;
+        if (sel.localFile) {
+          return `${escapeBasisText(s.supplierName)}【本地上传·${escapeBasisText(sel.localFile.name)}】`;
+        }
+        const ai = getAiContractById(s.supplierName, sel.aiContractId);
+        const label = ai ? `${escapeBasisText(ai.name)}（${escapeBasisText(ai.contractNo)}）` : escapeBasisText(sel.aiContractId);
+        return `${escapeBasisText(s.supplierName)}【AI·${label}】`;
+      });
+      return `合同（按供应商）【${parts.join('；')}】`;
+    }
+
     function getOrderLineAmount() {
       if (!currentProduct) return 0;
       const qty = Math.max(currentQty || 1, currentProduct.minOrder || 1);
@@ -3644,7 +4376,7 @@
       const selectedBudget = getBasisById('budget', selectedBudgetId);
       const planLabel = selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联';
       const budgetLabel = selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联';
-      return `关联概况：采购计划【${planLabel}】；采购预算【${budgetLabel}】；采购依据文件【${uploadedBasisFiles.length}个】`;
+      return `关联概况：采购计划【${planLabel}】；采购预算【${budgetLabel}】；${formatContractLinkageSummaryFragment()}；采购依据文件【${uploadedBasisFiles.length}个】`;
     }
 
     function renderBasisSelectedSummary() {
@@ -3706,11 +4438,29 @@
         return;
       }
 
+      if (orderBasisStep === 3) {
+        const suppliers = getOrderContractSupplierLines();
+        if (!suppliers.length) {
+          el.className = 'basis-summary-tip basis-summary-tip--warn';
+          el.innerHTML = `<div class="basis-summary-main">未识别到订单供应商，无法关联合同。</div>${foot}`;
+          return;
+        }
+        const missing = suppliers.filter(s => !isSupplierContractComplete(s.supplierId));
+        if (missing.length) {
+          el.className = 'basis-summary-tip basis-summary-tip--warn';
+          el.innerHTML = `<div class="basis-summary-main">尚有 ${missing.length} 个供应商未完成合同关联：请选择一份 <strong>AI 生成</strong> 合同，或点击 <strong>上传合同</strong> 提交本地文件。</div>${foot}`;
+          return;
+        }
+        el.className = 'basis-summary-tip basis-summary-tip--ok';
+        el.innerHTML = `<div class="basis-summary-main">已为 ${suppliers.length} 个供应商完成合同关联，进入下一步可补充采购依据文件。</div>${foot}`;
+        return;
+      }
+
       const selectedPlan = getBasisById('plan', selectedPlanId);
       const selectedBudget = getBasisById('budget', selectedBudgetId);
-      const line = `当前关联：采购计划【${selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联'}】；采购预算【${selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联'}】；采购依据文件【${uploadedBasisFiles.length}个】`;
-      el.className = 'basis-summary-tip';
-      el.innerHTML = `<div class="basis-summary-main">${line}</div>`;
+      const line = `当前关联：采购计划【${selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联'}】；采购预算【${selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联'}】；${formatContractLinkageSummaryFragment()}；采购依据文件【${uploadedBasisFiles.length}个】`;
+      el.className = 'basis-summary-tip basis-summary-tip--neutral';
+      el.innerHTML = `<div class="basis-summary-main">${line}</div>${foot}`;
     }
 
     function formatBasisFileSize(size) {
@@ -3744,19 +4494,320 @@
       `).join('');
     }
 
+    function toggleContractDropdown(supplierId) {
+      openContractDropdownSupplierId = openContractDropdownSupplierId === supplierId ? null : supplierId;
+      renderOrderBasisModal();
+    }
+
+    function renderOrderContractSupplierStep() {
+      const root = document.getElementById('orderContractSupplierRoot');
+      if (!root) return;
+      const suppliers = getOrderContractSupplierLines();
+      if (!suppliers.length) {
+        root.innerHTML = '<div class="basis-empty-state">暂无可关联供应商。商品详情页下单将自动带入当前店铺供应商；多供应商合并下单可向 sessionStorage 写入 <code>gcOrderBasisLines</code>（示意）。</div>';
+        return;
+      }
+      root.innerHTML = suppliers.map(s => {
+        const cat = getContractCatalogForSupplier(s.supplierName);
+        const sel = orderContractSelections[s.supplierId] || {};
+        const complete = isSupplierContractComplete(s.supplierId);
+        const isOpen = openContractDropdownSupplierId === s.supplierId;
+        const hintLines = (s.lines || []).map(l => l.productName).filter(Boolean);
+        const hint = hintLines.length ? hintLines.slice(0, 3).join('、') + (hintLines.length > 3 ? '…' : '') : '';
+
+        let statusText = '未关联合同';
+        let pillClass = 'basis-contract-status-pill is-warn';
+        if (complete) {
+          pillClass = 'basis-contract-status-pill is-ok';
+          if (sel.localFile) statusText = `本地上传：${sel.localFile.name}`;
+          else {
+            const ai = getAiContractById(s.supplierName, sel.aiContractId);
+            statusText = ai ? `已选 AI：${ai.name}` : '已选 AI 合同';
+          }
+        }
+
+        let triggerMain = '请选择合同（点击展开）';
+        let triggerValClass = 'basis-contract-dropdown-value placeholder';
+        if (complete) {
+          triggerValClass = 'basis-contract-dropdown-value';
+          if (sel.localFile) triggerMain = `本地上传：${sel.localFile.name}`;
+          else {
+            const ai = getAiContractById(s.supplierName, sel.aiContractId);
+            triggerMain = ai ? `已选：${ai.name}` : '已选 AI 合同';
+          }
+        }
+
+        const aiTableRows = (cat.ai || []).map(c => {
+          const picked = !sel.localFile && sel.aiContractId === c.id;
+          return `
+            <tr class="${picked ? 'is-row-selected' : ''}">
+              <td>
+                <div class="contract-name-main">${escapeBasisText(c.name)}</div>
+                <div class="contract-name-sub">编号 ${escapeBasisText(c.contractNo)}</div>
+              </td>
+              <td><span class="cell-tag ai">AI生成</span></td>
+              <td>
+                <div class="basis-contract-op-btns">
+                  <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();previewOrderContractAi('${s.supplierId}','${c.id}')">预览</button>
+                  <button type="button" class="basis-contract-btn primary" onclick="event.stopPropagation();selectSupplierAiContract('${s.supplierId}','${c.id}')">选择</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        const upTableRows = (cat.upload || []).map(c => `
+          <tr>
+            <td>
+              <div class="contract-name-main">${escapeBasisText(c.name)}</div>
+              <div class="contract-name-sub">编号 ${escapeBasisText(c.contractNo)}</div>
+            </td>
+            <td><span class="cell-tag upload">用户上传</span></td>
+            <td>
+              <div class="basis-contract-op-btns">
+                <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();previewOrderContractPlatformUpload('${s.supplierId}','${c.id}')">预览</button>
+                <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();downloadSupplierPlatformContract('${s.supplierId}','${c.id}')">下载</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+
+        const tableInner = (aiTableRows + upTableRows) || `
+          <tr>
+            <td colspan="3" style="padding:18px;text-align:center;color:#94a3b8;">暂无合同数据（示意）</td>
+          </tr>
+        `;
+
+        const localChip = sel.localFile ? `
+          <div class="basis-contract-local-chip">
+            <span><i class="fa-regular fa-file-lines mr-1"></i>${escapeBasisText(sel.localFile.name)}（${escapeBasisText(sel.localFile.sizeText)}）</span>
+            <button type="button" onclick="removeSupplierLocalContractFile('${s.supplierId}')">移除</button>
+          </div>
+        ` : '';
+
+        const previewLinkedBar = complete ? `
+          <div class="basis-contract-preview-bar">
+            <button type="button" class="basis-contract-btn" onclick="previewOrderContractLinked('${s.supplierId}')"><i class="fa-regular fa-eye mr-1"></i>预览</button>
+            <span class="basis-contract-preview-bar-hint">查看当前已关联合同正文示意（原型不渲染真实 PDF/Word）。</span>
+          </div>
+        ` : '';
+
+        return `
+          <div class="basis-contract-card">
+            <div class="basis-contract-card-head">
+              <div>
+                <div class="basis-contract-supplier-name">${escapeBasisText(s.supplierName)}</div>
+                ${hint ? `<div class="basis-contract-supplier-hint">本单涉及：${escapeBasisText(hint)}</div>` : ''}
+              </div>
+              <div class="${pillClass}">${escapeBasisText(statusText)}</div>
+            </div>
+            <div class="basis-contract-picker-row">
+              <div class="basis-contract-dropdown ${isOpen ? 'is-open' : ''}">
+                <button type="button" class="basis-contract-dropdown-trigger" onclick="toggleContractDropdown('${s.supplierId}')">
+                  <span class="${triggerValClass}">${escapeBasisText(triggerMain)}</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="basis-contract-dropdown-panel">
+                  <div class="basis-contract-table-wrap">
+                    <table class="basis-contract-table">
+                      <colgroup>
+                        <col class="col-contract-name">
+                        <col class="col-contract-tag">
+                        <col class="col-contract-action">
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <th>合同名称</th>
+                          <th>合同标签</th>
+                          <th>操作</th>
+                        </tr>
+                      </thead>
+                      <tbody>${tableInner}</tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="basis-contract-picker-upload-wrap">
+                <button type="button" class="basis-add-btn" onclick="triggerOrderContractLocalUpload('${s.supplierId}')"><i class="fa-solid fa-upload mr-1"></i>上传合同</button>
+              </div>
+            </div>
+            <div class="basis-contract-picker-hint">支持 pdf / doc / docx，单个不超过 20MB；下拉列表内每条合同均可「预览」。关联成功后可通过下方「预览」再次核对示意正文；本地上传合同同样支持预览。</div>
+            ${previewLinkedBar}
+            ${localChip ? `<div style="margin-top:12px">${localChip}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectSupplierAiContract(supplierId, contractId) {
+      openContractDropdownSupplierId = null;
+      orderContractSelections[supplierId] = {
+        aiContractId: contractId,
+        localFile: null
+      };
+      renderOrderBasisModal();
+      showToast('已选择 AI 生成合同作为关联合同');
+    }
+
+    function triggerOrderContractLocalUpload(supplierId) {
+      openContractDropdownSupplierId = null;
+      orderContractUploadTargetSupplierId = supplierId;
+      document.getElementById('orderContractLocalInput').click();
+    }
+
+    function handleOrderContractLocalUpload(event) {
+      const files = Array.from((event.target && event.target.files) || []);
+      event.target.value = '';
+      const sid = orderContractUploadTargetSupplierId;
+      orderContractUploadTargetSupplierId = '';
+      if (!sid || !files.length) return;
+      const file = files[0];
+      const extension = (file.name.split('.').pop() || '').toLowerCase();
+      if (!ORDER_CONTRACT_FILE_ACCEPTS.includes(extension)) {
+        showToast('合同仅支持 PDF、Word（.doc/.docx）');
+        return;
+      }
+      if (file.size > BASIS_FILE_MAX_SIZE) {
+        showToast(`文件「${file.name}」超过 20MB`);
+        return;
+      }
+      orderContractSelections[sid] = {
+        aiContractId: '',
+        localFile: {
+          id: `local-contract-${Date.now()}`,
+          name: file.name,
+          size: file.size,
+          sizeText: formatBasisFileSize(file.size),
+          type: extension,
+          uploadedAt: formatBasisDateTime(new Date())
+        }
+      };
+      renderOrderBasisModal();
+      showToast('已使用本地上传作为关联合同（原型示意）');
+    }
+
+    function removeSupplierLocalContractFile(supplierId) {
+      delete orderContractSelections[supplierId];
+      renderOrderBasisModal();
+      showToast('已移除本地上传合同');
+    }
+
+    function downloadSupplierPlatformContract(supplierId, contractId) {
+      const line = getOrderContractSupplierLines().find(l => l.supplierId === supplierId);
+      const supplierName = line ? line.supplierName : '';
+      const doc = getUploadContractById(supplierName, contractId);
+      showToast(doc ? `已开始下载「${doc.name}」（原型示意）` : '未找到可下载文件');
+    }
+
+    function buildOrderContractPreviewBodyHtml(title, contractNo, tagLine) {
+      return `
+        <div class="order-contract-preview-doc-title">${escapeBasisText(title)}</div>
+        <div class="order-contract-preview-doc-no">合同编号：${escapeBasisText(contractNo)} · ${escapeBasisText(tagLine)}</div>
+        <p class="order-contract-preview-note">以下为正文预览示意，仅供核对版式与条款结构；原型阶段不加载真实 PDF/Word 文件内容。</p>
+        <div class="order-contract-preview-clauses">
+          <h4>第一条 合同主体</h4>
+          <p>买方（采购人）与卖方（供应商）就本订单标的物的采购与交付达成一致，双方应遵守国家法律法规及平台交易规则。</p>
+          <h4>第二条 标的与价款</h4>
+          <p>标的物名称、规格、数量、单价以订单及附件约定为准；价款含税及运费约定以订单确认信息为准。</p>
+          <h4>第三条 交付与验收</h4>
+          <p>卖方应按约定时限交付；买方应在收货后按验收标准完成验收，逾期未提出异议视为验收合格（示意条款）。</p>
+          <h4>第四条 违约与争议</h4>
+          <p>任何一方违约应承担相应违约责任；争议协商不成的，提交合同约定仲裁机构或人民法院处理（示意条款）。</p>
+        </div>
+      `;
+    }
+
+    function openOrderContractPreview(metaText, bodyHtml) {
+      const overlay = document.getElementById('orderContractPreviewOverlay');
+      const metaEl = document.getElementById('orderContractPreviewMeta');
+      const bodyEl = document.getElementById('orderContractPreviewBody');
+      if (!overlay || !metaEl || !bodyEl) return;
+      metaEl.textContent = metaText || '';
+      bodyEl.innerHTML = bodyHtml || '';
+      overlay.classList.add('show');
+      updateBodyScrollLock();
+    }
+
+    function closeOrderContractPreview() {
+      const overlay = document.getElementById('orderContractPreviewOverlay');
+      if (!overlay) return;
+      overlay.classList.remove('show');
+      updateBodyScrollLock();
+    }
+
+    function previewOrderContractAi(supplierId, contractId) {
+      const line = getOrderContractSupplierLines().find(l => l.supplierId === supplierId);
+      const supplierName = line ? line.supplierName : '';
+      const doc = getAiContractById(supplierName, contractId);
+      if (!doc) {
+        showToast('未找到合同');
+        return;
+      }
+      const metaText = `供应商：${supplierName}｜合同编号：${doc.contractNo}｜类型：AI生成`;
+      const bodyHtml = buildOrderContractPreviewBodyHtml(doc.name, doc.contractNo, 'AI生成');
+      openOrderContractPreview(metaText, bodyHtml);
+    }
+
+    function previewOrderContractPlatformUpload(supplierId, contractId) {
+      const line = getOrderContractSupplierLines().find(l => l.supplierId === supplierId);
+      const supplierName = line ? line.supplierName : '';
+      const doc = getUploadContractById(supplierName, contractId);
+      if (!doc) {
+        showToast('未找到合同');
+        return;
+      }
+      const metaText = `供应商：${supplierName}｜合同编号：${doc.contractNo}｜类型：用户上传（平台归档）`;
+      const bodyHtml = buildOrderContractPreviewBodyHtml(doc.name, doc.contractNo, '用户上传（平台归档）');
+      openOrderContractPreview(metaText, bodyHtml);
+    }
+
+    function previewOrderContractLinked(supplierId) {
+      const line = getOrderContractSupplierLines().find(l => l.supplierId === supplierId);
+      const supplierName = line ? line.supplierName : '';
+      const sel = orderContractSelections[supplierId];
+      if (!sel || (!sel.aiContractId && !(sel.localFile && sel.localFile.name))) {
+        showToast('请先选择合同或上传本地合同');
+        return;
+      }
+      if (sel.localFile && sel.localFile.name) {
+        const metaText = `供应商：${supplierName}｜文件：${sel.localFile.name}｜类型：本地上传`;
+        const bodyHtml = buildOrderContractPreviewBodyHtml(sel.localFile.name, '—', '本地上传');
+        openOrderContractPreview(metaText, bodyHtml);
+        return;
+      }
+      previewOrderContractAi(supplierId, sel.aiContractId);
+    }
+
+    function validateOrderContractsOrToast() {
+      const suppliers = getOrderContractSupplierLines();
+      if (!suppliers.length) {
+        showToast('未识别到供应商，无法完成下单');
+        return false;
+      }
+      const missing = suppliers.filter(s => !isSupplierContractComplete(s.supplierId));
+      if (missing.length) {
+        showToast(`合同为必填：请为「${missing.map(m => m.supplierName).join('、')}」选择 AI 合同或上传本地合同`);
+        return false;
+      }
+      return true;
+    }
+
     function renderOrderBasisFooter() {
       const prevBtn = document.getElementById('orderBasisPrevBtn');
       const skipBtn = document.getElementById('orderBasisSkipBtn');
       const nextBtn = document.getElementById('orderBasisNextBtn');
       const note = document.querySelector('.order-basis-foot-note');
       prevBtn.style.display = orderBasisStep === 1 ? 'none' : 'inline-flex';
-      skipBtn.textContent = orderBasisStep === 3 ? '跳过上传' : '跳过';
-      nextBtn.textContent = orderBasisStep === 3 ? '确认并下单' : '下一步';
+      skipBtn.style.display = orderBasisStep === 3 ? 'none' : 'inline-flex';
+      skipBtn.textContent = orderBasisStep === 4 ? '跳过上传' : '跳过';
+      nextBtn.textContent = orderBasisStep === 4 ? '确认并下单' : '下一步';
       note.textContent = orderBasisStep === 1
         ? '如当前订单暂无明确采购计划，可点击“跳过”进入下一步。'
         : orderBasisStep === 2
-          ? '如预算信息暂未确认，可点击“跳过”继续补充采购依据文件。'
-          : '支持补充采购依据文件留痕；若三项依据均为空，系统会在下单前再次确认。';
+          ? '如预算信息暂未确认，可点击“跳过”进入「选择合同」步骤。'
+          : orderBasisStep === 3
+            ? '合同为必填：下拉列表内可先「预览」再「选择」AI 合同；用户上传归档合同可「预览 / 下载」。关联后可通过「预览」再次核对正文示意。亦可「上传合同」作为关联。'
+            : '支持补充采购依据文件留痕；若采购计划、预算与依据文件均为空，系统会在下单前再次确认。';
     }
 
     function renderOrderBasisModal() {
@@ -3764,8 +4815,9 @@
       if (!getBasisById('budget', selectedBudgetId)) selectedBudgetId = '';
       document.getElementById('orderPlanList').innerHTML = renderBasisItems('plan', procurementPlanOptions, selectedPlanId);
       document.getElementById('orderBudgetList').innerHTML = renderBasisItems('budget', procurementBudgetOptions, selectedBudgetId);
+      renderOrderContractSupplierStep();
       renderBasisFileList();
-      [1, 2, 3].forEach(step => {
+      [1, 2, 3, 4].forEach(step => {
         const nav = document.getElementById(`basisStepNav${step}`);
         const panel = document.getElementById(`basisStepPanel${step}`);
         nav.classList.toggle('active', step === orderBasisStep);
@@ -3778,12 +4830,15 @@
 
     function openOrderBasisModal() {
       orderBasisStep = 1;
+      openContractDropdownSupplierId = null;
       renderOrderBasisModal();
       document.getElementById('orderBasisOverlay').classList.add('show');
       updateBodyScrollLock();
     }
 
     function closeOrderBasisModal() {
+      const previewOverlay = document.getElementById('orderContractPreviewOverlay');
+      if (previewOverlay) previewOverlay.classList.remove('show');
       document.getElementById('orderBasisOverlay').classList.remove('show');
       updateBodyScrollLock();
     }
@@ -3893,15 +4948,18 @@
     }
 
     function goPrevOrderBasisStep() {
+      openContractDropdownSupplierId = null;
       orderBasisStep = Math.max(1, orderBasisStep - 1);
       renderOrderBasisModal();
     }
 
     function goNextOrderBasisStep() {
-      if (orderBasisStep >= 3) {
+      if (orderBasisStep >= ORDER_BASIS_TOTAL_STEPS) {
         confirmOrderBasisAndProceed();
         return;
       }
+      if (orderBasisStep === 3 && !validateOrderContractsOrToast()) return;
+      if (orderBasisStep === 3) openContractDropdownSupplierId = null;
       orderBasisStep += 1;
       renderOrderBasisModal();
     }
@@ -3919,10 +4977,19 @@
         renderOrderBasisModal();
         return;
       }
+      if (orderBasisStep === 3) {
+        showToast('合同为必填：请为每个供应商选择 AI 合同或上传本地合同');
+        return;
+      }
       confirmOrderBasisAndProceed();
     }
 
     function confirmOrderBasisAndProceed() {
+      if (!validateOrderContractsOrToast()) {
+        orderBasisStep = 3;
+        renderOrderBasisModal();
+        return;
+      }
       if (!selectedPlanId && !selectedBudgetId && !uploadedBasisFiles.length) {
         const proceed = window.confirm('当前未关联采购计划、采购预算，也未上传采购依据文件，是否继续采购？');
         if (!proceed) return;
@@ -3951,6 +5018,23 @@
     function buildOrderConfirmPayload() {
       const selectedPlan = getBasisById('plan', selectedPlanId);
       const selectedBudget = getBasisById('budget', selectedBudgetId);
+      const supplierLines = getOrderContractSupplierLines();
+      const contractsComplete = supplierLines.length > 0 && supplierLines.every(s => isSupplierContractComplete(s.supplierId));
+      const contractLinkage = supplierLines.map(s => {
+        const sel = orderContractSelections[s.supplierId] || {};
+        const base = { supplierId: s.supplierId, supplierName: s.supplierName };
+        if (sel.localFile && sel.localFile.name) {
+          return { ...base, source: 'local_upload', file: { ...sel.localFile } };
+        }
+        const ai = getAiContractById(s.supplierName, sel.aiContractId);
+        return {
+          ...base,
+          source: 'ai',
+          contractId: sel.aiContractId || '',
+          contractNo: ai ? ai.contractNo : '',
+          contractName: ai ? ai.name : ''
+        };
+      });
       return {
         orderNo: `ORD${Date.now().toString().slice(-8)}`,
         productId: currentProduct.id,
@@ -3992,10 +5076,12 @@
           plan: selectedPlan,
           budget: selectedBudget,
           files: uploadedBasisFiles.map(item => ({ ...item })),
+          contractLinkage,
           hasPlan: Boolean(selectedPlan),
           hasBudget: Boolean(selectedBudget),
           hasFiles: uploadedBasisFiles.length > 0,
-          hasBasis: Boolean(selectedPlan || selectedBudget || uploadedBasisFiles.length)
+          hasContracts: contractsComplete,
+          hasBasis: Boolean(selectedPlan || selectedBudget || uploadedBasisFiles.length || contractsComplete)
         }
       };
     }
