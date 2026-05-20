@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>下单确认 | 国采e购</title>
+  <title>采购单确认 | 国采e购</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../assets/custom.css">
@@ -513,6 +514,312 @@
       display: block;
     }
 
+    .approver-list {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .approver-card {
+      position: relative;
+      width: 300px;
+      border: 1px solid #dbeafe;
+      border-radius: 14px;
+      padding: 16px;
+      background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .approver-card:hover {
+      border-color: #93c5fd;
+    }
+
+    .approver-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.12);
+      background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
+    }
+
+    .approver-check {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      box-shadow: 0 4px 10px rgba(226, 35, 26, 0.25);
+    }
+
+    .approver-card.selected .approver-check {
+      display: flex;
+    }
+
+    .approver-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .approver-meta {
+      font-size: 13px;
+      line-height: 1.9;
+      color: #64748b;
+      margin-bottom: 14px;
+    }
+
+    .approver-meta strong {
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .approver-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .approver-actions .btn-ghost,
+    .approver-actions .btn-sub {
+      height: 34px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+
+    .simple-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 220;
+      background: rgba(15, 23, 42, 0.52);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .simple-overlay.show {
+      display: flex;
+    }
+
+    .simple-modal {
+      width: min(520px, 96vw);
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+      overflow: hidden;
+    }
+
+    .simple-modal.wide {
+      width: min(640px, 96vw);
+    }
+
+    .simple-modal-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .simple-modal-head h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .simple-modal-body {
+      padding: 20px;
+    }
+
+    .simple-modal-foot {
+      padding: 16px 20px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .form-field {
+      margin-bottom: 14px;
+    }
+
+    .form-field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .form-field input {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+      border-color: #fca5a5;
+    }
+
+    .form-field select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+
+    .field-error {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--danger);
+      min-height: 18px;
+    }
+
+    .field-error:empty {
+      display: none;
+    }
+
+    .dept-hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .submit-carousel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .carousel-nav {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #475569;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .carousel-nav:hover:not(:disabled) {
+      border-color: #93c5fd;
+      color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    .carousel-nav:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .submit-carousel-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d1d5db;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .carousel-dot.active {
+      background: var(--primary);
+      width: 20px;
+      border-radius: 999px;
+    }
+
+    .submit-slide-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .submit-share-box {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .submit-qr-wrap {
+      width: 148px;
+      height: 148px;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .submit-share-main {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .submit-link-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #475569;
+      word-break: break-all;
+    }
+
+    .submit-tip {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #eff6ff;
+      border: 1px solid #dbeafe;
+      font-size: 13px;
+      line-height: 1.9;
+      color: #1e3a8a;
+    }
+
     .bottom-summary {
       display: flex;
       justify-content: flex-end;
@@ -1004,26 +1311,26 @@
       <div class="brand">
         <div class="brand-logo"><i class="fa-solid fa-cart-shopping"></i></div>
         <div>国采e购</div>
-        <span class="top-chip">订单确认页</span>
+        <span class="top-chip">采购单确认页</span>
       </div>
       <div class="top-actions">
         <span><i class="fa-solid fa-house mr-1"></i>商城首页</span>
-        <span><i class="fa-solid fa-file-invoice mr-1"></i>订单确认</span>
+        <span><i class="fa-solid fa-file-invoice mr-1"></i>采购单确认</span>
         <span class="top-chip" id="roleDisplay">采购专员</span>
       </div>
     </div>
   </header>
 
   <main class="page-wrap">
-    <div class="crumb">首页 &gt; 购物车/立即下单 &gt; <span>确认订单</span></div>
+    <div class="crumb">首页 &gt; 购物车/立即下单 &gt; <span>确认采购单</span></div>
 
     <div class="compliance-mini" id="complianceMiniBar">
       <div class="compliance-mini-inner">
         <div class="mini-meta">
           <div class="mini-icon"><i class="fa-solid fa-shield-halved"></i></div>
           <div>
-            <div class="mini-title">订单合规分析</div>
-            <div class="mini-summary" id="miniSummaryText">正在逐项校验订单信息，请稍候。</div>
+            <div class="mini-title">采购单合规分析</div>
+            <div class="mini-summary" id="miniSummaryText">正在逐项校验采购单信息，请稍候。</div>
             <div class="mini-report-text" id="miniReportText">报告生成中，完成后将在此保留打开链接。</div>
           </div>
         </div>
@@ -1145,10 +1452,18 @@
         </div>
         <div class="more-panel" id="morePanel">
           <div>补充信息：</div>
-          <div>1. 本订单已自动带出采购主体、发票信息、配送地址等基础字段。</div>
-          <div>2. 页面顶部保留订单合规分析入口；若信息变更，系统会提示重新生成《采购合规分析报告》。</div>
+          <div>1. 本采购单已自动带出采购主体、发票信息、配送地址等基础字段。</div>
+          <div>2. 页面顶部保留采购单合规分析入口；若信息变更，系统会提示重新生成《采购合规分析报告》。</div>
           <div>3. 合规分析报告生成后，可用于审批留痕、采购归档及会签查阅。</div>
         </div>
+      </section>
+
+      <section class="card order-section">
+        <div class="section-head">
+          <div class="section-title" style="margin-bottom:0;">审批人员</div>
+          <button class="btn-sub" type="button" onclick="openApproverModal()"><i class="fa-solid fa-plus"></i>新增审批人员</button>
+        </div>
+        <div class="approver-list" id="approverList"></div>
       </section>
 
       <section class="bottom-summary">
@@ -1160,7 +1475,7 @@
             <div>配送至：<span id="summaryAddress"></span></div>
             <div>收货人：<span id="summaryReceiver"></span></div>
           </div>
-          <button class="submit-btn" id="submitOrderBtn" type="button" onclick="submitOrder()">提交订单</button>
+          <button class="submit-btn" id="submitOrderBtn" type="button" onclick="submitOrder()">提交采购单</button>
         </div>
       </section>
     </div>
@@ -1170,7 +1485,7 @@
     <div class="compliance-modal">
       <div class="compliance-head">
         <div style="min-width:0; flex:1;">
-          <div class="ai-title"><i class="fa-solid fa-shield-halved text-red-500"></i>订单合规性校验</div>
+          <div class="ai-title"><i class="fa-solid fa-shield-halved text-red-500"></i>采购单合规性校验</div>
           <div class="compliance-progress">
             <div class="compliance-progress-bar" id="complianceProgressBar"></div>
           </div>
@@ -1191,6 +1506,79 @@
 
   <div class="toast" id="toast"></div>
 
+  <div class="simple-overlay" id="approverOverlay" onclick="if(event.target===this) closeApproverModal()">
+    <div class="simple-modal" onclick="event.stopPropagation()">
+      <div class="simple-modal-head">
+        <h3 id="approverModalTitle">新增审批人员</h3>
+        <button class="btn-ghost" type="button" onclick="closeApproverModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="simple-modal-body">
+        <div class="form-field">
+          <label for="approverNameInput">姓名</label>
+          <input id="approverNameInput" type="text" placeholder="请输入审批人员姓名">
+        </div>
+        <div class="form-field">
+          <label for="approverPhoneInput">电话</label>
+          <input id="approverPhoneInput" type="tel" maxlength="11" placeholder="请输入11位手机号码" oninput="validateApproverPhone(false)">
+          <div class="field-error" id="approverPhoneError"></div>
+        </div>
+        <div class="form-field">
+          <label for="approverDeptSelect">部门</label>
+          <select id="approverDeptSelect" onchange="handleDeptSelectChange()">
+            <option value="">请选择常用部门（可选）</option>
+            <option value="采购管理部">采购管理部</option>
+            <option value="财务审核部">财务审核部</option>
+            <option value="办公室">办公室</option>
+            <option value="信息中心">信息中心</option>
+            <option value="后勤保障部">后勤保障部</option>
+            <option value="资产管理部">资产管理部</option>
+          </select>
+          <input id="approverDeptInput" type="text" placeholder="请输入或选择所在部门" style="margin-top:8px;">
+          <div class="dept-hint">支持从下拉框选择常用部门，也可在下方输入框自由填写。</div>
+        </div>
+      </div>
+      <div class="simple-modal-foot">
+        <button class="btn-ghost" type="button" onclick="closeApproverModal()">取消</button>
+        <button class="btn-main" type="button" onclick="saveApprover()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="simple-overlay" id="submitOverlay" onclick="if(event.target===this) closeSubmitModal()">
+    <div class="simple-modal wide" onclick="event.stopPropagation()">
+      <div class="simple-modal-head">
+        <h3>提交采购单 · 发起审批</h3>
+        <button class="btn-ghost" type="button" onclick="closeSubmitModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="simple-modal-body">
+        <div class="submit-carousel">
+          <button class="carousel-nav" id="submitPrevBtn" type="button" onclick="shiftSubmitSlide(-1)" aria-label="上一组"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="submit-carousel-body">
+            <div class="submit-share-box">
+              <div class="submit-qr-wrap" id="submitQrBox"></div>
+              <div class="submit-share-main">
+                <div class="submit-slide-title" id="submitSlideTitle">审批页面链接</div>
+                <div class="submit-link-box" id="submitApprovalLink"></div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-nav" id="submitNextBtn" type="button" onclick="shiftSubmitSlide(1)" aria-label="下一组"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="carousel-dots" id="submitCarouselDots"></div>
+        <div class="submit-tip">
+          您可通过以下方式进入审批页面：<br>
+          1. 使用手机扫描左侧二维码；<br>
+          2. 复制上方审批链接并在浏览器中打开；<br>
+          3. 审批人员将收到短信通知，点击短信中的链接即可进入审批页面。
+        </div>
+      </div>
+      <div class="simple-modal-foot">
+        <button class="btn-ghost" type="button" onclick="closeSubmitModal()">取消</button>
+        <button class="btn-main" type="button" onclick="confirmSubmitPurchase()">确认提交</button>
+      </div>
+    </div>
+  </div>
+
   <div class="hidden-report" id="reportPrintable">
     <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:18px;">
       <div>
@@ -1198,14 +1586,14 @@
         <div style="margin-top:8px; color:#64748b; font-size:13px; line-height:1.8;">
           <div>报告编号：<span id="reportDocNo"></span></div>
           <div>生成时间：<span id="reportGeneratedAt"></span></div>
-          <div>订单编号：<span id="reportOrderNo"></span></div>
+          <div>采购单编号：<span id="reportOrderNo"></span></div>
         </div>
       </div>
       <div style="padding:8px 12px; border-radius:999px; background:#eff6ff; color:#1d4ed8; font-size:12px; font-weight:700;">国采e购 AI 合规中心</div>
     </div>
 
     <div class="report-print-card">
-      <h2 style="margin:0 0 12px; font-size:18px;">一、订单基础信息</h2>
+      <h2 style="margin:0 0 12px; font-size:18px;">一、采购单基础信息</h2>
       <div class="report-print-grid">
         <div class="report-print-item"><strong>商品名称</strong><span id="reportProductName"></span></div>
         <div class="report-print-item"><strong>规格型号</strong><span id="reportProductModel"></span></div>
@@ -1234,16 +1622,23 @@
       <h2 style="margin:0 0 12px; font-size:18px;">四、结论判定</h2>
       <div id="reportConclusion" style="font-size:16px; line-height:2; color:#111827; font-weight:700;"></div>
       <div style="margin-top:8px; font-size:13px; line-height:1.9; color:#64748b;">
-        本报告由平台合规分析能力自动生成，用于采购审批辅助与留痕归档。若订单关键信息发生变更，请重新发起合规分析并生成新版本报告。
+        本报告由平台合规分析能力自动生成，用于采购审批辅助与留痕归档。若采购单关键信息发生变更，请重新发起合规分析并生成新版本报告。
       </div>
     </div>
   </div>
 
   <script>
     const ORDER_STORAGE_KEY = 'gcOrderConfirmPayload';
+    const APPROVAL_STORAGE_KEY = 'gcPurchaseApprovalPayload';
     const REPORT_FILE_NAME = '采购合规分析报告.pdf';
     let orderData = null;
     let activeAddressId = '';
+    let approvers = [];
+    let selectedApproverIds = [];
+    let editingApproverId = null;
+    let submitShareSlides = [];
+    let submitShareIndex = 0;
+    let approvalPageUrl = '';
     let complianceState = {
       minimized: false,
       checks: [],
@@ -1420,12 +1815,12 @@
           type: 'analysis',
           title: '商品基础信息完整性校验',
           basis: '核验商品名称、规格型号、计价单位、采购编码和供应商等基础字段。',
-          successText: `商品名称、规格型号、采购编码、计价单位和供应商信息齐全，可进入订单审核流程。`,
+          successText: `商品名称、规格型号、采购编码、计价单位和供应商信息齐全，可进入采购单审核流程。`,
           status: quantityOk ? 'pass' : 'block',
           children: [
             { title: '商品名称完整性', detail: orderData.name ? `商品名称已登记：${orderData.name}` : '商品名称缺失。', status: orderData.name ? 'pass' : 'block' },
             { title: '规格型号完整性', detail: orderData.model ? `规格型号已登记：${orderData.model}` : '规格型号缺失。', status: orderData.model ? 'pass' : 'block' },
-            { title: '计价与数量合法性', detail: quantityOk ? `计价单位为${orderData.unit}，下单数量为 ${orderData.qty}${orderData.unit}，数量合法。` : '下单数量异常，无法进入订单流程。', status: quantityOk ? 'pass' : 'block' },
+            { title: '计价与数量合法性', detail: quantityOk ? `计价单位为${orderData.unit}，下单数量为 ${orderData.qty}${orderData.unit}，数量合法。` : '下单数量异常，无法进入采购单流程。', status: quantityOk ? 'pass' : 'block' },
             { title: '采购标识完整性', detail: orderData.code ? `采购编码已登记：${orderData.code}；供应商信息已绑定。` : '采购编码缺失，影响归档。', status: orderData.code ? 'pass' : 'block' }
           ]
         },
@@ -1438,8 +1833,8 @@
           children: [
             { title: '采购场景匹配', detail: '当前商品可进入商城下单确认流程，未发现采购制度冲突。', status: 'pass' },
             { title: '类目适配性', detail: '商品类目与当前政采场景匹配，未命中限制采购类目。', status: 'pass' },
-            { title: '流程准入条件', detail: '当前订单具备基础资料、价格与履约信息，可继续进行合规分析。', status: 'pass' },
-            { title: '审批留痕适配', detail: '订单字段满足后续审批、留痕和报告归档需要。', status: 'pass' }
+            { title: '流程准入条件', detail: '当前采购单具备基础资料、价格与履约信息，可继续进行合规分析。', status: 'pass' },
+            { title: '审批留痕适配', detail: '采购单字段满足后续审批、留痕和报告归档需要。', status: 'pass' }
           ]
         },
         {
@@ -1453,8 +1848,8 @@
           children: [
             { title: '平台建议区间对比', detail: `当前下单价 ${formatCurrency(orderData.price)}；建议区间 ${formatCurrency(orderData.floor)} - ${formatCurrency(orderData.ceiling)}。`, status: priceReasonable ? 'pass' : 'warn' },
             { title: '上限偏离情况', detail: priceReasonable ? '当前价格未高于建议上限，价格风险可控。' : '当前价格高于建议上限，建议复核预算或议价。', status: priceReasonable ? 'pass' : 'warn' },
-            { title: '预算可接受性', detail: '订单总额与当前采购金额规模匹配，未发现明显异常金额波动。', status: 'pass' },
-            { title: '成交合理性判断', detail: priceReasonable ? '价格处于合理采购区间，可作为当前订单参考价。' : '当前价格存在偏高风险，不建议直接确认。', status: priceReasonable ? 'pass' : 'warn' }
+            { title: '预算可接受性', detail: '采购单总额与当前采购金额规模匹配，未发现明显异常金额波动。', status: 'pass' },
+            { title: '成交合理性判断', detail: priceReasonable ? '价格处于合理采购区间，可作为当前采购单参考价。' : '当前价格存在偏高风险，不建议直接确认。', status: priceReasonable ? 'pass' : 'warn' }
           ]
         },
         {
@@ -1475,22 +1870,22 @@
         {
           type: 'analysis',
           title: '发票主体一致性校验',
-          basis: '核验发票类型、抬头与纳税人识别号是否完整，是否可用于当前订单留档。',
+          basis: '核验发票类型、抬头与纳税人识别号是否完整，是否可用于当前采购单留档。',
           successText: invoiceOk
-            ? `发票主体信息完整，可用于订单归档和后续审批。`
-            : `发票主体信息不完整，建议补充后再提交订单。`,
+            ? `发票主体信息完整，可用于采购单归档和后续审批。`
+            : `发票主体信息不完整，建议补充后再提交采购单。`,
           status: invoiceOk ? 'pass' : 'warn',
           children: [
             { title: '发票类型校验', detail: `当前发票类型为：${orderData.invoice.type || '未填写'}。`, status: orderData.invoice.type ? 'pass' : 'warn' },
             { title: '发票抬头校验', detail: orderData.invoice.title ? `发票抬头已登记：${orderData.invoice.title}。` : '发票抬头缺失。', status: orderData.invoice.title ? 'pass' : 'warn' },
             { title: '税号校验', detail: orderData.invoice.taxNo ? `纳税人识别号已登记：${orderData.invoice.taxNo}。` : '纳税人识别号缺失。', status: orderData.invoice.taxNo ? 'pass' : 'warn' },
-            { title: '归档适配性', detail: invoiceOk ? '当前发票主体满足订单留档和审批要求。' : '发票主体信息不完整，影响后续归档。', status: invoiceOk ? 'pass' : 'warn' }
+            { title: '归档适配性', detail: invoiceOk ? '当前发票主体满足采购单留档和审批要求。' : '发票主体信息不完整，影响后续归档。', status: invoiceOk ? 'pass' : 'warn' }
           ]
         },
         {
           type: 'analysis',
           title: '收货信息有效性校验',
-          basis: '核验配送地址、收货人及交付时效信息是否具备订单履约条件。',
+          basis: '核验配送地址、收货人及交付时效信息是否具备采购单履约条件。',
           successText: addressOk
             ? `配送地址与收货人信息完整，且在当前可配送范围内。`
             : `收货信息不完整，可能影响履约和报告归档。`,
@@ -1510,7 +1905,7 @@
           status: 'pending',
           children: [
             { title: '报告编号', detail: `RPT-${orderData.orderNo}` },
-            { title: '报告范围', detail: '订单基础信息、一级合规校验结果、AI 合规总结、结论判定。' },
+            { title: '报告范围', detail: '采购单基础信息、一级合规校验结果、AI 合规总结、结论判定。' },
             { title: '报告格式', detail: '自动生成 PDF 文件，用于审批留痕、采购归档与会签查阅。' },
             { title: '报告动作', detail: '报告生成后支持打开查看、下载 PDF、重新生成。' }
           ]
@@ -1519,7 +1914,7 @@
     }
 
     function renderPage() {
-      document.title = `确认订单 - ${orderData.name} | 国采e购`;
+      document.title = `确认采购单 - ${orderData.name} | 国采e购`;
       document.getElementById('roleDisplay').textContent = getRoleName();
       document.getElementById('storeName').textContent = orderData.storeName;
       document.getElementById('goodsThumb').src = orderData.image;
@@ -1539,7 +1934,307 @@
       document.getElementById('invoiceAccountCell').textContent = orderData.invoice.account;
       renderProcurementBasisSummary();
       renderAddresses();
+      renderApprovers();
       renderReportPrintable();
+    }
+
+    function initDefaultApprovers() {
+      approvers = [
+        {
+          id: 'appr-1',
+          name: '王主任',
+          phone: '13800138001',
+          department: '采购管理部',
+          requested: false
+        },
+        {
+          id: 'appr-2',
+          name: '李科长',
+          phone: '13900139002',
+          department: '财务审核部',
+          requested: false
+        }
+      ];
+      selectedApproverIds = approvers.map(item => item.id);
+    }
+
+    function isApproverSelected(id) {
+      return selectedApproverIds.includes(id);
+    }
+
+    function toggleApproverSelect(id, event) {
+      if (event && event.target.closest('button')) return;
+      if (isApproverSelected(id)) {
+        selectedApproverIds = selectedApproverIds.filter(item => item !== id);
+      } else {
+        selectedApproverIds.push(id);
+      }
+      renderApprovers();
+    }
+
+    function renderApprovers() {
+      const list = document.getElementById('approverList');
+      if (!approvers.length) {
+        list.innerHTML = '<div class="procurement-basis-empty" style="width:100%;">暂未添加审批人员，请点击「新增审批人员」。</div>';
+        return;
+      }
+      list.innerHTML = approvers.map(item => {
+        const selected = isApproverSelected(item.id);
+        return `
+        <div class="approver-card ${selected ? 'selected' : ''}" onclick="toggleApproverSelect('${item.id}', event)">
+          <div class="approver-check"><i class="fa-solid fa-check"></i></div>
+          <div class="approver-name">${escapeHtml(item.name)}</div>
+          <div class="approver-meta">
+            <div><strong>电话：</strong>${escapeHtml(item.phone)}</div>
+            <div><strong>部门：</strong>${escapeHtml(item.department)}</div>
+          </div>
+          <div class="approver-actions">
+            <button class="btn-ghost" type="button" onclick="event.stopPropagation(); editApprover('${item.id}')"><i class="fa-solid fa-pen"></i>编辑</button>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    function validateApproverPhone(showToastOnFail) {
+      const phone = document.getElementById('approverPhoneInput').value.trim();
+      const errorEl = document.getElementById('approverPhoneError');
+      const valid = /^1[3-9]\d{9}$/.test(phone);
+      if (!phone) {
+        errorEl.textContent = '';
+        return false;
+      }
+      if (!valid) {
+        errorEl.textContent = '请输入正确的11位手机号码。';
+        if (showToastOnFail) showToast('电话号码格式不正确，请重新输入。');
+        return false;
+      }
+      errorEl.textContent = '';
+      return true;
+    }
+
+    function handleDeptSelectChange() {
+      const value = document.getElementById('approverDeptSelect').value;
+      if (value) {
+        document.getElementById('approverDeptInput').value = value;
+      }
+    }
+
+    function syncDeptSelectFromInput(value) {
+      const select = document.getElementById('approverDeptSelect');
+      const options = Array.from(select.options).map(option => option.value);
+      select.value = options.includes(value) ? value : '';
+    }
+
+    function openApproverModal(id) {
+      editingApproverId = id || null;
+      const target = id ? approvers.find(item => item.id === id) : null;
+      document.getElementById('approverModalTitle').textContent = target ? '编辑审批人员' : '新增审批人员';
+      document.getElementById('approverNameInput').value = target ? target.name : '';
+      document.getElementById('approverPhoneInput').value = target ? target.phone : '';
+      document.getElementById('approverDeptInput').value = target ? target.department : '';
+      document.getElementById('approverDeptSelect').value = '';
+      document.getElementById('approverPhoneError').textContent = '';
+      if (target) syncDeptSelectFromInput(target.department);
+      document.getElementById('approverOverlay').classList.add('show');
+    }
+
+    function closeApproverModal() {
+      document.getElementById('approverOverlay').classList.remove('show');
+      editingApproverId = null;
+    }
+
+    function saveApprover() {
+      const name = document.getElementById('approverNameInput').value.trim();
+      const phone = document.getElementById('approverPhoneInput').value.trim();
+      const department = document.getElementById('approverDeptInput').value.trim();
+      if (!name || !phone || !department) {
+        showToast('请完整填写审批人员信息。');
+        return;
+      }
+      if (!validateApproverPhone(true)) {
+        return;
+      }
+      if (editingApproverId) {
+        const target = approvers.find(item => item.id === editingApproverId);
+        if (target) {
+          target.name = name;
+          target.phone = phone;
+          target.department = department;
+        }
+      } else {
+        const newId = `appr-${Date.now()}`;
+        approvers.push({
+          id: newId,
+          name,
+          phone,
+          department,
+          requested: false
+        });
+        selectedApproverIds.push(newId);
+      }
+      const wasEditing = !!editingApproverId;
+      closeApproverModal();
+      renderApprovers();
+      showToast(wasEditing ? '审批人员信息已更新。' : '审批人员已添加。');
+    }
+
+    function editApprover(id) {
+      openApproverModal(id);
+    }
+
+    function getApprovalPageUrl(approver) {
+      const base = window.location.href.replace(/[^/]*$/, 'purchase_approval.html');
+      const params = new URLSearchParams({
+        po: orderData.orderNo
+      });
+      if (approver) {
+        params.set('approver', approver.id);
+        params.set('name', approver.name);
+      }
+      return `${base}?${params.toString()}`;
+    }
+
+    function buildSubmitShareSlides() {
+      const selected = approvers.filter(item => selectedApproverIds.includes(item.id));
+      if (!selected.length) {
+        return [{
+          approverId: null,
+          title: '审批页面链接',
+          url: getApprovalPageUrl(null)
+        }];
+      }
+      return selected.map(item => ({
+        approverId: item.id,
+        title: `审批人：${item.name}（${item.department}）`,
+        url: getApprovalPageUrl(item)
+      }));
+    }
+
+    function renderSubmitCarousel() {
+      submitShareSlides = buildSubmitShareSlides();
+      if (submitShareIndex >= submitShareSlides.length) {
+        submitShareIndex = 0;
+      }
+      const dots = document.getElementById('submitCarouselDots');
+      dots.innerHTML = submitShareSlides.map((_, index) =>
+        `<button class="carousel-dot ${index === submitShareIndex ? 'active' : ''}" type="button" onclick="goSubmitSlide(${index})" aria-label="第${index + 1}组"></button>`
+      ).join('');
+
+      const prevBtn = document.getElementById('submitPrevBtn');
+      const nextBtn = document.getElementById('submitNextBtn');
+      prevBtn.disabled = submitShareIndex <= 0;
+      nextBtn.disabled = submitShareIndex >= submitShareSlides.length - 1;
+
+      const slide = submitShareSlides[submitShareIndex];
+      if (!slide) return;
+
+      approvalPageUrl = slide.url;
+      document.getElementById('submitSlideTitle').textContent = slide.title;
+      document.getElementById('submitApprovalLink').textContent = slide.url;
+
+      const box = document.getElementById('submitQrBox');
+      box.innerHTML = '';
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(box, {
+          text: slide.url,
+          width: 128,
+          height: 128,
+          colorDark: '#111827',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } else {
+        box.innerHTML = '<div style="font-size:12px;color:#94a3b8;text-align:center;padding:12px;">二维码加载中</div>';
+      }
+    }
+
+    function shiftSubmitSlide(step) {
+      const next = submitShareIndex + step;
+      if (next < 0 || next >= submitShareSlides.length) return;
+      submitShareIndex = next;
+      renderSubmitCarousel();
+    }
+
+    function goSubmitSlide(index) {
+      submitShareIndex = index;
+      renderSubmitCarousel();
+    }
+
+    function openSubmitModal() {
+      submitShareIndex = 0;
+      renderSubmitCarousel();
+      document.getElementById('submitOverlay').classList.add('show');
+    }
+
+    function closeSubmitModal() {
+      document.getElementById('submitOverlay').classList.remove('show');
+    }
+
+    function buildApprovalPayload() {
+      return {
+        purchaseNo: orderData.orderNo,
+        submittedAt: new Date().toISOString(),
+        purchaser: getRoleName(),
+        purchaserDepartment: '采购管理部',
+        initiatedAt: new Date().toLocaleString('zh-CN', { hour12: false }),
+        procurementBasis: orderData.procurementBasis,
+        remark: document.getElementById('remarkInput').value.trim(),
+        approvers: approvers.filter(item => selectedApproverIds.includes(item.id)).map(item => ({ ...item, selected: true })),
+        complianceSummary: complianceState.summaryText,
+        complianceStatus: complianceState.overallStatus,
+        product: {
+          name: orderData.name,
+          model: orderData.model,
+          image: orderData.image,
+          unit: orderData.unit,
+          price: orderData.price,
+          qty: orderData.qty,
+          subtotal: orderData.subtotal,
+          supplier: orderData.supplier,
+          storeName: orderData.storeName
+        },
+        invoice: { ...orderData.invoice },
+        delivery: {
+          area: orderData.deliveryArea,
+          receiver: orderData.receiver,
+          phone: orderData.receiverPhone,
+          time: orderData.deliveryTime
+        },
+        totalAmount: orderData.subtotal,
+        shippingFee: 0,
+        payableAmount: orderData.subtotal
+      };
+    }
+
+    function finalizeSubmitPurchase() {
+      sessionStorage.setItem(APPROVAL_STORAGE_KEY, JSON.stringify(buildApprovalPayload()));
+      window.location.href = './purchase_approval.html?po=' + encodeURIComponent(orderData.orderNo);
+    }
+
+    function confirmSubmitPurchase() {
+      closeSubmitModal();
+      finalizeSubmitPurchase();
+    }
+
+    function submitOrder() {
+      if (complianceState.isRunning) {
+        showToast('采购单合规分析尚未完成，请稍候。');
+        return;
+      }
+      if (complianceState.overallStatus === 'block') {
+        showToast('当前采购单存在关键风险项，请修正后再提交。');
+        return;
+      }
+      if (complianceState.reportStatus !== 'ready') {
+        showToast('请先生成最新《采购合规分析报告》后再提交采购单。');
+        return;
+      }
+      if (selectedApproverIds.length) {
+        openSubmitModal();
+        return;
+      }
+      finalizeSubmitPurchase();
     }
 
     function renderProcurementBasisSummary() {
@@ -1550,7 +2245,7 @@
       document.getElementById('confirmPlanName').textContent = plan ? plan.name : '未关联采购计划';
       document.getElementById('confirmPlanMeta').textContent = plan
         ? `计划周期：${plan.period || '未填写'} · 提报部门：${plan.owner || '未填写'}`
-        : '本次下单未选择采购计划，可在后续审批或订单补录时补充。';
+        : '本次下单未选择采购计划，可在后续审批或采购单补录时补充。';
 
       document.getElementById('confirmBudgetName').textContent = budget ? budget.name : '未关联采购预算';
       document.getElementById('confirmBudgetMeta').textContent = budget
@@ -1595,7 +2290,7 @@
 
       const fileContainer = document.getElementById('confirmBasisFiles');
       if (!files.length) {
-        fileContainer.innerHTML = '<div class="procurement-basis-empty">暂未上传采购依据文件；本次订单仍可提交，建议后续补充留痕材料。</div>';
+        fileContainer.innerHTML = '<div class="procurement-basis-empty">暂未上传采购依据文件；本次采购单仍可提交，建议后续补充留痕材料。</div>';
         return;
       }
       fileContainer.innerHTML = files.map(item => `
@@ -1697,7 +2392,7 @@
         </div>
 
         <div class="detail-card">
-          <h3>订单上下文</h3>
+          <h3>采购单上下文</h3>
           <div class="detail-grid">
             <div class="detail-item"><strong>商品名称</strong><span>${orderData.name}</span></div>
             <div class="detail-item"><strong>供应商</strong><span>${orderData.supplier}</span></div>
@@ -1747,7 +2442,7 @@
               <div>RPT-${orderData.orderNo}</div>
             </div>
             <div class="report-preview-item">
-              <strong>订单编号</strong>
+              <strong>采购单编号</strong>
               <div>${orderData.orderNo}</div>
             </div>
             <div class="report-preview-item">
@@ -1764,9 +2459,9 @@
         <div class="detail-card">
           <h3>报告正文结构</h3>
           <div class="report-outline">
-            <div class="report-outline-item">一、订单基础信息：商品名称、规格型号、供应商、采购编码、价格、数量、发票与收货信息。</div>
+            <div class="report-outline-item">一、采购单基础信息：商品名称、规格型号、供应商、采购编码、价格、数量、发票与收货信息。</div>
             <div class="report-outline-item">二、一级合规校验结果：逐项汇总前 6 项一级分析结论与状态。</div>
-            <div class="report-outline-item">三、AI 合规总结：输出订单整体风险判断、关注点与建议动作。</div>
+            <div class="report-outline-item">三、AI 合规总结：输出采购单整体风险判断、关注点与建议动作。</div>
             <div class="report-outline-item">四、结论判定：给出“可提交 / 需关注 / 暂不建议提交”的最终意见。</div>
           </div>
         </div>
@@ -1834,19 +2529,19 @@
       if (analysisDoneCount === analysisChecks.length) {
         if (blockCount) {
           complianceState.overallStatus = 'block';
-          summary = `本次订单已完成前 ${analysisDoneCount} 项一级合规分析，但存在 ${blockCount} 项关键问题，当前不建议直接提交。建议先补充或修正收货/基础资料后，再重新生成合规报告。`;
+          summary = `本次采购单已完成前 ${analysisDoneCount} 项一级合规分析，但存在 ${blockCount} 项关键问题，当前不建议直接提交。建议先补充或修正收货/基础资料后，再重新生成合规报告。`;
         } else if (warnCount) {
           complianceState.overallStatus = 'warn';
-          summary = `本次订单已完成前 ${analysisDoneCount} 项一级合规分析，整体可继续处理，但存在 ${warnCount} 项需关注内容。当前价格、供应商资质与发票信息基本满足要求，建议在提交前再次确认关注项。`;
+          summary = `本次采购单已完成前 ${analysisDoneCount} 项一级合规分析，整体可继续处理，但存在 ${warnCount} 项需关注内容。当前价格、供应商资质与发票信息基本满足要求，建议在提交前再次确认关注项。`;
         } else {
           complianceState.overallStatus = 'pass';
-          summary = `本次订单已完成前 ${analysisDoneCount} 项一级合规分析，商品信息、价格区间、供应商履约、发票主体和收货信息均满足当前采购要求，建议按当前订单信息提交。`;
+          summary = `本次采购单已完成前 ${analysisDoneCount} 项一级合规分析，商品信息、价格区间、供应商履约、发票主体和收货信息均满足当前采购要求，建议按当前采购单信息提交。`;
         }
       }
 
       complianceState.summaryText = summary;
       document.getElementById('miniSummaryText').textContent = complianceState.completed
-        ? `已完成 ${doneCount}/${complianceState.checks.length} 项校验，${complianceState.overallStatus === 'pass' ? '当前订单可提交。' : complianceState.overallStatus === 'warn' ? '存在待关注项。' : '当前订单需先处理风险项。'}`
+        ? `已完成 ${doneCount}/${complianceState.checks.length} 项校验，${complianceState.overallStatus === 'pass' ? '当前采购单可提交。' : complianceState.overallStatus === 'warn' ? '存在待关注项。' : '当前采购单需先处理风险项。'}`
         : `正在校验 ${Math.min(doneCount + 1, complianceState.checks.length)}/${complianceState.checks.length} 项，请稍候。`;
       updateProgress();
       updateSubmitBtn();
@@ -1880,7 +2575,7 @@
 
       if (complianceState.reportStatus === 'generating') {
         if (title) title.textContent = '正在生成报告';
-        if (text) text.textContent = '正在汇总校验结果、订单信息和 AI 合规总结，并生成 PDF 文件。';
+        if (text) text.textContent = '正在汇总校验结果、采购单信息和 AI 合规总结，并生成 PDF 文件。';
         miniText.textContent = '报告生成中，完成后将在顶部保留打开链接。';
         if (reportCheck) reportCheck.runtimeStatus = 'generating';
       } else if (complianceState.reportStatus === 'ready') {
@@ -1902,7 +2597,7 @@
         if (reportCheck) reportCheck.runtimeStatus = 'ready';
       } else if (complianceState.reportStatus === 'dirty') {
         if (title) title.textContent = '报告需重新生成';
-        if (text) text.textContent = '订单关键信息已变更，原报告可能不再适用，请重新生成最新版本。';
+        if (text) text.textContent = '采购单关键信息已变更，原报告可能不再适用，请重新生成最新版本。';
         miniText.textContent = '原报告已失效，请重新生成最新报告。';
         if (complianceState.reportUrl) {
           [miniOpenReport, modalOpenReport].forEach(link => {
@@ -2106,10 +2801,10 @@
         : '未上传采购依据文件';
       document.getElementById('reportSummaryText').textContent = complianceState.summaryText || '系统正在生成总结。';
       document.getElementById('reportConclusion').textContent = complianceState.overallStatus === 'pass'
-        ? '结论：当前订单合规，可提交。'
+        ? '结论：当前采购单合规，可提交。'
         : complianceState.overallStatus === 'warn'
-          ? '结论：当前订单基本合规，可关注风险项后提交。'
-          : '结论：当前订单存在关键风险，暂不建议直接提交。';
+          ? '结论：当前采购单基本合规，可关注风险项后提交。'
+          : '结论：当前采购单存在关键风险，暂不建议直接提交。';
       document.getElementById('reportChecks').innerHTML = complianceState.checks.map(item => `
         <div class="report-print-item" style="margin-bottom:10px;">
           <strong>${item.title} / ${statusMap[item.runtimeStatus || 'pending']}</strong>
@@ -2117,22 +2812,6 @@
           <div>结果：${item.successText}</div>
         </div>
       `).join('');
-    }
-
-    function submitOrder() {
-      if (complianceState.isRunning) {
-        showToast('订单合规分析尚未完成，请稍候。');
-        return;
-      }
-      if (complianceState.overallStatus === 'block') {
-        showToast('当前订单存在关键风险项，请修正后再提交。');
-        return;
-      }
-      if (complianceState.reportStatus !== 'ready') {
-        showToast('请先生成最新《采购合规分析报告》后再提交订单。');
-        return;
-      }
-      showToast(complianceState.overallStatus === 'warn' ? '订单已提交，系统已记录关注项。' : '订单提交成功，已同步留存合规报告。');
     }
 
     function showToast(message) {
@@ -2154,6 +2833,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       orderData = loadOrderData();
       activeAddressId = orderData.addresses[0] ? orderData.addresses[0].id : '';
+      initDefaultApprovers();
       renderPage();
       bindFormEvents();
       startComplianceFlow();
