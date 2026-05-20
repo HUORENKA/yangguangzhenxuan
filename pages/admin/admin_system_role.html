@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>角色管理 | 系统管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <link rel="stylesheet" href="../../assets/system_rbac.css">
+  <style>
+    @layer utilities { .text-primary { color: #E2231A; } .bg-primary { background-color: #E2231A; } }
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); color: #0f172a; }
+    .admin-sidebar { position: fixed; left: 0; top: 0; width: 240px; height: 100vh; background: #1e293b; color: white; transition: width 0.3s; z-index: 100; overflow-y: auto; }
+    .admin-sidebar.collapsed { width: 64px; }
+    .admin-sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; }
+    .admin-sidebar-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; white-space: nowrap; }
+    .admin-sidebar.collapsed .admin-sidebar-logo span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-sidebar-toggle { background: rgba(255,255,255,0.1); border: none; color: white; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; }
+    .admin-menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: rgba(255,255,255,0.8); text-decoration: none; white-space: nowrap; }
+    .admin-menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
+    .admin-menu-item.active { background: rgba(226,35,26,0.2); color: white; border-left: 3px solid #E2231A; }
+    .admin-menu-item i { width: 20px; text-align: center; }
+    .admin-sidebar.collapsed .admin-menu-item span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-content { margin-left: 240px; transition: margin-left 0.3s; min-height: 100vh; }
+    .admin-sidebar.collapsed ~ .admin-content { margin-left: 64px; }
+    .page-card { background: #fff; border: 1px solid rgba(15,23,42,0.06); border-radius: 18px; box-shadow: 0 12px 30px rgba(15,23,42,0.05); }
+    .action-btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .action-btn-primary { color: #fff; background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .action-btn-danger { color: #b91c1c; background: #fff; border: 1px solid #fecaca; }
+    .filter-input { height: 38px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; }
+    .table-shell { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 16px; }
+    .rbac-op-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer; }
+    .rbac-op-icon:hover { border-color: #93c5fd; color: #1d4ed8; background: #eff6ff; }
+    .rbac-op-icon.danger:hover { border-color: #fca5a5; color: #b91c1c; background: #fef2f2; }
+    .btn-sm { height: 34px; padding: 0 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid #dbe2ea; background: #fff; }
+    .btn-sm-primary { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; border: none; }
+    html.admin-embed-mode .admin-sidebar { display: none !important; }
+    html.admin-embed-mode .admin-content { margin-left: 0 !important; }
+  </style>
+</head>
+<body>
+<script>
+  (function () {
+    var embedded = new URLSearchParams(location.search).get('embed') === '1';
+    if (embedded) document.documentElement.classList.add('admin-embed-mode');
+  })();
+</script>
+
+<div class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-header">
+    <div class="admin-sidebar-logo"><i class="fas fa-cog"></i><span>管理后台</span></div>
+    <button type="button" class="admin-sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="sidebarToggleIcon"></i></button>
+  </div>
+  <nav class="admin-menu">
+    <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>工作台首页</span></a>
+    <a href="admin_system_role.html" class="admin-menu-item active"><i class="fas fa-user-shield"></i><span>角色管理</span></a>
+  </nav>
+</div>
+
+<div class="admin-content">
+  <div class="p-6 max-w-[1920px] mx-auto">
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div class="text-sm text-slate-500 mb-1">
+        <a href="admin_dashboard.html" class="hover:text-primary">管理后台</a>
+        <span class="mx-2">/</span>
+        <span id="breadcrumbScope">供应商管理</span>
+        <span class="mx-2">/</span>
+        <span class="font-medium text-slate-700">角色管理</span>
+      </div>
+      <h1 class="text-2xl font-bold text-slate-900" id="pageTitle">角色管理</h1>
+    </div>
+
+    <div class="page-card p-5">
+      <div class="rbac-page-tabs">
+        <button type="button" class="rbac-page-tab active" data-tab="list" onclick="switchTab('list')">角色列表</button>
+        <button type="button" class="rbac-page-tab" data-tab="template" onclick="switchTab('template')">默认角色配置</button>
+      </div>
+
+      <!-- Tab1: 角色列表 -->
+      <div id="panelList" class="rbac-tab-panel active">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-3 page-card p-4" style="box-shadow:none;border:1px solid #e2e8f0;">
+            <p class="text-sm font-bold text-slate-700 mb-3">单位列表</p>
+            <div class="relative mb-3">
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" id="unitListSearch" class="filter-input w-full pl-8" placeholder="搜索单位名称" oninput="renderUnitList()">
+            </div>
+            <div id="unitListPanel" class="rbac-unit-list"></div>
+          </div>
+          <div class="lg:col-span-9">
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+              <div>
+                <h2 class="text-lg font-bold text-slate-800" id="selectedUnitTitle">请选择组织单位</h2>
+                <p class="text-xs text-slate-500 mt-1" id="selectedUnitHint">在左侧选择一级单位后查看角色</p>
+              </div>
+              <button type="button" class="action-btn action-btn-primary" id="btnAddUnitRole" style="display:none;" onclick="openUnitRoleDrawer()"><i class="fas fa-plus"></i>新增角色</button>
+            </div>
+            <div id="roleCardGrid" class="role-card-grid"></div>
+            <div id="roleCardEmpty" class="role-list-empty">
+              <i class="fas fa-building text-3xl mb-3 block text-slate-300"></i>
+              请在左侧选择组织单位
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab2: 默认角色配置 -->
+      <div id="panelTemplate" class="rbac-tab-panel">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
+          <div class="flex flex-wrap gap-2">
+            <input type="text" id="tplSearchName" class="filter-input w-48" placeholder="角色名称" oninput="renderTemplateTable()">
+            <select id="tplSearchStatus" class="filter-input w-32" onchange="renderTemplateTable()">
+              <option value="">全部状态</option>
+              <option value="0">正常</option>
+              <option value="1">停用</option>
+            </select>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="action-btn action-btn-primary" onclick="openTemplateDrawer()"><i class="fas fa-plus"></i>新增</button>
+            <button type="button" class="action-btn action-btn-danger" onclick="batchDeleteTemplates()"><i class="fas fa-trash"></i>批量删除</button>
+            <button type="button" class="action-btn action-btn-secondary" onclick="reloadTemplates()"><i class="fas fa-rotate"></i>刷新</button>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 mb-3" id="tplSelectHint">未选中任何记录</p>
+        <div class="table-shell">
+          <table class="min-w-full bg-white text-sm">
+            <thead class="bg-slate-50 text-slate-500 text-xs">
+              <tr>
+                <th class="px-4 py-3 w-10"><input type="checkbox" class="w-4 h-4 accent-red-600" onchange="toggleTplSelectAll(this)"></th>
+                <th class="px-4 py-3 text-left font-semibold w-14">序号</th>
+                <th class="px-4 py-3 text-left font-semibold">角色名称</th>
+                <th class="px-4 py-3 text-left font-semibold w-24">显示顺序</th>
+                <th class="px-4 py-3 text-left font-semibold">权限范围</th>
+                <th class="px-4 py-3 text-left font-semibold w-28">角色状态</th>
+                <th class="px-4 py-3 text-left font-semibold">创建人员</th>
+                <th class="px-4 py-3 text-left font-semibold">创建时间</th>
+                <th class="px-4 py-3 text-left font-semibold w-32">操作</th>
+              </tr>
+            </thead>
+            <tbody id="templateTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 单位角色抽屉（角色列表） -->
+<div class="rbac-drawer-overlay" id="unitRoleDrawer">
+  <div class="rbac-drawer">
+    <div class="rbac-drawer-head">
+      <span class="rbac-drawer-title" id="unitDrawerTitle">新增角色</span>
+      <button type="button" class="text-slate-400 hover:text-slate-600 text-xl" onclick="closeUnitRoleDrawer()">&times;</button>
+    </div>
+    <div class="rbac-drawer-body">
+      <input type="hidden" id="editUnitRoleId">
+      <div class="rbac-form-item" id="defaultRoleWrap">
+        <label>默认角色</label>
+        <select id="fDefaultRole" class="rbac-form-input" onchange="onDefaultRolePick()">
+          <option value="">不套用模板（自定义配置）</option>
+        </select>
+        <div class="template-hint" id="defaultRoleHint">选择默认角色后将自动带入权限范围与菜单权限，仍可调整。</div>
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>角色名称</label>
+        <input type="text" id="unitFRoleName" class="rbac-form-input" placeholder="请输入角色名称">
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>权限范围</label>
+        <select id="unitFDataScope" class="rbac-form-input"></select>
+      </div>
+      <div class="rbac-form-item">
+        <label>显示顺序</label>
+        <input type="number" id="unitFSort" class="rbac-form-input" value="1" min="0">
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>角色状态</label>
+        <div class="rbac-radio-group">
+          <label><input type="radio" name="unitFStatus" value="0" checked> 正常</label>
+          <label><input type="radio" name="unitFStatus" value="1"> 停用</label>
+        </div>
+      </div>
+      <div class="rbac-form-item">
+        <label>菜单权限</label>
+        <div class="rbac-menu-toolbar">
+          <label><input type="checkbox" id="unitTreeExpand"> 展开/折叠</label>
+          <label><input type="checkbox" id="unitTreeSelectAll"> 全选/反选</label>
+          <label><input type="checkbox" id="unitTreeLinkage" checked> 父子联动</label>
+        </div>
+        <div id="unitMenuTreeBox"></div>
+      </div>
+      <div class="rbac-form-item">
+        <label>备注</label>
+        <textarea id="unitFRemark" class="rbac-form-textarea" placeholder="请输入备注"></textarea>
+      </div>
+    </div>
+    <div class="rbac-drawer-foot">
+      <div class="rbac-drawer-foot-split">
+        <button type="button" class="btn-sm btn-sm-danger-outline" id="btnDeleteUnitRole" style="display:none;" onclick="deleteUnitRoleFromDrawer()"><i class="fas fa-trash"></i> 删除</button>
+        <div class="foot-right">
+          <button type="button" class="btn-sm" onclick="closeUnitRoleDrawer()">取消</button>
+          <button type="button" class="btn-sm btn-sm-primary" onclick="saveUnitRole()">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 默认角色模板抽屉 -->
+<div class="rbac-drawer-overlay" id="templateDrawer">
+  <div class="rbac-drawer">
+    <div class="rbac-drawer-head">
+      <span class="rbac-drawer-title" id="tplDrawerTitle">新增默认角色</span>
+      <button type="button" class="text-slate-400 hover:text-slate-600 text-xl" onclick="closeTemplateDrawer()">&times;</button>
+    </div>
+    <div class="rbac-drawer-body">
+      <input type="hidden" id="editTemplateId">
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>角色名称</label>
+        <input type="text" id="tplFRoleName" class="rbac-form-input" placeholder="请输入默认角色名称">
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>权限范围</label>
+        <select id="tplFDataScope" class="rbac-form-input"></select>
+      </div>
+      <div class="rbac-form-item">
+        <label>显示顺序</label>
+        <input type="number" id="tplFSort" class="rbac-form-input" value="1" min="0">
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>角色状态</label>
+        <div class="rbac-radio-group">
+          <label><input type="radio" name="tplFStatus" value="0" checked> 正常</label>
+          <label><input type="radio" name="tplFStatus" value="1"> 停用</label>
+        </div>
+      </div>
+      <div class="rbac-form-item">
+        <label>菜单权限</label>
+        <p class="text-xs text-slate-500 mb-2">默认角色建议配置完整菜单树，供各单位新建角色时引用。</p>
+        <div class="rbac-menu-toolbar">
+          <label><input type="checkbox" id="tplTreeExpand"> 展开/折叠</label>
+          <label><input type="checkbox" id="tplTreeSelectAll"> 全选/反选</label>
+          <label><input type="checkbox" id="tplTreeLinkage" checked> 父子联动</label>
+        </div>
+        <div id="tplMenuTreeBox"></div>
+      </div>
+      <div class="rbac-form-item">
+        <label>备注</label>
+        <textarea id="tplFRemark" class="rbac-form-textarea"></textarea>
+      </div>
+    </div>
+    <div class="rbac-drawer-foot">
+      <div class="rbac-drawer-foot-split">
+        <button type="button" class="btn-sm btn-sm-danger-outline" id="btnDeleteTemplate" style="display:none;" onclick="deleteTemplateFromDrawer()"><i class="fas fa-trash"></i> 删除</button>
+        <div class="foot-right">
+          <button type="button" class="btn-sm" onclick="closeTemplateDrawer()">取消</button>
+          <button type="button" class="btn-sm btn-sm-primary" onclick="saveTemplate()">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/system_rbac_data.js"></script>
+<script src="../../assets/system_rbac_ui.js"></script>
+<script>
+  var SCOPE = SystemRbac.getPageScope();
+  var SCOPE_LABEL = SystemRbac.getScopeLabel(SCOPE);
+  var unitRoles = [];
+  var templates = [];
+  var topLevelUnits = [];
+  var selectedOrgUnitId = '';
+  var tplSelectedIds = new Set();
+  var CURRENT_CREATOR = 'admin';
+
+  function initPageMeta() {
+    document.getElementById('breadcrumbScope').textContent = SCOPE_LABEL + '管理';
+    document.getElementById('pageTitle').textContent = SCOPE_LABEL + '管理 / 角色管理';
+    document.title = SCOPE_LABEL + '管理 / 角色管理 | 管理后台';
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.rbac-page-tab').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    document.getElementById('panelList').classList.toggle('active', tab === 'list');
+    document.getElementById('panelTemplate').classList.toggle('active', tab === 'template');
+    if (tab === 'template') renderTemplateTable();
+  }
+
+  function fillScopeSelect(selId, val) {
+    var sel = document.getElementById(selId);
+    sel.innerHTML = SystemRbac.ROLE_FORM_DATA_SCOPES.map(function (d) {
+      return '<option value="' + d.value + '">' + d.label + '</option>';
+    }).join('');
+    sel.value = val || '5';
+  }
+
+  function orgTypeLabel(type) {
+    return { operator: '运营商', supplier: '供应商', buyer: '采购商' }[type] || '';
+  }
+
+  function loadData() {
+    topLevelUnits = SystemRbac.getTopLevelUnitsForScope(SCOPE);
+    unitRoles = SystemRbac.getUnitRoles(SCOPE);
+    templates = SystemRbac.getDefaultRoleTemplates();
+    if (!selectedOrgUnitId && topLevelUnits[0]) {
+      selectedOrgUnitId = topLevelUnits[0].orgUnitId;
+    }
+    renderUnitList();
+    renderRoleCards();
+  }
+
+  function renderUnitList() {
+    var kw = (document.getElementById('unitListSearch').value || '').trim().toLowerCase();
+    var list = topLevelUnits.filter(function (u) {
+      return !kw || u.label.toLowerCase().indexOf(kw) >= 0;
+    });
+    var panel = document.getElementById('unitListPanel');
+    if (!list.length) {
+      panel.innerHTML = '<div class="text-center text-slate-400 text-sm py-8">暂无单位</div>';
+      return;
+    }
+    panel.innerHTML = list.map(function (u) {
+      var active = selectedOrgUnitId === u.orgUnitId ? ' active' : '';
+      var tag = orgTypeLabel(u.orgType);
+      return '<div class="rbac-unit-list-item' + active + '" onclick="selectOrgUnit(\'' + u.orgUnitId + '\')">' +
+        SystemRbacUi.escapeHtml(u.label) +
+        (tag ? '<span class="unit-type-tag">' + tag + '</span>' : '') +
+        '</div>';
+    }).join('');
+  }
+
+  function selectOrgUnit(orgUnitId) {
+    selectedOrgUnitId = orgUnitId;
+    renderUnitList();
+    renderRoleCards();
+  }
+
+  function getRolesForUnit(orgUnitId) {
+    return unitRoles.filter(function (r) { return r.orgUnitId === orgUnitId; });
+  }
+
+  function renderRoleCards() {
+    var grid = document.getElementById('roleCardGrid');
+    var empty = document.getElementById('roleCardEmpty');
+    var btnAdd = document.getElementById('btnAddUnitRole');
+    var title = document.getElementById('selectedUnitTitle');
+    var hint = document.getElementById('selectedUnitHint');
+
+    if (!selectedOrgUnitId) {
+      grid.innerHTML = '';
+      empty.style.display = '';
+      btnAdd.style.display = 'none';
+      title.textContent = '请选择组织单位';
+      hint.textContent = '在左侧组织架构树中选择单位后查看角色';
+      return;
+    }
+
+    var unitName = SystemRbac.getOrgUnitLabel(selectedOrgUnitId);
+    title.textContent = unitName + ' · 角色列表';
+    hint.textContent = '以下为该单位已配置的角色，可新增或编辑';
+    btnAdd.style.display = '';
+    empty.style.display = 'none';
+
+    var list = getRolesForUnit(selectedOrgUnitId);
+    if (!list.length) {
+      grid.innerHTML = '';
+      empty.style.display = '';
+      empty.innerHTML = '<i class="fas fa-user-shield text-3xl mb-3 block text-slate-300"></i>该单位暂无角色，点击「新增角色」创建';
+      return;
+    }
+
+    grid.innerHTML = list.map(function (r) {
+      var userCount = r.status === '0' ? SystemRbac.countUsersForUnitRole(SCOPE, r.id) : 0;
+      var tplName = '';
+      if (r.templateRoleId) {
+        var t = templates.find(function (x) { return x.id === r.templateRoleId; });
+        tplName = t ? t.roleName : '';
+      }
+      return '<div class="role-card">' +
+        '<div class="role-card-head">' +
+        '<div class="role-card-title">' + SystemRbacUi.escapeHtml(r.roleName) + '</div>' +
+        '<label class="rbac-switch" title="启用/禁用"><input type="checkbox"' + (r.status === '0' ? ' checked' : '') +
+        ' onchange="toggleUnitRoleStatus(\'' + r.id + '\', this)"><span class="slider"></span></label>' +
+        '</div>' +
+        '<div class="role-card-meta">' +
+        '<div><strong>创建人员：</strong>' + SystemRbacUi.escapeHtml(r.createBy || '—') + '</div>' +
+        '<div><strong>创建时间：</strong>' + SystemRbacUi.escapeHtml(r.createTime || '—') + '</div>' +
+        (tplName ? '<div><strong>默认角色：</strong>' + SystemRbacUi.escapeHtml(tplName) + '</div>' : '') +
+        '<div><strong>权限范围：</strong>' + SystemRbacUi.escapeHtml(SystemRbac.scopeLabel(r.dataScope)) + '</div>' +
+        '</div>' +
+        '<div class="role-card-foot">' +
+        (r.status === '0' ? '<span class="role-card-user-count"><i class="fas fa-users"></i> 关联用户 ' + userCount + ' 人</span>' : '<span class="text-xs text-slate-400">已停用</span>') +
+        '<button type="button" class="role-card-edit-btn" onclick="openUnitRoleDrawer(\'' + r.id + '\')"><i class="fas fa-pen"></i> 编辑角色</button>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  function toggleUnitRoleStatus(id, el) {
+    var r = unitRoles.find(function (x) { return x.id === id; });
+    if (!r) return;
+    if (!el.checked) {
+      var cnt = SystemRbac.countUsersForUnitRole(SCOPE, id);
+      if (cnt > 0) {
+        el.checked = true;
+        SystemRbacUi.showRoleDisableBlockModal(r.roleName, cnt);
+        return;
+      }
+    }
+    r.status = el.checked ? '0' : '1';
+    SystemRbac.saveUnitRoles(SCOPE, unitRoles);
+    renderRoleCards();
+    SystemRbacUi.toast(r.status === '0' ? '已启用' : '已停用', 'success');
+  }
+
+  function fillDefaultRoleOptions(selectedId) {
+    var sel = document.getElementById('fDefaultRole');
+    var opts = '<option value="">不套用模板（自定义配置）</option>';
+    templates.filter(function (t) { return t.status === '0'; }).forEach(function (t) {
+      opts += '<option value="' + t.id + '"' + (selectedId === t.id ? ' selected' : '') + '>' +
+        SystemRbacUi.escapeHtml(t.roleName) + '</option>';
+    });
+    sel.innerHTML = opts;
+  }
+
+  function onDefaultRolePick() {
+    var tid = document.getElementById('fDefaultRole').value;
+    if (!tid) return;
+    var t = templates.find(function (x) { return x.id === tid; });
+    if (!t) return;
+    var applied = SystemRbac.applyTemplateToRole(t, {});
+    document.getElementById('unitFRoleName').value = applied.roleName;
+    document.getElementById('unitFDataScope').value = applied.dataScope;
+    document.getElementById('unitFSort').value = applied.sort || 1;
+    document.getElementById('unitFRemark').value = applied.remark || '';
+    SystemRbacUi.renderMenuTree(document.getElementById('unitMenuTreeBox'), SystemRbac.getMenuTreeForOrgUnit(selectedOrgUnitId), applied.menuIds, {
+      linkage: document.getElementById('unitTreeLinkage').checked
+    });
+    SystemRbacUi.toast('已套用默认角色配置', 'success');
+  }
+
+  function bindUnitTreeToolbar() {
+    var box = document.getElementById('unitMenuTreeBox');
+    document.getElementById('unitTreeExpand').onchange = function () { SystemRbacUi.toggleExpandAll(box, this.checked); };
+    document.getElementById('unitTreeSelectAll').onchange = function () { SystemRbacUi.setAllMenuChecks(box, this.checked); };
+    document.getElementById('unitTreeLinkage').onchange = function () { box.dataset.linkage = this.checked ? '1' : '0'; };
+  }
+
+  function openUnitRoleDrawer(id) {
+    if (!selectedOrgUnitId) { SystemRbacUi.toast('请先选择组织单位', 'warn'); return; }
+    document.getElementById('unitRoleDrawer').classList.add('show');
+    var isEdit = !!id;
+    document.getElementById('unitDrawerTitle').textContent = isEdit ? '编辑角色' : '新增角色';
+    document.getElementById('editUnitRoleId').value = id || '';
+    document.getElementById('btnDeleteUnitRole').style.display = isEdit ? '' : 'none';
+    fillDefaultRoleOptions('');
+    fillScopeSelect('unitFDataScope', '5');
+
+    var r = isEdit ? unitRoles.find(function (x) { return x.id === id; }) : null;
+    if (r) {
+      fillDefaultRoleOptions(r.templateRoleId || '');
+      document.getElementById('unitFRoleName').value = r.roleName;
+      fillScopeSelect('unitFDataScope', r.dataScope);
+      document.getElementById('unitFSort').value = r.sort || 1;
+      document.querySelector('input[name="unitFStatus"][value="' + r.status + '"]').checked = true;
+      document.getElementById('unitFRemark').value = r.remark || '';
+      SystemRbacUi.renderMenuTree(document.getElementById('unitMenuTreeBox'), SystemRbac.getMenuTreeForOrgUnit(selectedOrgUnitId), r.menuIds || [], {
+        linkage: document.getElementById('unitTreeLinkage').checked
+      });
+    } else {
+      document.getElementById('unitFRoleName').value = '';
+      document.getElementById('unitFSort').value = '1';
+      document.querySelector('input[name="unitFStatus"][value="0"]').checked = true;
+      document.getElementById('unitFRemark').value = '';
+      SystemRbacUi.renderMenuTree(document.getElementById('unitMenuTreeBox'), SystemRbac.getMenuTreeForOrgUnit(selectedOrgUnitId), [], {
+        linkage: document.getElementById('unitTreeLinkage').checked
+      });
+    }
+    bindUnitTreeToolbar();
+  }
+
+  function closeUnitRoleDrawer() {
+    document.getElementById('unitRoleDrawer').classList.remove('show');
+  }
+
+  function saveUnitRole() {
+    var name = document.getElementById('unitFRoleName').value.trim();
+    if (!name) { SystemRbacUi.toast('请填写角色名称', 'warn'); return; }
+    if (!selectedOrgUnitId) { SystemRbacUi.toast('未选择组织单位', 'warn'); return; }
+    var payload = {
+      orgUnitId: selectedOrgUnitId,
+      roleName: name,
+      templateRoleId: document.getElementById('fDefaultRole').value || '',
+      dataScope: document.getElementById('unitFDataScope').value,
+      sort: parseInt(document.getElementById('unitFSort').value, 10) || 1,
+      status: document.querySelector('input[name="unitFStatus"]:checked').value,
+      menuIds: SystemRbacUi.getCheckedMenuIds(document.getElementById('unitMenuTreeBox')),
+      remark: document.getElementById('unitFRemark').value.trim(),
+      createBy: CURRENT_CREATOR
+    };
+    var id = document.getElementById('editUnitRoleId').value;
+    if (payload.status === '1' && id) {
+      var checkCnt = SystemRbac.countUsersForUnitRole(SCOPE, id);
+      if (checkCnt > 0) {
+        SystemRbacUi.showRoleDisableBlockModal(name, checkCnt);
+        return;
+      }
+    }
+    if (id) {
+      var r = unitRoles.find(function (x) { return x.id === id; });
+      if (!r) return;
+      Object.assign(r, payload);
+      r.createBy = r.createBy || CURRENT_CREATOR;
+    } else {
+      payload.id = SystemRbac.genId('ur');
+      payload.createTime = SystemRbac.nowStr();
+      unitRoles.push(payload);
+    }
+    SystemRbac.saveUnitRoles(SCOPE, unitRoles);
+    closeUnitRoleDrawer();
+    renderRoleCards();
+    SystemRbacUi.toast('保存成功', 'success');
+  }
+
+  function deleteUnitRoleFromDrawer() {
+    var id = document.getElementById('editUnitRoleId').value;
+    if (!id) return;
+    var cnt = SystemRbac.countUsersForUnitRole(SCOPE, id);
+    if (cnt > 0) { SystemRbacUi.toast('该角色下还有 ' + cnt + ' 个用户，无法删除', 'warn'); return; }
+    if (!confirm('确定删除该角色？')) return;
+    unitRoles = unitRoles.filter(function (x) { return x.id !== id; });
+    SystemRbac.saveUnitRoles(SCOPE, unitRoles);
+    closeUnitRoleDrawer();
+    renderRoleCards();
+    SystemRbacUi.toast('已删除', 'success');
+  }
+
+  /* —— 默认角色配置 —— */
+  function renderTemplateTable() {
+    var nameKw = (document.getElementById('tplSearchName').value || '').trim().toLowerCase();
+    var st = document.getElementById('tplSearchStatus').value;
+    var list = templates.filter(function (t) {
+      if (nameKw && t.roleName.toLowerCase().indexOf(nameKw) < 0) return false;
+      if (st !== '' && t.status !== st) return false;
+      return true;
+    });
+    var tbody = document.getElementById('templateTableBody');
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center py-12 text-slate-400">暂无默认角色</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(function (t, i) {
+      return '<tr class="border-t border-slate-100 hover:bg-slate-50/80">' +
+        '<td class="px-4 py-3"><input type="checkbox" class="tpl-row-check w-4 h-4 accent-red-600" data-id="' + t.id + '"' +
+        (tplSelectedIds.has(t.id) ? ' checked' : '') + ' onchange="onTplRowCheck(this)"></td>' +
+        '<td class="px-4 py-3">' + (i + 1) + '</td>' +
+        '<td class="px-4 py-3 font-medium">' + SystemRbacUi.escapeHtml(t.roleName) + '</td>' +
+        '<td class="px-4 py-3">' + (t.sort || 1) + '</td>' +
+        '<td class="px-4 py-3"><span class="rbac-scope-tag">' + SystemRbacUi.escapeHtml(SystemRbac.scopeLabel(t.dataScope)) + '</span></td>' +
+        '<td class="px-4 py-3"><label class="rbac-switch"><input type="checkbox"' + (t.status === '0' ? ' checked' : '') +
+        ' onchange="toggleTemplateStatus(\'' + t.id + '\', this)"><span class="slider"></span></label></td>' +
+        '<td class="px-4 py-3 text-slate-500">' + SystemRbacUi.escapeHtml(t.createBy || '—') + '</td>' +
+        '<td class="px-4 py-3 text-xs text-slate-500">' + (t.createTime || '—') + '</td>' +
+        '<td class="px-4 py-3"><div class="flex gap-1">' +
+        '<button type="button" class="rbac-op-icon" title="编辑" onclick="openTemplateDrawer(\'' + t.id + '\')"><i class="fas fa-pen"></i></button>' +
+        '<button type="button" class="rbac-op-icon" title="菜单权限" onclick="openTemplateDrawer(\'' + t.id + '\', true)"><i class="fas fa-key"></i></button>' +
+        '</div></td></tr>';
+    }).join('');
+    document.getElementById('tplSelectHint').textContent = tplSelectedIds.size ? '已选中 ' + tplSelectedIds.size + ' 条' : '未选中任何记录';
+  }
+
+  function onTplRowCheck(el) {
+    if (el.checked) tplSelectedIds.add(el.dataset.id); else tplSelectedIds.delete(el.dataset.id);
+    document.getElementById('tplSelectHint').textContent = tplSelectedIds.size ? '已选中 ' + tplSelectedIds.size + ' 条' : '未选中任何记录';
+  }
+
+  function toggleTplSelectAll(el) {
+    document.querySelectorAll('.tpl-row-check').forEach(function (c) {
+      c.checked = el.checked;
+      if (el.checked) tplSelectedIds.add(c.dataset.id); else tplSelectedIds.delete(c.dataset.id);
+    });
+    document.getElementById('tplSelectHint').textContent = tplSelectedIds.size ? '已选中 ' + tplSelectedIds.size + ' 条' : '未选中任何记录';
+  }
+
+  function toggleTemplateStatus(id, el) {
+    var t = templates.find(function (x) { return x.id === id; });
+    if (!t) return;
+    t.status = el.checked ? '0' : '1';
+    SystemRbac.saveDefaultRoleTemplates(templates);
+    SystemRbacUi.toast(t.status === '0' ? '已启用' : '已停用', 'success');
+  }
+
+  function bindTplTreeToolbar(menuTree) {
+    var box = document.getElementById('tplMenuTreeBox');
+    document.getElementById('tplTreeExpand').onchange = function () { SystemRbacUi.toggleExpandAll(box, this.checked); };
+    document.getElementById('tplTreeSelectAll').onchange = function () { SystemRbacUi.setAllMenuChecks(box, this.checked); };
+    document.getElementById('tplTreeLinkage').onchange = function () { box.dataset.linkage = this.checked ? '1' : '0'; };
+  }
+
+  function openTemplateDrawer(id, menuOnly) {
+    document.getElementById('templateDrawer').classList.add('show');
+    var isEdit = !!id;
+    document.getElementById('tplDrawerTitle').textContent = isEdit ? (menuOnly ? '配置菜单权限' : '编辑默认角色') : '新增默认角色';
+    document.getElementById('editTemplateId').value = id || '';
+    document.getElementById('btnDeleteTemplate').style.display = isEdit ? '' : 'none';
+    fillScopeSelect('tplFDataScope', '5');
+
+    var t = isEdit ? templates.find(function (x) { return x.id === id; }) : null;
+    document.getElementById('tplFRoleName').value = t ? t.roleName : '';
+    if (t) fillScopeSelect('tplFDataScope', t.dataScope);
+    document.getElementById('tplFSort').value = t ? (t.sort || 1) : 1;
+    document.querySelector('input[name="tplFStatus"][value="' + (t ? t.status : '0') + '"]').checked = true;
+    document.getElementById('tplFRemark').value = t ? (t.remark || '') : '';
+    SystemRbacUi.renderMenuTree(document.getElementById('tplMenuTreeBox'), SystemRbac.getMenuTree('operator'), t ? (t.menuIds || []) : [], {
+      linkage: document.getElementById('tplTreeLinkage').checked
+    });
+    bindTplTreeToolbar();
+  }
+
+  function closeTemplateDrawer() {
+    document.getElementById('templateDrawer').classList.remove('show');
+  }
+
+  function saveTemplate() {
+    var name = document.getElementById('tplFRoleName').value.trim();
+    if (!name) { SystemRbacUi.toast('请填写角色名称', 'warn'); return; }
+    var payload = {
+      roleName: name,
+      roleKey: SystemRbac.genRoleKey(name, templates),
+      dataScope: document.getElementById('tplFDataScope').value,
+      sort: parseInt(document.getElementById('tplFSort').value, 10) || 1,
+      status: document.querySelector('input[name="tplFStatus"]:checked').value,
+      menuIds: SystemRbacUi.getCheckedMenuIds(document.getElementById('tplMenuTreeBox')),
+      remark: document.getElementById('tplFRemark').value.trim(),
+      createBy: CURRENT_CREATOR
+    };
+    var id = document.getElementById('editTemplateId').value;
+    if (id) {
+      var t = templates.find(function (x) { return x.id === id; });
+      if (!t) return;
+      Object.assign(t, payload);
+    } else {
+      payload.id = SystemRbac.genId('rt');
+      payload.createTime = SystemRbac.nowStr();
+      templates.push(payload);
+    }
+    SystemRbac.saveDefaultRoleTemplates(templates);
+    closeTemplateDrawer();
+    renderTemplateTable();
+    SystemRbacUi.toast('保存成功', 'success');
+  }
+
+  function deleteTemplateFromDrawer() {
+    var id = document.getElementById('editTemplateId').value;
+    if (!id) return;
+    var used = unitRoles.some(function (r) { return r.templateRoleId === id; });
+    if (used) { SystemRbacUi.toast('该默认角色已被单位角色引用，无法删除', 'warn'); return; }
+    if (!confirm('确定删除该默认角色？')) return;
+    templates = templates.filter(function (x) { return x.id !== id; });
+    SystemRbac.saveDefaultRoleTemplates(templates);
+    closeTemplateDrawer();
+    renderTemplateTable();
+    SystemRbacUi.toast('已删除', 'success');
+  }
+
+  function batchDeleteTemplates() {
+    if (!tplSelectedIds.size) { SystemRbacUi.toast('请先选择记录', 'warn'); return; }
+    var ids = Array.from(tplSelectedIds);
+    if (ids.some(function (id) { return unitRoles.some(function (r) { return r.templateRoleId === id; }); })) {
+      SystemRbacUi.toast('选中的模板已被引用，无法删除', 'warn'); return;
+    }
+    if (!confirm('确定删除选中的 ' + ids.length + ' 个默认角色？')) return;
+    templates = templates.filter(function (t) { return !tplSelectedIds.has(t.id); });
+    SystemRbac.saveDefaultRoleTemplates(templates);
+    tplSelectedIds.clear();
+    renderTemplateTable();
+    SystemRbacUi.toast('批量删除完成', 'success');
+  }
+
+  function reloadTemplates() {
+    templates = SystemRbac.getDefaultRoleTemplates();
+    renderTemplateTable();
+    SystemRbacUi.toast('已刷新', 'success');
+  }
+
+  function toggleSidebar() {
+    document.getElementById('adminSidebar').classList.toggle('collapsed');
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initPageMeta();
+    loadData();
+  });
+</script>
+</body>
+</html>

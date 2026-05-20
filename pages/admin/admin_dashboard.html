@@ -596,6 +596,59 @@
       opacity: 1;
       transition: opacity 0.3s;
     }
+
+    .admin-menu-group-title {
+      padding: 8px 20px 4px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 0.05em;
+    }
+
+    .admin-sidebar.collapsed .admin-menu-group-title {
+      opacity: 0;
+      height: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .admin-menu-parent {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: left;
+      position: relative;
+    }
+
+    .admin-menu-parent .sub-arrow {
+      margin-left: auto;
+      font-size: 11px;
+      opacity: 0.7;
+      transition: transform 0.2s;
+    }
+
+    .admin-menu-group.open .admin-menu-parent .sub-arrow {
+      transform: rotate(180deg);
+    }
+
+    .admin-submenu {
+      display: none;
+      padding: 4px 0 8px 12px;
+      border-left: 2px solid rgba(255, 255, 255, 0.12);
+      margin-left: 20px;
+    }
+
+    .admin-menu-group.open .admin-submenu {
+      display: block;
+    }
+
+    .admin-submenu .admin-menu-item {
+      padding: 10px 16px 10px 14px;
+      font-size: 13px;
+    }
+
+    .admin-sidebar.collapsed .admin-submenu {
+      display: none !important;
+    }
     
     .admin-sidebar.collapsed .admin-menu-item span {
       opacity: 0;
@@ -665,14 +718,48 @@
         <i class="fas fa-sitemap"></i>
         <span>分站管理</span>
       </a>
-      <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_supplier_manage.html" onclick="openAdminSubPage(this, 'admin_supplier_manage.html', '供应商管理')">
-        <i class="fas fa-store"></i>
-        <span>供应商管理</span>
-      </a>
-      <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_buyer_manage.html" onclick="openAdminSubPage(this, 'admin_buyer_manage.html', '采购商管理')">
-        <i class="fas fa-users"></i>
-        <span>采购商管理</span>
-      </a>
+      <div class="admin-menu-group open" id="menuGroupSupplier">
+        <button type="button" class="admin-menu-item admin-menu-parent" onclick="toggleAdminMenuGroup('menuGroupSupplier')">
+          <i class="fas fa-store"></i>
+          <span>供应商管理</span>
+          <i class="fas fa-chevron-down sub-arrow"></i>
+        </button>
+        <div class="admin-submenu">
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_supplier_manage.html" onclick="openAdminSubPage(this, 'admin_supplier_manage.html', '供应商管理')">
+            <i class="fas fa-list"></i><span>供应商管理</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_system_user.html?scope=supplier" onclick="openAdminSubPage(this, 'admin_system_user.html?scope=supplier', '供应商管理 / 用户管理')">
+            <i class="fas fa-user-gear"></i><span>用户管理</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_system_role.html?scope=supplier" onclick="openAdminSubPage(this, 'admin_system_role.html?scope=supplier', '供应商管理 / 角色管理')">
+            <i class="fas fa-user-shield"></i><span>角色管理</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_system_dept.html?scope=supplier" onclick="openAdminSubPage(this, 'admin_system_dept.html?scope=supplier', '供应商管理 / 部门管理')">
+            <i class="fas fa-building"></i><span>部门管理</span>
+          </a>
+        </div>
+      </div>
+      <div class="admin-menu-group" id="menuGroupBuyer">
+        <button type="button" class="admin-menu-item admin-menu-parent" onclick="toggleAdminMenuGroup('menuGroupBuyer')">
+          <i class="fas fa-users"></i>
+          <span>采购商管理</span>
+          <i class="fas fa-chevron-down sub-arrow"></i>
+        </button>
+        <div class="admin-submenu">
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_buyer_manage.html" onclick="openAdminSubPage(this, 'admin_buyer_manage.html', '采购商管理')">
+            <i class="fas fa-list"></i><span>采购商管理</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_system_user.html?scope=buyer" onclick="openAdminSubPage(this, 'admin_system_user.html?scope=buyer', '采购商管理 / 用户管理')">
+            <i class="fas fa-user-gear"></i><span>用户管理</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_system_role.html?scope=buyer" onclick="openAdminSubPage(this, 'admin_system_role.html?scope=buyer', '采购商管理 / 角色管理')">
+            <i class="fas fa-user-shield"></i><span>角色管理</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_system_dept.html?scope=buyer" onclick="openAdminSubPage(this, 'admin_system_dept.html?scope=buyer', '采购商管理 / 部门管理')">
+            <i class="fas fa-building"></i><span>部门管理</span>
+          </a>
+        </div>
+      </div>
       <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_product_audit_list.html" onclick="openAdminSubPage(this, 'admin_product_audit_list.html', '商品上架审核')">
         <i class="fas fa-boxes-stacked"></i>
         <span>商品上架审核</span>
@@ -1086,7 +1173,13 @@
       'admin_po.html': '采购单管理',
       'admin_orders.html': '订单管理',
       'admin_settlement.html': '结算管理',
-      'operator_platform_settlement.html': '平台结算管理'
+      'operator_platform_settlement.html': '平台结算管理',
+      'admin_system_user.html?scope=supplier': '供应商管理 / 用户管理',
+      'admin_system_role.html?scope=supplier': '供应商管理 / 角色管理',
+      'admin_system_dept.html?scope=supplier': '供应商管理 / 部门管理',
+      'admin_system_user.html?scope=buyer': '采购商管理 / 用户管理',
+      'admin_system_role.html?scope=buyer': '采购商管理 / 角色管理',
+      'admin_system_dept.html?scope=buyer': '采购商管理 / 部门管理'
     };
     
     // ========== 销售TOP：状态 ==========
@@ -1261,6 +1354,11 @@
     }
 
     /** iframe 内嵌子页时追加 embed=1，子页可隐藏自带侧栏，避免双导航 */
+    function toggleAdminMenuGroup(groupId) {
+      const g = document.getElementById(groupId);
+      if (g) g.classList.toggle('open');
+    }
+
     function buildAdminSubpageSrc(page) {
       if (!page) return 'about:blank';
       const q = page.indexOf('?');
@@ -1281,6 +1379,14 @@
       if (frame && frame.getAttribute('src') !== src) frame.setAttribute('src', src);
       if (titleEl) titleEl.textContent = title || adminShellPageConfig[page] || '子功能页面';
       setAdminMenuActive(menuEl || document.querySelector(`.admin-menu-item[data-page-key="${page}"]`));
+      if (page.indexOf('scope=supplier') >= 0) {
+        var gs = document.getElementById('menuGroupSupplier');
+        if (gs) gs.classList.add('open');
+      }
+      if (page.indexOf('scope=buyer') >= 0) {
+        var gb = document.getElementById('menuGroupBuyer');
+        if (gb) gb.classList.add('open');
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 

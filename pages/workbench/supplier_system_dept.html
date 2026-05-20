@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>部门管理 | 供应商工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <link rel="stylesheet" href="../../assets/system_rbac.css">
+  <style>
+    body { background: #f1f5f9; margin: 0; }
+    .page-card { background: #fff; border: 1px solid rgba(15,23,42,0.06); border-radius: 18px; box-shadow: 0 12px 30px rgba(15,23,42,0.05); }
+    .action-btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+    .action-btn-primary { color: #fff; background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .action-btn-danger { color: #b91c1c; background: #fff; border: 1px solid #fecaca; }
+    .filter-input { height: 38px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; width: 100%; }
+    .btn-sm { height: 34px; padding: 0 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid #dbe2ea; background: #fff; }
+    .btn-sm-primary { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; border: none; }
+    .rbac-unit-badge { display: inline-block; padding: 4px 10px; background: #eff6ff; color: #1d4ed8; border-radius: 8px; font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="p-5 max-w-[1920px] mx-auto">
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <div class="text-sm text-slate-500 mb-1">供应商工作台 <span class="mx-2">/</span> 部门管理</div>
+    <div class="flex flex-wrap items-center gap-3">
+      <h1 class="text-xl font-bold text-slate-900" id="pageTitle">部门列表</h1>
+      <span class="rbac-unit-badge" id="unitBadge"></span>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <div class="lg:col-span-5 page-card p-4">
+      <div class="flex flex-wrap gap-2 mb-3 items-center">
+        <button type="button" class="action-btn action-btn-primary" onclick="window._rbacDept.startAdd()"><i class="fas fa-plus"></i>新增部门</button>
+        <input type="text" id="deptSearch" class="filter-input flex-1 min-w-[120px]" placeholder="搜索部门名称">
+        <button type="button" class="action-btn action-btn-secondary" onclick="window._rbacDept.expandAll(true)"><i class="fas fa-angles-down"></i>展开</button>
+        <button type="button" class="action-btn action-btn-secondary" onclick="window._rbacDept.expandAll(false)"><i class="fas fa-angles-up"></i>折叠</button>
+      </div>
+      <div id="deptTreePanel"></div>
+    </div>
+    <div class="lg:col-span-7 page-card p-6">
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-lg font-bold text-slate-800" id="formTitle">部门信息</h2>
+        <button type="button" class="action-btn action-btn-danger" id="btnDeleteDept" style="display:none;" onclick="window._rbacDept.deleteDept()"><i class="fas fa-trash"></i>删除</button>
+      </div>
+      <div id="formEmpty" class="dept-form-empty"><i class="fas fa-hand-pointer text-3xl mb-3"></i><p>请在左侧选择部门，或点击「新增部门」</p></div>
+      <form id="deptForm" style="display:none;" onsubmit="return window._rbacDept.save(event)">
+        <input type="hidden" id="fDeptId">
+        <input type="hidden" id="fParentId">
+        <input type="hidden" id="formMode" value="view">
+        <div class="rbac-form-item"><label>上级部门</label><div id="parentDeptCascader"></div></div>
+        <div class="rbac-form-item"><label><span class="req">*</span>部门名称</label><input type="text" id="fLabel" class="rbac-form-input" required></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="rbac-form-item"><label>显示顺序</label><input type="number" id="fSort" class="rbac-form-input" value="1" min="0"></div>
+          <div class="rbac-form-item"><label>部门状态</label><div class="rbac-radio-group pt-2"><label><input type="radio" name="fDeptStatus" value="0" checked> 正常</label><label><input type="radio" name="fDeptStatus" value="1"> 停用</label></div></div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-100">
+          <button type="button" class="btn-sm" onclick="window._rbacDept.cancelForm()">取消</button>
+          <button type="submit" class="btn-sm btn-sm-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="../../assets/system_rbac_data.js"></script>
+<script src="../../assets/system_rbac_ui.js"></script>
+<script src="../../assets/system_rbac_portal.js"></script>
+<script>SystemRbacPortal.initDeptPage('supplier');</script>
+</body>
+</html>

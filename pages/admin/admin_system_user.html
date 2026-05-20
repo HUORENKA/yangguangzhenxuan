@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户管理 | 系统管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <link rel="stylesheet" href="../../assets/system_rbac.css">
+  <style>
+    @layer utilities { .text-primary { color: #E2231A; } }
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%); color: #0f172a; }
+    .admin-sidebar { position: fixed; left: 0; top: 0; width: 240px; height: 100vh; background: #1e293b; color: white; transition: width 0.3s; z-index: 100; overflow-y: auto; }
+    .admin-sidebar.collapsed { width: 64px; }
+    .admin-sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; }
+    .admin-sidebar-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; white-space: nowrap; }
+    .admin-sidebar.collapsed .admin-sidebar-logo span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-sidebar-toggle { background: rgba(255,255,255,0.1); border: none; color: white; width: 32px; height: 32px; border-radius: 4px; cursor: pointer; }
+    .admin-menu-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: rgba(255,255,255,0.8); text-decoration: none; white-space: nowrap; }
+    .admin-menu-item:hover { background: rgba(255,255,255,0.1); color: white; }
+    .admin-menu-item.active { background: rgba(226,35,26,0.2); color: white; border-left: 3px solid #E2231A; }
+    .admin-menu-item i { width: 20px; text-align: center; }
+    .admin-sidebar.collapsed .admin-menu-item span { opacity: 0; width: 0; overflow: hidden; }
+    .admin-content { margin-left: 240px; transition: margin-left 0.3s; min-height: 100vh; }
+    .admin-sidebar.collapsed ~ .admin-content { margin-left: 64px; }
+    .page-card { background: #fff; border: 1px solid rgba(15,23,42,0.06); border-radius: 18px; box-shadow: 0 12px 30px rgba(15,23,42,0.05); }
+    .action-btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .action-btn-primary { color: #fff; background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .action-btn-danger { color: #b91c1c; background: #fff; border: 1px solid #fecaca; }
+    .filter-input { height: 38px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; }
+    .table-shell { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 16px; }
+    .rbac-op-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; color: #475569; cursor: pointer; }
+    .rbac-op-icon:hover { border-color: #93c5fd; color: #1d4ed8; background: #eff6ff; }
+    .rbac-op-icon.danger:hover { border-color: #fca5a5; color: #b91c1c; background: #fef2f2; }
+    .btn-sm { height: 34px; padding: 0 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid #dbe2ea; background: #fff; }
+    .btn-sm-primary { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; border: none; }
+    html.admin-embed-mode .admin-sidebar { display: none !important; }
+    html.admin-embed-mode .admin-content { margin-left: 0 !important; }
+  </style>
+</head>
+<body>
+<script>
+  (function () {
+    var embedded = new URLSearchParams(location.search).get('embed') === '1';
+    if (embedded) {
+      document.documentElement.classList.add('admin-embed-mode');
+      document.querySelectorAll('a[href]').forEach(function (a) {
+        var h = a.getAttribute('href');
+        if (!h || /^https?:\/\//i.test(h) || h.indexOf('javascript:') === 0 || h.charAt(0) === '#') return;
+        if (h.indexOf('embed=') !== -1 || h.indexOf('.html') === -1) return;
+        a.setAttribute('href', h + (h.indexOf('?') > -1 ? '&' : '?') + 'embed=1');
+      });
+    }
+  })();
+</script>
+
+<div class="admin-sidebar" id="adminSidebar">
+  <div class="admin-sidebar-header">
+    <div class="admin-sidebar-logo"><i class="fas fa-cog"></i><span>管理后台</span></div>
+    <button type="button" class="admin-sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-chevron-left" id="sidebarToggleIcon"></i></button>
+  </div>
+  <nav class="admin-menu">
+    <a href="admin_dashboard.html" class="admin-menu-item"><i class="fas fa-home"></i><span>工作台首页</span></a>
+    <a href="admin_station.html" class="admin-menu-item"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
+    <a href="admin_supplier_manage.html" class="admin-menu-item"><i class="fas fa-store"></i><span>供应商管理</span></a>
+    <a href="admin_buyer_manage.html" class="admin-menu-item"><i class="fas fa-users"></i><span>采购商管理</span></a>
+    <a href="admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a>
+    <a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a>
+    <a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
+    <a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a>
+    <a href="admin_settlement.html" class="admin-menu-item"><i class="fas fa-calculator"></i><span>结算管理</span></a>
+    <div class="admin-menu-group-title">系统管理</div>
+    <a href="admin_system_user.html" class="admin-menu-item active"><i class="fas fa-user-gear"></i><span>用户管理</span></a>
+    <a href="admin_system_role.html" class="admin-menu-item"><i class="fas fa-user-shield"></i><span>角色管理</span></a>
+    <a href="admin_system_dept.html" class="admin-menu-item"><i class="fas fa-building"></i><span>部门管理</span></a>
+    <a href="admin_cockpit.html" class="admin-menu-item" target="_blank"><i class="fas fa-tachometer-alt"></i><span>数据驾驶舱</span></a>
+  </nav>
+</div>
+
+<div class="admin-content">
+  <div class="p-6 max-w-[1920px] mx-auto">
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div class="text-sm text-slate-500 mb-1">
+        <a href="admin_dashboard.html" class="hover:text-primary">管理后台</a>
+        <span class="mx-2">/</span><span id="breadcrumbScope">供应商管理</span>
+        <span class="mx-2">/</span><span class="font-medium text-slate-700">用户管理</span>
+      </div>
+      <h1 class="text-2xl font-bold text-slate-900" id="pageTitle">用户列表</h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-4 page-card p-4">
+        <p class="text-sm font-bold text-slate-700 mb-2">部门列表</p>
+        <input type="text" id="deptFilterSearch" class="filter-input w-full mb-3" placeholder="搜索部门" oninput="renderDeptFilter()">
+        <div id="deptAllBtn" class="dept-filter-all active" onclick="selectDeptFilter('')">全部部门</div>
+        <div id="deptFilterTree" class="dept-filter-tree"></div>
+      </div>
+
+      <div class="lg:col-span-8 page-card p-5">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
+          <div class="flex flex-wrap gap-2">
+            <input type="text" id="searchUser" class="filter-input w-44" placeholder="用户名称/昵称" oninput="renderTable()">
+            <input type="text" id="searchPhone" class="filter-input w-40" placeholder="手机号码" oninput="renderTable()">
+            <select id="searchStatus" class="filter-input w-28" onchange="renderTable()">
+              <option value="">全部状态</option>
+              <option value="0">正常</option>
+              <option value="1">停用</option>
+            </select>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" class="action-btn action-btn-primary" onclick="openUserDrawer()"><i class="fas fa-plus"></i>新增</button>
+            <button type="button" class="action-btn action-btn-danger" onclick="batchDelete()"><i class="fas fa-trash"></i>批量删除</button>
+            <button type="button" class="action-btn action-btn-secondary" onclick="exportUsers()"><i class="fas fa-download"></i>导出</button>
+            <button type="button" class="action-btn action-btn-secondary" onclick="reloadUsers()"><i class="fas fa-rotate"></i>刷新</button>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-500 mb-3" id="selectHint">未选中任何记录</p>
+
+        <div class="table-shell overflow-x-auto">
+          <table class="min-w-full bg-white text-sm">
+            <thead class="bg-slate-50 text-slate-500 text-xs">
+              <tr>
+                <th class="px-4 py-3 w-10"><input type="checkbox" id="selectAll" class="w-4 h-4 accent-red-600" onchange="toggleSelectAll(this)"></th>
+                <th class="px-4 py-3 text-left font-semibold">用户名称</th>
+                <th class="px-4 py-3 text-left font-semibold w-16">性别</th>
+                <th class="px-4 py-3 text-left font-semibold">部门</th>
+                <th class="px-4 py-3 text-left font-semibold">邮箱</th>
+                <th class="px-4 py-3 text-left font-semibold">手机号码</th>
+                <th class="px-4 py-3 text-left font-semibold w-24">状态</th>
+                <th class="px-4 py-3 text-left font-semibold">创建时间</th>
+                <th class="px-4 py-3 text-left font-semibold w-32">操作</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody" class="text-slate-700"></tbody>
+          </table>
+        </div>
+        <p class="text-xs text-slate-500 mt-3" id="tableCount"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 新增/编辑用户 -->
+<div class="rbac-drawer-overlay" id="userDrawer">
+  <div class="rbac-drawer">
+    <div class="rbac-drawer-head">
+      <span class="rbac-drawer-title" id="userDrawerTitle">新增用户</span>
+      <button type="button" class="text-slate-400 hover:text-slate-600 text-xl" onclick="closeUserDrawer()">&times;</button>
+    </div>
+    <div class="rbac-drawer-body">
+      <input type="hidden" id="editUserId">
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>用户昵称</label>
+        <input type="text" id="fNickName" class="rbac-form-input" placeholder="请输入用户昵称">
+      </div>
+      <div class="rbac-form-item">
+        <label>部门</label>
+        <div id="userDeptCascader"></div>
+        <input type="hidden" id="fDeptId">
+      </div>
+      <div class="grid grid-cols-1 gap-4">
+        <div class="rbac-form-item">
+          <label>手机号码</label>
+          <input type="text" id="fPhone" class="rbac-form-input" placeholder="请输入手机号码">
+        </div>
+        <div class="rbac-form-item">
+          <label>邮箱</label>
+          <input type="email" id="fEmail" class="rbac-form-input" placeholder="请输入邮箱">
+        </div>
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>用户名称</label>
+        <input type="text" id="fUserName" class="rbac-form-input" placeholder="登录账号">
+      </div>
+      <div class="rbac-form-item" id="pwdWrap">
+        <label><span class="req" id="pwdReq">*</span>密码</label>
+        <input type="password" id="fPassword" class="rbac-form-input" placeholder="请输入密码">
+        <p class="text-xs text-slate-400 mt-1" id="pwdHint" style="display:none;">留空表示不修改密码</p>
+      </div>
+      <div class="rbac-form-item">
+        <label>性别</label>
+        <div class="rbac-radio-group">
+          <label><input type="radio" name="fSex" value="0" checked> 男</label>
+          <label><input type="radio" name="fSex" value="1"> 女</label>
+          <label><input type="radio" name="fSex" value="2"> 未知</label>
+        </div>
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>角色</label>
+        <div id="roleCheckGroup" class="role-check-group"></div>
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>状态</label>
+        <div class="rbac-radio-group">
+          <label><input type="radio" name="fUserStatus" value="0" checked> 正常</label>
+          <label><input type="radio" name="fUserStatus" value="1"> 停用</label>
+        </div>
+      </div>
+    </div>
+    <div class="rbac-drawer-foot">
+      <button type="button" class="btn-sm" onclick="closeUserDrawer()">取消</button>
+      <button type="button" class="btn-sm btn-sm-primary" onclick="saveUser()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 重置密码 -->
+<div class="rbac-modal-overlay" id="resetPwdModal">
+  <div class="rbac-modal">
+    <div class="rbac-modal-head">重置密码</div>
+    <div class="rbac-modal-body">
+      <p class="text-sm text-slate-600 mb-3">用户：<strong id="resetPwdUserLabel"></strong></p>
+      <div class="rbac-form-item">
+        <label>新密码</label>
+        <input type="text" id="resetPwdValue" class="rbac-form-input" readonly>
+      </div>
+      <p class="text-xs text-amber-600">原型演示：重置后请将新密码告知用户，正式环境应通过短信/邮件发送且不可回显明文。</p>
+    </div>
+    <div class="rbac-modal-foot">
+      <button type="button" class="btn-sm" onclick="closeResetPwd()">关闭</button>
+      <button type="button" class="btn-sm btn-sm-primary" onclick="confirmResetPwd()">确认重置</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/system_rbac_data.js"></script>
+<script src="../../assets/system_rbac_ui.js"></script>
+<script>
+  var SCOPE = SystemRbac.getPageScope();
+  var SCOPE_LABEL = SystemRbac.getScopeLabel(SCOPE);
+  var CLIENT = SCOPE === 'buyer' ? 'buyer' : (SCOPE === 'supplier' ? 'supplier' : 'operator');
+  var CURRENT_LOGIN = 'admin';
+  var users = [];
+  var depts = [];
+  var filterDeptId = '';
+  var selectedIds = new Set();
+  var resetPwdUserId = '';
+
+  function initPageMeta() {
+    var bc = document.getElementById('breadcrumbScope');
+    if (bc) bc.textContent = SCOPE_LABEL + '管理';
+    var t = document.getElementById('pageTitle');
+    if (t) t.textContent = SCOPE_LABEL + '管理 / 用户列表';
+    document.title = SCOPE_LABEL + '管理 / 用户管理 | 管理后台';
+  }
+
+  function loadAll() {
+    users = SystemRbac.getUsers(CLIENT);
+    depts = SystemRbac.getDepts(SCOPE);
+    renderDeptFilter();
+    renderTable();
+    fillRoleChecks();
+  }
+
+  function reloadUsers() {
+    loadAll();
+    SystemRbacUi.toast('已刷新', 'success');
+  }
+
+  function selectDeptFilter(id) {
+    filterDeptId = id;
+    document.getElementById('deptAllBtn').classList.toggle('active', !id);
+    renderDeptFilter();
+    renderTable();
+  }
+
+  function renderDeptFilter() {
+    var kw = document.getElementById('deptFilterSearch').value;
+    SystemRbacUi.renderDeptManageTree(document.getElementById('deptFilterTree'), depts, {
+      selectedId: filterDeptId,
+      keyword: kw,
+      expanded: true,
+      onSelect: function (id) {
+        document.getElementById('deptAllBtn').classList.remove('active');
+        selectDeptFilter(id);
+      }
+    });
+  }
+
+  function initUserDeptCascader(deptId) {
+    var box = document.getElementById('userDeptCascader');
+    SystemRbacUi.renderDeptCascader(box, depts, deptId || '', {
+      allowRoot: false,
+      placeholder: '请选择部门',
+      getPath: function (id) { return SystemRbac.getDeptPath(depts, id); },
+      onChange: function (id) {
+        document.getElementById('fDeptId').value = id || '';
+      }
+    });
+  }
+
+  function fillRoleChecks(checkedIds) {
+    checkedIds = checkedIds || [];
+    var roles = SystemRbac.getRoles(CLIENT).filter(function (r) { return r.status === '0'; });
+    document.getElementById('roleCheckGroup').innerHTML = roles.map(function (r) {
+      var c = checkedIds.indexOf(r.id) >= 0 ? ' checked' : '';
+      return '<label><input type="checkbox" class="role-cb" value="' + r.id + '"' + c + '> ' +
+        SystemRbacUi.escapeHtml(r.roleName) + ' <span class="text-slate-400 text-xs">(' + r.roleKey + ')</span></label>';
+    }).join('');
+  }
+
+  function getFilteredUsers() {
+    var nameKw = (document.getElementById('searchUser').value || '').trim().toLowerCase();
+    var phoneKw = (document.getElementById('searchPhone').value || '').trim();
+    var st = document.getElementById('searchStatus').value;
+    var deptIds = [];
+    if (filterDeptId) {
+      deptIds = SystemRbac.getDeptSubtreeIds(depts, filterDeptId);
+    }
+    return users.filter(function (u) {
+      if (filterDeptId && deptIds.indexOf(u.deptId) < 0) return false;
+      if (nameKw && u.userName.toLowerCase().indexOf(nameKw) < 0 && (u.nickName || '').toLowerCase().indexOf(nameKw) < 0) return false;
+      if (phoneKw && (u.phone || '').indexOf(phoneKw) < 0) return false;
+      if (st !== '' && u.status !== st) return false;
+      return true;
+    });
+  }
+
+  function avatarLetter(u) {
+    var s = (u.nickName || u.userName || '?').charAt(0);
+    return s.toUpperCase();
+  }
+
+  function renderTable() {
+    var list = getFilteredUsers();
+    var tbody = document.getElementById('userTableBody');
+    document.getElementById('tableCount').textContent = '共 ' + list.length + ' 条';
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="9" class="text-center py-12 text-slate-400">暂无用户</td></tr>';
+      updateSelectHint();
+      return;
+    }
+    tbody.innerHTML = list.map(function (u) {
+      var canDel = !u.preset && u.userName !== CURRENT_LOGIN;
+      return '<tr class="border-t border-slate-100 hover:bg-slate-50/80">' +
+        '<td class="px-4 py-3"><input type="checkbox" class="row-check w-4 h-4 accent-red-600" data-id="' + u.id + '"' +
+        (selectedIds.has(u.id) ? ' checked' : '') + ' onchange="onRowCheck(this)"></td>' +
+        '<td class="px-4 py-3"><div class="user-name-cell">' +
+        '<span class="user-avatar">' + avatarLetter(u) + '</span>' +
+        '<div><div class="font-semibold">' + SystemRbacUi.escapeHtml(u.userName) + '</div>' +
+        '<div class="sub">' + SystemRbacUi.escapeHtml(u.nickName || '') + '</div></div></div></td>' +
+        '<td class="px-4 py-3">' + SystemRbac.sexLabel(u.sex) + '</td>' +
+        '<td class="px-4 py-3">' + SystemRbacUi.escapeHtml(SystemRbac.getDeptLabel(u.deptId, SCOPE)) + '</td>' +
+        '<td class="px-4 py-3 text-slate-500">' + SystemRbacUi.escapeHtml(u.email || '—') + '</td>' +
+        '<td class="px-4 py-3">' + SystemRbacUi.escapeHtml(u.phone || '—') + '</td>' +
+        '<td class="px-4 py-3"><label class="rbac-switch"><input type="checkbox"' + (u.status === '0' ? ' checked' : '') +
+        (u.preset ? ' disabled' : '') + ' onchange="toggleUserStatus(\'' + u.id + '\', this)"><span class="slider"></span></label></td>' +
+        '<td class="px-4 py-3 text-xs text-slate-500">' + u.createTime + '</td>' +
+        '<td class="px-4 py-3"><div class="flex gap-1">' +
+        '<button type="button" class="rbac-op-icon" title="编辑" onclick="openUserDrawer(\'' + u.id + '\')"><i class="fas fa-pen"></i></button>' +
+        '<button type="button" class="rbac-op-icon" title="重置密码" onclick="openResetPwd(\'' + u.id + '\')"><i class="fas fa-key"></i></button>' +
+        (canDel ? '<button type="button" class="rbac-op-icon danger" title="删除" onclick="deleteUser(\'' + u.id + '\')"><i class="fas fa-trash"></i></button>' : '') +
+        '</div></td></tr>';
+    }).join('');
+    updateSelectHint();
+  }
+
+  function onRowCheck(el) {
+    if (el.checked) selectedIds.add(el.dataset.id); else selectedIds.delete(el.dataset.id);
+    updateSelectHint();
+  }
+  function toggleSelectAll(el) {
+    document.querySelectorAll('.row-check').forEach(function (c) {
+      c.checked = el.checked;
+      if (el.checked) selectedIds.add(c.dataset.id); else selectedIds.delete(c.dataset.id);
+    });
+    updateSelectHint();
+  }
+  function updateSelectHint() {
+    document.getElementById('selectHint').textContent = selectedIds.size ? '已选中 ' + selectedIds.size + ' 条' : '未选中任何记录';
+  }
+
+  function toggleUserStatus(id, el) {
+    var u = users.find(function (x) { return x.id === id; });
+    if (!u || u.preset) return;
+    u.status = el.checked ? '0' : '1';
+    SystemRbac.saveUsers(CLIENT, users);
+    SystemRbacUi.toast(u.status === '0' ? '已启用' : '已停用', 'success');
+  }
+
+  function openUserDrawer(id) {
+    document.getElementById('userDrawer').classList.add('show');
+    var isEdit = !!id;
+    document.getElementById('userDrawerTitle').textContent = isEdit ? '编辑用户' : '新增用户';
+    document.getElementById('editUserId').value = id || '';
+    document.getElementById('pwdReq').style.display = isEdit ? 'none' : '';
+    document.getElementById('pwdHint').style.display = isEdit ? '' : 'none';
+    document.getElementById('fPassword').placeholder = isEdit ? '留空不修改' : '请输入密码';
+    document.getElementById('fPassword').value = '';
+    document.getElementById('fUserName').readOnly = isEdit;
+
+    var u = isEdit ? users.find(function (x) { return x.id === id; }) : null;
+    document.getElementById('fNickName').value = u ? u.nickName : '';
+    document.getElementById('fUserName').value = u ? u.userName : '';
+    document.getElementById('fPhone').value = u ? (u.phone || '') : '';
+    document.getElementById('fEmail').value = u ? (u.email || '') : '';
+    var deptId = u ? (u.deptId || '') : (filterDeptId || '');
+    document.getElementById('fDeptId').value = deptId;
+    initUserDeptCascader(deptId);
+    document.querySelector('input[name="fSex"][value="' + (u ? u.sex : '0') + '"]').checked = true;
+    document.querySelector('input[name="fUserStatus"][value="' + (u ? u.status : '0') + '"]').checked = true;
+    fillRoleChecks(u ? (u.roleIds || []) : []);
+  }
+
+  function closeUserDrawer() {
+    document.getElementById('userDrawer').classList.remove('show');
+    document.getElementById('fUserName').readOnly = false;
+  }
+
+  function getSelectedRoleIds() {
+    return Array.prototype.slice.call(document.querySelectorAll('.role-cb:checked')).map(function (c) { return c.value; });
+  }
+
+  function saveUser() {
+    var nick = document.getElementById('fNickName').value.trim();
+    var userName = document.getElementById('fUserName').value.trim();
+    var pwd = document.getElementById('fPassword').value;
+    var roleIds = getSelectedRoleIds();
+    var id = document.getElementById('editUserId').value;
+
+    if (!nick || !userName) { SystemRbacUi.toast('请填写用户昵称和登录账号', 'warn'); return; }
+    if (!roleIds.length) { SystemRbacUi.toast('请至少选择一个角色', 'warn'); return; }
+
+    if (id) {
+      var u = users.find(function (x) { return x.id === id; });
+      if (!u) return;
+      u.nickName = nick;
+      u.deptId = document.getElementById('fDeptId').value;
+      u.phone = document.getElementById('fPhone').value.trim();
+      u.email = document.getElementById('fEmail').value.trim();
+      u.sex = document.querySelector('input[name="fSex"]:checked').value;
+      u.status = document.querySelector('input[name="fUserStatus"]:checked').value;
+      u.roleIds = roleIds;
+      if (pwd) u.password = pwd;
+    } else {
+      if (!pwd) { SystemRbacUi.toast('请设置初始密码', 'warn'); return; }
+      if (users.some(function (x) { return x.userName === userName; })) {
+        SystemRbacUi.toast('登录账号已存在', 'warn'); return;
+      }
+      users.push({
+        id: SystemRbac.genId('u_op'),
+        userName: userName,
+        nickName: nick,
+        deptId: document.getElementById('fDeptId').value,
+        phone: document.getElementById('fPhone').value.trim(),
+        email: document.getElementById('fEmail').value.trim(),
+        sex: document.querySelector('input[name="fSex"]:checked').value,
+        status: document.querySelector('input[name="fUserStatus"]:checked').value,
+        roleIds: roleIds,
+        password: pwd,
+        preset: false,
+        createTime: SystemRbac.nowStr()
+      });
+    }
+    SystemRbac.saveUsers(CLIENT, users);
+    closeUserDrawer();
+    renderTable();
+    SystemRbacUi.toast('保存成功', 'success');
+  }
+
+  function deleteUser(id) {
+    var u = users.find(function (x) { return x.id === id; });
+    if (!u || u.preset || u.userName === CURRENT_LOGIN) return;
+    if (!confirm('确定删除用户「' + u.nickName + '」？')) return;
+    users = users.filter(function (x) { return x.id !== id; });
+    SystemRbac.saveUsers(CLIENT, users);
+    selectedIds.delete(id);
+    renderTable();
+    SystemRbacUi.toast('已删除', 'success');
+  }
+
+  function batchDelete() {
+    if (!selectedIds.size) { SystemRbacUi.toast('请先选择用户', 'warn'); return; }
+    var ids = Array.from(selectedIds);
+    if (ids.some(function (id) {
+      var u = users.find(function (x) { return x.id === id; });
+      return u && (u.preset || u.userName === CURRENT_LOGIN);
+    })) {
+      SystemRbacUi.toast('预置或当前登录用户不可删除', 'warn');
+      return;
+    }
+    if (!confirm('确定删除选中的 ' + ids.length + ' 个用户？')) return;
+    users = users.filter(function (u) { return !selectedIds.has(u.id); });
+    SystemRbac.saveUsers(CLIENT, users);
+    selectedIds.clear();
+    renderTable();
+    SystemRbacUi.toast('批量删除完成', 'success');
+  }
+
+  function openResetPwd(id) {
+    var u = users.find(function (x) { return x.id === id; });
+    if (!u) return;
+    resetPwdUserId = id;
+    document.getElementById('resetPwdUserLabel').textContent = u.nickName + '（' + u.userName + '）';
+    document.getElementById('resetPwdValue').value = randomPwd();
+    document.getElementById('resetPwdModal').classList.add('show');
+  }
+
+  function randomPwd() {
+    return 'Gc@' + Math.random().toString(36).slice(2, 10);
+  }
+
+  function closeResetPwd() {
+    document.getElementById('resetPwdModal').classList.remove('show');
+    resetPwdUserId = '';
+  }
+
+  function confirmResetPwd() {
+    var u = users.find(function (x) { return x.id === resetPwdUserId; });
+    if (u) {
+      u.password = document.getElementById('resetPwdValue').value;
+      SystemRbac.saveUsers(CLIENT, users);
+      SystemRbacUi.toast('密码已重置', 'success');
+    }
+    closeResetPwd();
+  }
+
+  function exportUsers() {
+    SystemRbacUi.toast('已导出用户列表（原型演示）', 'success');
+  }
+
+  function toggleSidebar() {
+    document.getElementById('adminSidebar').classList.toggle('collapsed');
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initPageMeta();
+    loadAll();
+  });
+</script>
+</body>
+</html>

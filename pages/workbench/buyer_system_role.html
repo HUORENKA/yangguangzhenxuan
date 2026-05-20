@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>角色管理 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <link rel="stylesheet" href="../../assets/system_rbac.css">
+  <style>
+    body { background: #f1f5f9; margin: 0; }
+    .page-card { background: #fff; border: 1px solid rgba(15,23,42,0.06); border-radius: 18px; box-shadow: 0 12px 30px rgba(15,23,42,0.05); }
+    .action-btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .action-btn-primary { color: #fff; background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .filter-input { height: 38px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; }
+    .btn-sm { height: 34px; padding: 0 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid #dbe2ea; background: #fff; }
+    .btn-sm-primary { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; border: none; }
+    .btn-sm-danger-outline { color: #b91c1c; border-color: #fecaca; }
+    .rbac-unit-badge { display: inline-block; padding: 4px 10px; background: #eff6ff; color: #1d4ed8; border-radius: 8px; font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="p-5 max-w-[1920px] mx-auto">
+  <div class="page-card p-5">
+    <div class="flex flex-wrap justify-between items-start gap-3 mb-4">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900" id="pageTitle">角色列表</h1>
+        <p class="text-xs text-slate-500 mt-1" id="selectedUnitHint">以下为该单位已配置的角色，可新增或编辑</p>
+        <span class="rbac-unit-badge mt-2 inline-block" id="unitBadge"></span>
+      </div>
+      <button type="button" class="action-btn action-btn-primary" onclick="window._rbacRole.openDrawer()"><i class="fas fa-plus"></i>新增角色</button>
+    </div>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <input type="text" id="roleSearchName" class="filter-input w-44" placeholder="搜索角色名称">
+      <select id="roleSearchStatus" class="filter-input w-32">
+        <option value="">全部状态</option>
+        <option value="0">正常</option>
+        <option value="1">停用</option>
+      </select>
+      <button type="button" class="action-btn action-btn-secondary" onclick="window._rbacRole.reload()"><i class="fas fa-rotate"></i>刷新</button>
+    </div>
+    <div id="roleCardGrid" class="role-card-grid"></div>
+    <div id="roleCardEmpty" class="role-list-empty" style="display:none;">
+      <i class="fas fa-user-shield text-3xl mb-3 block text-slate-300"></i>暂无角色，点击「新增角色」创建
+    </div>
+  </div>
+</div>
+
+<div class="rbac-drawer-overlay" id="unitRoleDrawer">
+  <div class="rbac-drawer">
+    <div class="rbac-drawer-head">
+      <span class="rbac-drawer-title" id="unitDrawerTitle">新增角色</span>
+      <button type="button" class="text-slate-400 hover:text-slate-600 text-xl" onclick="window._rbacRole.closeDrawer()">&times;</button>
+    </div>
+    <div class="rbac-drawer-body">
+      <input type="hidden" id="editUnitRoleId">
+      <div class="rbac-form-item">
+        <label>默认角色</label>
+        <select id="fDefaultRole" class="rbac-form-input" onchange="window._rbacRole.onDefaultRolePick()">
+          <option value="">不套用模板（自定义配置）</option>
+        </select>
+        <div class="template-hint">选择默认角色后将自动带入权限范围与菜单权限，仍可调整。</div>
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>角色名称</label>
+        <input type="text" id="unitFRoleName" class="rbac-form-input" placeholder="请输入角色名称">
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>权限范围</label>
+        <select id="unitFDataScope" class="rbac-form-input"></select>
+      </div>
+      <div class="rbac-form-item">
+        <label>显示顺序</label>
+        <input type="number" id="unitFSort" class="rbac-form-input" value="1" min="0">
+      </div>
+      <div class="rbac-form-item">
+        <label><span class="req">*</span>角色状态</label>
+        <div class="rbac-radio-group">
+          <label><input type="radio" name="unitFStatus" value="0" checked> 正常</label>
+          <label><input type="radio" name="unitFStatus" value="1"> 停用</label>
+        </div>
+      </div>
+      <div class="rbac-form-item">
+        <label>菜单权限</label>
+        <div class="rbac-menu-toolbar">
+          <label><input type="checkbox" id="unitTreeExpand"> 展开/折叠</label>
+          <label><input type="checkbox" id="unitTreeSelectAll"> 全选/反选</label>
+          <label><input type="checkbox" id="unitTreeLinkage" checked> 父子联动</label>
+        </div>
+        <div id="unitMenuTreeBox"></div>
+      </div>
+      <div class="rbac-form-item">
+        <label>备注</label>
+        <textarea id="unitFRemark" class="rbac-form-textarea" placeholder="请输入备注"></textarea>
+      </div>
+    </div>
+    <div class="rbac-drawer-foot">
+      <div class="rbac-drawer-foot-split">
+        <button type="button" class="btn-sm btn-sm-danger-outline" id="btnDeleteUnitRole" style="display:none;" onclick="window._rbacRole.deleteFromDrawer()"><i class="fas fa-trash"></i> 删除</button>
+        <div class="foot-right">
+          <button type="button" class="btn-sm" onclick="window._rbacRole.closeDrawer()">取消</button>
+          <button type="button" class="btn-sm btn-sm-primary" onclick="window._rbacRole.save()">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/system_rbac_data.js"></script>
+<script src="../../assets/system_rbac_ui.js"></script>
+<script src="../../assets/system_rbac_portal.js"></script>
+<script>SystemRbacPortal.initRolePage('buyer');</script>
+</body>
+</html>

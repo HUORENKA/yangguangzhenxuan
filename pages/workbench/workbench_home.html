@@ -626,6 +626,14 @@
       width: 0;
       overflow: hidden;
     }
+    .admin-menu-group-title {
+      padding: 14px 20px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
     .admin-content {
       margin-left: 240px;
       transition: margin-left 0.3s ease;
@@ -874,6 +882,16 @@
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="favorites" onclick="openFavoritesFeature()">
           <i class="fas fa-heart"></i><span>我的收藏</span>
         </a>
+        <div class="admin-menu-group-title">系统管理</div>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="sys-user" onclick="openWorkbenchSubPage('buyer_system_user.html?portal=workbench', 'sys-user', '用户管理')">
+          <i class="fas fa-user-gear"></i><span>用户管理</span>
+        </a>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="sys-role" onclick="openWorkbenchSubPage('buyer_system_role.html?portal=workbench', 'sys-role', '角色管理')">
+          <i class="fas fa-user-shield"></i><span>角色管理</span>
+        </a>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="sys-dept" onclick="openWorkbenchSubPage('buyer_system_dept.html?portal=workbench', 'sys-dept', '部门管理')">
+          <i class="fas fa-building"></i><span>部门管理</span>
+        </a>
       </div>
       <!-- 供应商 -->
       <div id="wbMenuSupplier" style="display: none;">
@@ -909,6 +927,16 @@
         </a>
         <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="platform-settlement" onclick="openWorkbenchSubPage('supplier_platform_settlement.html', 'platform-settlement', '平台结算管理')">
           <i class="fas fa-file-invoice-dollar"></i><span>平台结算管理</span>
+        </a>
+        <div class="admin-menu-group-title">系统管理</div>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="sys-user" onclick="openWorkbenchSubPage('supplier_system_user.html?portal=workbench', 'sys-user', '用户管理')">
+          <i class="fas fa-user-gear"></i><span>用户管理</span>
+        </a>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="sys-role" onclick="openWorkbenchSubPage('supplier_system_role.html?portal=workbench', 'sys-role', '角色管理')">
+          <i class="fas fa-user-shield"></i><span>角色管理</span>
+        </a>
+        <a href="javascript:void(0)" class="admin-menu-item" data-menu-key="sys-dept" onclick="openWorkbenchSubPage('supplier_system_dept.html?portal=workbench', 'sys-dept', '部门管理')">
+          <i class="fas fa-building"></i><span>部门管理</span>
         </a>
       </div>
     </nav>
@@ -1941,9 +1969,17 @@
     }
     
     // ========== 切换角色 ==========
+    function syncWorkbenchOrgUnit(role) {
+      try {
+        if (role === 'supplier') localStorage.setItem('gc_current_org_supplier', 'org_sp_yq');
+        else localStorage.setItem('gc_current_org_buyer', 'org_by_sh');
+      } catch (e) { /* ignore */ }
+    }
+
     function switchRole(newRole) {
       // 保存到 localStorage
       localStorage.setItem('role', newRole);
+      syncWorkbenchOrgUnit(newRole);
       
       // 更新权限说明
       updateRoleHint(newRole);
@@ -2259,6 +2295,13 @@
       }, menuKey);
     }
 
+    function withWorkbenchEmbed(url) {
+      if (!url || url.indexOf('about:') === 0) return url;
+      var u = url;
+      if (u.indexOf('embed=') < 0) u += (u.indexOf('?') >= 0 ? '&' : '?') + 'embed=1';
+      return u;
+    }
+
     function openWorkbenchSubPage(url, menuKey, title) {
       const main = document.getElementById('workbenchMainContent');
       const shell = document.getElementById('workbenchSubpageShell');
@@ -2267,6 +2310,7 @@
       const titleEl = document.getElementById('workbenchSubpageTitle');
       if (!main || !shell || !frame || !titleEl) return;
 
+      url = withWorkbenchEmbed(url);
       main.style.display = 'none';
       shell.style.display = 'block';
       if (footer) footer.style.display = 'none';
@@ -2920,6 +2964,7 @@
       
       // 读取保存的角色
       const savedRole = getCurrentRole();
+      syncWorkbenchOrgUnit(savedRole);
       const roleSelector = document.getElementById('roleSelector');
       
       if (roleSelector) {

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户管理 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <link rel="stylesheet" href="../../assets/system_rbac.css">
+  <style>
+    body { background: #f1f5f9; margin: 0; }
+    .page-card { background: #fff; border: 1px solid rgba(15,23,42,0.06); border-radius: 18px; box-shadow: 0 12px 30px rgba(15,23,42,0.05); }
+    .action-btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .action-btn-primary { color: #fff; background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .action-btn-secondary { color: #475569; background: #fff; border: 1px solid #dbe2ea; }
+    .action-btn-danger { color: #b91c1c; background: #fff; border: 1px solid #fecaca; }
+    .filter-input { height: 38px; padding: 0 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; }
+    .table-shell { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 16px; }
+    .rbac-op-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; }
+    .btn-sm { height: 34px; padding: 0 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid #dbe2ea; background: #fff; }
+    .btn-sm-primary { background: linear-gradient(135deg,#ef4444,#dc2626); color: #fff; border: none; }
+    .rbac-unit-badge { display: inline-block; padding: 4px 10px; background: #eff6ff; color: #1d4ed8; border-radius: 8px; font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div class="p-5 max-w-[1920px] mx-auto">
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <div class="text-sm text-slate-500 mb-1">采购工作台 <span class="mx-2">/</span> 用户管理</div>
+    <div class="flex flex-wrap items-center gap-3">
+      <h1 class="text-xl font-bold text-slate-900" id="pageTitle">用户列表</h1>
+      <span class="rbac-unit-badge" id="unitBadge"></span>
+    </div>
+    <p class="text-xs text-slate-500 mt-2">新增用户时，部门仅可选择本单位内部门。</p>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <div class="lg:col-span-4 page-card p-4">
+      <p class="text-sm font-bold text-slate-700 mb-2">部门列表</p>
+      <input type="text" id="deptFilterSearch" class="filter-input w-full mb-3" placeholder="搜索部门" oninput="window._rbacUser.renderDeptFilter()">
+      <div id="deptAllBtn" class="dept-filter-all active" onclick="window._rbacUser.selectDeptFilter('')">全部部门</div>
+      <div id="deptFilterTree" class="dept-filter-tree"></div>
+    </div>
+    <div class="lg:col-span-8 page-card p-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
+        <div class="flex flex-wrap gap-2">
+          <input type="text" id="searchUser" class="filter-input w-44" placeholder="用户名称/昵称">
+          <input type="text" id="searchPhone" class="filter-input w-40" placeholder="手机号码">
+          <select id="searchStatus" class="filter-input w-28"><option value="">全部状态</option><option value="0">正常</option><option value="1">停用</option></select>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="action-btn action-btn-primary" onclick="window._rbacUser.openDrawer()"><i class="fas fa-plus"></i>新增</button>
+          <button type="button" class="action-btn action-btn-danger" onclick="window._rbacUser.batchDelete()"><i class="fas fa-trash"></i>批量删除</button>
+          <button type="button" class="action-btn action-btn-secondary" onclick="window._rbacUser.exportUsers()"><i class="fas fa-download"></i>导出</button>
+          <button type="button" class="action-btn action-btn-secondary" onclick="window._rbacUser.reload()"><i class="fas fa-rotate"></i>刷新</button>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500 mb-3" id="selectHint">未选中任何记录</p>
+      <div class="table-shell overflow-x-auto">
+        <table class="min-w-full bg-white text-sm">
+          <thead class="bg-slate-50 text-slate-500 text-xs">
+            <tr>
+              <th class="px-4 py-3 w-10"><input type="checkbox" class="w-4 h-4 accent-red-600" onchange="window._rbacUser.toggleSelectAll(this)"></th>
+              <th class="px-4 py-3 text-left font-semibold">用户名称</th>
+              <th class="px-4 py-3 text-left font-semibold w-16">性别</th>
+              <th class="px-4 py-3 text-left font-semibold">部门</th>
+              <th class="px-4 py-3 text-left font-semibold">邮箱</th>
+              <th class="px-4 py-3 text-left font-semibold">手机号码</th>
+              <th class="px-4 py-3 text-left font-semibold w-24">状态</th>
+              <th class="px-4 py-3 text-left font-semibold">创建时间</th>
+              <th class="px-4 py-3 text-left font-semibold w-32">操作</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody"></tbody>
+        </table>
+      </div>
+      <p class="text-xs text-slate-500 mt-3" id="tableCount"></p>
+    </div>
+  </div>
+</div>
+
+<div class="rbac-drawer-overlay" id="userDrawer">
+  <div class="rbac-drawer">
+    <div class="rbac-drawer-head">
+      <span class="rbac-drawer-title" id="userDrawerTitle">新增用户</span>
+      <button type="button" class="text-slate-400 hover:text-slate-600 text-xl" onclick="window._rbacUser.closeDrawer()">&times;</button>
+    </div>
+    <div class="rbac-drawer-body">
+      <input type="hidden" id="editUserId">
+      <div class="rbac-form-item"><label><span class="req">*</span>用户昵称</label><input type="text" id="fNickName" class="rbac-form-input" placeholder="请输入用户昵称"></div>
+      <div class="rbac-form-item"><label>部门</label><div id="userDeptCascader"></div><input type="hidden" id="fDeptId"></div>
+      <div class="rbac-form-item"><label>手机号码</label><input type="text" id="fPhone" class="rbac-form-input"></div>
+      <div class="rbac-form-item"><label>邮箱</label><input type="email" id="fEmail" class="rbac-form-input"></div>
+      <div class="rbac-form-item"><label><span class="req">*</span>用户名称</label><input type="text" id="fUserName" class="rbac-form-input" placeholder="登录账号"></div>
+      <div class="rbac-form-item"><label><span class="req" id="pwdReq">*</span>密码</label><input type="password" id="fPassword" class="rbac-form-input"><p class="text-xs text-slate-400 mt-1" id="pwdHint" style="display:none;">留空表示不修改密码</p></div>
+      <div class="rbac-form-item"><label>性别</label><div class="rbac-radio-group"><label><input type="radio" name="fSex" value="0" checked> 男</label><label><input type="radio" name="fSex" value="1"> 女</label><label><input type="radio" name="fSex" value="2"> 未知</label></div></div>
+      <div class="rbac-form-item"><label><span class="req">*</span>角色</label><div id="roleCheckGroup" class="role-check-group"></div></div>
+      <div class="rbac-form-item"><label><span class="req">*</span>状态</label><div class="rbac-radio-group"><label><input type="radio" name="fUserStatus" value="0" checked> 正常</label><label><input type="radio" name="fUserStatus" value="1"> 停用</label></div></div>
+    </div>
+    <div class="rbac-drawer-foot">
+      <button type="button" class="btn-sm" onclick="window._rbacUser.closeDrawer()">取消</button>
+      <button type="button" class="btn-sm btn-sm-primary" onclick="window._rbacUser.save()">确定</button>
+    </div>
+  </div>
+</div>
+
+<div class="rbac-modal-overlay" id="resetPwdModal">
+  <div class="rbac-modal">
+    <div class="rbac-modal-head">重置密码</div>
+    <div class="rbac-modal-body">
+      <p class="text-sm text-slate-600 mb-3">用户：<strong id="resetPwdUserLabel"></strong></p>
+      <input type="text" id="resetPwdValue" class="rbac-form-input" readonly>
+    </div>
+    <div class="rbac-modal-foot">
+      <button type="button" class="btn-sm" onclick="window._rbacUser.closeResetPwd()">关闭</button>
+      <button type="button" class="btn-sm btn-sm-primary" onclick="window._rbacUser.confirmResetPwd()">确认重置</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/system_rbac_data.js"></script>
+<script src="../../assets/system_rbac_ui.js"></script>
+<script src="../../assets/system_rbac_portal.js"></script>
+<script>SystemRbacPortal.initUserPage('buyer');</script>
+</body>
+</html>
