@@ -7,71 +7,1149 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    body { background:#f8fafc; color:#0f172a; }
-    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
-    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
-    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
-    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
-    .b-blue { background:#eff6ff; color:#1d4ed8; } .b-orange { background:#fff7ed; color:#c2410c; } .b-green { background:#ecfdf5; color:#047857; }
-    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; }
-    .btn-primary { background:#16a34a; border-color:#16a34a; color:#fff; }
-    .btn:hover { filter:brightness(.98); }
-    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
-    td, th { padding:14px 16px; border-bottom:1px solid #f1f5f9; text-align:left; }
-    .dialog { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,.45); z-index:20; }
-    .dialog.show { display:flex; }
+    body { background: #f5f7fa; color: #0f172a; font-family: system-ui, "Microsoft YaHei", sans-serif; }
+    .page-wrap { max-width: 1660px; margin: 0 auto; padding: 16px 20px 32px; }
+    .toolbar-title { font-size: 22px; font-weight: 800; }
+    .toolbar-sub { font-size: 13px; color: #64748b; margin-top: 4px; }
+    .tabs-wrap { border-bottom: 2px solid #e5e7eb; margin-bottom: 12px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: flex-end; }
+    .tab { padding: 10px 14px 12px; font-size: 14px; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; font-weight: 600; }
+    .tab:hover { color: #2563eb; }
+    .tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+    .filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-bottom: 14px; }
+    .ipt { border: 1px solid #d8dee8; border-radius: 6px; padding: 8px 12px; font-size: 13px; min-width: 220px; }
+    .btn { height: 34px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 700; border: 1px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; }
+    .btn:hover { filter: brightness(0.98); }
+    .btn-primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .btn-ghost-line { border: 1px solid #94a3b8; color: #334155; background: #fff; }
+    .btn-sm { height: 30px; padding: 0 10px; font-size: 12px; }
+    .list-head-grid {
+      display: grid;
+      grid-template-columns: 36px minmax(320px, 1fr) 140px 160px 100px 120px;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 16px;
+      background: #eef2f6;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px 6px 0 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .order-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-top: none;
+      margin-bottom: 16px;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 6px 16px rgba(15,23,42,.04);
+      overflow: hidden;
+    }
+    .order-meta {
+      padding: 10px 14px;
+      background: linear-gradient(#f8fafc, #f1f5f9);
+      border-bottom: 1px solid #e8edf3;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px;
+      font-size: 13px;
+    }
+    .order-meta .muted { color: #64748b; }
+    .badge {
+      margin-left: auto;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .badge-pending-supplier { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .badge-pending-ship { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+    .badge-partial { background: #fefce8; color: #a16207; border: 1px solid #fde047; }
+    .badge-shipped { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .badge-done { background: #ecfeff; color: #0e7490; border: 1px solid #a5f3fc; }
+    .badge-cancel { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+    .badge-return { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .inner-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .inner-table td { vertical-align: top; padding: 14px 12px; border-top: 1px solid #f1f5f9; }
+    .product-cell { display: flex; gap: 10px; align-items: flex-start; padding-left: 8px !important; }
+    .thumb {
+      width: 72px; height: 72px; border-radius: 8px; background: linear-gradient(135deg,#e2e8f0,#cbd5f5);
+      flex-shrink: 0; border: 1px solid #e2e8f0;
+      display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:11px; text-align:center; padding:4px;
+    }
+    .p-name { font-weight: 700; color: #0f172a; line-height: 1.4; margin-bottom: 6px; }
+    .p-spec { font-size: 12px; color: #64748b; line-height: 1.6; }
+    .qty-block .row { margin-bottom: 4px; }
+    .qty-block .lbl { color: #94a3b8; margin-right: 6px; }
+    .qty-block strong { font-weight: 700; color: #0f172a; }
+    .price-red { font-weight: 800; color: #dc2626; }
+    .actions-stack { display: flex; flex-direction: column; gap: 8px; align-items: stretch; text-align: center; }
+    .actions-stack button { justify-content: center; }
+    .linklike { font-size: 13px; color: #2563eb; cursor: pointer; background: none; border: none; padding: 0; text-align: left; }
+    .linklike:hover { text-decoration: underline; }
+    .ship-count { font-size: 11px; color: #64748b; margin-top: 6px; }
+    /* 弹窗 */
+    .dlg-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,.5);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .dlg-overlay.show { display: flex; }
+    .dlg {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 92vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 48px rgba(15,23,42,.18);
+      border: 1px solid #e2e8f0;
+    }
+    .dlg-hd {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e8edf3;
+      font-weight: 800;
+      font-size: 17px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dlg-bd { padding: 16px 20px; overflow-y: auto; flex: 1; }
+    .dlg-ft {
+      padding: 12px 20px;
+      border-top: 1px solid #e8edf3;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; }
+    .field .hint { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pill-readonly {
+      padding: 8px 10px;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px dashed #cbd5e1;
+      font-size: 13px;
+      color: #334155;
+    }
+    .waybill-row { display: flex; gap: 8px; align-items: flex-start; }
+    .waybill-row input { flex: 1; }
+    .ship-line-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .ship-line-table th, .ship-line-table td {
+      border: 1px solid #e8edf3; padding: 8px 10px;
+    }
+    .ship-line-table th { background: #f8fafc; font-weight: 700; color: #475569; }
+    .alert-mock {
+      padding: 8px 12px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #1e40af;
+      margin-bottom: 14px;
+    }
+    .log-list { margin: 10px 0 0; padding-left: 16px; color: #475569; font-size: 13px; line-height: 1.7; max-height: 200px; overflow-y: auto; }
+    .log-item { padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+    .empty-list { padding: 40px; text-align: center; color: #94a3b8; font-size: 14px; }
+    .upload-slip-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+    .upload-preview {
+      font-size: 12px; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0;
+      border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; display: none;
+    }
+    .upload-preview.show { display: block; }
+    .qty-readonly { font-weight: 800; color: #0f172a; text-align: center; }
+    .line-actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+    .line-actions .btn { width: 100%; }
+    /* 物流时间轴 */
+    .timeline-wrap { position: relative; padding: 8px 0 4px 6px; }
+    .timeline-item {
+      position: relative; padding: 0 0 18px 22px; font-size: 13px;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: 5px; top: 6px; width: 10px; height: 10px;
+      border-radius: 50%; background: #cbd5e1; border: 2px solid #fff; box-shadow: 0 0 0 1px #cbd5e1;
+    }
+    .timeline-item:first-child::before { background: #2563eb; box-shadow: 0 0 0 1px #2563eb; }
+    .timeline-item:not(:last-child)::after {
+      content: ''; position: absolute; left: 9px; top: 18px; bottom: 0; width: 2px; background: #e2e8f0;
+    }
+    .timeline-time { color: #64748b; font-size: 12px; margin-bottom: 2px; }
+    .timeline-desc { color: #0f172a; font-weight: 600; line-height: 1.5; }
+    .timeline-loc { color: #64748b; font-size: 12px; margin-top: 2px; }
+    .timeline-head { font-size: 14px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #e8edf3; }
+    .dlg-product-cell { display: flex; gap: 10px; align-items: flex-start; min-width: 0; }
+    .dlg-thumb {
+      width: 56px; height: 56px; border-radius: 6px; object-fit: cover;
+      border: 1px solid #e2e8f0; flex-shrink: 0; background: #f1f5f9;
+    }
+    .dlg-product-name { font-weight: 700; font-size: 13px; line-height: 1.4; color: #0f172a; }
+    .dlg-product-spec { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
+    .dlg-supplier { font-size: 12px; color: #334155; line-height: 1.5; }
+    .dlg-supplier-lbl { color: #94a3b8; font-size: 11px; display: block; margin-bottom: 2px; }
+    .ship-line-table .dlg-product-cell { min-width: 200px; }
   </style>
 </head>
 <body>
-  <div class="p-5 max-w-[1680px] mx-auto">
-    <div class="page-card p-5 mb-5 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center"><i class="fas fa-shopping-bag text-xl"></i></div>
-        <div><h1 class="text-2xl font-bold">订单管理</h1><p class="text-sm text-slate-500 mt-1">处理订单确认、发货、物流跟踪等供应商履约动作。</p></div>
+  <div class="page-wrap">
+    <div class="mb-5 flex items-start justify-between gap-4">
+      <div>
+        <div class="toolbar-title">订单管理</div>
+        <p class="toolbar-sub">按商品行登记发货（勾选即发全部待发数量）· 上传物流单识别 · 运单校验回填 · 行级查看物流时间轴 / 修改单号</p>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-5">
-      <div class="stat-card"><div><div class="text-sm text-slate-500">总订单</div><div class="text-3xl font-bold mt-2">94</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-layer-group"></i></div></div>
-      <div class="stat-card"><div><div class="text-sm text-slate-500">待确认</div><div class="text-3xl font-bold text-blue-600 mt-2">8</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-hourglass-half"></i></div></div>
-      <div class="stat-card"><div><div class="text-sm text-slate-500">待发货</div><div class="text-3xl font-bold text-orange-600 mt-2">12</div></div><div class="stat-icon bg-orange-50 text-orange-600"><i class="fas fa-truck-loading"></i></div></div>
-      <div class="stat-card"><div><div class="text-sm text-slate-500">已发货</div><div class="text-3xl font-bold text-green-600 mt-2">18</div></div><div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-truck"></i></div></div>
-      <div class="stat-card"><div><div class="text-sm text-slate-500">已完成</div><div class="text-3xl font-bold text-teal-600 mt-2">56</div></div><div class="stat-icon bg-teal-50 text-teal-600"><i class="fas fa-box-check"></i></div></div>
+    <div class="tabs-wrap">
+      <div class="tabs" id="orderTabs"></div>
     </div>
 
-    <div class="page-card p-4 mb-5 flex flex-wrap gap-3">
-      <input class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="搜索订单编号 / 采购单位">
-      <select class="border border-slate-300 rounded-lg px-3 py-2 text-sm"><option>全部状态</option><option>待确认</option><option>待发货</option><option>已发货</option><option>已完成</option></select>
-      <button class="btn">查询</button><button class="btn">重置</button>
+    <div class="filter-bar">
+      <input type="text" class="ipt" id="orderSearchInput" placeholder="请输入订单编号">
+      <button class="btn btn-primary" type="button" id="btnSearch">搜索</button>
+      <button class="btn" type="button" id="btnReset">重置</button>
     </div>
 
-    <div class="page-card overflow-hidden">
-      <table class="w-full text-sm">
-        <thead><tr><th>订单编号</th><th>采购单位</th><th>关联采购单</th><th>商品摘要</th><th>订单金额</th><th>状态</th><th>下单时间</th><th>操作</th></tr></thead>
-        <tbody>
-          <tr><td class="font-semibold">ORD20260427008</td><td>北京市政务服务中心</td><td>PO20260427001</td><td>启天M550 台式机 × 10</td><td class="font-bold text-red-600">¥52,990</td><td><span class="badge b-blue">待确认</span></td><td>2026-04-27 10:18</td><td><button class="btn btn-primary" onclick="confirmOrder(this)">确认订单</button> <button class="btn">详情</button></td></tr>
-          <tr><td class="font-semibold">ORD20260426021</td><td>海淀区教育装备中心</td><td>PO20260426018</td><td>交换机 S1850-24P × 5</td><td class="font-bold text-red-600">¥6,495</td><td><span class="badge b-orange">待发货</span></td><td>2026-04-26 16:05</td><td><button class="btn btn-primary" onclick="openShipDialog()">发货</button> <button class="btn">详情</button></td></tr>
-          <tr><td class="font-semibold">ORD20260425003</td><td>朝阳区行政服务局</td><td>PO20260425009</td><td>A4复印纸 × 80箱</td><td class="font-bold text-red-600">¥12,640</td><td><span class="badge b-green">已发货</span></td><td>2026-04-25 14:22</td><td><button class="btn">查看物流</button></td></tr>
-        </tbody>
-      </table>
+    <div class="list-head-grid">
+      <div><input type="checkbox" disabled title="整单勾选（示意）"/></div>
+      <div>商品详情</div>
+      <div>数量</div>
+      <div>金额</div>
+      <div>订单详情</div>
+      <div>操作</div>
     </div>
+
+    <div id="orderListRoot"></div>
   </div>
 
-  <div class="dialog" id="shipDialog">
-    <div class="page-card p-5 w-[460px]">
-      <h3 class="text-lg font-bold mb-4">填写发货信息</h3>
-      <div class="space-y-3">
-        <input class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="物流公司，如：顺丰速运">
-        <input class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="物流单号">
-        <textarea class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" rows="3" placeholder="发货备注"></textarea>
+  <!-- 登记发货 -->
+  <div class="dlg-overlay" id="shipDlg">
+    <div class="dlg" onclick="event.stopPropagation()">
+      <div class="dlg-hd">
+        <span>登记发货（快递）</span>
+        <button type="button" class="btn btn-sm" onclick="closeShipDlg()">&times;</button>
       </div>
-      <div class="flex justify-end gap-2 mt-5"><button class="btn" onclick="closeShipDialog()">取消</button><button class="btn btn-primary" onclick="closeShipDialog(); alert('发货成功，订单状态已更新。')">确认发货</button></div>
+      <div class="dlg-bd">
+        <div class="alert-mock"><i class="fa-solid fa-plug-circle-bolt mr-1"></i>可勾选<strong>同订单下多条待发商品</strong>合并一次发货，每条按<strong>全部待发数量</strong>发出。可<strong>上传物流单</strong>识别信息，或手动填写后<strong>校验</strong>回填承运商、发货时间。</div>
+        <p class="text-sm mb-3"><strong>订单</strong> <span id="shipDlgOrderNo"></span> · <span id="shipDlgBuyer"></span> · <span id="shipDlgLineHint" class="text-slate-500"></span></p>
+        <div class="field">
+          <label>本批发货明细（可勾选同订单其他待发商品，勾选即发全部待发数量）</label>
+          <table class="ship-line-table">
+            <thead>
+              <tr>
+                <th style="width:36px;"></th>
+                <th>商品</th>
+                <th style="width:130px;">供应商</th>
+                <th style="width:90px;text-align:center;">商品数量</th>
+              </tr>
+            </thead>
+            <tbody id="shipDlgLinesBody"></tbody>
+          </table>
+        </div>
+        <div class="upload-slip-row">
+          <input type="file" id="inpLogisticsSlip" accept="image/*,.pdf" hidden>
+          <button type="button" class="btn btn-ghost-line" id="btnUploadSlip"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>上传物流单</button>
+          <span class="text-xs text-slate-500">支持图片 / PDF，原型模拟 OCR 识别</span>
+        </div>
+        <div class="upload-preview" id="uploadSlipPreview"></div>
+        <div class="row2">
+          <div class="field">
+            <label>发货人姓名 <span style="color:#dc2626">*</span></label>
+            <input class="ipt w-full" id="inpShipperName" placeholder="如：王明">
+          </div>
+          <div class="field">
+            <label>发货人手机号 <span style="color:#dc2626">*</span></label>
+            <input class="ipt w-full" id="inpShipperPhone" placeholder="如：138xxxx0000">
+          </div>
+        </div>
+        <div class="field">
+          <label>物流单号 <span style="color:#dc2626">*</span></label>
+          <div class="waybill-row">
+            <input type="text" class="ipt" id="inpWaybill" placeholder="请输入运单号，或上传物流单自动识别">
+            <button type="button" class="btn btn-ghost-line" id="btnValidateWaybill">校验</button>
+          </div>
+          <div class="hint field" id="waybillValidateMsg"></div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>承运商（接口回填）</label>
+            <input class="ipt w-full" id="inpCarrier" readonly placeholder="请先校验物流单号">
+          </div>
+          <div class="field">
+            <label>发货时间（接口回填）</label>
+            <input class="ipt w-full" id="inpShipTimeApi" readonly placeholder="请先校验物流单号">
+          </div>
+        </div>
+      </div>
+      <div class="dlg-ft">
+        <button class="btn" type="button" onclick="closeShipDlg()">取消</button>
+        <button class="btn btn-primary" type="button" onclick="submitShipment()">提交发货</button>
+      </div>
     </div>
   </div>
+
+  <!-- 查看物流 · 时间轴 -->
+  <div class="dlg-overlay" id="timelineDlg">
+    <div class="dlg" style="max-width:560px" onclick="event.stopPropagation()">
+      <div class="dlg-hd">
+        <span>物流跟踪</span>
+        <button type="button" class="btn btn-sm" onclick="closeTimelineDlg()">&times;</button>
+      </div>
+      <div class="dlg-bd" id="timelineDlgBody"></div>
+      <div class="dlg-ft">
+        <button class="btn" type="button" onclick="closeTimelineDlg()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 修改单号（行级） -->
+  <div class="dlg-overlay" id="modifyWaybillDlg">
+    <div class="dlg" style="max-width:520px" onclick="event.stopPropagation()">
+      <div class="dlg-hd">
+        <span>修改物流单号</span>
+        <button type="button" class="btn btn-sm" onclick="closeModifyWaybillDlg()">&times;</button>
+      </div>
+      <div class="dlg-bd">
+        <p class="text-sm mb-3" id="modifyWaybillSummary"></p>
+        <div class="upload-slip-row">
+          <input type="file" id="inpModifyLogisticsSlip" accept="image/*,.pdf" hidden>
+          <button type="button" class="btn btn-ghost-line" id="btnModifyUploadSlip"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>上传物流单</button>
+          <span class="text-xs text-slate-500">支持图片 / PDF，识别后自动填入运单号并校验</span>
+        </div>
+        <div class="upload-preview" id="modifyUploadSlipPreview"></div>
+        <div class="field">
+          <label>物流单号 <span style="color:#dc2626">*</span></label>
+          <div class="waybill-row">
+            <input type="text" class="ipt" id="modifyWaybillInput" placeholder="请输入新运单号，或上传物流单识别">
+            <button type="button" class="btn btn-ghost-line" id="btnModifyValidate">校验</button>
+          </div>
+          <div class="hint" id="modifyWaybillMsg"></div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>承运商（接口回填）</label>
+            <input class="ipt w-full" id="modifyCarrier" readonly>
+          </div>
+          <div class="field">
+            <label>发货时间（接口回填）</label>
+            <input class="ipt w-full" id="modifyShipTime" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="dlg-ft">
+        <button class="btn" type="button" onclick="closeModifyWaybillDlg()">取消</button>
+        <button class="btn btn-primary" type="button" onclick="saveModifyWaybill()">保存</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    function openShipDialog(){ document.getElementById('shipDialog').classList.add('show'); }
-    function closeShipDialog(){ document.getElementById('shipDialog').classList.remove('show'); }
-    function confirmOrder(btn){ btn.closest('tr').querySelector('.badge').className='badge b-orange'; btn.closest('tr').querySelector('.badge').textContent='待发货'; btn.outerHTML='<button class="btn btn-primary" onclick="openShipDialog()">发货</button>'; }
+    const TAB_KEYS = ['all','pending_ship','pending_receive','received','cancelled','return'];
+    const TAB_LABEL = {
+      all: '全部',
+      pending_ship: '待发货',
+      pending_receive: '待收货',
+      received: '收货完成',
+      cancelled: '已取消',
+      'return': '退货'
+    };
+
+    /** Tab 与后端状态映射：partial_ship 归「待发货」；shipped 归「待收货」 */
+    function tabMatches(tabKey, status) {
+      if (tabKey === 'pending_ship') return status === 'pending_ship' || status === 'partial_ship';
+      if (tabKey === 'pending_receive') return status === 'shipped';
+      if (tabKey === 'received') return status === 'received_done';
+      if (tabKey === 'cancelled') return status === 'cancelled';
+      if (tabKey === 'return') return status === 'return';
+      return false;
+    }
+
+    /** 原型数据：可多行明细、可多批次发货 */
+    let orders = [];
+
+    let activeTab = 'all';
+    let searchNo = '';
+
+    /** 发货弹窗状态 */
+    let shipTargetOrderId = null;
+    let shipTargetLineId = null; // 行级登记入口：默认勾选该行，列表展示同订单全部待发商品
+    let lastWaybillValidation = null;
+
+    /** 修改单号弹窗状态 */
+    let modifyCtx = null; // { orderId, lineId, shipmentId }
+    let modifyPending = null;
+
+    function seedOrders() {
+      orders = [
+        {
+          id: 'ORD20260426021',
+          poNo: 'PO20260426018',
+          supplierName: '新华三官方旗舰店',
+          buyerName: '海淀区教育装备中心',
+          buyerPhone: '13888889999',
+          createdAt: '2026年04月26日-16:05:08',
+          status: 'pending_ship',
+          freight: 0,
+          lines: [
+            { lineId: 'l-n1-a', name: '交换机 S1850-24P', spec: '品牌：新华三｜类目：千兆管理型｜端口：24口｜PoE：支持', skuCode: 'H3CS1850', unitPrice: 1299, qty: 5, shippedQty: 0 },
+            { lineId: 'l-n1-b', name: '千兆光模块 单模双纤', spec: '品牌：原厂｜接口：LC｜波长：1310nm', skuCode: 'SFP-GELX', unitPrice: 180, qty: 5, shippedQty: 0 }
+          ],
+          shipments: []
+        },
+        {
+          id: 'ORD20260425003',
+          poNo: 'PO20260425009',
+          supplierName: '浙江得力办公用品有限公司',
+          buyerName: '朝阳区行政服务局',
+          buyerPhone: '13977776666',
+          createdAt: '2026年04月25日-14:22:30',
+          status: 'partial_ship',
+          freight: 0,
+          lines: [
+            {
+              lineId: 'l-n2-a',
+              name: 'A4复印纸 70g 整箱',
+              spec: '品牌：得力｜规格：2500张/箱｜包装：纸箱',
+              skuCode: 'DL-A470',
+              unitPrice: 158,
+              qty: 80,
+              shippedQty: 30
+            }
+          ],
+          shipments: [
+            {
+              shipmentId: 'sh-demo-01',
+              waybill: 'SF10260625003421',
+              carrier: '顺丰速运',
+              shipTimeApi: '2026-04-25 17:06:43',
+              shipperName: '赵志强',
+              shipperPhone: '13600008888',
+              allocations: [{ lineId: 'l-n2-a', qty: 30 }]
+            }
+          ]
+        },
+        {
+          id: 'ORD20260427008',
+          poNo: 'PO20260427001',
+          supplierName: '北京联想直营科技',
+          buyerName: '北京市政务服务中心',
+          buyerPhone: '13812345678',
+          createdAt: '2026年04月27日-10:18:52',
+          status: 'pending_ship',
+          freight: 0,
+          lines: [
+            {
+              lineId: 'l-n3-a',
+              name: '启天 M550 商用台式机',
+              spec: '品牌：联想｜处理器：Intel i7｜内存：16G｜硬盘：512G SSD｜显卡：集成',
+              skuCode: 'L-M550-QD',
+              unitPrice: 5299,
+              qty: 10,
+              shippedQty: 0
+            }
+          ],
+          shipments: []
+        },
+        {
+          id: 'ORD20260330088',
+          poNo: '—',
+          supplierName: '广博文教旗舰店',
+          buyerName: '某区教育局',
+          buyerPhone: '15800009999',
+          createdAt: '2026年03月30日-09:01:02',
+          status: 'cancelled',
+          freight: 0,
+          lines: [
+            {
+              lineId: 'x1',
+              name: '白板笔 黑板擦套装',
+              spec: '品牌：广博｜数量：成套',
+              skuCode: 'WBJ-SET',
+              unitPrice: 28,
+              qty: 2,
+              shippedQty: 0
+            }
+          ],
+          shipments: []
+        },
+        {
+          id: 'ORD20260320055',
+          poNo: 'PO20260320001',
+          supplierName: '科密办公设备专营店',
+          buyerName: '西城区机关事务管理处',
+          buyerPhone: '18500001111',
+          createdAt: '2026年03月20日-09:45:22',
+          status: 'shipped',
+          freight: 6,
+          lines: [
+            { lineId: 'l-done-a', name: '碎纸机 米粒级保密', spec: '品牌：科密｜桶容量：20L｜单次碎纸：6张', skuCode: 'KM-S6638', unitPrice: 899, qty: 2, shippedQty: 2 }
+          ],
+          shipments: [
+            {
+              shipmentId: 'sh-shipped-01',
+              waybill: 'YT88776655443322',
+              carrier: '圆通速递',
+              shipTimeApi: '2026-03-20 14:08:03',
+              shipperName: '王海涛',
+              shipperPhone: '13611112222',
+              allocations: [{ lineId: 'l-done-a', qty: 2 }]
+            }
+          ]
+        },
+        {
+          id: 'ORD20260210001',
+          poNo: 'PO20260210001',
+          supplierName: '秋叶原线缆旗舰店',
+          buyerName: '丰台区集中采购中心',
+          buyerPhone: '18800009900',
+          createdAt: '2026年02月10日-11:03:51',
+          status: 'received_done',
+          freight: 0,
+          lines: [
+            { lineId: 'l-rcv-a', name: '网线 六类千兆', spec: '品牌：秋叶原｜长度：305米/箱', skuCode: 'CAT6-305', unitPrice: 620, qty: 1, shippedQty: 1 }
+          ],
+          shipments: [
+            {
+              shipmentId: 'sh-rcvd-01',
+              waybill: 'SF22021000334455',
+              carrier: '顺丰速运',
+              shipTimeApi: '2026-02-11 10:02:59',
+              shipperName: '李小雷',
+              shipperPhone: '13833334444',
+              allocations: [{ lineId: 'l-rcv-a', qty: 1 }]
+            }
+          ]
+        },
+        {
+          id: 'ORD20260405012',
+          poNo: 'PO20260331002',
+          supplierName: '飞利浦会议设备专营',
+          buyerName: '朝阳区行政服务局',
+          buyerPhone: '13977776666',
+          createdAt: '2026年04月05日-11:20:00',
+          status: 'return',
+          freight: 0,
+          lines: [
+            {
+              lineId: 'r1',
+              name: '会议话筒',
+              spec: '品牌：飞利浦｜类型：电容',
+              skuCode: 'MIC-001',
+              unitPrice: 499,
+              qty: 1,
+              shippedQty: 1
+            }
+          ],
+          shipments: [
+            {
+              shipmentId: 'sh-ret',
+              waybill: 'JDVB20260315112233',
+              carrier: '京东物流',
+              shipTimeApi: '2026-04-06 09:45:21',
+              shipperName: '刘强',
+              shipperPhone: '13700005678',
+              allocations: [{ lineId: 'r1', qty: 1 }]
+            }
+          ]
+        }
+      ];
+    }
+
+    function statusBadgeClass(st) {
+      const map = {
+        pending_confirm: 'badge-pending-supplier',
+        pending_ship: 'badge-pending-ship',
+        partial_ship: 'badge-partial',
+        shipped: 'badge-shipped',
+        received_done: 'badge-done',
+        cancelled: 'badge-cancel',
+        'return': 'badge-return'
+      };
+      return map[st] || 'badge-cancel';
+    }
+
+    function statusLabel(st) {
+      const map = {
+        pending_confirm: '待供应商确认',
+        pending_ship: '待发货',
+        partial_ship: '部分发货',
+        shipped: '已发货',
+        received_done: '收货完成',
+        cancelled: '已取消',
+        'return': '退货'
+      };
+      return map[st] || st;
+    }
+
+    function deriveOrderTotals(o) {
+      let goodsAmt = o.lines.reduce((s, ln) => s + ln.unitPrice * ln.qty, 0);
+      let totalShipped = o.shipments.reduce((s, sh) =>
+        s + sh.allocations.reduce((t, al) => t + al.qty, 0), 0);
+      return { goodsAmt, totalShipped };
+    }
+
+    function recomputeStatus(o) {
+      /** 采购商已收货完成的演示单，不参与自动回算 */
+      if (['cancelled', 'return', 'received_done'].includes(o.status)) return;
+      const allShipped = o.lines.every(l => l.shippedQty >= l.qty);
+      const anyShip = o.shipments.length > 0;
+      if (allShipped) o.status = 'shipped';
+      else if (anyShip && o.lines.some(l => l.shippedQty < l.qty)) o.status = 'partial_ship';
+      else o.status = 'pending_ship';
+    }
+
+    function tabCounts() {
+      const counts = {};
+      TAB_KEYS.forEach(k => { counts[k] = 0; });
+      counts.all = orders.length;
+      orders.forEach(o => {
+        TAB_KEYS.forEach(k => {
+          if (k === 'all') return;
+          if (tabMatches(k, o.status)) counts[k] += 1;
+        });
+      });
+      return counts;
+    }
+
+    function renderTabs() {
+      const counts = tabCounts();
+      document.getElementById('orderTabs').innerHTML = TAB_KEYS.map(k => {
+        const n = counts[k] ?? 0;
+        return `<button type="button" class="tab ${activeTab===k?'active':''}" data-tab="${k}">${TAB_LABEL[k]}（${n}）</button>`;
+      }).join('');
+      document.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeTab = btn.getAttribute('data-tab');
+          renderTabs();
+          renderOrderList();
+        });
+      });
+    }
+
+    /** 模拟接口：校验运单 → 回填承运商、发货时间 */
+    function mockWaybillLookup(waybill) {
+      const w = String(waybill || '').trim();
+      if (!w || w.length < 8) return { ok: false, msg: '请输入不少于 8 位的运单号' };
+      if (/^SF/i.test(w)) return { ok: true, carrier: '顺丰速运', shipTimeApi: fmtNow(), msg: '' };
+      if (/^JT/i.test(w)) return { ok: true, carrier: '极兔速递', shipTimeApi: fmtNow(), msg: '' };
+      if (/^JD/i.test(w) || /^JDVB/i.test(w)) return { ok: true, carrier: '京东物流', shipTimeApi: fmtNow(), msg: '' };
+      if (/^YT/i.test(w)) return { ok: true, carrier: '圆通速递', shipTimeApi: fmtNow(), msg: '' };
+      return { ok: true, carrier: '快递（承运商占位）', shipTimeApi: fmtNow(), msg: '' };
+    }
+
+    function fmtNow() {
+      const d = new Date();
+      return d.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+    function lineRemaining(ln) {
+      return Math.max(0, ln.qty - ln.shippedQty);
+    }
+
+    function canShipOrder(o) {
+      return o.status === 'pending_ship' || o.status === 'partial_ship';
+    }
+
+    /** 某商品行关联的发货批次（含该 lineId 的 allocation） */
+    function getLineShipments(o, lineId) {
+      return o.shipments.filter(sh =>
+        sh.allocations.some(a => a.lineId === lineId && a.qty > 0)
+      );
+    }
+
+    function getLatestLineShipment(o, lineId) {
+      const list = getLineShipments(o, lineId);
+      return list.length ? list[list.length - 1] : null;
+    }
+
+    /** 模拟 OCR：上传物流单后识别填报字段 */
+    function mockOcrLogisticsSlip(fileName) {
+      const seed = (fileName || '').length % 3;
+      const samples = [
+        { waybill: 'SF' + Date.now().toString().slice(-12), shipperName: '王明', shipperPhone: '13800138001' },
+        { waybill: 'YT88776655443399', shipperName: '李芳', shipperPhone: '13900139002' },
+        { waybill: 'JDVB20260421008877', shipperName: '赵志强', shipperPhone: '13600008888' }
+      ];
+      return samples[seed];
+    }
+
+    /** 模拟物流轨迹时间轴 */
+    function mockWaybillTimeline(waybill, carrier, shipTimeApi) {
+      const base = shipTimeApi || fmtNow();
+      const nodes = [
+        { time: base, desc: '快件已揽收', loc: '发货网点' },
+        { time: addHours(base, 2), desc: '快件已发往【区域转运中心】', loc: '转运中心' },
+        { time: addHours(base, 8), desc: '快件到达【区域转运中心】', loc: '转运中心' },
+        { time: addHours(base, 20), desc: '快件已发出，下一站【目的地城市】', loc: '在途' },
+        { time: addHours(base, 36), desc: '快件派送中', loc: '目的地派送站' }
+      ];
+      return nodes;
+    }
+
+    function addHours(isoStr, h) {
+      const d = new Date(String(isoStr).replace(/-/g, '/'));
+      if (isNaN(d.getTime())) return isoStr;
+      d.setHours(d.getHours() + h);
+      return d.toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+    function renderLineActions(o, ln) {
+      const rem = lineRemaining(ln);
+      if (o.status === 'cancelled') {
+        return '<span class="text-xs text-slate-400">—</span>';
+      }
+      const parts = [];
+      if (canShipOrder(o) && rem > 0) {
+        parts.push(`<button type="button" class="btn btn-primary btn-sm" data-action="ship-line" data-order="${escapeHtml(o.id)}" data-line="${escapeHtml(ln.lineId)}">登记发货</button>`);
+      }
+      if (ln.shippedQty > 0 && getLineShipments(o, ln.lineId).length > 0) {
+        parts.push(`<button type="button" class="btn btn-ghost-line btn-sm" data-action="timeline" data-order="${escapeHtml(o.id)}" data-line="${escapeHtml(ln.lineId)}">查看物流</button>`);
+        parts.push(`<button type="button" class="btn btn-ghost-line btn-sm" data-action="modify-waybill-line" data-order="${escapeHtml(o.id)}" data-line="${escapeHtml(ln.lineId)}">修改单号</button>`);
+      }
+      if (!parts.length) {
+        if (o.status === 'return') return '<span class="text-xs text-slate-400">退货</span>';
+        return '<span class="text-xs text-slate-400">—</span>';
+      }
+      return `<div class="line-actions">${parts.join('')}</div>`;
+    }
+
+    function renderOrderList() {
+      renderTabs();
+      const root = document.getElementById('orderListRoot');
+      let filtered = orders.filter(o => !searchNo || o.id.toLowerCase().includes(searchNo.trim().toLowerCase()));
+      if (activeTab !== 'all') filtered = filtered.filter(o => tabMatches(activeTab, o.status));
+
+      if (!filtered.length) {
+        root.innerHTML = '<div class="order-card empty-list">暂无订单</div>';
+        return;
+      }
+
+      root.innerHTML = filtered.map(o => renderOneOrderCard(o)).join('');
+      bindInlineHandlers();
+    }
+
+    function bindInlineHandlers() {
+      document.querySelectorAll('[data-action="ship-line"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openShipDlg(btn.getAttribute('data-order'), btn.getAttribute('data-line'));
+        });
+      });
+      document.querySelectorAll('[data-action="timeline"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openTimelineDlg(btn.getAttribute('data-order'), btn.getAttribute('data-line'));
+        });
+      });
+      document.querySelectorAll('[data-action="modify-waybill-line"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openModifyWaybillDlg(btn.getAttribute('data-order'), btn.getAttribute('data-line'));
+        });
+      });
+    }
+
+    function renderOneOrderCard(o) {
+      const nLines = o.lines.length;
+      let detailLinks = `<button type="button" class="linklike">订单详情</button>`;
+      let shipNote = '';
+      if (o.shipments.length) {
+        shipNote = `<div class="ship-count">已发 ${o.shipments.length} 批</div>`;
+      }
+
+      let rows = '';
+      o.lines.forEach((ln, idx) => {
+        const remaining = lineRemaining(ln);
+        const lineAmt = ln.unitPrice * ln.qty;
+        const detailCell = idx === 0 ? `
+            <td style="width:100px;text-align:center;vertical-align:middle;background:#fafbff;" rowspan="${nLines}">
+              ${detailLinks}
+              ${shipNote}
+            </td>` : '';
+        rows += `
+          <tr data-line-row="${idx}">
+            <td style="width:36px"><input type="checkbox" disabled title="单行示意"/></td>
+            <td style="padding-left:14px;">
+              <div class="product-cell">
+                <div class="thumb">SKU<br/>${escapeHtml(ln.skuCode||'')}</div>
+                <div>
+                  <div class="p-name">${escapeHtml(ln.name)}</div>
+                  <div class="p-spec">${escapeHtml(ln.spec)}</div>
+                </div>
+              </div>
+            </td>
+            <td style="width:140px;">
+              <div class="qty-block">
+                <div class="row"><span class="lbl">单价：</span><span class="price-red">¥ ${ln.unitPrice.toLocaleString()}</span></div>
+                <div class="row"><span class="lbl">下单数量：</span><strong>${ln.qty}</strong></div>
+                <div class="row"><span class="lbl">待发：</span><strong style="${remaining>0?'color:#d97706':''}">${remaining}</strong></div>
+              </div>
+            </td>
+            <td style="width:160px;">
+              <div class="qty-block">
+                <div class="row"><span class="lbl">运费：</span>¥ ${o.freight.toLocaleString()}</div>
+                <div class="row"><span class="lbl">单品小计：</span><span class="price-red">¥ ${lineAmt.toLocaleString('zh-CN', {maximumFractionDigits:2})}</span></div>
+              </div>
+            </td>
+            ${detailCell}
+            <td style="width:120px;text-align:center;vertical-align:middle;background:#fafbff;padding:12px 8px!important;">
+              ${renderLineActions(o, ln)}
+            </td>
+          </tr>
+        `;
+      });
+
+      return `
+      <div class="order-card" data-order-id="${escapeHtml(o.id)}">
+        <div class="order-meta">
+          <label class="muted"><input type="checkbox" disabled style="vertical-align:middle;margin-right:6px;"/>订单编号：</label>
+          <strong>${escapeHtml(o.id)}</strong>
+          <span class="muted">｜关联采购单：${escapeHtml(o.poNo)}</span>
+          <span class="muted">｜采购商：${escapeHtml(o.buyerName)}（联系方式：${escapeHtml(o.buyerPhone)}）</span>
+          <span class="muted">｜提交日期：${escapeHtml(o.createdAt)}</span>
+          <span class="badge ${statusBadgeClass(o.status)}">${escapeHtml(statusLabel(o.status))}</span>
+        </div>
+        <table class="inner-table">
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function lineImageUrl(ln) {
+      const seed = encodeURIComponent(ln.skuCode || ln.lineId || 'product');
+      return 'https://picsum.photos/seed/' + seed + '/112/112';
+    }
+
+    function renderDlgProductCell(ln) {
+      return `
+        <div class="dlg-product-cell">
+          <img class="dlg-thumb" src="${lineImageUrl(ln)}" alt="${escapeHtml(ln.name)}" loading="lazy" />
+          <div>
+            <div class="dlg-product-name">${escapeHtml(ln.name)}</div>
+            <div class="dlg-product-spec">${escapeHtml(ln.spec)}</div>
+          </div>
+        </div>`;
+    }
+
+    function renderDlgSupplierCell(supplierName) {
+      return `
+        <div class="dlg-supplier">
+          <span class="dlg-supplier-lbl">供应商</span>
+          ${escapeHtml(supplierName || '—')}
+        </div>`;
+    }
+
+    /** ---- 发货弹窗 ---- */
+    function openShipDlg(orderId, lineId) {
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      shipTargetOrderId = orderId;
+      shipTargetLineId = lineId || null;
+      lastWaybillValidation = null;
+      document.getElementById('shipDlgOrderNo').textContent = orderId;
+      document.getElementById('shipDlgBuyer').textContent = o.buyerName;
+      const hintEl = document.getElementById('shipDlgLineHint');
+      if (lineId) {
+        const ln = o.lines.find(l => l.lineId === lineId);
+        hintEl.textContent = ln
+          ? '当前商品：' + ln.name + '（已默认勾选，可勾选同订单其他待发商品一并发货）'
+          : '';
+      } else {
+        hintEl.textContent = '请勾选本订单待发商品';
+      }
+      document.getElementById('inpShipperName').value = '';
+      document.getElementById('inpShipperPhone').value = '';
+      document.getElementById('inpWaybill').value = '';
+      document.getElementById('inpCarrier').value = '';
+      document.getElementById('inpShipTimeApi').value = '';
+      document.getElementById('waybillValidateMsg').textContent = '';
+      const preview = document.getElementById('uploadSlipPreview');
+      preview.classList.remove('show');
+      preview.innerHTML = '';
+      const fileInp = document.getElementById('inpLogisticsSlip');
+      if (fileInp) fileInp.value = '';
+
+      const linesToShow = o.lines.filter(ln => lineRemaining(ln) > 0);
+
+      document.getElementById('shipDlgLinesBody').innerHTML = linesToShow.map(ln => {
+        const rem = lineRemaining(ln);
+        const preCheck = lineId && ln.lineId === lineId ? 'checked' : '';
+        return `
+          <tr data-line="${ln.lineId}" data-qty="${rem}">
+            <td style="text-align:center"><input type="checkbox" class="shipPick" ${preCheck} /></td>
+            <td>${renderDlgProductCell(ln)}</td>
+            <td>${renderDlgSupplierCell(o.supplierName)}</td>
+            <td class="qty-readonly">${rem}</td>
+          </tr>`;
+      }).join('');
+
+      if (!linesToShow.length) {
+        document.getElementById('shipDlgLinesBody').innerHTML =
+          '<tr><td colspan="4" style="text-align:center;color:#94a3b8;">本订单暂无待发商品</td></tr>';
+      }
+
+      document.getElementById('btnValidateWaybill').onclick = runWaybillValidate;
+      document.getElementById('shipDlg').classList.add('show');
+    }
+
+    function closeShipDlg() {
+      shipTargetOrderId = null;
+      shipTargetLineId = null;
+      document.getElementById('shipDlg').classList.remove('show');
+    }
+
+    function applyOcrResult(ocr) {
+      document.getElementById('inpWaybill').value = ocr.waybill || '';
+      document.getElementById('inpShipperName').value = ocr.shipperName || '';
+      document.getElementById('inpShipperPhone').value = ocr.shipperPhone || '';
+      runWaybillValidate();
+    }
+
+    function runWaybillValidate() {
+      const w = document.getElementById('inpWaybill').value.trim();
+      const res = mockWaybillLookup(w);
+      const msgEl = document.getElementById('waybillValidateMsg');
+      if (!res.ok) {
+        lastWaybillValidation = null;
+        msgEl.innerHTML = `<span style="color:#b91c1c">${escapeHtml(res.msg)}</span>`;
+        document.getElementById('inpCarrier').value = '';
+        document.getElementById('inpShipTimeApi').value = '';
+        return;
+      }
+      lastWaybillValidation = { carrier: res.carrier, shipTimeApi: res.shipTimeApi };
+      document.getElementById('inpCarrier').value = res.carrier;
+      document.getElementById('inpShipTimeApi').value = res.shipTimeApi;
+      msgEl.innerHTML = '<span style="color:#047857"><i class="fa-solid fa-check"></i> 校验成功（模拟接口），承运商与时间已回填</span>';
+    }
+
+    function submitShipment() {
+      if (!shipTargetOrderId) return;
+      const o = orders.find(x => x.id === shipTargetOrderId);
+      if (!o) return;
+
+      const name = document.getElementById('inpShipperName').value.trim();
+      const phone = document.getElementById('inpShipperPhone').value.trim();
+      const waybill = document.getElementById('inpWaybill').value.trim();
+
+      const rows = document.querySelectorAll('#shipDlgLinesBody tr[data-line]');
+      const allocations = [];
+      rows.forEach(tr => {
+        const cb = tr.querySelector('.shipPick');
+        if (!cb || !cb.checked) return;
+        const lineId = tr.getAttribute('data-line');
+        const ln = o.lines.find(l => l.lineId === lineId);
+        if (!ln) return;
+        const rem = lineRemaining(ln);
+        if (rem < 1) return;
+        allocations.push({ lineId, qty: rem });
+      });
+      if (!allocations.length) {
+        alert('请至少勾选一条待发商品');
+        return;
+      }
+      if (!name || !/^1\d{10}$/.test(phone.replace(/\s+/g,''))) {
+        alert('请填写发货人姓名与合规手机号');
+        return;
+      }
+      if (!waybill) {
+        alert('请填写物流单号并完成校验'); return;
+      }
+      if (!lastWaybillValidation || document.getElementById('inpWaybill').value.trim() !== waybill ||
+          document.getElementById('inpCarrier').value !== lastWaybillValidation.carrier) {
+        alert('请先点击「校验」通过后再提交发货');
+        return;
+      }
+
+      const shipmentId = 'sh-' + Date.now();
+      o.shipments.push({
+        shipmentId,
+        waybill,
+        carrier: lastWaybillValidation.carrier,
+        shipTimeApi: lastWaybillValidation.shipTimeApi,
+        shipperName: name,
+        shipperPhone: phone.replace(/\s+/g,''),
+        allocations: allocations.slice()
+      });
+
+      allocations.forEach(al => {
+        const ln = o.lines.find(l => l.lineId === al.lineId);
+        ln.shippedQty += al.qty;
+      });
+      recomputeStatus(o);
+
+      alert('发货已登记（示意），已生成批次：' + shipmentId);
+      closeShipDlg();
+      renderOrderList();
+    }
+
+    /** ---- 查看物流 · 时间轴 ---- */
+    function openTimelineDlg(orderId, lineId) {
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      const ln = o.lines.find(l => l.lineId === lineId);
+      const shipments = getLineShipments(o, lineId);
+      if (!shipments.length) {
+        alert('该商品暂无物流信息');
+        return;
+      }
+      const sh = shipments[shipments.length - 1];
+      const nodes = mockWaybillTimeline(sh.waybill, sh.carrier, sh.shipTimeApi);
+      const body = document.getElementById('timelineDlgBody');
+      body.innerHTML = `
+        <div class="timeline-head">
+          <div><strong>${escapeHtml(ln ? ln.name : '')}</strong></div>
+          <div class="text-sm text-slate-500 mt-1">订单 ${escapeHtml(orderId)}</div>
+          <div class="text-sm mt-2"><span class="text-slate-500">承运商：</span>${escapeHtml(sh.carrier)}</div>
+          <div class="text-sm"><span class="text-slate-500">运单号：</span><strong>${escapeHtml(sh.waybill)}</strong></div>
+          <div class="text-sm"><span class="text-slate-500">发货人：</span>${escapeHtml(sh.shipperName)} ${escapeHtml(sh.shipperPhone)}</div>
+        </div>
+        <div class="timeline-wrap">
+          ${nodes.map((n, i) => `
+            <div class="timeline-item">
+              <div class="timeline-time">${escapeHtml(n.time)}</div>
+              <div class="timeline-desc">${escapeHtml(n.desc)}</div>
+              ${n.loc ? `<div class="timeline-loc">${escapeHtml(n.loc)}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+        ${shipments.length > 1 ? `<p class="text-xs text-slate-500 mt-3">该商品共 ${shipments.length} 批发货，当前展示最近一批物流轨迹。</p>` : ''}
+      `;
+      document.getElementById('timelineDlg').classList.add('show');
+    }
+
+    function closeTimelineDlg() {
+      document.getElementById('timelineDlg').classList.remove('show');
+    }
+
+    /** ---- 修改单号（行级） ---- */
+    function openModifyWaybillDlg(orderId, lineId) {
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      const sh = getLatestLineShipment(o, lineId);
+      if (!sh) {
+        alert('未找到该商品的发货批次');
+        return;
+      }
+      const ln = o.lines.find(l => l.lineId === lineId);
+      modifyCtx = { orderId, lineId, shipmentId: sh.shipmentId };
+      modifyPending = null;
+      document.getElementById('modifyWaybillSummary').innerHTML =
+        `<strong>${escapeHtml(ln ? ln.name : '')}</strong><br><span class="text-slate-500">当前运单：${escapeHtml(sh.waybill)} · ${escapeHtml(sh.carrier)}</span>`;
+      document.getElementById('modifyWaybillInput').value = sh.waybill;
+      document.getElementById('modifyCarrier').value = sh.carrier;
+      document.getElementById('modifyShipTime').value = sh.shipTimeApi;
+      document.getElementById('modifyWaybillMsg').textContent = '';
+      const modPreview = document.getElementById('modifyUploadSlipPreview');
+      modPreview.classList.remove('show');
+      modPreview.innerHTML = '';
+      const modFile = document.getElementById('inpModifyLogisticsSlip');
+      if (modFile) modFile.value = '';
+      document.getElementById('modifyWaybillDlg').classList.add('show');
+    }
+
+    function closeModifyWaybillDlg() {
+      modifyCtx = null;
+      modifyPending = null;
+      document.getElementById('modifyWaybillDlg').classList.remove('show');
+    }
+
+    function applyModifyOcrResult(ocr) {
+      document.getElementById('modifyWaybillInput').value = ocr.waybill || '';
+      runModifyValidate();
+    }
+
+    function runModifyValidate() {
+      if (!modifyCtx) return;
+      const w = document.getElementById('modifyWaybillInput').value.trim();
+      const res = mockWaybillLookup(w);
+      const msgEl = document.getElementById('modifyWaybillMsg');
+      if (!res.ok) {
+        modifyPending = null;
+        msgEl.innerHTML = `<span style="color:#b91c1c">${escapeHtml(res.msg)}</span>`;
+        return;
+      }
+      modifyPending = { carrier: res.carrier, shipTimeApi: res.shipTimeApi };
+      document.getElementById('modifyCarrier').value = res.carrier;
+      document.getElementById('modifyShipTime').value = res.shipTimeApi;
+      msgEl.innerHTML = '<span style="color:#047857">校验成功，承运商与时间已更新</span>';
+    }
+
+    function saveModifyWaybill() {
+      if (!modifyCtx || !modifyPending) {
+        alert('请先点击「校验」');
+        return;
+      }
+      const o = orders.find(x => x.id === modifyCtx.orderId);
+      if (!o) return;
+      const sh = o.shipments.find(x => x.shipmentId === modifyCtx.shipmentId);
+      if (!sh) return;
+      const w = document.getElementById('modifyWaybillInput').value.trim();
+      if (!w) {
+        alert('请填写物流单号');
+        return;
+      }
+      sh.waybill = w;
+      sh.carrier = modifyPending.carrier;
+      sh.shipTimeApi = modifyPending.shipTimeApi;
+      alert('物流单号已更新（示意）');
+      closeModifyWaybillDlg();
+      renderOrderList();
+    }
+
+    document.getElementById('btnSearch').addEventListener('click', () => {
+      searchNo = document.getElementById('orderSearchInput').value;
+      renderOrderList();
+    });
+    document.getElementById('btnReset').addEventListener('click', () => {
+      document.getElementById('orderSearchInput').value = '';
+      searchNo = '';
+      activeTab = 'all';
+      renderOrderList();
+    });
+
+    document.getElementById('btnUploadSlip').addEventListener('click', () => {
+      document.getElementById('inpLogisticsSlip').click();
+    });
+    document.getElementById('inpLogisticsSlip').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const preview = document.getElementById('uploadSlipPreview');
+      preview.classList.add('show');
+      preview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在识别物流单…';
+      setTimeout(() => {
+        const ocr = mockOcrLogisticsSlip(file.name);
+        preview.innerHTML = `<i class="fa-solid fa-check"></i> 已识别：<strong>${escapeHtml(file.name)}</strong> → 运单号、发货人信息已填入，并已触发校验`;
+        applyOcrResult(ocr);
+      }, 600);
+    });
+    document.getElementById('btnModifyValidate').addEventListener('click', runModifyValidate);
+    document.getElementById('btnModifyUploadSlip').addEventListener('click', () => {
+      document.getElementById('inpModifyLogisticsSlip').click();
+    });
+    document.getElementById('inpModifyLogisticsSlip').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const preview = document.getElementById('modifyUploadSlipPreview');
+      preview.classList.add('show');
+      preview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在识别物流单…';
+      setTimeout(() => {
+        const ocr = mockOcrLogisticsSlip(file.name);
+        preview.innerHTML = `<i class="fa-solid fa-check"></i> 已识别：<strong>${escapeHtml(file.name)}</strong> → 运单号已填入，并已触发校验`;
+        applyModifyOcrResult(ocr);
+      }, 600);
+    });
+
+    seedOrders();
+    orders.forEach(recomputeStatus);
+    renderOrderList();
   </script>
 </body>
 </html>
