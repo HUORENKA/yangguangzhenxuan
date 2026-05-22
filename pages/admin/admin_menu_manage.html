@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>菜单管理 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    :root {
+      --primary: #E2231A;
+      --primary-hover: #c01e16;
+      --primary-soft: rgba(226, 35, 26, 0.08);
+      --primary-border: rgba(226, 35, 26, 0.22);
+    }
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #eef1f6 100%);
+      color: #334155;
+      min-height: 100vh;
+    }
+    .admin-content { min-height: 100vh; }
+    .page-inner { padding: 24px; max-width: 1680px; margin: 0 auto; }
+
+    /* 页头 */
+    .page-hero {
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .page-hero-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, #ef4444 0%, var(--primary) 100%);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 20px rgba(226, 35, 26, 0.25);
+      flex-shrink: 0;
+    }
+    .page-hero-icon .icon-menu-mgmt { color: #fff; }
+    .page-hero h1 { font-size: 22px; font-weight: 700; color: #0f172a; line-height: 1.3; }
+    .page-hero p { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+    /* 双栏布局 */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 340px) 1fr;
+      gap: 16px;
+      align-items: stretch;
+      min-height: calc(100vh - 200px);
+    }
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; min-height: auto; }
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid #f1f5f9;
+      background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
+    }
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      color: #0f172a;
+    }
+    .panel-title i { color: var(--primary); font-size: 14px; }
+    .panel-tools { display: flex; gap: 6px; }
+    .icon-btn {
+      width: 32px; height: 32px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #64748b;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .icon-btn:hover {
+      border-color: var(--primary-border);
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    /* 树搜索 */
+    .tree-search { padding: 12px 14px 10px; }
+    .search-wrap { position: relative; }
+    .search-wrap i {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: #94a3b8; font-size: 13px; pointer-events: none;
+    }
+    .search-wrap input {
+      width: 100%; height: 38px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0 12px 0 36px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .tree-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 10px 16px;
+      min-height: 420px;
+    }
+    .tree-body::-webkit-scrollbar { width: 6px; }
+    .tree-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    .tree-node { user-select: none; }
+    .tree-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      margin: 2px 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #475569;
+      min-height: 36px;
+      transition: background 0.15s, color 0.15s;
+      border: 1px solid transparent;
+    }
+    .tree-row:hover { background: #f8fafc; }
+    .tree-row.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-color: var(--primary-border);
+      font-weight: 600;
+    }
+    .tree-row.active .node-icon-wrap { box-shadow: 0 0 0 2px var(--primary-border); }
+    .tree-row .toggle {
+      width: 18px; text-align: center; font-size: 11px;
+      color: #94a3b8; flex-shrink: 0;
+    }
+    .tree-row .toggle.empty { visibility: hidden; }
+    .node-icon-wrap {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .tree-row:hover .node-icon-wrap { transform: scale(1.05); }
+    .detail-icon-preview {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: #f8fafc; border-radius: 12px;
+      border: 1px solid #e2e8f0; margin-bottom: 16px;
+    }
+    .detail-icon-preview .preview-badge {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .detail-icon-preview .preview-meta { font-size: 13px; color: #64748b; }
+    .detail-icon-preview .preview-meta strong { display: block; color: #0f172a; font-size: 15px; margin-bottom: 2px; }
+    .icon-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .icon-pick-btn {
+      width: 40px; height: 40px; border-radius: 10px; border: 2px solid transparent;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: all 0.15s;
+    }
+    .icon-pick-btn:hover { transform: scale(1.08); border-color: var(--primary-border); }
+    .icon-pick-btn.selected { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+    .tree-row .node-label {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tree-row .node-add {
+      opacity: 0;
+      width: 26px; height: 26px;
+      border: none;
+      background: #fff;
+      color: var(--primary);
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      transition: opacity 0.15s;
+    }
+    .tree-row:hover .node-add { opacity: 1; }
+    .tree-row .node-add:hover { background: var(--primary-soft); }
+    .tree-children { margin-left: 12px; padding-left: 10px; border-left: 1px dashed #e2e8f0; }
+    .tree-children.collapsed { display: none; }
+
+    /* 详情区 */
+    .detail-panel { min-height: 480px; }
+    .detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #475569;
+      transition: all 0.2s ease;
+    }
+    .btn:hover { border-color: #cbd5e1; background: #f8fafc; }
+    .btn-primary {
+      background: linear-gradient(135deg, #ef4444 0%, var(--primary) 100%);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(226, 35, 26, 0.22);
+    }
+    .btn-primary:hover {
+      filter: brightness(0.96);
+      color: #fff;
+      border-color: transparent;
+    }
+    .btn-danger {
+      color: var(--primary);
+      border-color: rgba(226, 35, 26, 0.35);
+      background: #fff;
+    }
+    .btn-danger:hover { background: #fef2f2; }
+
+    .detail-body { padding: 20px; flex: 1; overflow-y: auto; }
+    .empty-detail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 24px;
+      color: #94a3b8;
+      text-align: center;
+    }
+    .empty-detail i {
+      font-size: 40px;
+      margin-bottom: 12px;
+      color: #cbd5e1;
+    }
+    .empty-detail p { font-size: 14px; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 130px 1fr 130px 1fr;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 14px;
+      background: #fff;
+    }
+    .info-grid .cell-label {
+      background: #f8fafc;
+      padding: 14px 16px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 600;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9;
+    }
+    .info-grid .cell-value {
+      padding: 14px 16px;
+      color: #0f172a;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9;
+    }
+    .info-grid .cell-value:nth-child(4n),
+    .info-grid .cell-label:nth-child(4n) { border-right: none; }
+    .info-grid .row-last.cell-label,
+    .info-grid .row-last.cell-value { border-bottom: none; }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .tag-blue { background: #eff6ff; color: #1d4ed8; }
+    .tag-green { background: #dcfce7; color: #166534; }
+    .tag-orange { background: #fff7ed; color: #c2410c; }
+    .tag-red { background: #fef2f2; color: var(--primary); }
+
+    /* 弹窗 */
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-mask.show { display: flex; }
+    .modal-box {
+      width: min(720px, 96vw);
+      max-height: 90vh;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      border-bottom: 1px solid #f1f5f9;
+      background: linear-gradient(180deg, #fff7f7 0%, #fff 60%);
+    }
+    .modal-head span { font-size: 17px; font-weight: 700; color: #0f172a; }
+    .modal-close {
+      width: 36px; height: 36px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #fff;
+      color: #64748b;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { background: #f8fafc; color: #0f172a; }
+    .modal-body { padding: 22px; overflow-y: auto; flex: 1; }
+    .modal-foot {
+      padding: 14px 22px 18px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fafbfc;
+    }
+    .form-row { margin-bottom: 18px; }
+    .form-row:last-child { margin-bottom: 0; }
+    .form-row label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+    .form-row label .req { color: var(--primary); }
+    .form-row input[type="text"],
+    .form-row input[type="number"],
+    .form-row select {
+      width: 100%;
+      height: 38px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-row input:focus,
+    .form-row select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media (max-width: 640px) { .form-row-2 { grid-template-columns: 1fr; } }
+
+    .seg-btn {
+      display: inline-flex;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f8fafc;
+      padding: 3px;
+      gap: 3px;
+    }
+    .seg-btn button {
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.2s;
+    }
+    .seg-btn button.active {
+      background: #fff;
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .radio-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 20px;
+      align-items: center;
+      font-size: 13px;
+      color: #475569;
+    }
+    .radio-line label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      margin: 0;
+      font-weight: 500;
+    }
+    .hint-i { color: #94a3b8; font-size: 12px; margin-left: 4px; }
+    .num-step { display: flex; align-items: stretch; max-width: 168px; }
+    .num-step input {
+      flex: 1;
+      border-radius: 10px 0 0 10px;
+      text-align: center;
+    }
+    .num-step .step-btns {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #e2e8f0;
+      border-left: none;
+      border-radius: 0 10px 10px 0;
+      overflow: hidden;
+    }
+    .num-step .step-btns button {
+      border: none;
+      background: #f8fafc;
+      padding: 0 12px;
+      font-size: 10px;
+      cursor: pointer;
+      color: #64748b;
+      flex: 1;
+      transition: background 0.15s;
+    }
+    .num-step .step-btns button:hover { background: #f1f5f9; color: var(--primary); }
+    .icon-input { display: flex; gap: 10px; align-items: center; }
+    .icon-input input { flex: 1; }
+    .icon-preview {
+      width: 40px; height: 40px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="admin-content">
+    <div class="page-inner">
+      <div class="page-hero">
+        <div class="page-hero-icon">
+          <span class="icon-menu-mgmt icon-menu-mgmt--lg" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M3 4.25A1.25 1.25 0 0 1 4.25 3h5.5A1.25 1.25 0 0 1 11 4.25V6.5H3V4.25zm10.5 0A1.25 1.25 0 0 1 14.75 3h5.5A1.25 1.25 0 0 1 21.5 4.25V6.5H13.5V4.25zM3 10.25A1.25 1.25 0 0 1 4.25 9h4.25A1.25 1.25 0 0 1 9.5 10.25v2.25H3v-2.25zm8.5 0a1.25 1.25 0 0 1 1.25-1.25h4.25A1.25 1.25 0 0 1 17.25 10.25v2.25H11.5v-2.25zM3 16.25A1.25 1.25 0 0 1 4.25 15h5.75A1.25 1.25 0 0 1 11.25 16.25v2.25H3v-2.25zm9.5 0a1.25 1.25 0 0 1 1.25-1.25h5.75A1.25 1.25 0 0 1 19.5 16.25v2.25H12.5v-2.25z"/><path stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M7.375 6.5v3.75M7.375 12.5v3.75"/></svg></span>
+        </div>
+        <div>
+          <div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">菜单管理</span></div>
+          <h1>菜单管理</h1>
+          <p>维护运营商后台导航菜单结构；支持目录与菜单配置，不含页面内按钮权限配置。</p>
+        </div>
+      </div>
+
+      <div class="layout">
+        <!-- 菜单列表树 -->
+        <div class="panel">
+          <div class="panel-head">
+            <span class="panel-title"><i class="fas fa-sitemap"></i>菜单列表</span>
+            <div class="panel-tools">
+              <button type="button" class="icon-btn" title="新增根菜单" onclick="openMenuModal('add-root')"><i class="fas fa-plus"></i></button>
+              <button type="button" class="icon-btn" title="删除" onclick="deleteSelectedMenu()"><i class="fas fa-trash-can"></i></button>
+              <button type="button" class="icon-btn" title="刷新" onclick="alert('原型：已刷新菜单树')"><i class="fas fa-rotate-right"></i></button>
+            </div>
+          </div>
+          <div class="tree-search">
+            <div class="search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="treeSearch" placeholder="请输入菜单名称" oninput="filterMenuTree(this.value)">
+            </div>
+          </div>
+          <div class="tree-body" id="menuTree"></div>
+        </div>
+
+        <!-- 菜单详情 -->
+        <div class="panel detail-panel">
+          <div class="panel-head">
+            <span class="panel-title"><i class="fas fa-circle-info"></i>菜单详情</span>
+            <div class="detail-actions" id="detailActions" style="display:none;">
+              <button type="button" class="btn btn-primary" onclick="openMenuModal('add-child')"><i class="fas fa-plus"></i>新增子菜单</button>
+              <button type="button" class="btn" onclick="openMenuModal('edit')"><i class="fas fa-pen"></i>编辑</button>
+              <button type="button" class="btn btn-danger" onclick="deleteSelectedMenu()"><i class="fas fa-trash-can"></i>删除</button>
+            </div>
+          </div>
+          <div class="detail-body" id="detailBody">
+            <div class="empty-detail">
+              <i class="fas fa-hand-pointer"></i>
+              <p>请在左侧选择菜单节点查看详情</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 编辑菜单弹窗 -->
+  <div class="modal-mask" id="menuModal">
+    <div class="modal-box" role="dialog" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <span id="modalTitle">编辑菜单</span>
+        <button type="button" class="modal-close" onclick="closeMenuModal()" aria-label="关闭"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>上级菜单</label>
+          <select id="fParent">
+            <option value="root">根目录</option>
+            <option value="supplier">供应商管理</option>
+            <option value="buyer">采购商管理</option>
+            <option value="system">系统管理</option>
+          </select>
+        </div>
+        <div class="form-row form-row-2">
+          <div>
+            <label>菜单类型</label>
+            <div class="seg-btn" id="segMenuType">
+              <button type="button" class="active" data-val="dir" onclick="setSeg(this,'segMenuType')">目录</button>
+              <button type="button" data-val="menu" onclick="setSeg(this,'segMenuType')">菜单</button>
+            </div>
+          </div>
+          <div>
+            <label>布局方式 <i class="fas fa-circle-info hint-i" title="目录类型可配置布局"></i></label>
+            <div class="radio-line">
+              <label><input type="radio" name="layout" value="default" checked> 默认布局</label>
+              <label><input type="radio" name="layout" value="blank"> 空白布局</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>菜单名称 <span class="req">*</span></label>
+          <input type="text" id="fName" placeholder="请输入菜单名称">
+        </div>
+        <div class="form-row form-row-2">
+          <div>
+            <label>图标类型</label>
+            <div class="radio-line">
+              <label><input type="radio" name="iconType" value="iconify" checked> iconify</label>
+              <label><input type="radio" name="iconType" value="local"> 本地图标</label>
+            </div>
+          </div>
+          <div>
+            <label>菜单图标 <i class="fas fa-circle-info hint-i" title="与侧栏展示一致，支持 iconify 编码或下方快捷选择"></i></label>
+            <div class="icon-input">
+              <input type="text" id="fIcon" value="mdi:store" oninput="updateIconPreview()">
+              <div class="icon-preview" id="modalIconPreview"><i class="fas fa-store"></i></div>
+            </div>
+            <div class="icon-picker" id="iconPicker"></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>是否外链 <i class="fas fa-circle-info hint-i"></i></label>
+          <div class="radio-line">
+            <label><input type="radio" name="external" value="yes"> 是</label>
+            <label><input type="radio" name="external" value="no" checked> 否</label>
+            <label><input type="radio" name="external" value="iframe"> iframe</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>路由地址 <span class="req">*</span> <i class="fas fa-circle-info hint-i"></i></label>
+          <input type="text" id="fRoute" placeholder="如：gygl">
+        </div>
+        <div class="form-row form-row-2">
+          <div>
+            <label>显示状态 <i class="fas fa-circle-info hint-i"></i></label>
+            <div class="radio-line">
+              <label><input type="radio" name="visible" value="show" checked> 显示</label>
+              <label><input type="radio" name="visible" value="hide"> 隐藏</label>
+            </div>
+          </div>
+          <div>
+            <label>菜单状态 <i class="fas fa-circle-info hint-i"></i></label>
+            <div class="radio-line">
+              <label><input type="radio" name="status" value="normal" checked> 正常</label>
+              <label><input type="radio" name="status" value="disabled"> 停用</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>排序 <span class="req">*</span></label>
+          <div class="num-step">
+            <input type="number" id="fSort" value="2" min="0">
+            <div class="step-btns">
+              <button type="button" onclick="stepSort(1)"><i class="fas fa-chevron-up"></i></button>
+              <button type="button" onclick="stepSort(-1)"><i class="fas fa-chevron-down"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn" onclick="closeMenuModal()">取消</button>
+        <button type="button" class="btn btn-primary" onclick="saveMenuModal()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /** 菜单图标规范：与运营商后台侧栏一致，目录/菜单分色 */
+    var MENU_ICONS = {
+      root:       { fa: 'fa-folder-tree', bg: '#fef3c7', color: '#b45309', mdi: 'mdi:folder-outline', label: '根目录' },
+      _dir:       { fa: 'fa-folder-open', bg: '#fff7ed', color: '#ea580c', mdi: 'mdi:folder-open', label: '目录' },
+      _menu:      { fa: 'fa-circle-dot', bg: '#f1f5f9', color: '#64748b', mdi: 'mdi:circle-small', label: '菜单' },
+      home:       { fa: 'fa-house', bg: '#fef2f2', color: '#E2231A', mdi: 'mdi:home', label: '工作台' },
+      station:    { fa: 'fa-sitemap', bg: '#f3e8ff', color: '#7c3aed', mdi: 'mdi:sitemap', label: '分站' },
+      supplier:   { fa: 'fa-store', bg: '#fff7ed', color: '#ea580c', mdi: 'mdi:store', label: '供应商' },
+      supplierList: { fa: 'fa-list', bg: '#ffedd5', color: '#c2410c', mdi: 'mdi:format-list-bulleted', label: '列表' },
+      supplierUser: { fa: 'fa-user-gear', bg: '#ffedd5', color: '#c2410c', mdi: 'mdi:account-cog', label: '用户' },
+      supplierRole: { fa: 'fa-user-shield', bg: '#ffedd5', color: '#c2410c', mdi: 'mdi:shield-account', label: '角色' },
+      supplierDept: { fa: 'fa-building', bg: '#ffedd5', color: '#c2410c', mdi: 'mdi:office-building', label: '部门' },
+      buyer:      { fa: 'fa-users', bg: '#ecfeff', color: '#0891b2', mdi: 'mdi:account-group', label: '采购商' },
+      buyerList:  { fa: 'fa-list', bg: '#cffafe', color: '#0e7490', mdi: 'mdi:format-list-bulleted', label: '列表' },
+      buyerUser:  { fa: 'fa-user-gear', bg: '#cffafe', color: '#0e7490', mdi: 'mdi:account-cog', label: '用户' },
+      buyerRole:  { fa: 'fa-user-shield', bg: '#cffafe', color: '#0e7490', mdi: 'mdi:shield-account', label: '角色' },
+      buyerDept:  { fa: 'fa-building', bg: '#cffafe', color: '#0e7490', mdi: 'mdi:office-building', label: '部门' },
+      productAudit: { fa: 'fa-boxes-stacked', bg: '#ecfdf5', color: '#059669', mdi: 'mdi:package-variant', label: '商品审核' },
+      news:       { fa: 'fa-newspaper', bg: '#eef2ff', color: '#4f46e5', mdi: 'mdi:newspaper', label: '资讯' },
+      law:        { fa: 'fa-scale-balanced', bg: '#fffbeb', color: '#d97706', mdi: 'mdi:scale-balance', label: '法规' },
+      notice:     { fa: 'fa-bullhorn', bg: '#fdf2f8', color: '#db2777', mdi: 'mdi:bullhorn', label: '公告' },
+      po:         { fa: 'fa-file-invoice', bg: '#eff6ff', color: '#2563eb', mdi: 'mdi:file-document', label: '采购单' },
+      orders:     { fa: 'fa-bag-shopping', bg: '#ecfeff', color: '#0284c7', mdi: 'mdi:shopping', label: '订单' },
+      settlement: { fa: 'fa-file-invoice-dollar', bg: '#f0fdf4', color: '#16a34a', mdi: 'mdi:cash-multiple', label: '结算' },
+      system:     { fa: 'fa-gears', bg: '#f1f5f9', color: '#475569', mdi: 'mdi:cog', label: '系统' },
+      menuManage: { fa: 'icon-menu-mgmt-svg', bg: '#fef2f2', color: '#E2231A', mdi: 'mdi:file-tree', label: '菜单', customSvg: true },
+      cockpit:    { fa: 'fa-gauge-high', bg: '#ede9fe', color: '#6d28d9', mdi: 'mdi:monitor-dashboard', label: '驾驶舱' }
+    };
+
+    var ICON_PRESETS = ['home','station','supplier','buyer','productAudit','news','law','notice','po','orders','settlement','menuManage','cockpit','supplierUser','supplierRole'];
+
+    function getMenuIconDef(id, type) {
+      if (MENU_ICONS[id]) return MENU_ICONS[id];
+      return type === 'dir' ? MENU_ICONS._dir : MENU_ICONS._menu;
+    }
+
+    var MENU_MGMT_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M3 4.25A1.25 1.25 0 0 1 4.25 3h5.5A1.25 1.25 0 0 1 11 4.25V6.5H3V4.25zm10.5 0A1.25 1.25 0 0 1 14.75 3h5.5A1.25 1.25 0 0 1 21.5 4.25V6.5H13.5V4.25zM3 10.25A1.25 1.25 0 0 1 4.25 9h4.25A1.25 1.25 0 0 1 9.5 10.25v2.25H3v-2.25zm8.5 0a1.25 1.25 0 0 1 1.25-1.25h4.25A1.25 1.25 0 0 1 17.25 10.25v2.25H11.5v-2.25zM3 16.25A1.25 1.25 0 0 1 4.25 15h5.75A1.25 1.25 0 0 1 11.25 16.25v2.25H3v-2.25zm9.5 0a1.25 1.25 0 0 1 1.25-1.25h5.75A1.25 1.25 0 0 1 19.5 16.25v2.25H12.5v-2.25z"/><path stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M7.375 6.5v3.75M7.375 12.5v3.75"/></svg>';
+
+    function iconBadgeHtml(id, isRoot, type) {
+      var ic = isRoot ? MENU_ICONS.root : getMenuIconDef(id, type);
+      if (ic.customSvg) {
+        return '<span class="node-icon-wrap" style="background:' + ic.bg + ';color:' + ic.color + '"><span class="icon-menu-mgmt" style="width:16px;height:16px">' + MENU_MGMT_SVG + '</span></span>';
+      }
+      return '<span class="node-icon-wrap" style="background:' + ic.bg + ';color:' + ic.color + '"><i class="fas ' + ic.fa + '"></i></span>';
+    }
+
+    function mdiToFa(mdi) {
+      if (mdi === 'mdi:file-tree') {
+        return MENU_ICONS.menuManage;
+      }
+      var hit = Object.keys(MENU_ICONS).find(function (k) { return MENU_ICONS[k].mdi === mdi; });
+      return hit ? MENU_ICONS[hit] : { fa: 'fa-icons', bg: '#f1f5f9', color: '#64748b', mdi: mdi, label: '自定义' };
+    }
+
+    function renderIconInner(ic) {
+      if (ic.customSvg) {
+        return '<span class="icon-menu-mgmt" style="width:100%;height:100%">' + MENU_MGMT_SVG + '</span>';
+      }
+      return '<i class="fas ' + ic.fa + '"></i>';
+    }
+
+    var menuData = {
+      root: { id: 'root', name: '根目录', type: 'dir', typeLabel: '目录', status: 'normal', statusLabel: '正常', route: '-', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '-', icon: 'mdi:folder-outline' },
+      home: { id: 'home', name: '工作台首页', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_dashboard', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:home', sort: 1 },
+      station: { id: 'station', name: '分站管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_station', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:sitemap', sort: 2 },
+      supplier: { id: 'supplier', name: '供应商管理', type: 'dir', typeLabel: '目录', status: 'normal', statusLabel: '正常', route: 'gygl', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:store', sort: 3 },
+      supplierList: { id: 'supplierList', name: '供应商管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_supplier_manage', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '供应商管理', icon: 'mdi:format-list-bulleted', sort: 1 },
+      supplierUser: { id: 'supplierUser', name: '用户管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_user', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '供应商管理', icon: 'mdi:account-cog', sort: 2 },
+      supplierRole: { id: 'supplierRole', name: '角色管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_role', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '供应商管理', icon: 'mdi:shield-account', sort: 3 },
+      supplierDept: { id: 'supplierDept', name: '部门管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_dept', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '供应商管理', icon: 'mdi:office-building', sort: 4 },
+      buyer: { id: 'buyer', name: '采购商管理', type: 'dir', typeLabel: '目录', status: 'normal', statusLabel: '正常', route: 'cgsgl', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:account-group', sort: 4 },
+      buyerList: { id: 'buyerList', name: '采购商管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_buyer_manage', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '采购商管理', icon: 'mdi:format-list-bulleted', sort: 1 },
+      buyerUser: { id: 'buyerUser', name: '用户管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_user', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '采购商管理', icon: 'mdi:account-cog', sort: 2 },
+      buyerRole: { id: 'buyerRole', name: '角色管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_role', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '采购商管理', icon: 'mdi:shield-account', sort: 3 },
+      buyerDept: { id: 'buyerDept', name: '部门管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_dept', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '采购商管理', icon: 'mdi:office-building', sort: 4 },
+      productAudit: { id: 'productAudit', name: '商品上架审核', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_product_audit_list', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:package-variant', sort: 5 },
+      news: { id: 'news', name: '新闻资讯管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_news_list', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:newspaper', sort: 6 },
+      law: { id: 'law', name: '采购法规管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_law_list', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:scale-balance', sort: 7 },
+      notice: { id: 'notice', name: '平台公告管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_notice', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:bullhorn', sort: 8 },
+      po: { id: 'po', name: '采购单管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_po', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:file-document', sort: 9 },
+      orders: { id: 'orders', name: '订单管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_orders', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:shopping', sort: 10 },
+      settlement: { id: 'settlement', name: '平台结算管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'operator_platform_settlement', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:cash-multiple', sort: 11 },
+      system: { id: 'system', name: '系统管理', type: 'dir', typeLabel: '目录', status: 'normal', statusLabel: '正常', route: 'xtgl', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:cog', sort: 12 },
+      menuManage: { id: 'menuManage', name: '菜单管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_menu_manage', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '系统管理', icon: 'mdi:file-tree', sort: 1 },
+      cockpit: { id: 'cockpit', name: '数据驾驶舱', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_cockpit', external: 'yes', externalLabel: '是', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:monitor-dashboard', sort: 13 }
+    };
+
+    var treeStructure = [
+      { id: 'root', label: '根目录', type: 'dir', children: [
+        { id: 'home', label: '工作台首页', type: 'menu' },
+        { id: 'station', label: '分站管理', type: 'menu' },
+        { id: 'supplier', label: '供应商管理', type: 'dir', children: [
+          { id: 'supplierList', label: '供应商管理', type: 'menu' },
+          { id: 'supplierUser', label: '用户管理', type: 'menu' },
+          { id: 'supplierRole', label: '角色管理', type: 'menu' },
+          { id: 'supplierDept', label: '部门管理', type: 'menu' }
+        ]},
+        { id: 'buyer', label: '采购商管理', type: 'dir', children: [
+          { id: 'buyerList', label: '采购商管理', type: 'menu' },
+          { id: 'buyerUser', label: '用户管理', type: 'menu' },
+          { id: 'buyerRole', label: '角色管理', type: 'menu' },
+          { id: 'buyerDept', label: '部门管理', type: 'menu' }
+        ]},
+        { id: 'productAudit', label: '商品上架审核', type: 'menu' },
+        { id: 'news', label: '新闻资讯管理', type: 'menu' },
+        { id: 'law', label: '采购法规管理', type: 'menu' },
+        { id: 'notice', label: '平台公告管理', type: 'menu' },
+        { id: 'po', label: '采购单管理', type: 'menu' },
+        { id: 'orders', label: '订单管理', type: 'menu' },
+        { id: 'settlement', label: '平台结算管理', type: 'menu' },
+        { id: 'system', label: '系统管理', type: 'dir', children: [
+          { id: 'menuManage', label: '菜单管理', type: 'menu' }
+        ]},
+        { id: 'cockpit', label: '数据驾驶舱', type: 'menu' }
+      ]}
+    ];
+
+    var selectedMenuId = null;
+    var modalMode = 'edit';
+
+    function emptyDetailHtml(msg) {
+      return '<div class="empty-detail"><i class="fas fa-folder-open"></i><p>' + msg + '</p></div>';
+    }
+
+    function renderTree(nodes, container, depth) {
+      depth = depth || 0;
+      nodes.forEach(function (node) {
+        if (node.id === 'root' && depth === 0) {
+          var rootEl = document.createElement('div');
+          rootEl.className = 'tree-node';
+          rootEl.innerHTML = buildRow(node, true, false);
+          container.appendChild(rootEl);
+          if (node.children && node.children.length) {
+            var ch = document.createElement('div');
+            ch.className = 'tree-children';
+            ch.dataset.parent = node.id;
+            renderTree(node.children, ch, depth + 1);
+            container.appendChild(ch);
+          }
+          return;
+        }
+        var wrap = document.createElement('div');
+        wrap.className = 'tree-node';
+        wrap.dataset.id = node.id;
+        var hasChild = node.children && node.children.length;
+        wrap.innerHTML = buildRow(node, false, hasChild);
+        container.appendChild(wrap);
+        if (hasChild) {
+          var childBox = document.createElement('div');
+          childBox.className = 'tree-children';
+          childBox.dataset.parent = node.id;
+          renderTree(node.children, childBox, depth + 1);
+          container.appendChild(childBox);
+        }
+      });
+    }
+
+    function buildRow(node, isRoot, hasChild) {
+      var chevron = hasChild
+        ? '<span class="toggle" onclick="event.stopPropagation();toggleTreeBranch(this)"><i class="fas fa-caret-down"></i></span>'
+        : '<span class="toggle empty"></span>';
+      return '<div class="tree-row" data-id="' + node.id + '" onclick="selectMenu(\'' + node.id + '\', this)">' +
+        chevron +
+        iconBadgeHtml(node.id, isRoot, node.type) +
+        '<span class="node-label">' + node.label + '</span>' +
+        (isRoot ? '' : '<button type="button" class="node-add" onclick="event.stopPropagation();quickAddChild(\'' + node.id + '\')" title="新增子菜单"><i class="fas fa-plus"></i></button>') +
+        '</div>';
+    }
+
+    function toggleTreeBranch(el) {
+      var row = el.closest('.tree-node');
+      var next = row.nextElementSibling;
+      if (next && next.classList.contains('tree-children')) {
+        next.classList.toggle('collapsed');
+        var icon = el.querySelector('i');
+        if (next.classList.contains('collapsed')) {
+          icon.classList.replace('fa-caret-down', 'fa-caret-right');
+        } else {
+          icon.classList.replace('fa-caret-right', 'fa-caret-down');
+        }
+      }
+    }
+
+    function selectMenu(id, rowEl) {
+      if (id === 'root') {
+        selectedMenuId = null;
+        document.querySelectorAll('.tree-row').forEach(function (r) { r.classList.remove('active'); });
+        if (rowEl) rowEl.classList.add('active');
+        document.getElementById('detailActions').style.display = 'none';
+        document.getElementById('detailBody').innerHTML = emptyDetailHtml('根目录为虚拟节点，请选择具体菜单查看详情');
+        return;
+      }
+      selectedMenuId = id;
+      document.querySelectorAll('.tree-row').forEach(function (r) { r.classList.remove('active'); });
+      if (rowEl) rowEl.classList.add('active');
+      var d = menuData[id];
+      if (!d) return;
+      document.getElementById('detailActions').style.display = 'flex';
+      var extClass = d.external === 'no' ? 'tag-orange' : 'tag-blue';
+      var statusClass = d.status === 'normal' ? 'tag-green' : 'tag-red';
+      var ic = mdiToFa(d.icon || 'mdi:menu');
+      document.getElementById('detailBody').innerHTML =
+        '<div class="detail-icon-preview">' +
+        '<span class="preview-badge" style="background:' + ic.bg + ';color:' + ic.color + '">' + renderIconInner(ic) + '</span>' +
+        '<div class="preview-meta"><strong>' + d.name + '</strong>图标编码：' + (d.icon || '-') + ' · 侧栏预览</div></div>' +
+        '<div class="info-grid">' +
+        '<div class="cell-label">菜单类型</div><div class="cell-value"><span class="tag-pill tag-blue">' + d.typeLabel + '</span></div>' +
+        '<div class="cell-label">菜单状态</div><div class="cell-value"><span class="tag-pill ' + statusClass + '">' + d.statusLabel + '</span></div>' +
+        '<div class="cell-label">菜单名称</div><div class="cell-value font-medium">' + d.name + '</div>' +
+        '<div class="cell-label">菜单图标</div><div class="cell-value"><span class="tag-pill tag-red">' + ic.label + '</span> <code class="text-xs text-slate-500">' + (d.icon || '') + '</code></div>' +
+        '<div class="cell-label">路由地址</div><div class="cell-value"><code class="text-sm bg-slate-50 px-2 py-0.5 rounded">' + d.route + '</code></div>' +
+        '<div class="cell-label">是否外链</div><div class="cell-value"><span class="tag-pill ' + extClass + '">' + d.externalLabel + '</span></div>' +
+        '<div class="cell-label">显示状态</div><div class="cell-value"><span class="tag-pill tag-blue">' + d.visibleLabel + '</span></div>' +
+        '<div class="cell-label row-last">上级菜单</div><div class="cell-value row-last">' + (d.parentName || '-') + '</div>' +
+        '<div class="cell-label row-last">排序</div><div class="cell-value row-last">' + (d.sort != null ? d.sort : '-') + '</div>' +
+        '</div>';
+    }
+
+    function renderIconPicker(selectedMdi) {
+      var box = document.getElementById('iconPicker');
+      if (!box) return;
+      box.innerHTML = ICON_PRESETS.map(function (key) {
+        var ic = MENU_ICONS[key];
+        var sel = selectedMdi === ic.mdi ? ' selected' : '';
+        var inner = ic.customSvg
+          ? '<span class="icon-menu-mgmt" style="width:18px;height:18px">' + MENU_MGMT_SVG + '</span>'
+          : '<i class="fas ' + ic.fa + '"></i>';
+        return '<button type="button" class="icon-pick-btn' + sel + '" style="background:' + ic.bg + ';color:' + ic.color + '" title="' + ic.label + '" onclick="pickIcon(\'' + ic.mdi + '\', this)">' + inner + '</button>';
+      }).join('');
+    }
+
+    function pickIcon(mdi, btn) {
+      document.getElementById('fIcon').value = mdi;
+      document.querySelectorAll('.icon-pick-btn').forEach(function (b) { b.classList.remove('selected'); });
+      if (btn) btn.classList.add('selected');
+      updateIconPreview();
+    }
+
+    function updateIconPreview() {
+      var mdi = document.getElementById('fIcon').value.trim() || 'mdi:menu';
+      var ic = mdiToFa(mdi);
+      var el = document.getElementById('modalIconPreview');
+      if (el) {
+        el.style.background = ic.bg;
+        el.style.color = ic.color;
+        el.innerHTML = renderIconInner(ic);
+      }
+      renderIconPicker(mdi);
+    }
+
+    function filterMenuTree(keyword) {
+      keyword = (keyword || '').trim().toLowerCase();
+      document.querySelectorAll('.tree-node[data-id]').forEach(function (node) {
+        var label = node.querySelector('.node-label');
+        if (!label) return;
+        var match = !keyword || label.textContent.toLowerCase().indexOf(keyword) >= 0;
+        node.style.display = match ? '' : 'none';
+      });
+    }
+
+    function openMenuModal(mode) {
+      modalMode = mode;
+      var title = mode === 'edit' ? '编辑菜单' : (mode === 'add-child' ? '新增子菜单' : '新增菜单');
+      document.getElementById('modalTitle').textContent = title;
+      if (mode === 'edit' && selectedMenuId && menuData[selectedMenuId]) {
+        var d = menuData[selectedMenuId];
+        document.getElementById('fName').value = d.name;
+        document.getElementById('fRoute').value = d.route;
+        document.getElementById('fIcon').value = d.icon || 'mdi:store';
+        document.getElementById('fSort').value = d.sort != null ? d.sort : 0;
+        document.querySelector('#segMenuType button[data-val="' + d.type + '"]')?.click();
+        updateIconPreview();
+      } else {
+        document.getElementById('fName').value = '';
+        document.getElementById('fRoute').value = '';
+        document.getElementById('fSort').value = 1;
+        document.getElementById('fIcon').value = 'mdi:menu';
+        updateIconPreview();
+      }
+      document.getElementById('menuModal').classList.add('show');
+    }
+
+    function closeMenuModal() {
+      document.getElementById('menuModal').classList.remove('show');
+    }
+
+    function saveMenuModal() {
+      alert('原型：菜单已保存');
+      closeMenuModal();
+    }
+
+    function deleteSelectedMenu() {
+      if (!selectedMenuId) {
+        alert('请先选择要删除的菜单');
+        return;
+      }
+      if (confirm('确认删除所选菜单？')) alert('原型：已删除');
+    }
+
+    function quickAddChild(parentId) {
+      selectedMenuId = parentId;
+      openMenuModal('add-child');
+    }
+
+    function setSeg(btn, groupId) {
+      document.querySelectorAll('#' + groupId + ' button').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+
+    function stepSort(delta) {
+      var inp = document.getElementById('fSort');
+      inp.value = Math.max(0, parseInt(inp.value, 10) + delta || 0);
+    }
+
+    document.getElementById('menuModal').addEventListener('click', function (e) {
+      if (e.target === this) closeMenuModal();
+    });
+
+    renderIconPicker('mdi:store');
+    renderTree(treeStructure, document.getElementById('menuTree'));
+    selectMenu('supplier', document.querySelector('.tree-row[data-id="supplier"]'));
+  </script>
+</body>
+</html>
