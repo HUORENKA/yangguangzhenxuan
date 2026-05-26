@@ -647,8 +647,26 @@
       border-top: 1px solid #e5e7eb;
       display: flex;
       justify-content: flex-end;
+      align-items: center;
       gap: 10px;
       flex-wrap: wrap;
+    }
+
+    .btn-delete {
+      margin-right: auto;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      color: var(--danger);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-delete:hover {
+      background: #fee2e2;
     }
 
     .form-field {
@@ -703,6 +721,10 @@
     .dept-hint {
       margin-top: 6px;
       font-size: 12px;
+      color: #94a3b8;
+    }
+
+    #approverDeptInput::placeholder {
       color: #94a3b8;
     }
 
@@ -1533,11 +1555,12 @@
             <option value="后勤保障部">后勤保障部</option>
             <option value="资产管理部">资产管理部</option>
           </select>
-          <input id="approverDeptInput" type="text" placeholder="请输入或选择所在部门" style="margin-top:8px;">
+          <input id="approverDeptInput" type="text" placeholder="手动输入" style="margin-top:8px;">
           <div class="dept-hint">支持从下拉框选择常用部门，也可在下方输入框自由填写。</div>
         </div>
       </div>
       <div class="simple-modal-foot">
+        <button class="btn-delete" id="approverDeleteBtn" type="button" style="display:none;" onclick="deleteApprover()"><i class="fa-solid fa-trash"></i> 删除</button>
         <button class="btn-ghost" type="button" onclick="closeApproverModal()">取消</button>
         <button class="btn-main" type="button" onclick="saveApprover()">保存</button>
       </div>
@@ -2036,12 +2059,27 @@
       document.getElementById('approverDeptSelect').value = '';
       document.getElementById('approverPhoneError').textContent = '';
       if (target) syncDeptSelectFromInput(target.department);
+      const delBtn = document.getElementById('approverDeleteBtn');
+      if (delBtn) delBtn.style.display = target ? 'inline-flex' : 'none';
       document.getElementById('approverOverlay').classList.add('show');
     }
 
     function closeApproverModal() {
       document.getElementById('approverOverlay').classList.remove('show');
       editingApproverId = null;
+      const delBtn = document.getElementById('approverDeleteBtn');
+      if (delBtn) delBtn.style.display = 'none';
+    }
+
+    function deleteApprover() {
+      if (!editingApproverId) return;
+      if (!confirm('确认删除该审批人员？')) return;
+      const id = editingApproverId;
+      approvers = approvers.filter(item => item.id !== id);
+      selectedApproverIds = selectedApproverIds.filter(item => item !== id);
+      closeApproverModal();
+      renderApprovers();
+      showToast('审批人员已删除。');
     }
 
     function saveApprover() {

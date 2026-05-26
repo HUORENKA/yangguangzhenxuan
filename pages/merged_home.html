@@ -909,7 +909,6 @@
     .nr-notice-title:hover { color: var(--brand); }
     .nr-notice-date { font-size: 12px; color: #94a3b8; flex-shrink: 0; }
     /* 法规列表 */
-    .nr-law-bar { display: flex; align-items: center; justify-content: flex-end; padding: 8px 20px 4px; flex-shrink: 0; border-bottom: 1px solid #f8fafc; }
     .nr-law-item { display: flex; align-items: center; gap: 12px; padding: 10px 20px; border-bottom: 1px solid #f8fafc; cursor: pointer; transition: background 0.15s; }
     .nr-law-item:hover { background: rgba(249, 246, 241, 0.95); }
     .nr-law-item:last-child { border-bottom: none; }
@@ -932,6 +931,7 @@
     .cp-card-icon.plan { background: linear-gradient(135deg,#dbeafe,#bfdbfe); }
     .cp-card-icon.budget { background: linear-gradient(135deg,#d1fae5,#a7f3d0); }
     .cp-card-icon.contract { background: linear-gradient(135deg,#fce7f3,#fbcfe8); }
+    .cp-card-icon.approver { background: linear-gradient(135deg,#fce7f3,#fbcfe8); }
     .cp-card-name { font-size: 16px; font-weight: 800; color: #0f172a; line-height: 1.35; }
     .cp-card-desc { font-size: 12px; color: #64748b; line-height: 1.6; flex: none; }
     .cp-card-enter { font-size: 12px; color: #ff6a00; font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: auto; flex: none; }
@@ -948,6 +948,41 @@
       border-style: dashed;
     }
     .cp-card-stat-guest-msg { font-size: 12px; color: #94a3b8; font-weight: 600; text-align: center; width: 100%; }
+
+    /* 审批人员弹窗 */
+    .approver-modal-head { align-items: center; gap: 12px; }
+    .approver-modal-head .gm-title { flex: 1; }
+    .approver-add-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 8px; border: 1px solid #bfdbfe;
+      background: #eff6ff; color: #2563eb; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .approver-add-btn:hover { background: #dbeafe; }
+    .approver-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    @media (max-width: 640px) { .approver-grid { grid-template-columns: 1fr; } }
+    .approver-card {
+      position: relative; background: #fff; border: 1px solid #fecaca; border-radius: 10px;
+      padding: 18px 16px 14px; min-height: 140px;
+    }
+    .approver-card-badge {
+      position: absolute; top: 14px; right: 14px; width: 22px; height: 22px; border-radius: 50%;
+      background: #ef4444; color: #fff; font-size: 11px; display: flex; align-items: center; justify-content: center;
+    }
+    .approver-card-name { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 14px; padding-right: 28px; }
+    .approver-card-row { font-size: 13px; color: #64748b; margin-bottom: 8px; line-height: 1.5; }
+    .approver-card-row span { color: #475569; font-weight: 600; margin-right: 6px; }
+    .approver-card-edit {
+      margin-top: 14px; display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; background: #f8fafc;
+      font-size: 12px; font-weight: 600; color: #475569; cursor: pointer;
+    }
+    .approver-card-edit:hover { background: #f1f5f9; }
+    .approver-form-grid { display: grid; gap: 12px; }
+    .approver-form-grid label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; }
+    .approver-form-grid select.form-input { width: 100%; padding: 8px 12px; margin-bottom: 8px; }
+    .approver-dept-hint { font-size: 12px; color: #94a3b8; margin-top: 6px; line-height: 1.5; }
+    #approverFormDeptInput::placeholder { color: #94a3b8; }
+    .approver-form-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 
     /* 运营数据板 */
     .data-board-section { padding: 36px 0; }
@@ -1041,15 +1076,7 @@
       .platform-stat-item:last-child { border-bottom: none; }
     }
 
-    /* 管理法规弹窗 */
-    .law-manage-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.56); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 150; }
-    .law-manage-overlay.open { display: flex; }
-    .law-manage-box { width: min(720px, calc(100vw - 40px)); max-height: calc(100vh - 80px); border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 28px 60px rgba(15,23,42,0.22); display: flex; flex-direction: column; }
-    .law-manage-head { padding: 18px 22px 14px; border-bottom: 1px solid rgba(226,232,240,0.9); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .law-manage-body { flex: 1; overflow-y: auto; padding: 10px 22px; }
-    .law-manage-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-    .law-manage-item:last-child { border-bottom: none; }
-    .law-manage-actions { padding: 14px 22px; border-top: 1px solid rgba(226,232,240,0.9); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+
 
     /* AI推荐采购按钮 */
     .ai-reco-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px; border: none; background: linear-gradient(135deg,#7c3aed,#4f46e5); color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s; box-shadow: 0 2px 8px rgba(124,58,237,0.25); flex-shrink: 0; }
@@ -1672,9 +1699,6 @@
             </div>
             <!-- 采购法规 -->
             <div class="nr-pane" id="nrPane-law">
-              <div class="nr-law-bar">
-                <button class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openLawManageModal()"><i class="fa-solid fa-pen-to-square"></i> 法规文件管理</button>
-              </div>
               <a class="nr-law-item" href="./law_detail.html?id=zfcgfl">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">中华人民共和国政府采购法</span>
@@ -1722,7 +1746,7 @@
       <div class="container">
         <div class="home-section-head">
           <h2 class="home-section-title"><i class="fa-solid fa-shield-halved" style="color:#ff6a00;font-size:18px;"></i> 采购合规通</h2>
-          <p class="home-section-subtitle">覆盖采购全流程合规管理，计划、预算、合同一站到位。</p>
+          <p class="home-section-subtitle">覆盖采购全流程合规管理，计划、预算、审批一站到位。</p>
         </div>
         <div class="compliance-pass-grid">
           <div class="cp-card" onclick="onCompliancePassCardEnter('plan')">
@@ -1761,21 +1785,21 @@
             </div>
             <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
           </div>
-          <div class="cp-card" onclick="onCompliancePassCardEnter('contract')">
+          <div class="cp-card" onclick="onCompliancePassCardEnter('approver')">
             <div class="cp-card-top">
-              <div class="cp-card-icon contract">📝</div>
+              <div class="cp-card-icon approver">👤</div>
               <div class="cp-card-text">
-                <div class="cp-card-name">合同管理</div>
-                <div class="cp-card-desc">管理合同全生命周期，AI自动审核条款风险，签章存档。</div>
+                <div class="cp-card-name">审批人员</div>
+                <div class="cp-card-desc">维护采购审批链条人员，按部门配置审批节点与联系方式。</div>
               </div>
             </div>
-            <div class="cp-card-stat cp-card-stat--guest" id="cpStatContractGuest">
+            <div class="cp-card-stat cp-card-stat--guest" id="cpStatApproverGuest">
               <span class="cp-card-stat-guest-msg">登录后查看单位数据</span>
             </div>
-            <div class="cp-card-stat cp-card-stat--user" id="cpStatContractUser" style="display:none;">
-              <span class="cp-card-stat-num pink">28</span>
-              <span class="cp-card-stat-unit">个</span>
-              <span class="cp-card-stat-label">合同模板数</span>
+            <div class="cp-card-stat cp-card-stat--user" id="cpStatApproverUser" style="display:none;">
+              <span class="cp-card-stat-num pink" id="cpStatApproverCount">2</span>
+              <span class="cp-card-stat-unit">人</span>
+              <span class="cp-card-stat-label">审批人数</span>
             </div>
             <div class="cp-card-enter">进入功能 <i class="fa-solid fa-arrow-right" style="font-size:9px;"></i></div>
           </div>
@@ -2374,84 +2398,6 @@
     </div>
   </div>
 
-  <div class="law-manage-overlay" id="lawManageModal" onclick="closeLawManageModal(event)">
-    <div class="law-manage-box" onclick="event.stopPropagation()">
-      <div class="law-manage-head">
-        <div>
-          <h3 style="margin:0;font-size:20px;font-weight:800;">采购法规管理</h3>
-          <p style="margin:5px 0 0;font-size:13px;color:#64748b;">维护平台展示的采购法规条目。</p>
-        </div>
-        <button class="modal-close" type="button" onclick="closeLawManageModal()"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="law-manage-body">
-        <div class="law-manage-item">
-          <div class="law-icon">📘</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:700;color:#0f172a;">中华人民共和国政府采购法</div>
-            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2002-06-29 &nbsp;|&nbsp; 修订：2022-06-24</div>
-          </div>
-          <span class="law-status active" style="margin-right:8px;">现行有效</span>
-          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
-          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
-        </div>
-        <div class="law-manage-item">
-          <div class="law-icon">📗</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:700;color:#0f172a;">政府采购法实施条例</div>
-            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2015-02-27 &nbsp;|&nbsp; 修订：2022-04-06</div>
-          </div>
-          <span class="law-status active" style="margin-right:8px;">现行有效</span>
-          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
-          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
-        </div>
-        <div class="law-manage-item">
-          <div class="law-icon">📙</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:700;color:#0f172a;">政府采购货物和服务招标投标管理办法</div>
-            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2017-07-11 &nbsp;|&nbsp; 修订：2022-09-01</div>
-          </div>
-          <span class="law-status updated" style="margin-right:8px;">近期修订</span>
-          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
-          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
-        </div>
-        <div class="law-manage-item">
-          <div class="law-icon">📕</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:700;color:#0f172a;">政府采购非招标采购方式管理办法</div>
-            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2013-12-19 &nbsp;|&nbsp; 修订：2021-08-30</div>
-          </div>
-          <span class="law-status active" style="margin-right:8px;">现行有效</span>
-          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
-          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
-        </div>
-        <div class="law-manage-item">
-          <div class="law-icon">📘</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:700;color:#0f172a;">政府采购评审专家管理办法</div>
-            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：2016-12-27 &nbsp;|&nbsp; 修订：2021-08-09</div>
-          </div>
-          <span class="law-status active" style="margin-right:8px;">现行有效</span>
-          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
-          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
-        </div>
-        <div class="law-manage-item">
-          <div class="law-icon">📗</div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:700;color:#0f172a;">中华人民共和国招标投标法</div>
-            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">发布：1999-08-30 &nbsp;|&nbsp; 修订：2017-12-27</div>
-          </div>
-          <span class="law-status active" style="margin-right:8px;">现行有效</span>
-          <button class="gm-btn gm-btn-ghost gm-btn-sm">编辑</button>
-          <button class="gm-btn gm-btn-danger gm-btn-sm">删除</button>
-        </div>
-      </div>
-      <div class="law-manage-actions">
-        <button class="gm-btn gm-btn-primary"><i class="fa-solid fa-plus"></i> 新增法规</button>
-        <button class="gm-btn gm-btn-ghost" onclick="closeLawManageModal()">关闭</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ==================== 模式切换 (本地fallback) ==================== -->
   <div class="mode-switch-fab" id="localModeFab" aria-label="模式切换">
     <button class="mode-switch-item active" type="button">采购模式</button>
@@ -2546,7 +2492,7 @@
         <button class="modal-close" type="button" onclick="closeCpLoginPromptModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="cp-login-modal-body">
-        “采购合规通”中的计划、预算、合同和单位数据仅对登录用户开放；登录后即可进入对应功能模块。
+        “采购合规通”中的计划、预算、审批人员和单位数据仅对登录用户开放；登录后即可进入对应功能模块。
       </div>
       <div class="cp-login-modal-actions">
         <button class="gm-btn gm-btn-ghost" type="button" onclick="closeCpLoginPromptModal()">稍后再说</button>
@@ -2731,6 +2677,61 @@
         <button type="button" class="gm-close" onclick="closeBudgetOrderDetail()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="gm-body" id="budgetOrderDetailBody"></div>
+    </div>
+  </div>
+
+  <!-- ==================== 审批人员 Modal ==================== -->
+  <div class="gm-overlay" id="approverModal" onclick="closeApproverModal(event)">
+    <div class="gm-box wide" style="max-width:720px;" onclick="event.stopPropagation()">
+      <div class="gm-head approver-modal-head">
+        <span class="gm-title">审批人员</span>
+        <button type="button" class="approver-add-btn" onclick="openApproverForm()"><i class="fa-solid fa-plus"></i> 新增审批人员</button>
+        <button class="gm-close" onclick="closeApproverModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="gm-body">
+        <div class="approver-grid" id="approverListContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 审批人员 · 新增/编辑 -->
+  <div class="gm-overlay" id="approverFormModal" onclick="closeApproverForm(event)" style="z-index:2200;">
+    <div class="gm-box" style="max-width:440px;" onclick="event.stopPropagation()">
+      <div class="gm-head">
+        <span class="gm-title" id="approverFormTitle">新增审批人员</span>
+        <button class="gm-close" onclick="closeApproverForm()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="gm-body">
+        <div class="approver-form-grid">
+          <div>
+            <label>姓名 <span style="color:#dc2626">*</span></label>
+            <input type="text" class="form-input" id="approverFormName" placeholder="如：王主任" style="width:100%;padding:8px 12px;">
+          </div>
+          <div>
+            <label>电话 <span style="color:#dc2626">*</span></label>
+            <input type="text" class="form-input" id="approverFormPhone" placeholder="如：13800138001" style="width:100%;padding:8px 12px;">
+          </div>
+          <div>
+            <label>部门 <span style="color:#dc2626">*</span></label>
+            <select class="form-input" id="approverFormDeptSelect" onchange="handleApproverDeptSelectChange()">
+              <option value="">请选择常用部门（可选）</option>
+              <option value="采购管理部">采购管理部</option>
+              <option value="财务审核部">财务审核部</option>
+              <option value="办公室">办公室</option>
+              <option value="信息中心">信息中心</option>
+              <option value="后勤保障部">后勤保障部</option>
+              <option value="资产管理部">资产管理部</option>
+            </select>
+            <input type="text" class="form-input" id="approverFormDeptInput" placeholder="手动输入" style="width:100%;padding:8px 12px;">
+            <div class="approver-dept-hint">支持从下拉框选择常用部门，也可在下方输入框自由填写。</div>
+          </div>
+        </div>
+      </div>
+      <div class="gm-foot approver-form-foot" style="padding:12px 20px;border-top:1px solid #e8edf3;">
+        <button type="button" class="gm-btn gm-btn-danger" id="approverFormDeleteBtn" style="display:none;margin-right:auto;" onclick="deleteApproverForm()"><i class="fa-solid fa-trash"></i> 删除</button>
+        <button type="button" class="gm-btn gm-btn-ghost" onclick="closeApproverForm()">取消</button>
+        <button type="button" class="gm-btn gm-btn-primary" onclick="saveApproverForm()">保存</button>
+      </div>
     </div>
   </div>
 
@@ -3559,6 +3560,105 @@
     }
 
     /* =====================================================================
+       审批人员 Modal
+    ===================================================================== */
+    var approvers = [
+      { id: 1, name: '王主任', phone: '13800138001', dept: '采购管理部', active: true },
+      { id: 2, name: '李科长', phone: '13800138002', dept: '财务审核部', active: true }
+    ];
+    var approverFormEditingId = null;
+
+    function syncApproverStatCount() {
+      var el = document.getElementById('cpStatApproverCount');
+      if (el) el.textContent = String(approvers.length);
+    }
+
+    function openApproverModal() {
+      renderApproverList();
+      syncApproverStatCount();
+      document.getElementById('approverModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeApproverModal(e) {
+      if (e && e.target !== document.getElementById('approverModal')) return;
+      document.getElementById('approverModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function renderApproverList() {
+      var con = document.getElementById('approverListContainer');
+      if (!con) return;
+      if (!approvers.length) {
+        con.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:40px 16px;font-size:14px;">暂无审批人员，请点击「新增审批人员」</div>';
+        return;
+      }
+      con.innerHTML = approvers.map(function(a) {
+        return '<div class="approver-card">'
+          + (a.active ? '<div class="approver-card-badge"><i class="fa-solid fa-check"></i></div>' : '')
+          + '<div class="approver-card-name">' + escapeAttr(a.name) + '</div>'
+          + '<div class="approver-card-row"><span>电话</span>' + escapeAttr(a.phone) + '</div>'
+          + '<div class="approver-card-row"><span>部门</span>' + escapeAttr(a.dept) + '</div>'
+          + '<button type="button" class="approver-card-edit" onclick="openApproverForm(' + a.id + ')"><i class="fa-solid fa-pen"></i> 编辑</button>'
+          + '</div>';
+      }).join('');
+    }
+    function openApproverForm(id) {
+      approverFormEditingId = id || null;
+      var title = document.getElementById('approverFormTitle');
+      var a = id ? approvers.find(function(x) { return x.id === id; }) : null;
+      if (title) title.textContent = a ? '编辑审批人员' : '新增审批人员';
+      document.getElementById('approverFormName').value = a ? a.name : '';
+      document.getElementById('approverFormPhone').value = a ? a.phone : '';
+      var dept = a ? a.dept : '';
+      document.getElementById('approverFormDeptInput').value = dept;
+      document.getElementById('approverFormDeptSelect').value = '';
+      if (dept) syncApproverDeptSelectFromInput(dept);
+      var delBtn = document.getElementById('approverFormDeleteBtn');
+      if (delBtn) delBtn.style.display = a ? 'inline-flex' : 'none';
+      document.getElementById('approverFormModal').classList.add('open');
+    }
+    function handleApproverDeptSelectChange() {
+      var value = document.getElementById('approverFormDeptSelect').value;
+      if (value) document.getElementById('approverFormDeptInput').value = value;
+    }
+    function syncApproverDeptSelectFromInput(value) {
+      var select = document.getElementById('approverFormDeptSelect');
+      if (!select) return;
+      var options = Array.prototype.map.call(select.options, function(o) { return o.value; });
+      select.value = options.indexOf(value) >= 0 ? value : '';
+    }
+    function closeApproverForm(e) {
+      if (e && e.target !== document.getElementById('approverFormModal')) return;
+      approverFormEditingId = null;
+      var delBtn = document.getElementById('approverFormDeleteBtn');
+      if (delBtn) delBtn.style.display = 'none';
+      document.getElementById('approverFormModal').classList.remove('open');
+    }
+    function saveApproverForm() {
+      var name = (document.getElementById('approverFormName').value || '').trim();
+      var phone = (document.getElementById('approverFormPhone').value || '').trim();
+      var dept = (document.getElementById('approverFormDeptInput').value || '').trim();
+      if (!name || !phone || !dept) { alert('请填写姓名、电话与部门'); return; }
+      if (approverFormEditingId) {
+        var item = approvers.find(function(x) { return x.id === approverFormEditingId; });
+        if (item) { item.name = name; item.phone = phone; item.dept = dept; }
+      } else {
+        approvers.push({ id: Date.now(), name: name, phone: phone, dept: dept, active: true });
+      }
+      closeApproverForm();
+      renderApproverList();
+      syncApproverStatCount();
+    }
+    function deleteApproverForm() {
+      if (!approverFormEditingId) return;
+      if (!confirm('确认删除该审批人员？')) return;
+      var id = approverFormEditingId;
+      approvers = approvers.filter(function(x) { return x.id !== id; });
+      closeApproverForm();
+      renderApproverList();
+      syncApproverStatCount();
+    }
+
+    /* =====================================================================
        合同管理 Modal
     ===================================================================== */
     var CONTRACT_LIST_PAGE_SIZE = 10;
@@ -3820,7 +3920,7 @@
       if (typeof isLogin !== 'boolean') {
         isLogin = localStorage.getItem('gc_auth') === '1';
       }
-      ['cpStatPlan', 'cpStatBudget', 'cpStatContract'].forEach(function(prefix) {
+      ['cpStatPlan', 'cpStatBudget', 'cpStatApprover'].forEach(function(prefix) {
         var g = document.getElementById(prefix + 'Guest');
         var u = document.getElementById(prefix + 'User');
         if (g) g.style.display = isLogin ? 'none' : 'flex';
@@ -3852,7 +3952,7 @@
       }
       if (which === 'plan') openProcPlanModal();
       else if (which === 'budget') openBudgetDrawer();
-      else if (which === 'contract') openContractModal();
+      else if (which === 'approver') openApproverModal();
     }
 
     function unlockDataBoard() {
@@ -3864,19 +3964,6 @@
       var layer = document.getElementById('vipDataLayer');
       if (mask) mask.style.display = 'none';
       if (layer) layer.classList.remove('vip-blurred');
-    }
-
-    /* =====================================================================
-       管理法规弹窗
-    ===================================================================== */
-    function openLawManageModal() {
-      document.getElementById('lawManageModal').classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLawManageModal(event) {
-      if (event && event.target && event.target !== document.getElementById('lawManageModal')) return;
-      document.getElementById('lawManageModal').classList.remove('open');
-      document.body.style.overflow = '';
     }
 
     /* =====================================================================
@@ -3910,7 +3997,7 @@
     /* 点击选项跳转时关闭所有弹窗（不再恢复） */
     function closeAllModalsForNav() {
       _aiRecoSourceId = null;
-      document.querySelectorAll('.gm-overlay, .gm-drawer-overlay, .ai-reco-overlay, .law-manage-overlay, .ai-comp-overlay').forEach(function(el) { el.classList.remove('open'); });
+      document.querySelectorAll('.gm-overlay, .gm-drawer-overlay, .ai-reco-overlay, .ai-comp-overlay').forEach(function(el) { el.classList.remove('open'); });
       document.body.style.overflow = '';
     }
     /* 跳转到最价方案分析界面 */
@@ -4289,6 +4376,7 @@
       localStorage.setItem('gc_auth', '0');
     }
     syncDataBoardAuthState();
+    syncApproverStatCount();
     initNiCarousel();
     initAiCompanionWidget();
   </script>
