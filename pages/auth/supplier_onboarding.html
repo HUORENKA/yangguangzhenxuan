@@ -260,7 +260,7 @@
           <div class="rule-item">
             <div class="ricon" style="background:#eff6ff;color:#2563eb;"><i class="fa-regular fa-id-card"></i></div>
             <div class="rtitle">营业执照核验</div>
-            <div class="rdesc">核验营业执照的真实性、有效期、统一社会信用代码及经营范围与主营类目的匹配程度。</div>
+            <div class="rdesc">核验营业执照的真实性、有效期、统一社会信用代码及经营范围与填报信息的匹配程度。</div>
           </div>
           <div class="rule-item">
             <div class="ricon" style="background:#fffbeb;color:#d97706;"><i class="fa-solid fa-file-invoice-dollar"></i></div>
@@ -270,7 +270,7 @@
           <div class="rule-item">
             <div class="ricon" style="background:#ecfdf5;color:#059669;"><i class="fa-solid fa-certificate"></i></div>
             <div class="rtitle">行业证书比对</div>
-            <div class="rdesc">比对供应商主营类目与提交的行业资质证书（ISO、3C、生产许可等）是否相符匹配。</div>
+            <div class="rdesc">比对供应商提交的行业资质证书（ISO、3C、生产许可等）是否与经营范围相符匹配。</div>
           </div>
           <div class="rule-item">
             <div class="ricon" style="background:#f5f3ff;color:#6d28d9;"><i class="fa-solid fa-link"></i></div>
@@ -344,18 +344,6 @@
           <div>
             <label for="creditCode">统一社会信用代码<span class="req">*</span></label>
             <input type="text" id="creditCode" maxlength="18" placeholder="18位统一社会信用代码">
-          </div>
-          <div>
-            <label for="mainCategory">主营类目<span class="req">*</span></label>
-            <select id="mainCategory">
-              <option value="">请选择主营类目</option>
-              <option>办公设备</option>
-              <option>网络设备</option>
-              <option>办公耗材</option>
-              <option>IT配件</option>
-              <option>家具家居</option>
-              <option>安防设备</option>
-            </select>
           </div>
           <div>
             <label for="legalPerson">法人姓名<span class="req">*</span></label>
@@ -495,7 +483,6 @@
       if (!confirm('演示：模拟上传营业执照并完成识别，将回填示例企业信息并标记全部资质为「已上传」。是否继续？')) return;
       document.getElementById('companyName').value = '北京阳光办公科技有限公司';
       document.getElementById('creditCode').value = '91110108MA01SUN88X';
-      document.getElementById('mainCategory').value = '办公设备';
       document.getElementById('legalPerson').value = '张三';
       document.getElementById('contactName').value = '张三';
       document.getElementById('contactPhone').value = '13800138000';
@@ -553,10 +540,6 @@
       }
       if (!(document.getElementById('creditCode').value || '').trim()) {
         alert('请填写统一社会信用代码');
-        return;
-      }
-      if (!(document.getElementById('mainCategory').value || '').trim()) {
-        alert('请选择主营类目');
         return;
       }
       if (!(document.getElementById('legalPerson').value || '').trim()) {

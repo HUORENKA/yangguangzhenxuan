@@ -559,7 +559,7 @@
         <div class="rule-card">
           <div class="rule-icon bg-blue-50 text-blue-600"><i class="fas fa-id-card"></i></div>
           <div class="font-semibold text-slate-900 mb-2">营业执照核验</div>
-          <div class="text-sm text-slate-500 leading-6">核验营业执照的真实性、有效期、统一社会信用代码及经营范围与主营类目的匹配程度。</div>
+          <div class="text-sm text-slate-500 leading-6">核验营业执照的真实性、有效期、统一社会信用代码及经营范围与填报信息的匹配程度。</div>
         </div>
         <div class="rule-card">
           <div class="rule-icon bg-amber-50 text-amber-600"><i class="fas fa-file-invoice-dollar"></i></div>
@@ -569,7 +569,7 @@
         <div class="rule-card">
           <div class="rule-icon bg-emerald-50 text-emerald-600"><i class="fas fa-certificate"></i></div>
           <div class="font-semibold text-slate-900 mb-2">行业证书比对</div>
-          <div class="text-sm text-slate-500 leading-6">比对供应商主营类目与提交的行业资质证书（ISO、3C、生产许可等）是否相符匹配。</div>
+          <div class="text-sm text-slate-500 leading-6">比对供应商提交的行业资质证书（ISO、3C、生产许可等）是否与经营范围相符匹配。</div>
         </div>
         <div class="rule-card">
           <div class="rule-icon bg-purple-50 text-purple-600"><i class="fas fa-link"></i></div>
@@ -651,18 +651,6 @@
         <div>
           <label class="form-label">统一社会信用代码<span class="required">*</span></label>
           <input class="form-input" type="text" placeholder="18位统一社会信用代码" id="creditCode" maxlength="18">
-        </div>
-        <div>
-          <label class="form-label">主营类目<span class="required">*</span></label>
-          <select class="form-select" id="mainCategory">
-            <option value="">请选择主营类目</option>
-            <option>办公设备</option>
-            <option>网络设备</option>
-            <option>办公耗材</option>
-            <option>IT配件</option>
-            <option>家具家居</option>
-            <option>安防设备</option>
-          </select>
         </div>
         <div>
           <label class="form-label">法人姓名<span class="required">*</span></label>
@@ -913,7 +901,7 @@
       <div class="space-y-2 hidden" id="oneLicenseProgress">
         <div class="recognition-step" data-step="0"><i class="fas fa-circle-notch"></i><span>正在识别营业执照版式与关键字段</span></div>
         <div class="recognition-step" data-step="1"><i class="fas fa-circle-notch"></i><span>正在提取统一社会信用代码与企业名称</span></div>
-        <div class="recognition-step" data-step="2"><i class="fas fa-circle-notch"></i><span>正在匹配主营类目与注册地址</span></div>
+        <div class="recognition-step" data-step="2"><i class="fas fa-circle-notch"></i><span>正在校验注册地址与经营范围</span></div>
         <div class="recognition-step" data-step="3"><i class="fas fa-circle-notch"></i><span>正在回填供应商基本信息并生成资质文件</span></div>
       </div>
     </div>
@@ -967,13 +955,13 @@
       requirement: 'JPG/PDF，≤5MB，需清晰可辨识',
       uploadStatus: 'neutral', aiResult: '', summary: '', issues: [],
       aiResultFinal: 'pass',
-      finalSummary: '营业执照真实有效，统一社会信用代码与填报信息一致，经营范围涵盖主营类目，审核通过。',
+      finalSummary: '营业执照真实有效，统一社会信用代码与填报信息一致，经营范围核验通过，审核通过。',
       aiRecognized: '企业名称：XX科技有限公司\n信用代码：91110000123456789X\n有效期：长期\n经营范围：计算机软硬件及外围设备的销售…',
       checks: [
         { title: '真实性核验', desc: '与国家企业信用信息公示系统数据比对，营业执照真实有效。', finalStatus: 'pass' },
         { title: '有效期验证', desc: '营业执照有效期"长期"，状态正常。', finalStatus: 'pass' },
         { title: '信用代码匹配', desc: '统一社会信用代码与填报信息完全一致。', finalStatus: 'pass' },
-        { title: '经营范围比对', desc: '经营范围覆盖主营类目"办公设备"，比对通过。', finalStatus: 'pass' },
+        { title: '经营范围比对', desc: '经营范围与填报企业信息一致，比对通过。', finalStatus: 'pass' },
       ],
       aiIssues: []
     },
@@ -1207,7 +1195,6 @@
     const recognized = {
       companyName: '北京阳光办公科技有限公司',
       creditCode: '91110108MA01SUN88X',
-      mainCategory: '办公设备',
       legalPerson: '张三',
       contactName: '张三',
       contactPhone: '13800138000',
@@ -1232,7 +1219,7 @@
     const licenseFile = qualFiles.find(f => f.id === 'QF-001');
     if (licenseFile) {
       licenseFile.aiRecognized = '企业名称：北京阳光办公科技有限公司\n信用代码：91110108MA01SUN88X\n法定代表人：张三\n住所：北京市海淀区中关村科技园区阳光路88号\n经营范围：办公设备、办公耗材、计算机软硬件及外围设备销售';
-      licenseFile.finalSummary = '营业执照真实有效，统一社会信用代码与填报信息一致，经营范围涵盖主营类目，审核通过。';
+      licenseFile.finalSummary = '营业执照真实有效，统一社会信用代码与填报信息一致，经营范围核验通过，审核通过。';
     }
 
     renderQualTable();

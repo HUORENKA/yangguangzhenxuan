@@ -337,12 +337,32 @@ function formatPrice(val) {
   return `${Number(val).toFixed(2)}`;
 }
 
+function hideResultSection() {
+  const rs = document.getElementById('resultSection');
+  if (rs) rs.classList.add('hidden');
+}
+
+function updatePendingSectionVisibility() {
+  const section = document.getElementById('pendingSection');
+  if (section) section.classList.toggle('hidden', !pendingProducts.length);
+}
+
+function isMyProductsPage() {
+  return !!document.getElementById('productTableBody');
+}
+
+function flushPendingToMyProductsList(status) {
+  if (!isMyProductsPage() || typeof window.mergePendingIntoProductList !== 'function') return;
+  window.mergePendingIntoProductList(pendingProducts.slice(), status);
+}
+
 function renderPendingTable() {
   const tbody = document.getElementById('pendingTableBody');
   const summary = document.getElementById('pendingSummary');
+  if (!tbody) return;
 
   if (!pendingProducts.length) {
-    summary.textContent = '当前暂无待提交商品，请使用「添加商品」或「批量上传」。';
+    if (summary) summary.textContent = '当前暂无待提交商品，请使用「添加商品」或「批量上传」。';
     tbody.innerHTML = `
       <tr>
         <td colspan="6" class="empty-state">
@@ -351,10 +371,11 @@ function renderPendingTable() {
           <div class="text-sm">可先添加单笔商品，或点击「批量上传」载入演示数据（原型）。</div>
         </td>
       </tr>`;
+    updatePendingSectionVisibility();
     return;
   }
 
-  summary.textContent = `已载入 ${pendingProducts.length} 个待提交商品。可直接「提交审核」；亦可先执行「AI合规校验」（演示，不要求）。`;
+  if (summary) summary.textContent = `已载入 ${pendingProducts.length} 个待提交商品。可直接「提交审核」；亦可先执行「AI合规校验」（演示，不要求）。`;
 
   tbody.innerHTML = pendingProducts
     .map(p => {
@@ -378,6 +399,7 @@ function renderPendingTable() {
         </tr>`;
     })
     .join('');
+  updatePendingSectionVisibility();
 }
 
 /** @returns {PendingProduct|null} */
@@ -649,9 +671,20 @@ function generateMockPendingProducts() {
 
 window.triggerBulkUpload = function triggerBulkUpload() {
   const batch = generateMockPendingProducts();
+  if (isMyProductsPage() && typeof window.mergePendingIntoProductList === 'function') {
+    window.mergePendingIntoProductList(batch, 'draft');
+    showDialog({
+      title: '已载入演示数据',
+      message: `已向待提交列表追加 ${batch.length} 条模拟商品（含演示库存），可勾选后提交审核。\n说明：上架提交审核可不登记库存；通过后请在「我的商品」修改库存。`,
+      type: 'success',
+      confirmText: '好的'
+    });
+    return;
+  }
+
   pendingProducts = pendingProducts.concat(batch);
   renderPendingTable();
-  document.getElementById('resultSection').classList.add('hidden');
+  hideResultSection();
   showDialog({
     title: '已载入演示数据',
     message: `已向待提交列表追加 ${batch.length} 条模拟商品（含演示库存），可点击「预览」查看详情。\n可随时再次点击「批量上传」继续追加演示数据。\n说明：上架提交审核可不登记库存；通过后请在「我的商品」修改库存。`,
@@ -710,7 +743,7 @@ async function handleBulkFiles(fileList) {
     if (errs.length) msgLines.push(`跳过 ${errs.length} 条：`, errs.slice(0, 5).join('\n'));
     showDialog({ title: '导入完成', message: msgLines.join('\n'), type: errs.length ? 'warn' : 'success' });
 
-    document.getElementById('resultSection').classList.add('hidden');
+    hideResultSection();
   } catch (e2) {
     showDialog({
       title: '解析出错',
@@ -722,6 +755,22 @@ async function handleBulkFiles(fileList) {
 
 /* ---------- AI 演示：不耦合提交 ---------- */
 window.runAiComplianceDemo = function runAiComplianceDemo() {
+  if (isMyProductsPage() && typeof window.getSelectedPendingProductIds === 'function') {
+    const ids = window.getSelectedPendingProductIds();
+    if (!ids.length) {
+      showDialog({
+        title: '提示',
+        message: '请先在「待提交」列表中勾选商品。',
+        type: 'warn'
+      });
+      return;
+    }
+    if (typeof window.runAiCheckOnDraftProducts === 'function') {
+      window.runAiCheckOnDraftProducts(ids);
+    }
+    return;
+  }
+
   if (!pendingProducts.length) {
     showDialog({
       title: '提示',
@@ -760,6 +809,20 @@ window.saveAsDraft = function saveAsDraft() {
     cancelText: '取消',
     confirmText: '确认保存',
     onConfirm: () => {
+      if (isMyProductsPage()) {
+        flushPendingToMyProductsList('draft');
+        pendingProducts = [];
+        renderPendingTable();
+        hideResultSection();
+        showDialog({
+          title: '已存为草稿',
+          message: `已为 ${n} 件商品保存草稿（原型），已写入「我的商品」草稿列表。`,
+          type: 'success',
+          confirmText: '好的'
+        });
+        return;
+      }
+
       let payload;
       try {
         payload = JSON.stringify({
@@ -810,14 +873,17 @@ window.submitReview = function submitReview() {
     cancelText: '取消',
     confirmText: '确认提交',
     onConfirm: () => {
+      flushPendingToMyProductsList('reviewing');
       showDialog({
         title: '提交成功',
-        message: `已为 ${n} 件商品创建审核申请（原型）。`,
+        message: isMyProductsPage()
+          ? `已为 ${n} 件商品创建审核申请（原型），已写入「我的商品」审核中列表。`
+          : `已为 ${n} 件商品创建审核申请（原型）。`,
         type: 'success'
       });
       pendingProducts = [];
       renderPendingTable();
-      document.getElementById('resultSection').classList.add('hidden');
+      hideResultSection();
     }
   });
 };
@@ -1486,6 +1552,18 @@ window.confirmAddProduct = async function confirmAddProduct() {
       return;
     }
 
+    if (isMyProductsPage() && typeof window.mergePendingIntoProductList === 'function') {
+      window.mergePendingIntoProductList([{ ...product }], 'draft');
+      closeAddProductModal();
+      hideResultSection();
+      showDialog({
+        title: '已添加',
+        message: '商品已加入待提交列表，可勾选后提交审核。',
+        confirmText: '好的'
+      });
+      return;
+    }
+
     pendingProducts.push({
       id: makeId(),
       ...product,
@@ -1497,8 +1575,7 @@ window.confirmAddProduct = async function confirmAddProduct() {
     }
     closeAddProductModal();
 
-    const rs = document.getElementById('resultSection');
-    if (rs) rs.classList.add('hidden');
+    hideResultSection();
 
     showDialog({ title: '已添加', message: '商品已进入待提交列表，可预览或批量提交审核。', confirmText: '好的' });
   } catch (e) {
@@ -1566,7 +1643,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (document.getElementById('pendingTableBody')) {
     renderPendingTable();
-    const rs = document.getElementById('resultSection');
-    if (rs) rs.classList.add('hidden');
+    hideResultSection();
   }
 });

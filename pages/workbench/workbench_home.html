@@ -1120,7 +1120,7 @@
             <i class="fas fa-list"></i>
             <span>查看上架情况</span>
           </button>
-          <button class="goods-action-btn goods-action-btn-primary" onclick="window.location.href='../product/product_upload.html'">
+          <button class="goods-action-btn goods-action-btn-primary" onclick="openWorkbenchSubPage('../product/my_products.html', 'my-goods', '我的商品')">
             <i class="fas fa-plus"></i>
             <span>上架商品</span>
           </button>
@@ -2944,7 +2944,7 @@
         return;
       }
       const routeMap = {
-        'product-upload': '../product/product_upload.html'
+        'product-upload': '../product/my_products.html'
       };
       if (routeMap[page]) {
         window.location.href = routeMap[page];

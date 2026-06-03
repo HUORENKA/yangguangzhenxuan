@@ -553,6 +553,124 @@
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       color: #ffffff;
     }
+
+    /* 模板下载下拉（与上架页一致） */
+    .template-dd-wrap {
+      position: relative;
+    }
+
+    .template-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      min-width: 168px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+      z-index: 50;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 4px;
+    }
+
+    .template-dropdown.show {
+      display: flex;
+    }
+
+    .template-dropdown-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      border-radius: 10px;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .template-dropdown-btn:hover {
+      background: #f8fafc;
+      color: #dc2626;
+    }
+
+    .table-shell {
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+    }
+
+    .empty-state {
+      padding: 32px 20px;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .empty-state .icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      margin: 0 auto 12px;
+      background: #fff1f2;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .table-op-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      border: 1px solid #dbe2ea;
+      background: #fff;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .table-op-btn:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .table-op-btn-danger {
+      border-color: #fecaca !important;
+      color: #b91c1c !important;
+      background: #ffffff !important;
+    }
+
+    .table-op-btn-danger:hover {
+      border-color: #f87171 !important;
+      background: #fef2f2 !important;
+      color: #991b1b !important;
+    }
+
+    .upload-toolbar-btn {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    .row-check {
+      width: 16px;
+      height: 16px;
+      accent-color: #E2231A;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body class="text-slate-800">
@@ -570,15 +688,9 @@
           </div>
           <div>
             <h1 class="text-3xl font-bold text-slate-900">我的商品</h1>
-            <p class="text-sm text-slate-500 mt-1">按 SKU、品类与时间筛选查看商品列表，工作台入口可附带状态筛选。</p>
+            <p class="text-sm text-slate-500 mt-1">按 SKU、品类与时间筛选查看商品列表；可在下方直接添加、批量上传或提交审核。</p>
           </div>
         </div>
-      </div>
-      <div class="flex flex-wrap gap-3">
-        <button class="action-btn action-btn-primary" onclick="window.location.href='./product_upload.html'">
-          <i class="fas fa-plus"></i>
-          <span>上架商品</span>
-        </button>
       </div>
     </div>
 
@@ -622,23 +734,64 @@
     </div>
 
     <div class="page-card p-5">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+      <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 mb-4">
         <div class="flex flex-wrap gap-2" id="statusTabs">
           <button class="tab-btn" data-status="all" onclick="setStatusFilter('all')">全部商品</button>
-          <button class="tab-btn" data-status="draft" onclick="setStatusFilter('draft')">草稿</button>
+          <button class="tab-btn" data-status="draft" onclick="setStatusFilter('draft')">待提交</button>
           <button class="tab-btn" data-status="rejected" onclick="setStatusFilter('rejected')">审核未通过</button>
           <button class="tab-btn" data-status="reviewing" onclick="setStatusFilter('reviewing')">审核中</button>
           <button class="tab-btn" data-status="published" onclick="setStatusFilter('published')">已上架</button>
           <button class="tab-btn" data-status="offline" onclick="setStatusFilter('offline')">已下架</button>
         </div>
-        <div class="text-sm text-slate-500" id="tableSummary">共 0 条商品记录</div>
+        <div class="flex flex-wrap gap-2 shrink-0 justify-end" id="uploadToolbar">
+          <button type="button" class="action-btn action-btn-secondary upload-toolbar-btn" onclick="openAddProductModal()">
+            <i class="fas fa-plus"></i>
+            <span>添加商品</span>
+          </button>
+          <div class="template-dd-wrap">
+            <button
+              type="button"
+              class="action-btn action-btn-secondary upload-toolbar-btn gap-2"
+              id="templateDownloadBtn"
+              onclick="toggleTemplateMenu(event)"
+              aria-expanded="false"
+              aria-haspopup="true">
+              <i class="fas fa-download"></i>
+              <span>模板下载</span>
+              <i class="fas fa-chevron-down text-xs opacity-70"></i>
+            </button>
+            <div class="template-dropdown" id="templateDownloadMenu" role="menu">
+              <button type="button" role="menuitem" class="template-dropdown-btn" onclick="downloadTemplate('csv'); closeTemplateMenu();">
+                <i class="fas fa-file-csv text-green-700"></i>
+                CSV 模板
+              </button>
+              <button type="button" role="menuitem" class="template-dropdown-btn" onclick="downloadTemplate('xlsx'); closeTemplateMenu();">
+                <i class="fas fa-file-excel text-emerald-700"></i>
+                Excel 模板
+              </button>
+            </div>
+          </div>
+          <button type="button" class="action-btn action-btn-secondary upload-toolbar-btn" onclick="triggerBulkUpload()">
+            <i class="fas fa-file-arrow-up"></i>
+            <span>批量上传</span>
+          </button>
+          <button type="button" class="action-btn action-btn-secondary upload-toolbar-btn" id="aiCheckBtn">
+            <i class="fas fa-shield-halved"></i>
+            <span>AI合规校验</span>
+          </button>
+          <button type="button" class="action-btn action-btn-primary upload-toolbar-btn" id="submitReviewBtn" onclick="submitReview()">
+            <i class="fas fa-paper-plane"></i>
+            <span>提交审核</span>
+          </button>
+        </div>
+        <div class="text-sm text-slate-500 shrink-0 text-right" id="tableSummary">共 0 条商品记录</div>
       </div>
 
       <div class="table-wrap">
         <div class="overflow-x-auto">
           <table class="min-w-full bg-white">
             <thead class="bg-slate-50 text-slate-500 text-sm">
-              <tr>
+              <tr id="productTableHeadRow">
                 <th class="text-left px-5 py-4 font-semibold">商品信息</th>
                 <th class="text-left px-5 py-4 font-semibold">SKU</th>
                 <th class="text-left px-5 py-4 font-semibold">品类</th>
@@ -722,7 +875,7 @@
           <div id="mpEditBadge" class="text-xs font-black uppercase tracking-[0.14em] text-red-600">单笔录入 · 编辑</div>
           <h3 id="mpEditTitle" class="text-xl font-black text-slate-900 mt-1">编辑商品</h3>
           <p class="text-sm text-slate-500 mt-2 leading-6">
-            与「上架商品」弹窗一致填写；保存后将写回「我的商品」列表与预览快照（原型）。草稿/未通过商品可无主图占位后补全。
+            与「上架商品」弹窗一致填写；保存后将写回「我的商品」列表与预览快照（原型）。待提交/未通过商品可无主图占位后补全。
           </p>
         </div>
         <button type="button" class="assistant-close rounded-full bg-slate-100 text-slate-500 w-10 h-10 border-0" onclick="closeAddProductModal()" aria-label="关闭">
@@ -849,6 +1002,9 @@
     </div>
   </div>
 
+  <div id="resultSection" class="hidden" aria-hidden="true"></div>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script src="../../assets/platform_categories_data.js"></script>
   <script src="./product_upload_app.js"></script>
   <script>
@@ -859,9 +1015,155 @@
         if (typeof prev === 'function') prev();
       };
     })();
+
+    (function wrapOpenAdd() {
+      var prev = window.openAddProductModal;
+      window.openAddProductModal = function () {
+        window.ADD_PRODUCT_SUBMIT_HANDLER = null;
+        var bd = document.getElementById('mpEditBadge');
+        var ttl = document.getElementById('mpEditTitle');
+        var lbl = document.getElementById('mpEditSubmitLabel');
+        if (bd) bd.textContent = '单笔录入 · 新增';
+        if (ttl) ttl.textContent = '添加商品';
+        if (lbl) lbl.textContent = '确认添加';
+        if (typeof prev === 'function') prev();
+      };
+    })();
   </script>
 
   <script>
+    let currentStatus = 'all';
+    const selectedDraftIds = new Set();
+
+    function isDraftTabActive() {
+      return currentStatus === 'draft';
+    }
+
+    function renderTableHeader() {
+      const tr = document.getElementById('productTableHeadRow');
+      if (!tr) return;
+      const checkCol = isDraftTabActive()
+        ? `<th class="text-left px-5 py-4 font-semibold w-12">
+            <input type="checkbox" class="row-check" id="draftSelectAll" aria-label="全选待提交商品" onchange="toggleSelectAllDrafts(this.checked)" />
+          </th>`
+        : '';
+      tr.innerHTML = `
+        ${checkCol}
+        <th class="text-left px-5 py-4 font-semibold">商品信息</th>
+        <th class="text-left px-5 py-4 font-semibold">SKU</th>
+        <th class="text-left px-5 py-4 font-semibold">品类</th>
+        <th class="text-left px-5 py-4 font-semibold">当前状态</th>
+        <th class="text-left px-5 py-4 font-semibold">提交日期</th>
+        <th class="text-left px-5 py-4 font-semibold">操作</th>
+      `;
+      syncDraftSelectAllCheckbox();
+    }
+
+    function syncDraftSelectAllCheckbox() {
+      const selectAll = document.getElementById('draftSelectAll');
+      if (!selectAll || !isDraftTabActive()) return;
+      const rows = getFilteredProducts();
+      const allSelected = rows.length > 0 && rows.every(item => selectedDraftIds.has(item.id));
+      selectAll.checked = allSelected;
+      selectAll.indeterminate = !allSelected && rows.some(item => selectedDraftIds.has(item.id));
+    }
+
+    window.toggleSelectAllDrafts = function toggleSelectAllDrafts(checked) {
+      getFilteredProducts().forEach(item => {
+        if (checked) selectedDraftIds.add(item.id);
+        else selectedDraftIds.delete(item.id);
+      });
+      renderTable();
+    };
+
+    window.toggleDraftRowCheck = function toggleDraftRowCheck(productId, checked) {
+      if (checked) selectedDraftIds.add(productId);
+      else selectedDraftIds.delete(productId);
+      syncDraftSelectAllCheckbox();
+    };
+
+    window.getSelectedPendingProductIds = function getSelectedPendingProductIds() {
+      return [...selectedDraftIds];
+    };
+
+    window.runAiCheckOnDraftProducts = function runAiCheckOnDraftProducts(ids) {
+      ids.forEach(id => {
+        const item = products.find(p => p.id === id);
+        if (item && item.status === 'draft') {
+          item.summary = '（演示）AI 合规校验已完成，可勾选后提交审核。';
+        }
+      });
+      renderTable();
+      if (typeof showDialog === 'function') {
+        showDialog({
+          title: '已完成',
+          message: `（原型演示）已对选中的 ${ids.length} 件待提交商品标记为「合规已检查」。`,
+          confirmText: '知道了'
+        });
+      }
+    };
+
+    window.submitDraftProductsByIds = function submitDraftProductsByIds(ids) {
+      if (!ids.length) return;
+      const n = ids.length;
+      if (typeof showDialog !== 'function') return;
+
+      showDialog({
+        title: '提交审核',
+        message: `确认将选中的 ${n} 件商品提交平台审核吗？`,
+        cancelText: '取消',
+        confirmText: '确认提交',
+        onConfirm: () => {
+          ids.forEach(id => {
+            const item = products.find(p => p.id === id);
+            if (!item || item.status !== 'draft') return;
+            item.status = 'reviewing';
+            item.summary = '新提交商品，等待平台审核（原型）。';
+            item.issues = [
+              {
+                level: '处理中',
+                type: '流程状态',
+                field: 'AI复核',
+                desc: '已提交审核，等待平台处理。',
+                advice: '无需操作，等待系统输出最终结果。'
+              }
+            ];
+            selectedDraftIds.delete(id);
+          });
+          currentStatus = 'reviewing';
+          renderTabs();
+          updateQuery();
+          renderTableHeader();
+          renderTable();
+          showDialog({
+            title: '提交成功',
+            message: `已为 ${n} 件商品创建审核申请（原型），已写入「审核中」列表。`,
+            type: 'success'
+          });
+        }
+      });
+    };
+
+    (function wrapSubmitReviewForMyProducts() {
+      const prev = window.submitReview;
+      window.submitReview = function submitReviewMyProducts() {
+        if (!document.getElementById('productTableBody')) {
+          if (typeof prev === 'function') return prev();
+          return;
+        }
+        const ids = window.getSelectedPendingProductIds();
+        if (!ids.length) {
+          showDialog({
+            title: '提示',
+            message: '请先在「待提交」列表中勾选要提交的商品。',
+            type: 'warn'
+          });
+          return;
+        }
+        window.submitDraftProductsByIds(ids);
+      };
+    })();
+
     const products = [
       {
         id: 'SPU-202604-001',
@@ -957,26 +1259,26 @@
         status: 'draft',
         result: 'pass',
         submittedAt: '2026-05-12 09:25',
-        summary: '草稿尚未提交审核，暂无 AI 校验记录。',
+        summary: '尚未提交审核，暂无 AI 校验记录。',
         issues: []
       },
       {
         id: 'DRAFT-202605-002',
         sku: 'SKU-DRAFT-SCAN-01',
-        name: '高速扫描仪（草稿）',
+        name: '高速扫描仪（待提交）',
         category: '办公设备',
         spec: '-',
         status: 'draft',
         result: 'pass',
         submittedAt: '2026-05-11 17:08',
-        summary: '草稿尚未提交审核，暂无 AI 校验记录。',
+        summary: '尚未提交审核，暂无 AI 校验记录。',
         issues: []
       }
     ];
 
     const statusMeta = {
       all: { label: '全部商品' },
-      draft: { label: '草稿', className: 'status-badge status-draft', icon: 'fa-file-pen' },
+      draft: { label: '待提交', className: 'status-badge status-draft', icon: 'fa-clock' },
       rejected: { label: '审核未通过', className: 'status-badge status-rejected', icon: 'fa-triangle-exclamation' },
       reviewing: { label: '审核中', className: 'status-badge status-reviewing', icon: 'fa-spinner' },
       published: { label: '已上架', className: 'status-badge status-published', icon: 'fa-circle-check' },
@@ -1088,7 +1390,7 @@
 
     function previewStageFromMyProductStatus(status) {
       const m = {
-        draft: '草稿',
+        draft: '待提交',
         reviewing: '审核中',
         published: '已上架',
         offline: '已下架',
@@ -1235,8 +1537,6 @@
         alert('无法写入预览数据（可能被浏览器禁用 sessionStorage）。');
       }
     };
-
-    let currentStatus = 'all';
 
     function getQueryStatus() {
       const params = new URLSearchParams(window.location.search);
@@ -1427,6 +1727,7 @@
       if (!confirm('确定删除该商品？此为原型页面的示例操作。')) return;
       const index = products.findIndex(p => p.id === productId);
       if (index >= 0) {
+        selectedDraftIds.delete(productId);
         products.splice(index, 1);
         renderTable();
       }
@@ -1534,16 +1835,18 @@
     }
 
     function renderTable() {
+      renderTableHeader();
       const rows = getFilteredProducts();
       const tbody = document.getElementById('productTableBody');
       const summary = document.getElementById('tableSummary');
+      const colSpan = isDraftTabActive() ? 7 : 6;
 
       summary.textContent = `${statusMeta[currentStatus].label} · 共 ${rows.length} 条商品记录`;
 
       if (!rows.length) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" class="px-5 py-12 text-center text-slate-400">
+            <td colspan="${colSpan}" class="px-5 py-12 text-center text-slate-400">
               <i class="fas fa-box-open text-2xl mb-3"></i>
               <div>暂无符合条件的商品</div>
             </td>
@@ -1552,8 +1855,18 @@
         return;
       }
 
-      tbody.innerHTML = rows.map(item => `
+      tbody.innerHTML = rows.map(item => {
+        const idEsc = item.id.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        const checkCell = isDraftTabActive()
+          ? `<td class="px-5 py-4">
+              <input type="checkbox" class="row-check" aria-label="选择商品"
+                ${selectedDraftIds.has(item.id) ? 'checked' : ''}
+                onchange="toggleDraftRowCheck('${idEsc}', this.checked)" />
+            </td>`
+          : '';
+        return `
         <tr class="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+          ${checkCell}
           <td class="px-5 py-4">
             <div class="font-semibold text-slate-900">${item.name}</div>
             ${changePendingChipHtml(item.id)}
@@ -1568,10 +1881,13 @@
             </div>
           </td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
+      syncDraftSelectAllCheckbox();
     }
 
     function setStatusFilter(status) {
+      if (status !== 'draft') selectedDraftIds.clear();
       currentStatus = status;
       renderTabs();
       updateQuery();
@@ -1589,6 +1905,7 @@
       }
       document.getElementById('submitDateFrom').value = '';
       document.getElementById('submitDateTo').value = '';
+      selectedDraftIds.clear();
       currentStatus = 'all';
       renderTabs();
       updateQuery();
@@ -1721,6 +2038,64 @@
 
     document.getElementById('submitDateFrom').addEventListener('change', renderTable);
     document.getElementById('submitDateTo').addEventListener('change', renderTable);
+
+    window.mergePendingIntoProductList = function mergePendingIntoProductList(batch, status) {
+      if (!batch || !batch.length) return;
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      const submittedAt = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+      batch.forEach((p, idx) => {
+        const id = p.id || ('PEND-' + Date.now() + '-' + idx);
+        const vs = Object.values(p.specs || {}).filter(v => String(v).trim());
+        const spec = vs.length ? vs.join(' / ') : '-';
+        const skuSuffix = String(id).replace(/[^A-Za-z0-9]/g, '').slice(-8).toUpperCase()
+          || Math.random().toString(36).slice(2, 10).toUpperCase();
+
+        const entry = {
+          id,
+          sku: 'SKU-' + skuSuffix,
+          name: p.name,
+          category: p.cat1 || '未分类',
+          spec,
+          status,
+          result: 'pass',
+          submittedAt,
+          summary: status === 'draft'
+            ? '尚未提交审核，暂无 AI 校验记录。'
+            : '新提交商品，等待平台审核（原型）。',
+          issues: status === 'draft' ? [] : [
+            {
+              level: '处理中',
+              type: '流程状态',
+              field: 'AI复核',
+              desc: '已提交审核，等待平台处理。',
+              advice: '无需操作，等待系统输出最终结果。'
+            }
+          ]
+        };
+        if (p.warehouseStocks) entry.warehouseStocks = normalizeWarehouseStocks(p.warehouseStocks);
+        products.push(entry);
+
+        PREVIEW_BY_ID[id] = {
+          price: p.price,
+          unit: p.unit,
+          catPath: [p.cat1, p.cat2, p.cat3],
+          specs: { ...(p.specs || {}) },
+          warehouseStocks: normalizeWarehouseStocks(p.warehouseStocks),
+          mainImage: p.mainImage || '',
+          subImages: [...(p.subImages || [])],
+          detailImages: [...(p.detailImages || [])]
+        };
+      });
+
+      if (status === 'draft' || status === 'reviewing') {
+        currentStatus = status;
+      }
+      renderTabs();
+      updateQuery();
+      renderTable();
+    };
 
     document.addEventListener('DOMContentLoaded', () => {
       attachInitialWarehouseSnapshots();
