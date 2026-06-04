@@ -335,15 +335,13 @@
       background: #f1f5f9;
     }
 
-    .apm-wm-item {
+    .apm-wm-label {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      min-width: 8.5rem;
       font-size: 13px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 8px 12px;
+      font-weight: 600;
+      color: #334155;
     }
 
     #apmSpecArea {
@@ -930,7 +928,7 @@
       <div class="apm-section">
         <div class="apm-section-title">仓库与分仓库存（可选）</div>
         <p class="text-xs text-slate-500 mb-3 leading-relaxed">
-          上架提交<strong>可不登记</strong>：不勾选任何仓库即视为暂不登记库存。若勾选仓库，须在该行填写该仓<strong>非负整数</strong>库存。
+          上架提交<strong>可不登记</strong>：库存留空即视为暂不登记；若填写须为<strong>非负整数</strong>。
         </p>
         <div id="apmWarehouseWrap" class="apm-wm-grid"></div>
       </div>

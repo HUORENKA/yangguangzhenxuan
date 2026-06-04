@@ -212,15 +212,13 @@
       background: #f1f5f9;
     }
 
-    .apm-wm-item {
+    .apm-wm-label {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      min-width: 8.5rem;
       font-size: 13px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 8px 12px;
+      font-weight: 600;
+      color: #334155;
     }
 
     #apmSpecArea {
@@ -470,7 +468,7 @@
               <div class="text-xs font-black uppercase tracking-[0.14em] text-red-600">单笔录入 · 变更</div>
               <h3 class="text-xl font-black text-slate-900 mt-1">填写变更后资料</h3>
               <p class="text-sm text-slate-500 mt-2 leading-6">
-                价格按人民币填写；选择与平台一致的三级类目后，系统将展示该类目<strong>固定规格</strong>。<strong>提交变更可不登记库存</strong>（可不勾选仓库）；若勾选仓库须逐项填写<strong>非负整数</strong>库存。商品图片分为主图（必填）、副图（可选）与<strong>详情图</strong>（可选）。
+                价格按人民币填写；选择与平台一致的三级类目后，系统将展示该类目<strong>固定规格</strong>。<strong>提交变更可不登记库存</strong>（留空即可）；若填写须为<strong>非负整数</strong>。商品图片分为主图（必填）、副图（可选）与<strong>详情图</strong>（可选）。
               </p>
             </div>
           </div>
@@ -524,7 +522,7 @@
           <div class="apm-section" id="sec-wh">
             <div class="apm-section-title">仓库与分仓库存（可选）</div>
             <p class="text-xs text-slate-500 mb-3 leading-relaxed">
-              信息变更<strong>可不登记库存</strong>：不勾选任何仓库即视为暂不改动分仓录入方式；若勾选仓库，须在该行填写该仓<strong>非负整数</strong>库存。
+              信息变更<strong>可不登记库存</strong>：留空即视为暂不改动分仓录入；若填写须为<strong>非负整数</strong>。
             </p>
             <div id="apmWarehouseWrap" class="apm-wm-grid"></div>
           </div>

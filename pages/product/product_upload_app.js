@@ -1053,19 +1053,12 @@ function resetAddForm() {
   if (whWrap) {
     whWrap.innerHTML = WAREHOUSES.map(w => `
       <div class="apm-wm-row">
-        <label class="apm-wm-item">
-          <input type="checkbox" class="apm-wm-cb" data-wm value="${escapeHtml(w)}" />
-          <span>${escapeHtml(w)}</span>
-        </label>
-        <input type="number" class="add-form-input apm-wm-stock-input" min="0" step="1" placeholder="勾选后填写该仓库存（整数）" data-wstock="${escapeHtml(
+        <span class="apm-wm-label">${escapeHtml(w)}</span>
+        <input type="number" class="add-form-input apm-wm-stock-input" min="0" step="1" placeholder="留空表示暂不登记（整数）" data-wstock="${escapeHtml(
           w
-        )}" disabled />
+        )}" />
       </div>`).join('');
   }
-
-  document.querySelectorAll('input[type=checkbox][data-wm]').forEach(cb => {
-    cb.checked = false;
-  });
 
   ['apmMainImg', 'apmSubImg', 'apmDetailImg'].forEach(id => {
     const el = document.getElementById(id);
@@ -1140,12 +1133,13 @@ function renderSpecFields(leaf) {
 
 function readWarehouseStocksFromApmPartial() {
   const warehouseStocksPartial = {};
-  for (const row of document.querySelectorAll('.apm-wm-row')) {
-    const cb = row.querySelector('input[type="checkbox"][data-wm]');
-    if (!cb || !cb.checked) continue;
-    const wh = cb.value;
-    const inp = row.querySelector('input[data-wstock]');
-    const q = inp && inp.value !== '' ? sanitizeInt(String(inp.value)) : NaN;
+  for (const inp of document.querySelectorAll('.apm-wm-row input[data-wstock]')) {
+    if (!(inp instanceof HTMLInputElement)) continue;
+    const wh = inp.getAttribute('data-wstock');
+    if (!wh) continue;
+    const raw = String(inp.value ?? '').trim();
+    if (!raw) continue;
+    const q = sanitizeInt(raw);
     if (!Number.isNaN(q)) warehouseStocksPartial[wh] = q;
   }
   const warehouseStocks = {};
@@ -1221,20 +1215,11 @@ window.applyProductSnapshotToApmForm = function applyProductSnapshotToApmForm(p)
   });
 
   document.querySelectorAll('.apm-wm-row').forEach(row => {
-    const cb = row.querySelector('input[type="checkbox"][data-wm]');
     const inp = row.querySelector('input[data-wstock]');
-    if (!(cb instanceof HTMLInputElement) || !(inp instanceof HTMLInputElement)) return;
-    const wh = cb.value;
+    if (!(inp instanceof HTMLInputElement)) return;
+    const wh = inp.getAttribute('data-wstock');
     const n = wsNorm[wh] ?? 0;
-    if (n > 0) {
-      cb.checked = true;
-      inp.disabled = false;
-      inp.value = String(n);
-    } else {
-      cb.checked = false;
-      inp.disabled = true;
-      inp.value = '';
-    }
+    inp.value = n > 0 ? String(n) : '';
   });
 
   ['apmMainImg', 'apmSubImg', 'apmDetailImg'].forEach(refreshApmImageRow);
@@ -1316,14 +1301,15 @@ window.gatherAddProductPayloadAsync = async function gatherAddProductPayloadAsyn
   }
 
   const warehouseStocksPartial = {};
-  for (const row of document.querySelectorAll('.apm-wm-row')) {
-    const cb = row.querySelector('input[type="checkbox"][data-wm]');
-    if (!cb || !cb.checked) continue;
-    const wh = cb.value;
-    const inp = row.querySelector('input[data-wstock]');
-    const q = inp && inp.value !== '' ? sanitizeInt(String(inp.value)) : NaN;
+  for (const inp of document.querySelectorAll('.apm-wm-row input[data-wstock]')) {
+    if (!(inp instanceof HTMLInputElement)) continue;
+    const wh = inp.getAttribute('data-wstock');
+    if (!wh) continue;
+    const raw = String(inp.value ?? '').trim();
+    if (!raw) continue;
+    const q = sanitizeInt(raw);
     if (Number.isNaN(q)) {
-      bad(`请为「${wh}」填写非负整数库存`);
+      bad(`请为「${wh}」填写非负整数库存，或留空表示暂不登记`);
       return null;
     }
     warehouseStocksPartial[wh] = q;
@@ -1612,20 +1598,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dlg.addEventListener('click', event => {
       if (event.target.id === 'globalDialogOverlay') closeGlobalDialogWhich('cancel');
-    });
-  }
-
-  const wmHost = document.getElementById('addProductOverlay') || document.getElementById('apmFormHost');
-  if (wmHost) {
-    wmHost.addEventListener('change', ev => {
-      const t = ev.target;
-      if (!(t instanceof HTMLInputElement)) return;
-      if (t.type !== 'checkbox' || !t.hasAttribute('data-wm')) return;
-      const row = t.closest('.apm-wm-row');
-      const inp = row && row.querySelector('input[data-wstock]');
-      if (!(inp instanceof HTMLInputElement)) return;
-      inp.disabled = !t.checked;
-      if (!t.checked) inp.value = '';
     });
   }
 
