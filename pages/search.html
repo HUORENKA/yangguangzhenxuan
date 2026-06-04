@@ -8,14 +8,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     :root {
-      --primary: #E2231A;
-      --primary-dark: #c01e16;
-      --primary-light: #fff3f2;
-      --text-main: #111827;
-      --text-sub: #6b7280;
-      --bg: #f6f7fb;
-      --border: #e5e7eb;
-      --dark: #454545;
+      --brand: #2f6bff;
+      --brand-dark: #1d4ed8;
+      --brand-light: rgba(47, 107, 255, 0.08);
+      --mall-red: #E2231A;
+      --mall-red-hover: #c01e16;
+      --mall-red-light: #fff3f2;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --bg: #f9f8f6;
+      --border: rgba(148, 163, 184, 0.18);
     }
 
     * { box-sizing: border-box; }
@@ -23,130 +25,215 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-      background: var(--bg);
+      background: #fff;
       color: var(--text-main);
     }
 
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: #fff;
-      box-shadow: 0 2px 12px rgba(226, 35, 26, 0.18);
-    }
-
-    .topbar-inner {
-      max-width: 1600px;
-      margin: 0 auto;
-      height: 58px;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: #fff;
-    }
-
-    .brand-logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 20px;
-    }
-
-    .brand-name {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-    }
-
-    .brand-name em {
-      font-style: normal;
-      color: #ffe1df;
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      font-size: 14px;
-    }
-
-    .topbar-user {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.45);
-    }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .org-chip {
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      font-size: 12px;
+    .search-header-zone {
+      background: #fff;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.92);
+      padding: 20px 0 16px;
     }
 
     .page-wrap {
-      max-width: 1600px;
+      width: min(1320px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 16px 18px 36px;
     }
 
     .search-hero {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px 24px 16px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      width: 100%;
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      column-gap: 18px;
+      row-gap: 12px;
+      width: min(980px, calc(100% - 40px));
+      align-items: center;
+    }
+
+    .eshop-brand {
+      grid-column: 1;
+      grid-row: 1;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      text-decoration: none;
+      align-self: center;
+    }
+
+    .eshop-name {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.2px;
+      color: var(--brand);
+      white-space: nowrap;
+    }
+
+    .eshop-name em {
+      font-style: normal;
+      color: #5b8cff;
+      font-weight: 700;
     }
 
     .search-bar {
-      max-width: 920px;
-      margin: 0 auto;
-      height: 56px;
+      grid-column: 2;
+      grid-row: 1;
+      width: 100%;
+      height: 48px;
       border-radius: 999px;
-      border: 2px solid #f1b6b2;
+      border: 1px solid rgba(226, 232, 240, 0.96);
       background: #fff;
       display: grid;
-      grid-template-columns: 54px 1fr 110px;
+      grid-template-columns: 92px 1fr 96px;
       align-items: center;
       overflow: hidden;
-      box-shadow: 0 6px 18px rgba(226, 35, 26, 0.08);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
     }
 
-    .search-icon {
-      text-align: center;
-      color: var(--primary);
-      font-size: 20px;
+    .cat-assistant-btn {
+      grid-column: 3;
+      grid-row: 1;
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      height: 48px;
+      padding: 0 16px 0 8px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%);
+      border: 1px solid rgba(47, 107, 255, 0.22);
+      box-shadow: 0 6px 16px rgba(47, 107, 255, 0.1);
+      text-decoration: none;
+      flex-shrink: 0;
+      align-self: center;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .cat-assistant-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(47, 107, 255, 0.38);
+      box-shadow: 0 8px 20px rgba(47, 107, 255, 0.16);
+    }
+
+    .cat-mini {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+
+    .cat-mini-card {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #fff 0%, #eef4ff 100%);
+      border: 1px solid rgba(47, 107, 255, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      overflow: hidden;
+    }
+
+    .cat-mini-face {
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 20px;
+      background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
+      border-radius: 11px;
+    }
+
+    .cat-mini-ear {
+      position: absolute;
+      top: -5px;
+      width: 8px;
+      height: 8px;
+      background: #111827;
+      border-radius: 4px 6px 3px 6px;
+    }
+
+    .cat-mini-ear.left { left: 2px; transform: rotate(-28deg); }
+    .cat-mini-ear.right { right: 2px; transform: scaleX(-1) rotate(-28deg); }
+
+    .cat-mini-eye {
+      position: absolute;
+      top: 8px;
+      width: 3px;
+      height: 5px;
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .cat-mini-eye.left { left: 6px; }
+    .cat-mini-eye.right { right: 6px; }
+
+    .cat-mini-nose {
+      position: absolute;
+      left: 50%;
+      top: 11px;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 3px;
+      border-radius: 6px;
+      background: #fb7185;
+    }
+
+    .cat-mini-body {
+      display: none;
+    }
+
+    .cat-assistant-label {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--brand);
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: 0.2px;
+    }
+
+    .search-type {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid rgba(226, 232, 240, 0.96);
+      background: #fafbfc;
+      padding: 0 10px 0 14px;
+    }
+
+    .search-type::after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 4px solid transparent;
+      border-top-color: #94a3b8;
+      pointer-events: none;
+    }
+
+    .search-type-select {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      padding-right: 14px;
     }
 
     .search-input {
@@ -161,38 +248,16 @@
     .search-btn {
       height: 100%;
       border: none;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
       color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
+      transition: opacity 0.2s;
     }
 
-    .hot-terms {
-      max-width: 920px;
-      margin: 12px auto 0;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      color: var(--text-sub);
-      font-size: 13px;
-    }
-
-    .term-chip {
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: #f8fafc;
-      border: 1px solid #e5e7eb;
-      color: #475569;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .term-chip:hover {
-      border-color: #f1b6b2;
-      color: var(--primary);
-      background: var(--primary-light);
+    .search-btn:hover {
+      opacity: 0.88;
     }
 
     .tab-row {
@@ -224,7 +289,7 @@
     }
 
     .tab-item.active {
-      color: var(--primary);
+      color: var(--brand);
     }
 
     .tab-item.active::after {
@@ -235,12 +300,13 @@
       bottom: 0;
       height: 3px;
       border-radius: 3px 3px 0 0;
-      background: var(--primary);
+      background: var(--brand);
     }
 
     .filter-bar {
       margin-top: 14px;
-      background: #4a4a4a;
+      background: #fff;
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 12px 16px;
       display: flex;
@@ -248,7 +314,7 @@
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
-      color: #fff;
+      color: var(--text-main);
     }
 
     .filter-left,
@@ -265,7 +331,7 @@
       border-radius: 8px;
       border: none;
       background: transparent;
-      color: #fff;
+      color: var(--text-sub);
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
@@ -275,7 +341,8 @@
     }
 
     .sort-btn.active {
-      background: var(--primary);
+      background: var(--brand);
+      color: #fff;
     }
 
     .filter-select {
@@ -283,67 +350,82 @@
       min-width: 112px;
       padding: 0 12px;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
+      border: 1px solid rgba(203, 213, 225, 0.9);
+      background: #f8fafc;
+      color: var(--text-main);
       font-size: 13px;
       outline: none;
     }
 
     .filter-select option {
-      color: #111827;
+      color: var(--text-main);
     }
 
     .filter-right {
-      color: rgba(255, 255, 255, 0.9);
+      color: var(--text-sub);
       font-size: 13px;
       font-weight: 600;
     }
 
     .filter-right b {
-      color: #ff968f;
+      color: var(--brand);
     }
 
     .ai-strip {
-      max-width: 920px;
-      margin: 12px auto 0;
-      background: linear-gradient(135deg, #fff8f7 0%, #ffffff 100%);
-      border: 1px solid #fee2e2;
-      border-radius: 14px;
-      padding: 14px 16px;
-    }
-
-    .ai-strip-top {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #991b1b;
-      font-size: 13px;
-      line-height: 1.8;
-      flex-wrap: wrap;
+      grid-column: 2;
+      grid-row: 2;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
     }
 
     .ai-suggest {
-      margin-top: 10px;
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
+      justify-content: flex-start;
+    }
+
+    .ai-suggest-label {
+      font-size: 13px;
+      color: var(--text-sub);
+      font-weight: 600;
+      margin-right: 2px;
     }
 
     .suggest-chip {
-      padding: 5px 10px;
+      padding: 5px 12px;
       border-radius: 999px;
-      border: 1px solid #fecaca;
+      border: 1px solid rgba(47, 107, 255, 0.3);
       background: #fff;
-      color: #b91c1c;
+      color: var(--brand-dark);
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.18s ease;
     }
 
     .suggest-chip:hover {
-      background: #fff1f0;
+      background: var(--brand-light);
+      border-color: rgba(47, 107, 255, 0.45);
+    }
+
+    .suggest-chip.active {
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+      border-color: var(--brand);
+      color: #fff;
+    }
+
+    .results-zone {
+      background: #f5f8ff;
+      padding: 16px 0 40px;
+      min-height: calc(100vh - 300px);
+    }
+
+    .results-zone .page-wrap {
+      padding: 0;
     }
 
     .results-wrap {
@@ -352,8 +434,8 @@
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px 10px;
     }
 
     .product-card {
@@ -368,6 +450,7 @@
     .product-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+      border-color: var(--mall-red);
     }
 
     .product-thumb {
@@ -392,29 +475,29 @@
       padding: 3px 8px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.92);
-      border: 1px solid #fecaca;
-      color: var(--primary);
+      border: 1px solid #fde2e0;
+      color: var(--mall-red);
       font-size: 11px;
       font-weight: 700;
     }
 
     .product-body {
-      padding: 12px 12px 10px;
+      padding: 10px 10px 8px;
     }
 
     .product-name {
       display: block;
-      min-height: 46px;
+      min-height: 40px;
       color: #1f2937;
       text-decoration: none;
-      font-size: 15px;
-      line-height: 1.55;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 600;
+      margin-bottom: 6px;
     }
 
     .product-name:hover {
-      color: var(--primary);
+      color: var(--mall-red);
     }
 
     .price-row {
@@ -425,16 +508,16 @@
     }
 
     .price-num {
-      color: var(--primary);
-      font-size: 33px;
+      color: var(--mall-red);
+      font-size: 22px;
       line-height: 1;
       font-weight: 800;
       letter-spacing: -0.5px;
     }
 
     .price-unit {
-      color: var(--primary);
-      font-size: 14px;
+      color: var(--mall-red);
+      font-size: 12px;
       font-weight: 700;
     }
 
@@ -442,7 +525,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #6b7280;
+      color: var(--text-sub);
       font-size: 12px;
       margin-bottom: 10px;
       white-space: nowrap;
@@ -469,8 +552,8 @@
       height: 10px;
       border-radius: 50%;
       background: #fff;
-      border: 2px solid var(--primary);
-      box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.15);
+      border: 2px solid var(--brand);
+      box-shadow: 0 0 0 2px rgba(47, 107, 255, 0.15);
     }
 
     .range-labels {
@@ -488,22 +571,22 @@
     }
 
     .action-btn {
-      height: 34px;
-      border-radius: 8px;
-      font-size: 12px;
+      height: 30px;
+      border-radius: 6px;
+      font-size: 11px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
     }
 
     .action-btn.compare {
       flex: 1;
       border: none;
-      background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
       color: #fff;
     }
 
@@ -511,24 +594,11 @@
       filter: brightness(0.98);
     }
 
-    .action-btn.favorite {
-      width: 82px;
-      border: 1px solid #d1d5db;
-      background: #fff;
-      color: #475569;
-    }
-
-    .action-btn.favorite.active {
-      border-color: #fecaca;
-      color: var(--primary);
-      background: var(--primary-light);
-    }
-
     .action-btn.cart {
-      width: 110px;
+      flex: 1;
       border: 1px solid #fecaca;
       background: #fff5f5;
-      color: var(--primary);
+      color: var(--mall-red);
     }
 
     .action-btn.cart:hover {
@@ -642,8 +712,8 @@
     }
 
     .compare-tab.active {
-      background: var(--primary);
-      border-color: var(--primary);
+      background: var(--brand);
+      border-color: var(--brand);
       color: #fff;
     }
 
@@ -704,7 +774,7 @@
     }
 
     .primary-btn {
-      background: linear-gradient(135deg, #0ea5e9 0%, #14b8a6 100%);
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
       color: #fff;
     }
 
@@ -719,59 +789,93 @@
       border: 1px solid var(--border);
     }
 
-    @media (max-width: 1440px) {
-      .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 900px) {
+      .search-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto auto;
+        width: min(100%, calc(100% - 32px));
+      }
+      .eshop-brand {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        justify-self: center;
+      }
+      .search-bar {
+        grid-column: 1;
+        grid-row: 2;
+        grid-template-columns: 84px 1fr 88px;
+      }
+      .cat-assistant-btn {
+        grid-column: 2;
+        grid-row: 2;
+      }
+      .ai-strip {
+        grid-column: 1 / -1;
+        grid-row: 3;
+      }
+    }
+
+    @media (max-width: 1280px) {
+      .product-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
 
     @media (max-width: 1100px) {
-      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .filter-bar { align-items: flex-start; }
+    }
+
+    @media (max-width: 900px) {
+      .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
   </style>
   <script src="../assets/mode_switcher.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="#">
-        <div class="brand-logo">e</div>
-        <div class="brand-name">国采<em>e</em>购</div>
-      </a>
-      <div class="topbar-actions">
-        <div class="topbar-user">
-          <div class="avatar">
-            <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=buyer&backgroundColor=f3f4f6" alt="头像">
-          </div>
-          <span>张三</span>
-        </div>
-        <span class="org-chip"><i class="fa-regular fa-building mr-1"></i>某某机关单位</span>
-        <span><i class="fa-regular fa-bell"></i></span>
-        <span><i class="fa-solid fa-right-from-bracket mr-1"></i>退出</span>
-      </div>
-    </div>
-  </header>
+  <header class="topbar"></header>
 
-  <main class="page-wrap">
+  <div class="search-header-zone">
     <section class="search-hero">
-      <div class="search-bar">
-        <div class="search-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-        <input id="searchInput" class="search-input" placeholder='请输入采购需求，如“A4打印纸，15元以内，华南供应商，高时效”'>
-        <button id="searchBtn" class="search-btn">搜索</button>
-      </div>
-      <div class="ai-strip">
-        <div class="ai-strip-top" id="aiSummary"></div>
-        <div class="ai-suggest" id="aiSuggest"></div>
-      </div>
-      <div class="hot-terms">
-        <span>热门搜索：</span>
-        <button class="term-chip" data-term="A4打印纸">A4打印纸</button>
-        <button class="term-chip" data-term="硒鼓">硒鼓</button>
-        <button class="term-chip" data-term="办公椅">办公椅</button>
-        <button class="term-chip" data-term="会议设备">会议设备</button>
-        <button class="term-chip" data-term="低价优先">低价优先</button>
-        <button class="term-chip" data-term="高合规">高合规</button>
+      <div class="search-row">
+        <a class="eshop-brand" href="./merged_home.html?tab=mall">
+          <span class="eshop-name">E<em>·</em>SHOPPING</span>
+        </a>
+        <div class="search-bar">
+          <div class="search-type">
+            <select id="searchTypeSelect" class="search-type-select" aria-label="搜索类型">
+              <option value="product">宝贝</option>
+              <option value="shop">店铺</option>
+            </select>
+          </div>
+          <input id="searchInput" class="search-input" placeholder="请输入采购需求，如“A4打印纸，15元以内，华南供应商，高时效”">
+          <button id="searchBtn" class="search-btn" type="button">搜索</button>
+        </div>
+        <a class="cat-assistant-btn" href="./ai_assistant.html" title="猫助手 · AI 智能采购">
+          <span class="cat-mini" aria-hidden="true">
+            <span class="cat-mini-card">
+              <span class="cat-mini-face">
+                <span class="cat-mini-ear left"></span>
+                <span class="cat-mini-ear right"></span>
+                <span class="cat-mini-eye left"></span>
+                <span class="cat-mini-eye right"></span>
+                <span class="cat-mini-nose"></span>
+              </span>
+            </span>
+          </span>
+          <span class="cat-assistant-label">猫助手</span>
+        </a>
+        <div class="ai-strip">
+          <div class="ai-suggest" id="aiSuggest"></div>
+        </div>
       </div>
     </section>
+  </div>
+
+  <div class="results-zone" id="resultsZone">
+  <main class="page-wrap">
 
     <section class="tab-row" id="tabRow"></section>
 
@@ -800,6 +904,7 @@
       <div class="product-grid" id="productGrid"></div>
     </section>
   </main>
+  </div>
 
   <div class="compare-picker-overlay" id="comparePickerOverlay" onclick="if(event.target===this) closeComparePicker()">
     <div class="compare-picker-modal" onclick="event.stopPropagation()">
@@ -852,6 +957,7 @@
     </div>
   </div>
 
+  <script src="../assets/unified_topbar.js"></script>
   <script>
     const TAB_META = {
       guess: { label: '猜你喜欢', icon: 'fa-regular fa-star', tip: '基于采购偏好推荐相关商品' },
@@ -1074,11 +1180,11 @@
     const state = {
       tab: 'hot',
       query: '',
+      searchType: 'product',
       sort: 'comprehensive',
       region: '全部',
       city: '全部',
       attr: '全部',
-      favorites: new Set(['GC-003']),
       cart: { 'GC-001': 1, 'GC-005': 2 }
     };
 
@@ -1145,17 +1251,42 @@
       if (!state.query.trim()) return list;
       const tokens = state.query.toLowerCase().split(/[\s,，]+/).filter(Boolean);
       return list.filter(item => {
-        const blob = [
-          item.name,
-          item.category,
-          item.supplier,
-          item.deliveryArea,
-          item.deliveryCity,
-          item.deliveryTime,
-          item.tags.join(' ')
-        ].join(' ').toLowerCase();
+        const blob = state.searchType === 'shop'
+          ? [item.supplier, item.deliveryArea, item.deliveryCity].join(' ').toLowerCase()
+          : [
+              item.name,
+              item.category,
+              item.supplier,
+              item.deliveryArea,
+              item.deliveryCity,
+              item.deliveryTime,
+              item.tags.join(' ')
+            ].join(' ').toLowerCase();
         return tokens.every(token => blob.includes(token));
       });
+    }
+
+    function updateSearchPlaceholder() {
+      const input = $('searchInput');
+      if (!input) return;
+      input.placeholder = state.searchType === 'shop'
+        ? '请输入供应商或店铺名称，如“德邦办公、晨采办公”'
+        : '请输入采购需求，如“A4打印纸，15元以内，华南供应商，高时效”';
+    }
+
+    function initFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const keyword = (params.get('keyword') || params.get('q') || '').trim();
+      const type = params.get('type');
+      if (keyword) {
+        state.query = keyword;
+        $('searchInput').value = keyword;
+      }
+      if (type === 'shop' || type === 'product') {
+        state.searchType = type;
+        $('searchTypeSelect').value = type;
+      }
+      updateSearchPlaceholder();
     }
 
     function applyFilters(list) {
@@ -1207,26 +1338,21 @@
       $('attrSelect').innerHTML = attrs.map(v => `<option value="${v}" ${state.attr === v ? 'selected' : ''}>${v}</option>`).join('');
     }
 
-    function renderSummary(list) {
-      const summary = [];
-      summary.push(`<i class="fa-solid fa-robot text-red-500"></i>`);
-      if (state.query.trim()) {
-        summary.push(`AI已识别：<strong>${state.query}</strong>`);
-      } else {
-        summary.push(`AI已根据当前页签“<strong>${TAB_META[state.tab].label}</strong>”自动推荐候选商品`);
-      }
-      summary.push(`当前结果按“<strong>${state.sort === 'comprehensive' ? '综合评分' : state.sort === 'priceAsc' ? '价格由低到高' : '价格由高到低'}</strong>”排序`);
-      $('aiSummary').innerHTML = summary.join('，');
-
+    function renderSuggestTags() {
       const suggestions = [];
-      if (!state.attr || state.attr === '全部') suggestions.push('高合规', '48小时可发货', '低价优先');
+      suggestions.push('高合规', '48小时可发货', '低价优先');
       if (state.query.includes('打印') || state.query.includes('纸')) suggestions.push('办公耗材');
       if (state.query.includes('会议')) suggestions.push('会议设备');
-      const unique = [...new Set(suggestions)].slice(0, 5);
-      $('aiSuggest').innerHTML = unique.map(item => `<button class="suggest-chip" data-suggest="${item}">${item}</button>`).join('');
+      if (state.query.includes('椅') || state.query.includes('桌')) suggestions.push('办公家具');
+      const unique = [...new Set(suggestions)].slice(0, 6);
+      const chips = unique.map(item => {
+        const active = state.attr === item ? ' active' : '';
+        return `<button class="suggest-chip${active}" type="button" data-suggest="${item}">${item}</button>`;
+      }).join('');
+      $('aiSuggest').innerHTML = `<span class="ai-suggest-label">智能推荐：</span>${chips}`;
       document.querySelectorAll('.suggest-chip').forEach(btn => {
         btn.addEventListener('click', () => {
-          state.attr = btn.dataset.suggest;
+          state.attr = state.attr === btn.dataset.suggest ? '全部' : btn.dataset.suggest;
           render();
         });
       });
@@ -1234,7 +1360,14 @@
 
     function renderCounts(list) {
       $('resultCount').textContent = list.length;
-      $('pageInfo').textContent = `1 / ${Math.max(1, Math.ceil(list.length / 16))}`;
+      $('pageInfo').textContent = `1 / ${Math.max(1, Math.ceil(list.length / 24))}`;
+    }
+
+    function scrollToResults() {
+      const zone = $('resultsZone');
+      if (!zone) return;
+      const top = zone.getBoundingClientRect().top + window.scrollY - 8;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
     }
 
     function tagText(item) {
@@ -1275,24 +1408,12 @@
               </div>
               <div class="card-actions">
                 <button class="action-btn compare" onclick="event.stopPropagation();openComparePickerById('${item.id}')"><i class="fa-solid fa-scale-balanced"></i>比质比价</button>
-                <button class="action-btn favorite ${state.favorites.has(item.id) ? 'active' : ''}" onclick="event.stopPropagation();toggleFavorite('${item.id}')"><i class="fa-${state.favorites.has(item.id) ? 'solid' : 'regular'} fa-heart"></i>${state.favorites.has(item.id) ? '已收藏' : '收藏'}</button>
                 <button class="action-btn cart" onclick="event.stopPropagation();addToCart('${item.id}')"><i class="fa-solid fa-cart-plus"></i>加入购物车</button>
               </div>
             </div>
           </article>
         `;
       }).join('');
-    }
-
-    function toggleFavorite(id) {
-      if (state.favorites.has(id)) {
-        state.favorites.delete(id);
-        showToast('已取消收藏');
-      } else {
-        state.favorites.add(id);
-        showToast('已加入收藏');
-      }
-      render();
     }
 
     function addToCart(id) {
@@ -1408,17 +1529,17 @@
             <td><input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleCompareSelection('${currentCompareTab}','${row.id}')"></td>
             <td>
               <div class="font-semibold text-gray-900">${row.productName}</div>
-              ${row.isCurrent ? '<div class="text-xs text-red-500 mt-1">当前商品同源款</div>' : ''}
+              ${row.isCurrent ? '<div class="text-xs mt-1" style="color:var(--mall-red)">当前商品同源款</div>' : ''}
             </td>
             <td>${row.supplier}</td>
-            <td class="font-bold text-red-600">￥${row.price.toFixed(2)}</td>
+            <td class="font-bold" style="color:var(--mall-red)">￥${row.price.toFixed(2)}</td>
             <td>￥${row.floor.toFixed(2)} - ￥${row.ceiling.toFixed(2)}</td>
             <td>${row.rankText}</td>
             <td>${row.riskLevel}</td>
             <td>${row.qualityLevel}</td>
             <td>${row.afterSalesLabel}</td>
             <td>${row.fulfillmentLabel}</td>
-            <td class="font-semibold text-sky-600">${row.totalScore}</td>
+            <td class="font-semibold" style="color:var(--brand)">${row.totalScore}</td>
           </tr>
         `;
       }).join('');
@@ -1494,7 +1615,7 @@
       toast.textContent = text;
       Object.assign(toast.style, {
         position: 'fixed',
-        top: '76px',
+        top: '96px',
         left: '50%',
         transform: 'translateX(-50%)',
         background: '#111827',
@@ -1516,32 +1637,30 @@
       renderSelectOptions();
       const list = currentResults();
       renderCounts(list);
-      renderSummary(list);
+      renderSuggestTags();
       renderCards(list);
       document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.sort === state.sort);
       });
     }
 
+    function runSearch(scrollResults) {
+      state.query = $('searchInput').value.trim();
+      render();
+      if (scrollResults) scrollToResults();
+    }
+
     function bindStaticEvents() {
-      $('searchBtn').addEventListener('click', () => {
-        state.query = $('searchInput').value.trim();
-        render();
-      });
+      $('searchBtn').addEventListener('click', () => runSearch(true));
 
       $('searchInput').addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-          state.query = $('searchInput').value.trim();
-          render();
-        }
+        if (event.key === 'Enter') runSearch(true);
       });
 
-      document.querySelectorAll('.term-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          $('searchInput').value = btn.dataset.term;
-          state.query = btn.dataset.term;
-          render();
-        });
+      $('searchTypeSelect').addEventListener('change', event => {
+        state.searchType = event.target.value;
+        updateSearchPlaceholder();
+        if (state.query.trim()) render();
       });
 
       document.querySelectorAll('.sort-btn').forEach(btn => {
@@ -1574,7 +1693,11 @@
     document.head.appendChild(fadeStyle);
 
     bindStaticEvents();
+    initFromUrl();
     render();
+    if (state.query) {
+      requestAnimationFrame(() => scrollToResults());
+    }
   </script>
 </body>
 </html>
