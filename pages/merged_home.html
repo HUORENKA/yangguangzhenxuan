@@ -2962,7 +2962,7 @@
       }).join('');
       left.innerHTML = childCols || '<div style="font-size:13px;color:#9ca3af;">暂无二级分类</div>';
       var hots = (category.hotProducts||[]).slice(0,3).map(function(p){
-        return '<a href="'+p.link+'" class="mega-product-card" onclick="return false;"><img src="'+p.image+'" alt="'+escapeAttr(p.name||'')+'" loading="lazy" onerror="this.src=\'https://placehold.co/52/eee/999?text=+\'"><div class="info"><div class="name">'+p.name+'</div><div class="price">¥'+(p.price!=null?Number(p.price).toFixed(2):'0.00')+'</div></div></a>';
+        return '<a href="'+p.link+'" target="_blank" rel="noopener noreferrer" class="mega-product-card"><img src="'+p.image+'" alt="'+escapeAttr(p.name||'')+'" loading="lazy" onerror="this.src=\'https://placehold.co/52/eee/999?text=+\'"><div class="info"><div class="name">'+p.name+'</div><div class="price">¥'+(p.price!=null?Number(p.price).toFixed(2):'0.00')+'</div></div></a>';
       }).join('');
       right.innerHTML = '<div class="mega-hot-header"><span>热门商品</span></div><div>'+( hots||'<div style="font-size:13px;color:#9ca3af;">暂无</div>' )+'</div>';
     }
@@ -3066,7 +3066,7 @@
       var high = Math.max(Number(p.ref||p.price), Number(p.price));
       var unit = p.unit ? '<span style="font-size:11px;color:#9ca3af;margin-left:2px;">/ '+escapeAttr(p.unit)+'</span>' : '';
       var link = './product.html?id='+encodeURIComponent(p.id||'');
-      return '<a class="product-card" href="'+link+'" title="'+escapeAttr(p.name||'')+'">'
+      return '<a class="product-card" href="'+link+'" target="_blank" rel="noopener noreferrer" title="'+escapeAttr(p.name||'')+'">'
         +'<img src="'+escapeAttr(p.img||'')+'" alt="'+escapeAttr(p.name||'')+'" class="product-card-img" loading="lazy" onerror="this.src=\'https://placehold.co/640x400/eee/999?text=+\'">'
         +'<div class="product-card-body">'
         +'<div class="product-card-name">'+escapeAttr(p.name||'')+'</div>'

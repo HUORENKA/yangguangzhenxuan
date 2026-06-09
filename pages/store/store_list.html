@@ -478,8 +478,7 @@
     }
     
     function goToProduct(productId) {
-      // 跳转到商品详情页（如果存在）
-      window.location.href = `../product.html?id=${productId}`;
+      window.open(`../product.html?id=${productId}`, '_blank');
     }
     
     // ========== 页面初始化 ==========

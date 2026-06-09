@@ -34,73 +34,10 @@
       color: var(--text-main);
     }
 
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 110;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: #fff;
-      box-shadow: 0 2px 10px rgba(226, 35, 26, 0.22);
-    }
-
-    .topbar-inner {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-    }
-
-    .brand-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .top-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      font-size: 12px;
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.92);
-      flex-wrap: wrap;
-    }
-
     .page-wrap {
       max-width: 1440px;
       margin: 0 auto;
       padding: 20px 20px 80px;
-    }
-
-    .crumb {
-      color: #6b7280;
-      font-size: 14px;
-      margin-bottom: 16px;
     }
 
     .card {
@@ -1328,24 +1265,9 @@
   <script src="../assets/mode_switcher.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-logo"><i class="fa-solid fa-cart-shopping"></i></div>
-        <div>国采e购</div>
-        <span class="top-chip">采购单确认页</span>
-      </div>
-      <div class="top-actions">
-        <span><i class="fa-solid fa-house mr-1"></i>商城首页</span>
-        <span><i class="fa-solid fa-file-invoice mr-1"></i>采购单确认</span>
-        <span class="top-chip" id="roleDisplay">采购专员</span>
-      </div>
-    </div>
-  </header>
+  <header class="topbar"></header>
 
   <main class="page-wrap">
-    <div class="crumb">首页 &gt; 购物车/立即下单 &gt; <span>确认采购单</span></div>
-
     <div class="compliance-mini" id="complianceMiniBar">
       <div class="compliance-mini-inner">
         <div class="mini-meta">
@@ -1938,7 +1860,6 @@
 
     function renderPage() {
       document.title = `确认采购单 - ${orderData.name} | 国采e购`;
-      document.getElementById('roleDisplay').textContent = getRoleName();
       document.getElementById('storeName').textContent = orderData.storeName;
       document.getElementById('goodsThumb').src = orderData.image;
       document.getElementById('goodsName').textContent = `${orderData.name}（计价单位：${orderData.unit}）`;
@@ -2877,5 +2798,6 @@
       startComplianceFlow();
     });
   </script>
+  <script src="../assets/unified_topbar.js"></script>
 </body>
 </html>

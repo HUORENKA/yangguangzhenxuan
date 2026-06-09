@@ -1725,7 +1725,6 @@
       position: fixed;
       inset: 0;
       background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(4px);
       z-index: 190;
       display: none;
       align-items: center;
@@ -1800,7 +1799,7 @@
       border: 1px solid #e5e7eb;
       background: #fff;
       color: #64748b;
-      transition: all 0.2s ease;
+      transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .order-basis-step.active {
@@ -4436,6 +4435,7 @@
     let portraitGenerating = false;
     let procurementPlanOptions = [];
     let procurementBudgetOptions = [];
+    const ORDER_BASIS_TOTAL_STEPS = 4;
     let orderBasisStep = 1;
     let selectedPlanId = '';
     let selectedBudgetId = '';
@@ -4445,6 +4445,8 @@
     let orderContractUploadTargetSupplierId = '';
     /** STEP3 合同下拉：当前展开的供应商 id */
     let openContractDropdownSupplierId = null;
+    /** 关联采购依据弹窗是否已初始化过各步骤列表 DOM */
+    let orderBasisListsInitialized = { plan: false, budget: false, contract: false, files: false };
 
     const PARAM_DETAIL_EXTRA_IMAGES = [
       'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=1200&h=1800&fit=crop',
@@ -5632,6 +5634,8 @@
     }
 
     function updateDetailPurchaseStickyState() {
+      const basisOverlay = document.getElementById('orderBasisOverlay');
+      if (basisOverlay && basisOverlay.classList.contains('show')) return;
       const sentinel = document.getElementById('detailStickySentinel');
       const purchaseCard = document.getElementById('detailPurchaseCard');
       const detailSection = document.getElementById('detailSection');
@@ -5659,7 +5663,7 @@
       currentQty = Math.max(currentProduct.minOrder, next);
       syncQtyInputs();
       if (document.getElementById('orderBasisOverlay').classList.contains('show')) {
-        renderOrderBasisModal();
+        renderBasisSelectedSummary();
       }
     }
 
@@ -5686,8 +5690,12 @@
       } catch (error) {
         budgets = [];
       }
-      procurementPlanOptions = Array.isArray(plans) && plans.length ? plans : cloneList(defaultProcurementPlans);
-      procurementBudgetOptions = Array.isArray(budgets) && budgets.length ? budgets : cloneList(defaultProcurementBudgets);
+      procurementPlanOptions = Array.isArray(plans) && plans.length
+        ? plans.slice(0, 20)
+        : cloneList(defaultProcurementPlans);
+      procurementBudgetOptions = Array.isArray(budgets) && budgets.length
+        ? budgets.slice(0, 20)
+        : cloneList(defaultProcurementBudgets);
     }
 
     function saveProcurementBasisOptions() {
@@ -5754,29 +5762,34 @@
     }
 
     /**
-     * 订单涉及的供应商行（去重）。购物车等多行下单可向 sessionStorage 写入 gcOrderBasisLines：
-     * [{ supplierId?, supplierName, productName? }, ...]
+     * 订单涉及的供应商行（去重）。
+     * 商品详情单笔下单默认仅用当前商品供应商；多供应商合并下单需先设置
+     * sessionStorage.gcOrderBasisUseMulti = '1'，再写入 gcOrderBasisLines。
      */
     function getOrderContractSupplierLines() {
-      try {
-        const raw = sessionStorage.getItem('gcOrderBasisLines');
-        if (raw) {
-          const lines = JSON.parse(raw);
-          if (Array.isArray(lines) && lines.length) {
-            const map = new Map();
-            lines.forEach((line, idx) => {
-              const name = line.supplierName || line.supplier || '';
-              const id = line.supplierId || slugSupplierId(name || `unknown-${idx}`);
-              if (!map.has(id)) {
-                map.set(id, { supplierId: id, supplierName: name || id, lines: [] });
-              }
-              map.get(id).lines.push(line);
-            });
-            return Array.from(map.values());
+      // 商品详情页单笔下单：默认仅使用当前商品供应商，避免 sessionStorage 残留多行数据拖慢渲染
+      const useMultiLines = sessionStorage.getItem('gcOrderBasisUseMulti') === '1';
+      if (useMultiLines) {
+        try {
+          const raw = sessionStorage.getItem('gcOrderBasisLines');
+          if (raw) {
+            const lines = JSON.parse(raw);
+            if (Array.isArray(lines) && lines.length) {
+              const map = new Map();
+              lines.forEach((line, idx) => {
+                const name = line.supplierName || line.supplier || '';
+                const id = line.supplierId || slugSupplierId(name || `unknown-${idx}`);
+                if (!map.has(id)) {
+                  map.set(id, { supplierId: id, supplierName: name || id, lines: [] });
+                }
+                map.get(id).lines.push(line);
+              });
+              return Array.from(map.values());
+            }
           }
+        } catch (err) {
+          /* ignore */
         }
-      } catch (err) {
-        /* ignore */
       }
       if (!currentProduct) return [];
       const name = currentProduct.supplier || '';
@@ -5785,6 +5798,19 @@
         supplierName: name,
         lines: [{ productName: currentProduct.name }]
       }];
+    }
+
+    /** 原型演示：进入合同步骤时为未关联供应商预填第一条 AI 合同，避免演示流程卡住 */
+    function ensureDemoContractSelections() {
+      getOrderContractSupplierLines().forEach(s => {
+        if (isSupplierContractComplete(s.supplierId)) return;
+        const firstAi = (getContractCatalogForSupplier(s.supplierName).ai || [])[0];
+        if (!firstAi) return;
+        orderContractSelections[s.supplierId] = {
+          aiContractId: firstAi.id,
+          localFile: null
+        };
+      });
     }
 
     function getContractCatalogForSupplier(supplierName) {
@@ -5869,11 +5895,15 @@
       const selectedBudget = getBasisById('budget', selectedBudgetId);
       const planLabel = selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联';
       const budgetLabel = selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联';
-      return `关联概况：采购计划【${planLabel}】；采购预算【${budgetLabel}】；${formatContractLinkageSummaryFragment()}；采购依据文件【${uploadedBasisFiles.length}个】`;
+      const contractPart = orderBasisStep >= 3
+        ? formatContractLinkageSummaryFragment()
+        : '合同【待关联】';
+      return `关联概况：采购计划【${planLabel}】；采购预算【${budgetLabel}】；${contractPart}；采购依据文件【${uploadedBasisFiles.length}个】`;
     }
 
     function renderBasisSelectedSummary() {
       const el = document.getElementById('basisSelectedSummary');
+      if (!el) return;
       const orderAmt = getOrderLineAmount();
       const foot = `<div class="basis-summary-sub">${buildBasisAssociationFootnote()}</div>`;
 
@@ -5989,7 +6019,8 @@
 
     function toggleContractDropdown(supplierId) {
       openContractDropdownSupplierId = openContractDropdownSupplierId === supplierId ? null : supplierId;
-      renderOrderBasisModal();
+      renderOrderContractSupplierStep();
+      renderBasisSelectedSummary();
     }
 
     function renderOrderContractSupplierStep() {
@@ -6030,46 +6061,68 @@
           }
         }
 
-        const aiTableRows = (cat.ai || []).map(c => {
-          const picked = !sel.localFile && sel.aiContractId === c.id;
-          return `
-            <tr class="${picked ? 'is-row-selected' : ''}">
+        const dropdownPanelInner = isOpen ? (() => {
+          const aiTableRows = (cat.ai || []).map(c => {
+            const picked = !sel.localFile && sel.aiContractId === c.id;
+            return `
+              <tr class="${picked ? 'is-row-selected' : ''}">
+                <td>
+                  <div class="contract-name-main">${escapeBasisText(c.name)}</div>
+                  <div class="contract-name-sub">编号 ${escapeBasisText(c.contractNo)}</div>
+                </td>
+                <td><span class="cell-tag ai">AI生成</span></td>
+                <td>
+                  <div class="basis-contract-op-btns">
+                    <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();previewOrderContractAi('${s.supplierId}','${c.id}')">预览</button>
+                    <button type="button" class="basis-contract-btn primary" onclick="event.stopPropagation();selectSupplierAiContract('${s.supplierId}','${c.id}')">选择</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          const upTableRows = (cat.upload || []).map(c => `
+            <tr>
               <td>
                 <div class="contract-name-main">${escapeBasisText(c.name)}</div>
                 <div class="contract-name-sub">编号 ${escapeBasisText(c.contractNo)}</div>
               </td>
-              <td><span class="cell-tag ai">AI生成</span></td>
+              <td><span class="cell-tag upload">用户上传</span></td>
               <td>
                 <div class="basis-contract-op-btns">
-                  <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();previewOrderContractAi('${s.supplierId}','${c.id}')">预览</button>
-                  <button type="button" class="basis-contract-btn primary" onclick="event.stopPropagation();selectSupplierAiContract('${s.supplierId}','${c.id}')">选择</button>
+                  <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();previewOrderContractPlatformUpload('${s.supplierId}','${c.id}')">预览</button>
+                  <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();downloadSupplierPlatformContract('${s.supplierId}','${c.id}')">下载</button>
                 </div>
               </td>
             </tr>
+          `).join('');
+
+          const tableInner = (aiTableRows + upTableRows) || `
+            <tr>
+              <td colspan="3" style="padding:18px;text-align:center;color:#94a3b8;">暂无合同数据（示意）</td>
+            </tr>
           `;
-        }).join('');
 
-        const upTableRows = (cat.upload || []).map(c => `
-          <tr>
-            <td>
-              <div class="contract-name-main">${escapeBasisText(c.name)}</div>
-              <div class="contract-name-sub">编号 ${escapeBasisText(c.contractNo)}</div>
-            </td>
-            <td><span class="cell-tag upload">用户上传</span></td>
-            <td>
-              <div class="basis-contract-op-btns">
-                <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();previewOrderContractPlatformUpload('${s.supplierId}','${c.id}')">预览</button>
-                <button type="button" class="basis-contract-btn" onclick="event.stopPropagation();downloadSupplierPlatformContract('${s.supplierId}','${c.id}')">下载</button>
-              </div>
-            </td>
-          </tr>
-        `).join('');
-
-        const tableInner = (aiTableRows + upTableRows) || `
-          <tr>
-            <td colspan="3" style="padding:18px;text-align:center;color:#94a3b8;">暂无合同数据（示意）</td>
-          </tr>
-        `;
+          return `
+            <div class="basis-contract-table-wrap">
+              <table class="basis-contract-table">
+                <colgroup>
+                  <col class="col-contract-name">
+                  <col class="col-contract-tag">
+                  <col class="col-contract-action">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>合同名称</th>
+                    <th>合同标签</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>${tableInner}</tbody>
+              </table>
+            </div>
+          `;
+        })() : '';
 
         const localChip = sel.localFile ? `
           <div class="basis-contract-local-chip">
@@ -6100,25 +6153,7 @@
                   <span class="${triggerValClass}">${escapeBasisText(triggerMain)}</span>
                   <i class="fa-solid fa-chevron-down"></i>
                 </button>
-                <div class="basis-contract-dropdown-panel">
-                  <div class="basis-contract-table-wrap">
-                    <table class="basis-contract-table">
-                      <colgroup>
-                        <col class="col-contract-name">
-                        <col class="col-contract-tag">
-                        <col class="col-contract-action">
-                      </colgroup>
-                      <thead>
-                        <tr>
-                          <th>合同名称</th>
-                          <th>合同标签</th>
-                          <th>操作</th>
-                        </tr>
-                      </thead>
-                      <tbody>${tableInner}</tbody>
-                    </table>
-                  </div>
-                </div>
+                <div class="basis-contract-dropdown-panel">${dropdownPanelInner}</div>
               </div>
               <div class="basis-contract-picker-upload-wrap">
                 <button type="button" class="basis-add-btn" onclick="triggerOrderContractLocalUpload('${s.supplierId}')"><i class="fa-solid fa-upload mr-1"></i>上传合同</button>
@@ -6138,7 +6173,8 @@
         aiContractId: contractId,
         localFile: null
       };
-      renderOrderBasisModal();
+      renderOrderContractSupplierStep();
+      renderBasisSelectedSummary();
       showToast('已选择 AI 生成合同作为关联合同');
     }
 
@@ -6175,13 +6211,15 @@
           uploadedAt: formatBasisDateTime(new Date())
         }
       };
-      renderOrderBasisModal();
+      renderOrderContractSupplierStep();
+      renderBasisSelectedSummary();
       showToast('已使用本地上传作为关联合同（原型示意）');
     }
 
     function removeSupplierLocalContractFile(supplierId) {
       delete orderContractSelections[supplierId];
-      renderOrderBasisModal();
+      renderOrderContractSupplierStep();
+      renderBasisSelectedSummary();
       showToast('已移除本地上传合同');
     }
 
@@ -6290,6 +6328,7 @@
       const skipBtn = document.getElementById('orderBasisSkipBtn');
       const nextBtn = document.getElementById('orderBasisNextBtn');
       const note = document.querySelector('.order-basis-foot-note');
+      if (!prevBtn || !skipBtn || !nextBtn || !note) return;
       prevBtn.style.display = orderBasisStep === 1 ? 'none' : 'inline-flex';
       skipBtn.style.display = orderBasisStep === 3 ? 'none' : 'inline-flex';
       skipBtn.textContent = orderBasisStep === 4 ? '跳过上传' : '跳过';
@@ -6303,16 +6342,11 @@
             : '支持补充采购依据文件留痕；若采购计划、预算与依据文件均为空，系统会在下单前再次确认。';
     }
 
-    function renderOrderBasisModal() {
-      if (!getBasisById('plan', selectedPlanId)) selectedPlanId = '';
-      if (!getBasisById('budget', selectedBudgetId)) selectedBudgetId = '';
-      document.getElementById('orderPlanList').innerHTML = renderBasisItems('plan', procurementPlanOptions, selectedPlanId);
-      document.getElementById('orderBudgetList').innerHTML = renderBasisItems('budget', procurementBudgetOptions, selectedBudgetId);
-      renderOrderContractSupplierStep();
-      renderBasisFileList();
+    function renderOrderBasisStepChrome() {
       [1, 2, 3, 4].forEach(step => {
         const nav = document.getElementById(`basisStepNav${step}`);
         const panel = document.getElementById(`basisStepPanel${step}`);
+        if (!nav || !panel) return;
         nav.classList.toggle('active', step === orderBasisStep);
         nav.classList.toggle('completed', step < orderBasisStep);
         panel.classList.toggle('active', step === orderBasisStep);
@@ -6321,10 +6355,58 @@
       renderOrderBasisFooter();
     }
 
+    function normalizeBasisSelections() {
+      if (!getBasisById('plan', selectedPlanId)) selectedPlanId = '';
+      if (!getBasisById('budget', selectedBudgetId)) selectedBudgetId = '';
+    }
+
+    function ensureOrderBasisStepContent(step) {
+      if (step === 1 && !orderBasisListsInitialized.plan) {
+        document.getElementById('orderPlanList').innerHTML = renderBasisItems('plan', procurementPlanOptions, selectedPlanId);
+        orderBasisListsInitialized.plan = true;
+      }
+      if (step === 2 && !orderBasisListsInitialized.budget) {
+        document.getElementById('orderBudgetList').innerHTML = renderBasisItems('budget', procurementBudgetOptions, selectedBudgetId);
+        orderBasisListsInitialized.budget = true;
+      }
+      if (step === 3 && !orderBasisListsInitialized.contract) {
+        renderOrderContractSupplierStep();
+        orderBasisListsInitialized.contract = true;
+      }
+      if (step === 4 && !orderBasisListsInitialized.files) {
+        renderBasisFileList();
+        orderBasisListsInitialized.files = true;
+      }
+    }
+
+    function refreshOrderBasisStepContent(step) {
+      if (step === 1) {
+        document.getElementById('orderPlanList').innerHTML = renderBasisItems('plan', procurementPlanOptions, selectedPlanId);
+        orderBasisListsInitialized.plan = true;
+      } else if (step === 2) {
+        document.getElementById('orderBudgetList').innerHTML = renderBasisItems('budget', procurementBudgetOptions, selectedBudgetId);
+        orderBasisListsInitialized.budget = true;
+      } else if (step === 3) {
+        renderOrderContractSupplierStep();
+        orderBasisListsInitialized.contract = true;
+      } else if (step === 4) {
+        renderBasisFileList();
+        orderBasisListsInitialized.files = true;
+      }
+    }
+
+    function goToOrderBasisStep(step) {
+      normalizeBasisSelections();
+      orderBasisStep = Math.max(1, Math.min(ORDER_BASIS_TOTAL_STEPS, step));
+      if (orderBasisStep === 3) ensureDemoContractSelections();
+      ensureOrderBasisStepContent(orderBasisStep);
+      renderOrderBasisStepChrome();
+    }
+
     function openOrderBasisModal() {
-      orderBasisStep = 1;
       openContractDropdownSupplierId = null;
-      renderOrderBasisModal();
+      orderBasisListsInitialized = { plan: false, budget: false, contract: false, files: false };
+      goToOrderBasisStep(1);
       document.getElementById('orderBasisOverlay').classList.add('show');
       updateBodyScrollLock();
     }
@@ -6338,12 +6420,14 @@
 
     function selectOrderPlan(id) {
       selectedPlanId = id || '';
-      renderOrderBasisModal();
+      refreshOrderBasisStepContent(1);
+      renderBasisSelectedSummary();
     }
 
     function selectOrderBudget(id) {
       selectedBudgetId = id || '';
-      renderOrderBasisModal();
+      refreshOrderBasisStepContent(2);
+      renderBasisSelectedSummary();
     }
 
     function triggerBasisFileUpload() {
@@ -6384,13 +6468,15 @@
         addedCount += 1;
       });
       event.target.value = '';
-      renderOrderBasisModal();
+      refreshOrderBasisStepContent(4);
+      renderBasisSelectedSummary();
       if (addedCount) showToast(`已添加 ${addedCount} 个采购依据文件`);
     }
 
     function removeBasisFile(id) {
       uploadedBasisFiles = uploadedBasisFiles.filter(item => item.id !== id);
-      renderOrderBasisModal();
+      refreshOrderBasisStepContent(4);
+      renderBasisSelectedSummary();
       showToast('已移除采购依据文件');
     }
 
@@ -6414,7 +6500,8 @@
       procurementPlanOptions.unshift(item);
       selectedPlanId = item.id;
       saveProcurementBasisOptions();
-      renderOrderBasisModal();
+      refreshOrderBasisStepContent(1);
+      renderBasisSelectedSummary();
       showToast('已新增采购计划并完成选择');
     }
 
@@ -6436,14 +6523,14 @@
       procurementBudgetOptions.unshift(item);
       selectedBudgetId = item.id;
       saveProcurementBasisOptions();
-      renderOrderBasisModal();
+      refreshOrderBasisStepContent(2);
+      renderBasisSelectedSummary();
       showToast('已新增采购预算并完成选择');
     }
 
     function goPrevOrderBasisStep() {
       openContractDropdownSupplierId = null;
-      orderBasisStep = Math.max(1, orderBasisStep - 1);
-      renderOrderBasisModal();
+      goToOrderBasisStep(orderBasisStep - 1);
     }
 
     function goNextOrderBasisStep() {
@@ -6452,22 +6539,19 @@
         return;
       }
       if (orderBasisStep === 3 && !validateOrderContractsOrToast()) return;
-      if (orderBasisStep === 3) openContractDropdownSupplierId = null;
-      orderBasisStep += 1;
-      renderOrderBasisModal();
+      openContractDropdownSupplierId = null;
+      goToOrderBasisStep(orderBasisStep + 1);
     }
 
     function skipOrderBasisStep() {
       if (orderBasisStep === 1) {
         selectedPlanId = '';
-        orderBasisStep = 2;
-        renderOrderBasisModal();
+        goToOrderBasisStep(2);
         return;
       }
       if (orderBasisStep === 2) {
         selectedBudgetId = '';
-        orderBasisStep = 3;
-        renderOrderBasisModal();
+        goToOrderBasisStep(3);
         return;
       }
       if (orderBasisStep === 3) {
@@ -6479,8 +6563,7 @@
 
     function confirmOrderBasisAndProceed() {
       if (!validateOrderContractsOrToast()) {
-        orderBasisStep = 3;
-        renderOrderBasisModal();
+        goToOrderBasisStep(3);
         return;
       }
       if (!selectedPlanId && !selectedBudgetId && !uploadedBasisFiles.length) {
