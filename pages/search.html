@@ -1387,13 +1387,13 @@
       grid.innerHTML = list.map(item => {
         const marker = Math.max(6, Math.min(94, ((item.price - item.floor) / (item.ceiling - item.floor)) * 100));
         return `
-          <article class="product-card" onclick="window.location.href='product.html?id=${item.id}'">
+          <article class="product-card" onclick="window.open('product.html?id=${item.id}', '_blank')">
             <div class="product-thumb">
               <img src="${item.image}" alt="${item.name}">
               <span class="product-tag">${tagText(item)}</span>
             </div>
             <div class="product-body">
-              <a class="product-name" href="product.html?id=${item.id}">${item.name}</a>
+              <a class="product-name" href="product.html?id=${item.id}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${item.name}</a>
               <div class="price-row">
                 <span class="price-num">¥${item.price.toFixed(2)}</span>
                 <span class="price-unit">/${item.unit}</span>

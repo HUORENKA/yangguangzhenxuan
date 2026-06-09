@@ -10,13 +10,19 @@
   <script src="../assets/mock.js"></script>
   <style>
     :root {
-      --primary: #E2231A;
-      --primary-dark: #c01e16;
-      --primary-light: #fff1f0;
-      --text-main: #111827;
-      --text-sub: #6b7280;
-      --border: #e5e7eb;
-      --bg: #f5f5f5;
+      --brand: #2f6bff;
+      --brand-dark: #1d4ed8;
+      --brand-light: rgba(47, 107, 255, 0.08);
+      --mall-red: #E2231A;
+      --mall-red-hover: #c01e16;
+      --mall-red-light: #fff3f2;
+      --primary: var(--brand);
+      --primary-dark: var(--brand-dark);
+      --primary-light: var(--brand-light);
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border: rgba(148, 163, 184, 0.18);
+      --bg: #f9f8f6;
     }
 
     * { box-sizing: border-box; }
@@ -24,68 +30,14 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-      background: var(--bg);
+      background: #fff;
       color: var(--text-main);
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: #fff;
-      box-shadow: 0 2px 10px rgba(226, 35, 26, 0.22);
-    }
-
-    .topbar-inner {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-    }
-
-    .brand-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.92);
-    }
-
-    .top-chip {
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.14);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      font-size: 12px;
     }
 
     .page-wrap {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 20px 20px 120px;
+      padding: 20px 20px 40px;
     }
 
     .card {
@@ -130,13 +82,6 @@
       flex-wrap: wrap;
     }
 
-    .hero-action-buttons {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
     .gallery-main {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -173,8 +118,8 @@
 
     .thumb-btn.active,
     .thumb-btn:hover {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.1);
+      border-color: var(--brand);
+      box-shadow: 0 0 0 2px rgba(47, 107, 255, 0.12);
     }
 
     .thumb-btn img {
@@ -197,8 +142,8 @@
     }
 
     .tag.red {
-      background: #fff1f0;
-      color: var(--primary);
+      background: var(--brand-light);
+      color: var(--brand-dark);
     }
 
     .tag.green {
@@ -219,63 +164,90 @@
     }
 
     .price-panel {
-      background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
-      border: 1px solid #fecaca;
+      background: linear-gradient(180deg, #f0f5ff 0%, #fff 100%);
+      border: 1px solid rgba(47, 107, 255, 0.16);
       border-radius: 14px;
       padding: 18px 20px;
       margin: 18px 0;
     }
 
     .price-row {
-      display: flex;
-      align-items: end;
-      gap: 12px;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: minmax(200px, 1fr) minmax(240px, 320px);
+      align-items: stretch;
+      gap: 14px;
     }
 
     .price-main {
-      min-width: 210px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .price-main-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .price-sold-meta {
+      font-size: 13px;
+      color: var(--text-sub);
+      white-space: nowrap;
+    }
+
+    .price-sold-meta strong {
+      color: #475569;
+      font-weight: 700;
     }
 
     .price-range-card {
       flex: 1;
-      min-width: 260px;
-      max-width: 320px;
+      min-width: 0;
+      max-width: none;
       background: rgba(255, 255, 255, 0.86);
-      border: 1px solid #fed7d3;
+      border: 1px solid rgba(47, 107, 255, 0.14);
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .price-range-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
+      gap: 8px;
+      margin-bottom: 6px;
       flex-wrap: wrap;
     }
 
     .price-range-title {
-      font-size: 12px;
+      font-size: 11px;
       color: #64748b;
       font-weight: 600;
+      line-height: 1.3;
     }
 
     .price-range-judgement {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: #059669;
+      white-space: nowrap;
     }
 
     .price-range-track-wrap {
       position: relative;
-      padding-top: 14px;
+      padding-top: 0;
     }
 
     .price-range-track {
       position: relative;
-      height: 8px;
+      height: 6px;
       border-radius: 999px;
       background: linear-gradient(90deg, #fbbf24 0%, #34d399 35%, #34d399 75%, #f59e0b 100%);
       overflow: visible;
@@ -284,65 +256,514 @@
     .price-range-marker {
       position: absolute;
       top: 50%;
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      background: var(--primary);
-      border: 3px solid #fff;
-      box-shadow: 0 4px 12px rgba(226, 35, 26, 0.28);
+      background: var(--brand);
+      border: 2px solid #fff;
+      box-shadow: 0 2px 8px rgba(47, 107, 255, 0.28);
       transform: translate(-50%, -50%);
     }
 
-    .price-range-marker::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: -14px;
-      transform: translateX(-50%);
-      width: 2px;
-      height: 9px;
-      background: var(--primary);
-      border-radius: 2px;
-    }
-
-    .price-range-marker-label {
-      position: absolute;
-      top: 0;
-      transform: translate(-50%, -100%);
-      padding: 3px 7px;
-      border-radius: 7px;
-      background: #fff1f0;
-      border: 1px solid #fecaca;
-      color: var(--primary);
-      font-size: 11px;
-      font-weight: 800;
-      white-space: nowrap;
+    .price-range-marker::before,
+    .price-range-marker-label,
+    .price-range-footnote {
+      display: none;
     }
 
     .price-range-labels {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      margin-top: 8px;
-      font-size: 11px;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 10px;
       color: #64748b;
     }
 
     .price-range-labels strong {
       display: block;
       color: #0f172a;
-      font-size: 13px;
-      margin-top: 2px;
+      font-size: 12px;
+      margin-top: 1px;
     }
 
-    .price-range-footnote {
+    .recipient-delivery-row {
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .recipient-card {
+      flex: 1;
+      min-width: 0;
+      max-width: 68%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(47, 107, 255, 0.14);
+      background: #fff;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .recipient-card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--brand-light);
+      color: var(--brand);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+
+    .recipient-card-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .recipient-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .recipient-card-user {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .recipient-card-user span {
+      margin-left: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+    }
+
+    .recipient-edit-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid rgba(47, 107, 255, 0.22);
+      background: #fff;
+      color: var(--brand);
+      font-size: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .recipient-edit-btn:hover {
+      background: var(--brand-light);
+    }
+
+    .recipient-card-address {
       margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #475569;
+    }
+
+    .delivery-meta-col {
+      flex-shrink: 0;
+      width: auto;
+      min-width: 148px;
+      max-width: 190px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .delivery-meta-item {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+
+    .delivery-meta-label {
+      display: inline;
+      margin-right: 4px;
+    }
+
+    .delivery-meta-item strong {
+      color: #64748b;
+      font-weight: 500;
+      font-size: 13px;
+    }
+
+    .recipient-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .recipient-overlay.show {
+      display: flex;
+    }
+
+    .recipient-modal {
+      width: min(560px, 100%);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    .recipient-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(47, 107, 255, 0.12);
+    }
+
+    .recipient-modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .recipient-modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .recipient-modal-list {
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      overflow: auto;
+      flex: 1;
+    }
+
+    .recipient-option-row {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+      transition: border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .recipient-option-row:hover {
+      border-color: rgba(47, 107, 255, 0.28);
+    }
+
+    .recipient-option-row.active {
+      border-color: var(--brand);
+      background: var(--brand-light);
+    }
+
+    .recipient-option-main {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+      padding: 12px 14px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .recipient-option-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .recipient-option-phone {
+      margin-left: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+    }
+
+    .recipient-option-address {
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #475569;
+    }
+
+    .recipient-option-actions {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 10px 10px 0;
+      flex-shrink: 0;
+    }
+
+    .recipient-option-action {
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(47, 107, 255, 0.22);
+      background: #fff;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .recipient-option-action i {
       font-size: 11px;
+      line-height: 1;
+    }
+
+    .recipient-option-action:hover {
+      background: var(--brand-light);
+    }
+
+    .recipient-option-action.danger {
+      border-color: rgba(239, 68, 68, 0.22);
+      color: #dc2626;
+    }
+
+    .recipient-option-action.danger:hover {
+      background: #fef2f2;
+    }
+
+    .recipient-modal-foot {
+      padding: 12px 18px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .recipient-add-btn {
+      width: 100%;
+      height: 42px;
+      border: 1px dashed rgba(47, 107, 255, 0.35);
+      border-radius: 10px;
+      background: #f8fbff;
+      color: var(--brand);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .recipient-add-btn:hover {
+      background: var(--brand-light);
+      border-color: var(--brand);
+    }
+
+    .address-form-overlay,
+    .recipient-delete-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 210;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.42);
+    }
+
+    .address-form-overlay.show,
+    .recipient-delete-overlay.show {
+      display: flex;
+    }
+
+    .address-form-modal,
+    .recipient-delete-modal {
+      width: min(640px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    .address-form-head,
+    .recipient-delete-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 2px solid rgba(47, 107, 255, 0.35);
+    }
+
+    .address-form-title,
+    .recipient-delete-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .address-form-close,
+    .recipient-delete-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .address-form-body {
+      padding: 18px 20px 8px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .address-form-row {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .address-form-label {
+      padding-top: 10px;
+      font-size: 14px;
+      color: #334155;
+      text-align: right;
+    }
+
+    .address-form-label.required::before {
+      content: "* ";
+      color: #ef4444;
+    }
+
+    .address-form-field {
+      position: relative;
+    }
+
+    .address-form-input,
+    .address-form-select,
+    .address-form-textarea {
+      width: 100%;
+      border: 1px solid #dbe3ef;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #0f172a;
+      background: #fff;
+      outline: none;
+    }
+
+    .address-form-input,
+    .address-form-select {
+      height: 40px;
+      padding: 0 52px 0 12px;
+    }
+
+    .address-form-textarea {
+      min-height: 88px;
+      padding: 10px 52px 10px 12px;
+      resize: vertical;
+    }
+
+    .address-form-input:focus,
+    .address-form-select:focus,
+    .address-form-textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.12);
+    }
+
+    .address-form-count {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
       color: #94a3b8;
+      pointer-events: none;
+    }
+
+    .address-form-field.textarea-wrap .address-form-count {
+      top: auto;
+      bottom: 10px;
+      transform: none;
+    }
+
+    .address-form-radio-group {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 40px;
+    }
+
+    .address-form-radio {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .address-form-foot,
+    .recipient-delete-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .address-form-btn,
+    .recipient-delete-btn {
+      height: 36px;
+      padding: 0 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .address-form-btn.cancel,
+    .recipient-delete-btn.cancel {
+      border: 1px solid #dbe3ef;
+      background: #fff;
+      color: #334155;
+    }
+
+    .address-form-btn.save,
+    .recipient-delete-btn.confirm {
+      border: 1px solid var(--brand);
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .recipient-delete-body {
+      padding: 24px 20px;
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.6;
     }
 
     .current-price {
-      color: var(--primary);
+      color: var(--mall-red);
       font-size: 40px;
       font-weight: 800;
       line-height: 1;
@@ -353,25 +774,12 @@
       font-size: 13px;
     }
 
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px 18px;
-      margin-top: 18px;
-    }
-
-    .info-item {
+    .hero-action-buttons {
       display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      font-size: 14px;
-      color: #374151;
-    }
-
-    .info-label {
-      color: #6b7280;
-      min-width: 72px;
-      flex-shrink: 0;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-left: auto;
     }
 
     .qty-box {
@@ -422,20 +830,21 @@
     }
 
     .btn-main {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
       color: #fff;
+      box-shadow: 0 8px 18px rgba(47, 107, 255, 0.22);
     }
 
-    .btn-main:hover { background: var(--primary-dark); }
+    .btn-main:hover { background: linear-gradient(135deg, var(--brand-dark) 0%, #1e40af 100%); }
 
     .btn-sub {
-      background: #fff1f0;
-      color: var(--primary);
-      border-color: #fecaca;
+      background: var(--brand-light);
+      color: var(--brand);
+      border-color: rgba(47, 107, 255, 0.22);
     }
 
     .btn-sub:hover {
-      background: #ffe4e2;
+      background: rgba(47, 107, 255, 0.12);
     }
 
     .btn-ghost {
@@ -452,25 +861,254 @@
     .supplier-card {
       position: sticky;
       top: 88px;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid rgba(47, 107, 255, 0.12);
+      background: #fff;
     }
 
-    .score-row {
-      display: flex;
-      justify-content: space-between;
+    .supplier-banner {
+      position: relative;
+      padding: 20px 16px 18px;
+      background:
+        radial-gradient(ellipse 120% 90% at 50% 110%, rgba(96, 165, 250, 0.28) 0%, transparent 58%),
+        radial-gradient(circle at 88% 12%, rgba(255, 255, 255, 0.08) 0%, transparent 34%),
+        repeating-linear-gradient(-52deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 11px),
+        linear-gradient(165deg, #0a1f47 0%, #123a7a 42%, #1a4f9c 100%);
+      overflow: hidden;
+    }
+
+    .supplier-banner::before {
+      content: "";
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      bottom: -28px;
+      height: 56px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(147, 197, 253, 0.18) 0%, transparent 72%);
+      pointer-events: none;
+    }
+
+    .supplier-banner-name {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.45;
+      color: #fff;
+      letter-spacing: 0.2px;
+      text-shadow: 0 1px 3px rgba(15, 23, 42, 0.28);
+      word-break: break-all;
+    }
+
+    .supplier-cert-strip {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
       align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px dashed #e5e7eb;
-      font-size: 14px;
+      gap: 8px;
+      margin: 12px auto 0;
+      padding: 6px 14px 6px 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        inset 0 -1px 0 rgba(15, 23, 42, 0.12),
+        0 4px 14px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
 
-    .score-row:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
+    .supplier-banner .supplier-cert-strip {
+      display: flex;
+      width: fit-content;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    .score-value {
+    .supplier-gold-seal {
+      position: relative;
+      width: 26px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+
+    .supplier-gold-seal-disc {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 32% 28%, #fffef8 0%, #fde68a 24%, #f59e0b 58%, #b45309 100%);
+      border: 1.5px solid rgba(255, 250, 235, 0.95);
+      box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.72),
+        inset 0 -2px 4px rgba(146, 64, 14, 0.32),
+        0 3px 8px rgba(15, 23, 42, 0.24);
+    }
+
+    .supplier-gold-seal-star {
+      color: #fff;
+      font-size: 10px;
+      line-height: 1;
+      text-shadow: 0 1px 2px rgba(146, 64, 14, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .supplier-gold-seal-ribbon {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 6px;
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      border-radius: 0 0 3px 3px;
+      clip-path: polygon(0 0, 100% 0, 88% 100%, 50% 72%, 12% 100%);
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.22);
+    }
+
+    .supplier-cert-strip-text {
+      font-size: 13px;
       font-weight: 700;
-      color: var(--primary);
+      color: rgba(255, 255, 255, 0.96);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .supplier-card-body {
+      padding: 16px 0 0;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    }
+
+    .supplier-score-block {
+      margin: 0 18px 16px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid rgba(226, 232, 240, 0.96);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .supplier-score-main {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed rgba(226, 232, 240, 0.96);
+    }
+
+    .supplier-score-num {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+      color: #2f6bff;
+      letter-spacing: -0.5px;
+    }
+
+    .supplier-score-label {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .supplier-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .supplier-metric-row {
+      display: grid;
+      grid-template-columns: 64px 1fr 36px;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #475569;
+    }
+
+    .supplier-metric-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: #eef2f7;
+      overflow: hidden;
+    }
+
+    .supplier-metric-bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #5b8cff 0%, #2f6bff 100%);
+    }
+
+    .supplier-metric-val {
+      text-align: right;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1d4ed8;
+    }
+
+    .supplier-info-list {
+      padding: 0 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .supplier-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #475569;
+    }
+
+    .supplier-info-item i {
+      width: 16px;
+      margin-top: 3px;
+      color: #94a3b8;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .supplier-info-item strong {
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .supplier-store-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: calc(100% - 36px);
+      margin: 0 18px 18px;
+      height: 42px;
+      border: 1px solid rgba(47, 107, 255, 0.28);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%);
+      color: #1d4ed8;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .supplier-store-btn:hover {
+      border-color: rgba(47, 107, 255, 0.45);
+      background: #eef4ff;
+      transform: translateY(-1px);
     }
 
     .portrait-section {
@@ -527,12 +1165,12 @@
       padding: 0 18px;
       border: none;
       border-radius: 999px;
-      background: linear-gradient(135deg, #ef4444 0%, #f97316 100%);
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
       color: #fff;
       font-size: 14px;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 10px 24px rgba(239, 68, 68, 0.2);
+      box-shadow: 0 10px 24px rgba(47, 107, 255, 0.22);
       transition: all 0.2s ease;
     }
 
@@ -2546,28 +3184,87 @@
       font-weight: 700;
     }
 
-    .detail-section {
+    .detail-sticky-sentinel {
+      height: 1px;
+      margin: 0;
+      pointer-events: none;
+    }
+
+    .detail-zone {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr) 300px;
+      gap: 16px;
+      align-items: stretch;
       margin-top: 18px;
+    }
+
+    .detail-section {
+      grid-column: 1 / 3;
+      margin-top: 0;
+      overflow: visible;
+    }
+
+    .detail-purchase-slot {
+      grid-column: 3;
+      position: relative;
+    }
+
+    .detail-purchase-card {
+      border: 1px solid rgba(47, 107, 255, 0.12);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
       overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+      position: relative;
+      z-index: 55;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+    }
+
+    .detail-purchase-card.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .detail-purchase-card.is-fixed {
+      position: fixed;
+      z-index: 55;
+    }
+
+    .detail-purchase-placeholder {
+      height: 0;
+      pointer-events: none;
     }
 
     .detail-tabs {
       position: sticky;
-      top: 64px;
+      top: 88px;
       z-index: 60;
       background: #fff;
       display: flex;
       gap: 0;
       border-bottom: 1px solid var(--border);
       overflow-x: auto;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .detail-section.tabs-stuck .detail-tabs {
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
     }
 
     .detail-tab {
       flex-shrink: 0;
       border: none;
       background: transparent;
-      padding: 16px 20px;
-      font-size: 15px;
+      padding: 10px 18px;
+      font-size: 14px;
       font-weight: 700;
       color: #6b7280;
       cursor: pointer;
@@ -2581,11 +3278,275 @@
 
     .detail-panel {
       display: none;
-      padding: 22px 24px 26px;
+      padding: 18px 20px 22px;
     }
 
     .detail-panel.active {
       display: block;
+    }
+
+    .dpc-banner {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 12px 12px 11px;
+      background:
+        radial-gradient(ellipse 120% 90% at 50% 110%, rgba(96, 165, 250, 0.22) 0%, transparent 58%),
+        linear-gradient(165deg, #0a1f47 0%, #123a7a 42%, #1a4f9c 100%);
+    }
+
+    .dpc-banner-name {
+      flex: 1;
+      min-width: 0;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: #fff;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .dpc-banner .supplier-gold-seal {
+      width: 22px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+
+    .dpc-banner .supplier-gold-seal-disc {
+      width: 20px;
+      height: 20px;
+    }
+
+    .dpc-banner .supplier-gold-seal-star {
+      font-size: 9px;
+    }
+
+    .dpc-banner .supplier-gold-seal-ribbon {
+      width: 12px;
+      height: 5px;
+    }
+
+    .dpc-body {
+      padding: 14px 14px 16px;
+    }
+
+    .dpc-title {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.55;
+      color: #111827;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .dpc-price-block {
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .dpc-price-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+    }
+
+    .dpc-price-label {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .dpc-price-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--mall-red);
+      line-height: 1;
+    }
+
+    .dpc-price-unit {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--mall-red);
+    }
+
+    .dpc-price-meta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .dpc-sold {
+      font-size: 12px;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    .dpc-select option {
+      white-space: normal;
+    }
+
+    .dpc-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+
+    .dpc-field-label {
+      color: #6b7280;
+      min-width: 42px;
+      flex-shrink: 0;
+    }
+
+    .dpc-select {
+      flex: 1;
+      min-width: 0;
+      height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 13px;
+      color: #374151;
+      background: #fff;
+    }
+
+    .dpc-qty-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .detail-purchase-card .qty-box button {
+      width: 32px;
+      height: 32px;
+    }
+
+    .detail-purchase-card .qty-box input {
+      width: 46px;
+      height: 32px;
+      font-size: 14px;
+    }
+
+    .dpc-qty-note {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .dpc-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .dpc-actions .btn-main,
+    .dpc-actions .btn-sub,
+    .dpc-actions .dpc-favorite-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .dpc-actions .btn-sub i,
+    .dpc-actions .dpc-favorite-btn i {
+      margin-right: 6px;
+    }
+
+    .dpc-favorite-btn {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #374151;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .dpc-favorite-btn:hover {
+      border-color: #d1d5db;
+      background: #f9fafb;
+    }
+
+    .dpc-price-monitor {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .dpc-monitor-left {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.55;
+    }
+
+    .dpc-monitor-ceiling {
+      margin-top: 4px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #059669;
+      line-height: 1.2;
+    }
+
+    .dpc-monitor-right {
+      text-align: center;
+      min-width: 72px;
+    }
+
+    .dpc-monitor-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 64px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid #bbf7d0;
+      font-size: 12px;
+      font-weight: 700;
+      color: #059669;
+    }
+
+    .dpc-monitor-track {
+      margin-top: 6px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22c55e 0%, #fbbf24 55%, #ef4444 100%);
+      position: relative;
+    }
+
+    .dpc-monitor-track span {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #059669;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.18);
     }
 
     .section-title {
@@ -2626,6 +3587,20 @@
       border-right: 1px solid #f1f5f9;
     }
 
+    .param-detail-images {
+      margin-top: 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .param-detail-images img {
+      width: 100%;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
     .intro-block,
     .plain-block {
       border: 1px solid var(--border);
@@ -2655,54 +3630,6 @@
       background: #fff;
     }
 
-    .sticky-bar {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 120;
-      transform: translateY(110%);
-      transition: transform 0.25s ease;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid #e5e7eb;
-      box-shadow: 0 -8px 20px rgba(15, 23, 42, 0.08);
-    }
-
-    .sticky-bar.show {
-      transform: translateY(0);
-    }
-
-    .sticky-inner {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .sticky-meta {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-
-    .sticky-name {
-      font-size: 14px;
-      font-weight: 700;
-      max-width: 420px;
-    }
-
-    .sticky-price {
-      color: var(--primary);
-      font-size: 28px;
-      font-weight: 800;
-    }
-
     @media (max-width: 1280px) {
       .hero-grid {
         grid-template-columns: 320px minmax(0, 1fr);
@@ -2711,6 +3638,18 @@
       .supplier-card {
         position: static;
         grid-column: 1 / -1;
+      }
+
+      .detail-zone {
+        grid-template-columns: 320px minmax(0, 1fr);
+      }
+
+      .detail-section {
+        grid-column: 1 / -1;
+      }
+
+      .detail-purchase-slot {
+        display: none;
       }
     }
 
@@ -2750,7 +3689,26 @@
         grid-template-columns: 1fr;
       }
 
-      .info-grid,
+      .price-row {
+        grid-template-columns: 1fr;
+      }
+
+      .recipient-delivery-row {
+        flex-direction: column;
+      }
+
+      .recipient-card {
+        max-width: none;
+        width: 100%;
+      }
+
+      .delivery-meta-col {
+        width: 100%;
+        max-width: none;
+        gap: 8px;
+        padding: 0;
+      }
+
       .portrait-body,
       .portrait-skeleton-grid,
       .portrait-loading-tasks,
@@ -2778,26 +3736,9 @@
   <script src="../assets/mode_switcher.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-logo"><i class="fa-solid fa-cart-shopping"></i></div>
-        <div>国采e购</div>
-        <span class="top-chip">采购决策详情页</span>
-      </div>
-      <div class="top-actions">
-        <span><i class="fa-solid fa-house mr-1"></i>商城首页</span>
-        <span><i class="fa-solid fa-briefcase mr-1"></i>工作台</span>
-        <span class="top-chip" id="roleDisplay">采购专员</span>
-      </div>
-    </div>
-  </header>
+  <header class="topbar"></header>
 
   <main class="page-wrap">
-    <div class="text-sm text-gray-500 mb-4">
-      首页 &gt; 商品列表 &gt; <span id="crumbName">商品详情</span>
-    </div>
-
     <section class="hero-grid">
       <div class="card p-4 hero-card" id="heroAnchor">
         <div class="gallery-main">
@@ -2813,35 +3754,53 @@
           <div class="price-panel">
             <div class="price-row">
               <div class="price-main">
-                <div class="hint-text mb-2">当前采购价</div>
+                <div class="price-main-head">
+                  <div class="hint-text">当前采购价</div>
+                  <div class="price-sold-meta">已售 <strong id="saleCount"></strong></div>
+                </div>
                 <div class="current-price" id="currentPrice"></div>
               </div>
               <div class="price-range-card">
                 <div class="price-range-head">
-                  <div class="price-range-title">平台建议采购价格区间图示</div>
+                  <div class="price-range-title">平台建议采购价格区间</div>
                   <div class="price-range-judgement" id="priceJudgement"></div>
                 </div>
                 <div class="price-range-track-wrap">
                   <div class="price-range-track">
-                    <div class="price-range-marker" id="priceRangeMarker">
-                      <div class="price-range-marker-label" id="priceMarkerLabel"></div>
-                    </div>
+                    <div class="price-range-marker" id="priceRangeMarker"></div>
                   </div>
                   <div class="price-range-labels">
-                    <div>建议下限<strong id="priceFloor"></strong></div>
-                    <div style="text-align:right;">建议上限<strong id="priceCeiling"></strong></div>
+                    <div>下限<strong id="priceFloor"></strong></div>
+                    <div style="text-align:right;">上限<strong id="priceCeiling"></strong></div>
                   </div>
-                  <div class="price-range-footnote">当前位置按当前采购价相对平台建议采购上下限计算。</div>
                 </div>
               </div>
             </div>
-            <div class="info-grid">
-              <div class="info-item"><span class="info-label">已售</span><span id="saleCount"></span></div>
-              <div class="info-item"><span class="info-label">库存</span><span id="stockCount"></span></div>
-              <div class="info-item"><span class="info-label">配送至</span><span id="deliveryArea"></span></div>
-              <div class="info-item"><span class="info-label">预计发货</span><span id="deliveryTime"></span></div>
-              <div class="info-item"><span class="info-label">采购编码</span><span id="skuCode"></span></div>
-              <div class="info-item"><span class="info-label">状态</span><span id="stockStatus"></span></div>
+
+            <div class="recipient-delivery-row">
+              <div class="recipient-card" id="recipientCard">
+                <div class="recipient-card-icon"><i class="fa-solid fa-location-dot"></i></div>
+                <div class="recipient-card-body">
+                  <div class="recipient-card-head">
+                    <div class="recipient-card-user"><span id="recipientName"></span><span id="recipientPhone"></span></div>
+                    <button class="recipient-edit-btn" type="button" onclick="openRecipientModal()" aria-label="修改收货地址" title="修改收货地址">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                  </div>
+                  <div class="recipient-card-address" id="recipientAddress"></div>
+                </div>
+              </div>
+
+              <div class="delivery-meta-col">
+                <div class="delivery-meta-item">
+                  <span class="delivery-meta-label">库存</span>
+                  <strong id="stockCount"></strong>
+                </div>
+                <div class="delivery-meta-item">
+                  <span class="delivery-meta-label">预计发货</span>
+                  <strong id="deliveryTime"></strong>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -2855,43 +3814,69 @@
               </div>
               <span class="text-sm text-gray-500" id="purchaseNote"></span>
               <div class="hero-action-buttons">
-                <button class="btn-main" type="button" onclick="goToOrderConfirm()">立即下单</button>
-                <button class="btn-sub" type="button" onclick="showToast('已加入购物车')">加入购物车</button>
                 <button class="btn-ghost" type="button" onclick="showToast('已收藏该商品')">收藏</button>
+                <button class="btn-sub" type="button" onclick="showToast('已加入购物车')">加入购物车</button>
+                <button class="btn-main" type="button" onclick="goToOrderConfirm()">立即下单</button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <aside class="card p-5 supplier-card hero-card">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <div class="text-lg font-extrabold text-gray-900" id="supplierName"></div>
-            <div class="text-sm text-gray-500 mt-1">供应商基本信用认证</div>
+      <aside class="supplier-card hero-card">
+        <div class="supplier-banner">
+          <div class="supplier-banner-name" id="supplierName"></div>
+          <div class="supplier-cert-strip">
+            <span class="supplier-gold-seal" aria-hidden="true">
+              <span class="supplier-gold-seal-disc">
+                <span class="supplier-gold-seal-star">★</span>
+              </span>
+              <span class="supplier-gold-seal-ribbon"></span>
+            </span>
+            <span class="supplier-cert-strip-text">供应商基本信用认证</span>
           </div>
-          <span class="tag red"><i class="fa-solid fa-shield-halved"></i>已认证</span>
         </div>
 
-        <div class="mt-4 p-4 rounded-xl bg-red-50 border border-red-100">
-          <div class="text-sm text-gray-500">综合评分</div>
-          <div class="text-3xl font-extrabold text-red-600 mt-1" id="supplierScore"></div>
+        <div class="supplier-card-body">
+        <div class="supplier-score-block">
+          <div class="supplier-score-main">
+            <span class="supplier-score-num" id="supplierScore"></span>
+            <span class="supplier-score-label">综合评分</span>
+          </div>
+          <div class="supplier-metrics">
+            <div class="supplier-metric-row">
+              <span>描述相符</span>
+              <div class="supplier-metric-bar"><span id="scoreDescBar"></span></div>
+              <strong class="supplier-metric-val" id="scoreDesc"></strong>
+            </div>
+            <div class="supplier-metric-row">
+              <span>按时交货</span>
+              <div class="supplier-metric-bar"><span id="scoreDeliveryBar"></span></div>
+              <strong class="supplier-metric-val" id="scoreDelivery"></strong>
+            </div>
+            <div class="supplier-metric-row">
+              <span>综合服务</span>
+              <div class="supplier-metric-bar"><span id="scoreServiceBar"></span></div>
+              <strong class="supplier-metric-val" id="scoreService"></strong>
+            </div>
+          </div>
         </div>
 
-        <div class="mt-4">
-          <div class="score-row"><span>描述相符</span><span class="score-value" id="scoreDesc"></span></div>
-          <div class="score-row"><span>按时交货</span><span class="score-value" id="scoreDelivery"></span></div>
-          <div class="score-row"><span>综合服务</span><span class="score-value" id="scoreService"></span></div>
+        <div class="supplier-info-list">
+          <div class="supplier-info-item">
+            <i class="fa-solid fa-phone"></i>
+            <div><strong>售后电话</strong><br><span id="servicePhone"></span></div>
+          </div>
+          <div class="supplier-info-item">
+            <i class="fa-solid fa-truck"></i>
+            <div><strong>服务范围</strong><br><span id="serviceRegion"></span></div>
+          </div>
         </div>
 
-        <div class="mt-4 text-sm text-gray-600 leading-7">
-          <div><span class="text-gray-400">售后电话：</span><span id="servicePhone"></span></div>
-          <div><span class="text-gray-400">服务范围：</span><span id="serviceRegion"></span></div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2 mt-5">
-          <button class="btn-ghost !h-10 !px-0" type="button" onclick="showToast('已打开供应商主页')">查看店铺</button>
-          <button class="btn-ghost !h-10 !px-0" type="button" onclick="showToast('已发起供应商联系')">联系供应商</button>
+        <button class="supplier-store-btn" type="button" onclick="showToast('已打开供应商主页')">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          查看店铺
+        </button>
         </div>
       </aside>
     </section>
@@ -2900,7 +3885,7 @@
       <div class="portrait-head">
         <div class="portrait-head-top">
           <div>
-            <div class="ai-title"><i class="fa-solid fa-brain text-red-500"></i>AI商品画像</div>
+            <div class="ai-title"><i class="fa-solid fa-brain" style="color:var(--brand)"></i>AI商品画像</div>
             <div class="portrait-subtitle">可主动生成 AI 商品画像，也可进入比质比价流程选择候选商品进行整体分析。</div>
           </div>
           <div class="portrait-head-actions">
@@ -3026,43 +4011,211 @@
       </div>
     </section>
 
-    <section class="card detail-section">
-      <div class="detail-tabs">
-        <button class="detail-tab active" type="button" data-detail-tab="params">详细参数</button>
-        <button class="detail-tab" type="button" data-detail-tab="intro">商品介绍</button>
-        <button class="detail-tab" type="button" data-detail-tab="evaluation">商品评价</button>
-        <button class="detail-tab" type="button" data-detail-tab="code">采购编码</button>
-        <button class="detail-tab" type="button" data-detail-tab="service">售后与配送</button>
-      </div>
+    <div class="detail-sticky-sentinel" id="detailStickySentinel" aria-hidden="true"></div>
+    <div class="detail-zone">
+      <section class="card detail-section" id="detailSection">
+        <div class="detail-tabs" id="detailTabs">
+          <button class="detail-tab active" type="button" data-detail-tab="params">详细参数</button>
+          <button class="detail-tab" type="button" data-detail-tab="intro">商品介绍</button>
+          <button class="detail-tab" type="button" data-detail-tab="evaluation">商品评价</button>
+          <button class="detail-tab" type="button" data-detail-tab="code">采购编码</button>
+          <button class="detail-tab" type="button" data-detail-tab="service">售后与配送</button>
+        </div>
 
-      <div class="detail-panel active" data-detail-panel="params">
-        <div class="section-title">详细参数</div>
-        <div class="param-grid" id="paramGrid"></div>
-      </div>
+        <div class="detail-panel active" data-detail-panel="params">
+          <div class="section-title">详细参数</div>
+          <div class="param-grid" id="paramGrid"></div>
+          <div class="param-detail-images" id="paramDetailImages"></div>
+        </div>
 
-      <div class="detail-panel" data-detail-panel="intro">
-        <div class="section-title">商品介绍</div>
-        <div class="intro-block" id="introText"></div>
-        <div class="intro-list mt-4" id="introList"></div>
-      </div>
+        <div class="detail-panel" data-detail-panel="intro">
+          <div class="section-title">商品介绍</div>
+          <div class="intro-block" id="introText"></div>
+          <div class="intro-list mt-4" id="introList"></div>
+        </div>
 
-      <div class="detail-panel" data-detail-panel="evaluation">
-        <div class="section-title">商品评价</div>
-        <div class="text-sm text-gray-500 mb-4">好评率 <span class="font-bold text-emerald-600" id="goodRate"></span></div>
-        <div class="eval-list" id="evalList"></div>
-      </div>
+        <div class="detail-panel" data-detail-panel="evaluation">
+          <div class="section-title">商品评价</div>
+          <div class="text-sm text-gray-500 mb-4">好评率 <span class="font-bold text-emerald-600" id="goodRate"></span></div>
+          <div class="eval-list" id="evalList"></div>
+        </div>
 
-      <div class="detail-panel" data-detail-panel="code">
-        <div class="section-title">采购编码</div>
-        <div class="plain-block" id="codeBlock"></div>
-      </div>
+        <div class="detail-panel" data-detail-panel="code">
+          <div class="section-title">采购编码</div>
+          <div class="plain-block" id="codeBlock"></div>
+        </div>
 
-      <div class="detail-panel" data-detail-panel="service">
-        <div class="section-title">售后与配送</div>
-        <div class="plain-block" id="serviceBlock"></div>
-      </div>
-    </section>
+        <div class="detail-panel" data-detail-panel="service">
+          <div class="section-title">售后与配送</div>
+          <div class="plain-block" id="serviceBlock"></div>
+        </div>
+      </section>
+
+      <aside class="detail-purchase-slot">
+        <div class="detail-purchase-placeholder" id="detailPurchasePlaceholder" aria-hidden="true"></div>
+        <div class="detail-purchase-card" id="detailPurchaseCard" aria-hidden="true">
+          <div class="dpc-banner">
+            <div class="dpc-banner-name" id="dpcSupplierName"></div>
+            <span class="supplier-gold-seal" aria-hidden="true">
+              <span class="supplier-gold-seal-disc">
+                <span class="supplier-gold-seal-star">★</span>
+              </span>
+              <span class="supplier-gold-seal-ribbon"></span>
+            </span>
+          </div>
+          <div class="dpc-body">
+            <div class="dpc-title" id="dpcProductName"></div>
+            <div class="dpc-price-block">
+              <div class="dpc-price-row">
+                <span class="dpc-price-label">单价</span>
+                <span class="dpc-price-value" id="dpcPrice"></span>
+                <span class="dpc-price-unit" id="dpcPriceUnit"></span>
+              </div>
+              <div class="dpc-price-meta">
+                <span class="dpc-sold" id="dpcSold"></span>
+              </div>
+            </div>
+            <div class="dpc-field">
+              <span class="dpc-field-label">配送至</span>
+              <select class="dpc-select" id="dpcDelivery" aria-label="收货地址" onchange="selectRecipientFromDpc(this.value)">
+              </select>
+            </div>
+            <div class="dpc-field">
+              <span class="dpc-field-label">数量</span>
+              <div class="dpc-qty-row">
+                <div class="qty-box">
+                  <button type="button" onclick="changeQty(-1)" aria-label="减少数量">-</button>
+                  <input id="qtyInputDetail" type="text" value="1" readonly aria-label="采购数量">
+                  <button type="button" onclick="changeQty(1)" aria-label="增加数量">+</button>
+                </div>
+                <span class="dpc-qty-note" id="dpcQtyNote"></span>
+              </div>
+            </div>
+            <div class="dpc-actions">
+              <button class="btn-main" type="button" onclick="goToOrderConfirm()">立即下单</button>
+              <button class="btn-sub" type="button" onclick="showToast('已加入购物车')">
+                <i class="fa-solid fa-cart-shopping"></i>加入购物车
+              </button>
+              <button class="dpc-favorite-btn" type="button" onclick="showToast('已收藏该商品')">
+                <i class="fa-regular fa-star"></i>收藏
+              </button>
+            </div>
+            <div class="dpc-price-monitor">
+              <div class="dpc-monitor-left">
+                全国企业采购交易寻源询价系统
+                <div>建议采购价格上限价</div>
+                <div class="dpc-monitor-ceiling" id="dpcCeiling"></div>
+              </div>
+              <div class="dpc-monitor-right">
+                <div class="dpc-monitor-badge" id="dpcPriceBadge">价格合理</div>
+                <div class="dpc-monitor-track"><span id="dpcPriceMarker" style="left: 62%;"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
   </main>
+
+  <div class="recipient-overlay" id="recipientOverlay" onclick="if(event.target===this) closeRecipientModal()">
+    <div class="recipient-modal" onclick="event.stopPropagation()">
+      <div class="recipient-modal-head">
+        <div class="recipient-modal-title">选择收货地址</div>
+        <button class="recipient-modal-close" type="button" onclick="closeRecipientModal()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="recipient-modal-list" id="recipientModalList"></div>
+      <div class="recipient-modal-foot">
+        <button class="recipient-add-btn" type="button" onclick="openAddressForm('add')">
+          <i class="fa-solid fa-plus mr-1"></i>新增地址
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="address-form-overlay" id="addressFormOverlay" onclick="if(event.target===this) closeAddressForm()">
+    <div class="address-form-modal" onclick="event.stopPropagation()">
+      <div class="address-form-head">
+        <div class="address-form-title" id="addressFormTitle">新增地址</div>
+        <button class="address-form-close" type="button" onclick="closeAddressForm()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="address-form-body">
+        <div class="address-form-row">
+          <label class="address-form-label required" for="addressFormName">收货人</label>
+          <div class="address-form-field">
+            <input class="address-form-input" id="addressFormName" type="text" maxlength="25" placeholder="请输入收货人" oninput="updateAddressFormCount('addressFormName', 'addressFormNameCount', 25)">
+            <span class="address-form-count"><span id="addressFormNameCount">0</span> / 25</span>
+          </div>
+        </div>
+        <div class="address-form-row">
+          <label class="address-form-label required" for="addressFormPhone">联系电话</label>
+          <div class="address-form-field">
+            <input class="address-form-input" id="addressFormPhone" type="text" maxlength="11" placeholder="请输入联系电话" oninput="updateAddressFormCount('addressFormPhone', 'addressFormPhoneCount', 11)">
+            <span class="address-form-count"><span id="addressFormPhoneCount">0</span> / 11</span>
+          </div>
+        </div>
+        <div class="address-form-row">
+          <label class="address-form-label required" for="addressFormRegion">地区</label>
+          <div class="address-form-field">
+            <select class="address-form-select" id="addressFormRegion">
+              <option value="">请选择</option>
+              <option value="上海市浦东新区">上海市浦东新区</option>
+              <option value="北京市海淀区">北京市海淀区</option>
+              <option value="广东省广州市天河区">广东省广州市天河区</option>
+              <option value="浙江省杭州市西湖区">浙江省杭州市西湖区</option>
+            </select>
+          </div>
+        </div>
+        <div class="address-form-row">
+          <label class="address-form-label required" for="addressFormDetail">详细地址</label>
+          <div class="address-form-field textarea-wrap">
+            <textarea class="address-form-textarea" id="addressFormDetail" maxlength="85" placeholder="请输入详细地址" oninput="updateAddressFormCount('addressFormDetail', 'addressFormDetailCount', 85)"></textarea>
+            <span class="address-form-count"><span id="addressFormDetailCount">0</span> / 85</span>
+          </div>
+        </div>
+        <div class="address-form-row">
+          <label class="address-form-label" for="addressFormType">地址类型</label>
+          <div class="address-form-field">
+            <select class="address-form-select" id="addressFormType">
+              <option value="公司地址">公司地址</option>
+              <option value="家庭地址">家庭地址</option>
+              <option value="其他地址">其他地址</option>
+            </select>
+          </div>
+        </div>
+        <div class="address-form-row">
+          <label class="address-form-label">是否默认</label>
+          <div class="address-form-radio-group">
+            <label class="address-form-radio"><input type="radio" name="addressFormDefault" value="0" checked> 否</label>
+            <label class="address-form-radio"><input type="radio" name="addressFormDefault" value="1"> 是</label>
+          </div>
+        </div>
+      </div>
+      <div class="address-form-foot">
+        <button class="address-form-btn cancel" type="button" onclick="closeAddressForm()">取消</button>
+        <button class="address-form-btn save" type="button" onclick="saveAddressForm()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="recipient-delete-overlay" id="recipientDeleteOverlay" onclick="if(event.target===this) closeDeleteRecipientConfirm()">
+    <div class="recipient-delete-modal" onclick="event.stopPropagation()">
+      <div class="recipient-delete-head">
+        <div class="recipient-delete-title">删除地址</div>
+        <button class="recipient-delete-close" type="button" onclick="closeDeleteRecipientConfirm()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="recipient-delete-body" id="recipientDeleteText">确定删除该收货地址吗？</div>
+      <div class="recipient-delete-foot">
+        <button class="recipient-delete-btn cancel" type="button" onclick="closeDeleteRecipientConfirm()">取消</button>
+        <button class="recipient-delete-btn confirm" type="button" onclick="confirmDeleteRecipient()">确定</button>
+      </div>
+    </div>
+  </div>
 
   <div class="compare-picker-overlay" id="comparePickerOverlay" onclick="if(event.target===this) closeComparePicker()">
     <div class="compare-picker-modal" onclick="event.stopPropagation()">
@@ -3259,30 +4412,23 @@
     </div>
   </div>
 
-  <div class="sticky-bar" id="stickyBar">
-    <div class="sticky-inner">
-      <div class="sticky-meta">
-        <div class="sticky-name" id="stickyName"></div>
-        <div class="sticky-price" id="stickyPrice"></div>
-        <div class="text-sm text-gray-500" id="stickyMeta"></div>
-      </div>
-      <div class="flex items-center gap-3">
-        <div class="qty-box">
-          <button type="button" onclick="changeQty(-1)">-</button>
-          <input id="qtyInputSticky" type="text" value="1" readonly>
-          <button type="button" onclick="changeQty(1)">+</button>
-        </div>
-        <button class="btn-sub" type="button" onclick="showToast('已加入购物车')">加入购物车</button>
-        <button class="btn-main" type="button" onclick="goToOrderConfirm()">立即下单</button>
-      </div>
-    </div>
-  </div>
-
+  <script src="../assets/unified_topbar.js"></script>
   <script>
     let currentProduct = null;
     let currentImageIndex = 0;
     let currentCompareTab = 'same';
     let currentQty = 1;
+    let recipientOptions = [];
+    let selectedRecipientId = '';
+    let editingRecipientId = '';
+    let pendingDeleteRecipientId = '';
+
+    const REGION_DELIVERY_RULES = {
+      '上海市浦东新区': { ratio: 1, deliveryTime: product => product.deliveryTime },
+      '北京市海淀区': { ratio: 0.62, deliveryTime: () => '24小时内发货' },
+      '广东省广州市天河区': { ratio: 0.48, deliveryTime: () => '72小时内发货' },
+      '浙江省杭州市西湖区': { ratio: 0.55, deliveryTime: () => '48小时内发货' }
+    };
     let comparePickerSelections = { same: [], similar: [] };
     let portraitLoadingTimer = null;
     let portraitStageTimer = null;
@@ -3300,7 +4446,14 @@
     /** STEP3 合同下拉：当前展开的供应商 id */
     let openContractDropdownSupplierId = null;
 
-    const ORDER_BASIS_TOTAL_STEPS = 4;
+    const PARAM_DETAIL_EXTRA_IMAGES = [
+      'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=1200&h=1800&fit=crop',
+      'https://images.unsplash.com/photo-1517842645767-c639042777db?w=1200&h=1800&fit=crop',
+      'https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=1200&h=1800&fit=crop',
+      'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&h=1800&fit=crop',
+      'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&h=1800&fit=crop',
+      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&h=1800&fit=crop'
+    ];
     const ORDER_CONTRACT_FILE_ACCEPTS = ['pdf', 'doc', 'docx'];
 
     const BASIS_FILE_LIMIT = 5;
@@ -3626,6 +4779,14 @@
       return rows;
     }
 
+    function setSupplierMetric(key, score) {
+      const value = Number(score) || 0;
+      const textEl = document.getElementById(key);
+      const barEl = document.getElementById(`${key}Bar`);
+      if (textEl) textEl.textContent = value.toFixed(1);
+      if (barEl) barEl.style.width = `${Math.max(8, Math.min(100, (value / 5) * 100))}%`;
+    }
+
     function renderPage() {
       currentProduct = buildCurrentProduct();
       currentCompareTab = 'same';
@@ -3641,35 +4802,26 @@
       portraitGenerated = false;
       portraitGenerating = false;
       document.title = `${currentProduct.name} | 国采e购`;
-      document.getElementById('roleDisplay').textContent = getRoleName();
-      document.getElementById('crumbName').textContent = currentProduct.name;
       document.getElementById('productName').textContent = currentProduct.name;
       document.getElementById('currentPrice').textContent = `￥${currentProduct.price.toFixed(2)} / ${currentProduct.unit}`;
       document.getElementById('priceFloor').textContent = `￥${currentProduct.floor.toFixed(2)}`;
       document.getElementById('priceCeiling').textContent = `￥${currentProduct.ceiling.toFixed(2)} / ${currentProduct.unit}`;
       document.getElementById('priceJudgement').textContent = currentProduct.price <= currentProduct.ceiling ? `低于上限 ￥${currentProduct.ceilingGap.toFixed(2)}` : '高于建议上限';
-      document.getElementById('priceMarkerLabel').textContent = `当前价 ￥${currentProduct.price.toFixed(2)}`;
       document.getElementById('saleCount').textContent = `${formatNumber(currentProduct.sold)} 件`;
-      document.getElementById('stockCount').textContent = `${formatNumber(currentProduct.stock)} ${currentProduct.unit}`;
-      document.getElementById('deliveryArea').textContent = currentProduct.deliveryArea;
-      document.getElementById('deliveryTime').textContent = currentProduct.deliveryTime;
-      document.getElementById('skuCode').textContent = currentProduct.code;
-      document.getElementById('stockStatus').textContent = currentProduct.stockStatus;
       document.getElementById('purchaseNote').textContent = `起订量 ${currentProduct.minOrder} ${currentProduct.unit}`;
+
+      initRecipientSelection();
 
       document.getElementById('supplierName').textContent = currentProduct.supplier;
       document.getElementById('supplierScore').textContent = currentProduct.supplierScore.toFixed(1);
-      document.getElementById('scoreDesc').textContent = currentProduct.descScore.toFixed(1);
-      document.getElementById('scoreDelivery').textContent = currentProduct.deliveryScore.toFixed(1);
-      document.getElementById('scoreService').textContent = currentProduct.serviceScore.toFixed(1);
+      setSupplierMetric('scoreDesc', currentProduct.descScore);
+      setSupplierMetric('scoreDelivery', currentProduct.deliveryScore);
+      setSupplierMetric('scoreService', currentProduct.serviceScore);
       document.getElementById('servicePhone').textContent = currentProduct.phone;
       document.getElementById('serviceRegion').textContent = currentProduct.region;
       document.getElementById('goodRate').textContent = currentProduct.goodRate;
 
-      document.getElementById('stickyName').textContent = currentProduct.name;
-      document.getElementById('stickyPrice').textContent = `￥${currentProduct.price.toFixed(2)}`;
-      document.getElementById('stickyMeta').textContent = `${currentProduct.deliveryTime} · 库存 ${formatNumber(currentProduct.stock)} ${currentProduct.unit}`;
-
+      renderDetailPurchaseCard();
       renderPriceRange();
       renderTags();
       renderGallery();
@@ -3787,6 +4939,251 @@
       renderGallery();
     }
 
+    function buildRecipientOptions(product) {
+      const baseStock = product.stock;
+      const unit = product.unit;
+      return [
+        {
+          id: 'addr-sh',
+          name: '张三',
+          phone: '138****8000',
+          region: '上海市浦东新区',
+          detail: '世纪大道1000号国采大厦18层',
+          address: '上海市浦东新区世纪大道1000号国采大厦18层',
+          addressType: '公司地址',
+          isDefault: true,
+          stock: baseStock,
+          deliveryTime: product.deliveryTime,
+          unit
+        },
+        {
+          id: 'addr-bj',
+          name: '张三',
+          phone: '138****8000',
+          region: '北京市海淀区',
+          detail: '中关村大街1号政务中心3层',
+          address: '北京市海淀区中关村大街1号政务中心3层',
+          addressType: '公司地址',
+          isDefault: false,
+          stock: Math.max(product.minOrder, Math.floor(baseStock * 0.62)),
+          deliveryTime: '24小时内发货',
+          unit
+        },
+        {
+          id: 'addr-gz',
+          name: '李四',
+          phone: '139****9000',
+          region: '广东省广州市天河区',
+          detail: '天河路888号采购中心5层',
+          address: '广东省广州市天河区天河路888号采购中心5层',
+          addressType: '公司地址',
+          isDefault: false,
+          stock: Math.max(product.minOrder, Math.floor(baseStock * 0.48)),
+          deliveryTime: '72小时内发货',
+          unit
+        }
+      ];
+    }
+
+    function applyRegionDeliveryMeta(recipient, product) {
+      const rule = REGION_DELIVERY_RULES[recipient.region] || { ratio: 0.5, deliveryTime: () => '72小时内发货' };
+      recipient.stock = Math.max(product.minOrder, Math.floor(product.stock * rule.ratio));
+      recipient.deliveryTime = rule.deliveryTime(product);
+      recipient.address = `${recipient.region}${recipient.detail || ''}`;
+      return recipient;
+    }
+
+    function createRecipientId() {
+      return `addr-${Date.now().toString(36)}`;
+    }
+
+    function getSelectedRecipient() {
+      return recipientOptions.find(item => item.id === selectedRecipientId) || recipientOptions[0] || null;
+    }
+
+    function initRecipientSelection() {
+      recipientOptions = buildRecipientOptions(currentProduct);
+      const matched = recipientOptions.find(item => item.region === currentProduct.deliveryArea)
+        || recipientOptions.find(item => currentProduct.deliveryArea && item.address.includes(currentProduct.deliveryArea.slice(-3)))
+        || recipientOptions[0];
+      selectedRecipientId = matched.id;
+      renderRecipientCard();
+    }
+
+    function renderRecipientCard() {
+      const recipient = getSelectedRecipient();
+      if (!recipient) return;
+
+      document.getElementById('recipientName').textContent = recipient.name;
+      document.getElementById('recipientPhone').textContent = recipient.phone;
+      document.getElementById('recipientAddress').textContent = recipient.address;
+      document.getElementById('stockCount').textContent = `${formatNumber(recipient.stock)} ${recipient.unit}`;
+      document.getElementById('deliveryTime').textContent = recipient.deliveryTime;
+    }
+
+    function renderRecipientModalList() {
+      document.getElementById('recipientModalList').innerHTML = recipientOptions.map(item => `
+        <div class="recipient-option-row ${item.id === selectedRecipientId ? 'active' : ''}">
+          <button class="recipient-option-main" type="button" onclick="selectRecipient('${item.id}')">
+            <div><span class="recipient-option-name">${item.name}</span><span class="recipient-option-phone">${item.phone}</span></div>
+            <div class="recipient-option-address">${item.address}</div>
+          </button>
+          <div class="recipient-option-actions">
+            <button class="recipient-option-action" type="button" onclick="openAddressForm('edit', '${item.id}')"><i class="fa-solid fa-pen"></i>修改</button>
+            <button class="recipient-option-action danger" type="button" onclick="openDeleteRecipientConfirm('${item.id}')"><i class="fa-solid fa-trash-can"></i>删除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openRecipientModal() {
+      renderRecipientModalList();
+      document.getElementById('recipientOverlay').classList.add('show');
+    }
+
+    function closeRecipientModal() {
+      document.getElementById('recipientOverlay').classList.remove('show');
+    }
+
+    function selectRecipient(id) {
+      selectedRecipientId = id;
+      renderRecipientCard();
+      renderDetailPurchaseCard();
+      closeRecipientModal();
+    }
+
+    function selectRecipientFromDpc(id) {
+      if (!id || id === selectedRecipientId) return;
+      selectedRecipientId = id;
+      renderRecipientCard();
+      renderDetailPurchaseCard();
+    }
+
+    function updateAddressFormCount(inputId, countId, max) {
+      const input = document.getElementById(inputId);
+      const countEl = document.getElementById(countId);
+      if (!input || !countEl) return;
+      countEl.textContent = String((input.value || '').length);
+    }
+
+    function resetAddressFormCounts() {
+      updateAddressFormCount('addressFormName', 'addressFormNameCount', 25);
+      updateAddressFormCount('addressFormPhone', 'addressFormPhoneCount', 11);
+      updateAddressFormCount('addressFormDetail', 'addressFormDetailCount', 85);
+    }
+
+    function openAddressForm(mode, id) {
+      editingRecipientId = mode === 'edit' ? id : '';
+      document.getElementById('addressFormTitle').textContent = mode === 'edit' ? '修改地址' : '新增地址';
+
+      if (mode === 'edit') {
+        const item = recipientOptions.find(entry => entry.id === id);
+        if (!item) return;
+        document.getElementById('addressFormName').value = item.name;
+        document.getElementById('addressFormPhone').value = item.phone;
+        document.getElementById('addressFormRegion').value = item.region;
+        document.getElementById('addressFormDetail').value = item.detail || item.address.replace(item.region, '');
+        document.getElementById('addressFormType').value = item.addressType || '公司地址';
+        document.querySelector(`input[name="addressFormDefault"][value="${item.isDefault ? '1' : '0'}"]`).checked = true;
+      } else {
+        document.getElementById('addressFormName').value = '';
+        document.getElementById('addressFormPhone').value = '';
+        document.getElementById('addressFormRegion').value = '';
+        document.getElementById('addressFormDetail').value = '';
+        document.getElementById('addressFormType').value = '公司地址';
+        document.querySelector('input[name="addressFormDefault"][value="0"]').checked = true;
+      }
+
+      resetAddressFormCounts();
+      document.getElementById('addressFormOverlay').classList.add('show');
+    }
+
+    function closeAddressForm() {
+      document.getElementById('addressFormOverlay').classList.remove('show');
+      editingRecipientId = '';
+    }
+
+    function saveAddressForm() {
+      const name = document.getElementById('addressFormName').value.trim();
+      const phone = document.getElementById('addressFormPhone').value.trim();
+      const region = document.getElementById('addressFormRegion').value;
+      const detail = document.getElementById('addressFormDetail').value.trim();
+      const addressType = document.getElementById('addressFormType').value;
+      const isDefault = document.querySelector('input[name="addressFormDefault"]:checked')?.value === '1';
+
+      if (!name) return showToast('请输入收货人');
+      if (!phone) return showToast('请输入联系电话');
+      if (!region) return showToast('请选择地区');
+      if (!detail) return showToast('请输入详细地址');
+
+      let recipient = {
+        id: editingRecipientId || createRecipientId(),
+        name,
+        phone,
+        region,
+        detail,
+        addressType,
+        isDefault,
+        unit: currentProduct.unit
+      };
+      recipient = applyRegionDeliveryMeta(recipient, currentProduct);
+
+      if (editingRecipientId) {
+        const index = recipientOptions.findIndex(item => item.id === editingRecipientId);
+        if (index >= 0) recipientOptions[index] = recipient;
+      } else {
+        recipientOptions.push(recipient);
+        selectedRecipientId = recipient.id;
+      }
+
+      if (isDefault) {
+        recipientOptions = recipientOptions.map(item => ({
+          ...item,
+          isDefault: item.id === recipient.id
+        }));
+      }
+
+      const savedMode = editingRecipientId ? 'edit' : 'add';
+      renderRecipientCard();
+      renderDetailPurchaseCard();
+      renderRecipientModalList();
+      closeAddressForm();
+      showToast(savedMode === 'edit' ? '地址已更新' : '地址已新增');
+    }
+
+    function openDeleteRecipientConfirm(id) {
+      const item = recipientOptions.find(entry => entry.id === id);
+      if (!item) return;
+      pendingDeleteRecipientId = id;
+      document.getElementById('recipientDeleteText').textContent = `确定删除收货地址「${item.address}」吗？`;
+      document.getElementById('recipientDeleteOverlay').classList.add('show');
+    }
+
+    function closeDeleteRecipientConfirm() {
+      pendingDeleteRecipientId = '';
+      document.getElementById('recipientDeleteOverlay').classList.remove('show');
+    }
+
+    function confirmDeleteRecipient() {
+      if (!pendingDeleteRecipientId) return;
+      if (recipientOptions.length <= 1) {
+        showToast('至少保留一个收货地址');
+        closeDeleteRecipientConfirm();
+        return;
+      }
+
+      recipientOptions = recipientOptions.filter(item => item.id !== pendingDeleteRecipientId);
+      if (selectedRecipientId === pendingDeleteRecipientId) {
+        selectedRecipientId = recipientOptions[0].id;
+        renderRecipientCard();
+        renderDetailPurchaseCard();
+      }
+
+      renderRecipientModalList();
+      closeDeleteRecipientConfirm();
+      showToast('地址已删除');
+    }
+
     function renderPriceRange() {
       const marker = document.getElementById('priceRangeMarker');
       const min = currentProduct.floor;
@@ -3796,6 +5193,43 @@
       const ratio = Math.max(0, Math.min(1, (value - min) / range));
       const percent = 8 + ratio * 84;
       marker.style.left = `${percent}%`;
+    }
+
+    function renderDetailPurchaseCard() {
+      const card = document.getElementById('detailPurchaseCard');
+      if (!card || !currentProduct) return;
+
+      const recipient = getSelectedRecipient();
+      const stock = recipient ? recipient.stock : currentProduct.stock;
+
+      document.getElementById('dpcSupplierName').textContent = currentProduct.supplier;
+      document.getElementById('dpcProductName').textContent = currentProduct.name;
+      document.getElementById('dpcPrice').textContent = `￥${currentProduct.price.toFixed(2)}`;
+      document.getElementById('dpcPriceUnit').textContent = `/ ${currentProduct.unit}`;
+      document.getElementById('dpcSold').textContent = `已售 ${formatNumber(currentProduct.sold)} 件`;
+      document.getElementById('dpcQtyNote').textContent = `(起订量 >= ${currentProduct.minOrder} 库存: ${formatNumber(stock)})`;
+      document.getElementById('dpcCeiling').textContent = `￥${currentProduct.ceiling.toFixed(2)} / ${currentProduct.unit}`;
+
+      const badge = document.getElementById('dpcPriceBadge');
+      const isReasonable = currentProduct.price <= currentProduct.ceiling;
+      badge.textContent = isReasonable ? '价格合理' : '价格偏高';
+      badge.style.color = isReasonable ? '#059669' : '#d97706';
+      badge.style.borderColor = isReasonable ? '#bbf7d0' : '#fde68a';
+
+      const dpcMarker = document.getElementById('dpcPriceMarker');
+      const min = currentProduct.floor;
+      const max = currentProduct.ceiling;
+      const value = currentProduct.price;
+      const range = Math.max(max - min, 1);
+      const ratio = Math.max(0, Math.min(1, (value - min) / range));
+      dpcMarker.style.left = `${8 + ratio * 84}%`;
+
+      const deliverySelect = document.getElementById('dpcDelivery');
+      if (deliverySelect && recipientOptions.length) {
+        deliverySelect.innerHTML = recipientOptions.map(item => `
+          <option value="${item.id}"${item.id === selectedRecipientId ? ' selected' : ''}>${item.address}</option>
+        `).join('');
+      }
     }
 
     function renderPortrait() {
@@ -4087,6 +5521,22 @@
         `;
       }).join('');
       grid.innerHTML = rows;
+      renderDetailParamImages();
+    }
+
+    function renderDetailParamImages() {
+      const wrap = document.getElementById('paramDetailImages');
+      if (!wrap || !currentProduct) return;
+
+      const images = [...new Set([
+        ...(currentProduct.detailImages || []),
+        ...(currentProduct.images || []),
+        ...PARAM_DETAIL_EXTRA_IMAGES
+      ])];
+
+      wrap.innerHTML = images.map((src, index) => `
+        <img src="${src}" alt="商品详情图 ${index + 1}" loading="lazy">
+      `).join('');
     }
 
     function renderIntro() {
@@ -4147,19 +5597,61 @@
       });
     }
 
-    function bindStickyBar() {
-      const stickyBar = document.getElementById('stickyBar');
-      const heroAnchor = document.getElementById('heroAnchor');
-      function updateSticky() {
-        const rect = heroAnchor.getBoundingClientRect();
-        if (rect.bottom < 100) {
-          stickyBar.classList.add('show');
-        } else {
-          stickyBar.classList.remove('show');
-        }
+    let detailPurchaseSticky = false;
+    const DETAIL_CARD_TOP = 88;
+
+    function updateDetailPurchaseCardPosition() {
+      const card = document.getElementById('detailPurchaseCard');
+      const placeholder = document.getElementById('detailPurchasePlaceholder');
+      const slot = document.querySelector('.detail-purchase-slot');
+      const detailZone = document.querySelector('.detail-zone');
+      if (!card || !slot || !detailZone) return;
+
+      if (!detailPurchaseSticky || window.getComputedStyle(slot).display === 'none') {
+        card.classList.remove('is-fixed');
+        card.style.top = '';
+        card.style.left = '';
+        card.style.width = '';
+        if (placeholder) placeholder.style.height = '0';
+        return;
       }
-      window.addEventListener('scroll', updateSticky, { passive: true });
-      updateSticky();
+
+      const slotRect = slot.getBoundingClientRect();
+      const zoneRect = detailZone.getBoundingClientRect();
+      const cardHeight = card.offsetHeight;
+      let top = DETAIL_CARD_TOP;
+      if (zoneRect.bottom - cardHeight < DETAIL_CARD_TOP) {
+        top = zoneRect.bottom - cardHeight;
+      }
+
+      card.classList.add('is-fixed');
+      card.style.top = `${top}px`;
+      card.style.left = `${slotRect.left}px`;
+      card.style.width = `${slotRect.width}px`;
+      if (placeholder) placeholder.style.height = `${cardHeight}px`;
+    }
+
+    function updateDetailPurchaseStickyState() {
+      const sentinel = document.getElementById('detailStickySentinel');
+      const purchaseCard = document.getElementById('detailPurchaseCard');
+      const detailSection = document.getElementById('detailSection');
+      if (!sentinel || !purchaseCard || !detailSection) return;
+
+      // 仅当详情区哨兵滚过顶栏下方时才显示卡片；
+      // 不能用 IntersectionObserver 的 isIntersecting，因为元素在视口下方时同样为 false。
+      const rect = sentinel.getBoundingClientRect();
+      detailPurchaseSticky = rect.top <= DETAIL_CARD_TOP;
+
+      purchaseCard.classList.toggle('is-visible', detailPurchaseSticky);
+      purchaseCard.setAttribute('aria-hidden', detailPurchaseSticky ? 'false' : 'true');
+      detailSection.classList.toggle('tabs-stuck', detailPurchaseSticky);
+      updateDetailPurchaseCardPosition();
+    }
+
+    function bindDetailStickyPurchase() {
+      updateDetailPurchaseStickyState();
+      window.addEventListener('scroll', updateDetailPurchaseStickyState, { passive: true });
+      window.addEventListener('resize', updateDetailPurchaseStickyState);
     }
 
     function changeQty(step) {
@@ -4173,7 +5665,8 @@
 
     function syncQtyInputs() {
       document.getElementById('qtyInput').value = currentQty;
-      document.getElementById('qtyInputSticky').value = currentQty;
+      const detailQty = document.getElementById('qtyInputDetail');
+      if (detailQty) detailQty.value = currentQty;
     }
 
     function cloneList(list) {
@@ -5046,10 +6539,10 @@
         supplier: currentProduct.supplier,
         storeName: currentProduct.supplier.includes('京东') ? '京东' : '平台店铺',
         code: currentProduct.code,
-        deliveryArea: currentProduct.deliveryArea,
-        deliveryTime: currentProduct.deliveryTime,
-        receiver: '小庄',
-        receiverPhone: '138****5621',
+        deliveryArea: getSelectedRecipient()?.region || currentProduct.deliveryArea,
+        deliveryTime: getSelectedRecipient()?.deliveryTime || currentProduct.deliveryTime,
+        receiver: getSelectedRecipient()?.name || '张三',
+        receiverPhone: getSelectedRecipient()?.phone || '138****8000',
         stockStatus: currentProduct.stockStatus,
         image: currentProduct.images[0],
         floor: currentProduct.floor,
@@ -5067,9 +6560,9 @@
         addresses: [
           {
             id: 'addr-1',
-            label: currentProduct.deliveryArea,
-            detail: '创业大厦17楼',
-            receiver: '小庄'
+            label: getSelectedRecipient()?.region || currentProduct.deliveryArea,
+            detail: getSelectedRecipient()?.address || '创业大厦17楼',
+            receiver: getSelectedRecipient()?.name || '张三'
           }
         ],
         procurementBasis: {
@@ -5099,7 +6592,7 @@
       loadProcurementBasisOptions();
       renderPage();
       bindTabs();
-      bindStickyBar();
+      bindDetailStickyPurchase();
     });
   </script>
 </body>
