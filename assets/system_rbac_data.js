@@ -57,6 +57,7 @@
       { id: 'by_root', label: '根目录', children: [
         { id: 'by_wb', label: '采购工作台', children: [
           { id: 'by_home', label: '首页' },
+          { id: 'by_bid', label: '竞价/询价' },
           { id: 'by_po', label: '采购单' },
           { id: 'by_orders', label: '订单管理' },
           { id: 'by_after', label: '售后管理' },
@@ -113,8 +114,8 @@
       { id: 'r_op_3', roleName: '供应商协同角色', roleKey: 'supplier_collab', sort: 3, dataScope: '2', status: '0', sharedUnitIds: ['org_sp_yq','org_sp_dl','org_sp_hb'], menuIds: ['op_root','op_biz','op_supplier'], customDeptIds: [], remark: '多供应商共享', preset: false, createTime: '2026-05-12 09:00:00' }
     ],
     buyer: [
-      { id: 'r_by_1', roleName: '单位管理员', roleKey: 'buyer_admin', sort: 1, dataScope: '1', status: '0', menuIds: ['by_root','by_wb','by_sys','by_home','by_po','by_orders','by_after','by_contract','by_law','by_settlement','by_fav','by_sys_user','by_sys_role','by_sys_dept'], customDeptIds: [], remark: '预置', preset: true, createTime: '2026-05-07 18:27:34' },
-      { id: 'r_by_2', roleName: '采购专员', roleKey: 'cgzy', sort: 2, dataScope: '5', status: '0', menuIds: ['by_root','by_wb','by_home','by_po','by_orders','by_settlement'], customDeptIds: [], remark: '', preset: false, createTime: '2026-05-07 18:28:10' }
+      { id: 'r_by_1', roleName: '单位管理员', roleKey: 'buyer_admin', sort: 1, dataScope: '1', status: '0', menuIds: ['by_root','by_wb','by_sys','by_home','by_bid','by_po','by_orders','by_after','by_contract','by_law','by_settlement','by_fav','by_sys_user','by_sys_role','by_sys_dept'], customDeptIds: [], remark: '预置', preset: true, createTime: '2026-05-07 18:27:34' },
+      { id: 'r_by_2', roleName: '采购专员', roleKey: 'cgzy', sort: 2, dataScope: '5', status: '0', menuIds: ['by_root','by_wb','by_home','by_bid','by_po','by_orders','by_settlement'], customDeptIds: [], remark: '', preset: false, createTime: '2026-05-07 18:28:10' }
     ],
     supplier: [
       { id: 'r_sp_1', roleName: '企业管理员', roleKey: 'supplier_admin', sort: 1, dataScope: '1', status: '0', menuIds: ['sp_root','sp_wb','sp_sys','sp_home','sp_warehouse','sp_goods','sp_po','sp_orders','sp_after','sp_contract','sp_settlement','sp_platform_settle','sp_sys_user','sp_sys_role','sp_sys_dept'], customDeptIds: [], remark: '预置', preset: true, createTime: '2026-05-07 18:27:34' },
