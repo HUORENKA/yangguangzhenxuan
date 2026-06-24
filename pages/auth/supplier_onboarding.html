@@ -357,6 +357,10 @@
             <label for="contactPhone">联系电话<span class="req">*</span></label>
             <input type="tel" id="contactPhone" maxlength="11" placeholder="请输入联系电话">
           </div>
+          <div>
+            <label for="afterSalesPhone">售后电话</label>
+            <input type="tel" id="afterSalesPhone" maxlength="11" placeholder="请输入售后电话">
+          </div>
           <div class="grid-full">
             <label for="address">企业地址<span class="req">*</span></label>
             <input type="text" id="address" placeholder="省市区 + 详细地址">
@@ -486,6 +490,7 @@
       document.getElementById('legalPerson').value = '张三';
       document.getElementById('contactName').value = '张三';
       document.getElementById('contactPhone').value = '13800138000';
+      document.getElementById('afterSalesPhone').value = '4008889999';
       document.getElementById('address').value = '北京市海淀区中关村科技园区阳光路88号';
       qualRows.forEach(function (r) {
         r.uploaded = true;

@@ -590,7 +590,9 @@ const baseAuditMocks = [
     detailImages: ['https://picsum.photos/seed/guocai-adm-det-lap/960/540'],
     supplierName: '北京联合科技有限公司',
     submittedAt: '2026-05-12 10:08',
-    aiKind: 'pass'
+    aiKind: 'pass',
+    aiRiskCount: 0,
+    aiCheckedAt: '2026-05-12 10:06'
   },
   {
     id: 'AUD-DEMO-CHANGE-PAPER',
@@ -619,6 +621,9 @@ const baseAuditMocks = [
     supplierName: '华东优选办公用品商行',
     submittedAt: '2026-05-13 14:05',
     aiKind: 'warn',
+    aiRiskCount: 2,
+    aiCheckedAt: '2026-05-13 14:03',
+    aiCheckSummary: '包装规格变更后简介宣传表述需核对，共 2 项风险。',
     shelfSnapshot: 'online',
     beforeSnapshot: {
       name: '【演示·变更】得力风 A4复印纸 70g（8包装）',
@@ -679,7 +684,10 @@ const baseAuditMocks = [
     detailImages: [],
     supplierName: '华北数码供应链有限公司',
     submittedAt: '2026-05-12 09:52',
-    aiKind: 'warn'
+    aiKind: 'warn',
+    aiRiskCount: 2,
+    aiCheckedAt: '2026-05-12 09:50',
+    aiCheckSummary: '详情中存在需核对的宣传表述，图文一致性需人工复核，共 2 项风险。'
   },
   {
     id: 'AUD-DEMO-PAPER',
@@ -699,7 +707,9 @@ const baseAuditMocks = [
     detailImages: ['https://picsum.photos/seed/guocai-adm-paper-d1/960/400'],
     supplierName: '华东优选办公用品商行',
     submittedAt: '2026-05-11 16:41',
-    aiKind: 'pass'
+    aiKind: 'pass',
+    aiRiskCount: 0,
+    aiCheckedAt: '2026-05-11 16:38'
   },
   {
     id: 'AUD-DEMO-SW',
@@ -719,7 +729,10 @@ const baseAuditMocks = [
     detailImages: [],
     supplierName: '智联网络设备（上海）有限公司',
     submittedAt: '2026-05-11 11:06',
-    aiKind: 'fail'
+    aiKind: 'fail',
+    aiRiskCount: 3,
+    aiCheckedAt: '2026-05-11 11:04',
+    aiCheckSummary: '主图与参数型号不一致，类目归属存疑，共 3 项风险。'
   },
   {
     id: 'AUD-DEMO-DOCK',
@@ -739,7 +752,9 @@ const baseAuditMocks = [
     detailImages: [],
     supplierName: '北京联合科技有限公司',
     submittedAt: '2026-05-10 09:18',
-    aiKind: 'pass'
+    aiKind: 'pass',
+    aiRiskCount: 0,
+    aiCheckedAt: '2026-05-10 09:16'
   },
   {
     id: 'AUD-DEMO-CHAIR-OFF',
@@ -759,26 +774,169 @@ const baseAuditMocks = [
     detailImages: [],
     supplierName: '华北数码供应链有限公司',
     submittedAt: '2026-05-09 14:22',
-    aiKind: 'pass'
+    aiKind: 'pass',
+    aiRiskCount: 0,
+    aiCheckedAt: '2026-05-09 14:20'
   }
 ];
 
 /** @type {typeof baseAuditMocks} */
 let auditQueue = [...baseAuditMocks];
 
-function aiTagHtml(aiKind) {
-  if (aiKind === 'pass')
+/** 【上架审核层】校验项（与供应商侧、商品标签体系一致） */
+const LISTING_AUDIT_ITEMS = [
+  { code: 'title', name: '商品名称', desc: '标题规范、品名完整、与类目一致' },
+  { code: 'intro', name: '简介充分', desc: '简介与描述有效文字不少于 30 字' },
+  { code: 'mainImg', name: '主图合格', desc: '主图清晰、主体为商品本身' },
+  { code: 'consistency', name: '图文一致', desc: '标题、参数与图片信息一致' },
+  { code: 'noWatermark', name: '无水印导流', desc: '无外链、水印及导流信息' },
+  { code: 'noSensitive', name: '无敏感违规', desc: '无敏感词及违规宣传' },
+  { code: 'completeness', name: '资料完整度', desc: '综合前 6 项自动汇总' }
+];
+
+function getAiRiskCount(row) {
+  if (typeof row.aiRiskCount === 'number') return row.aiRiskCount;
+  if (Array.isArray(row.aiCheckItems) && row.aiCheckItems.length) {
+    return row.aiCheckItems.filter(i => i.status === 'fail' && i.code !== 'completeness').length;
+  }
+  if (row.aiKind === 'pass') return 0;
+  if (row.aiKind === 'warn') return 2;
+  if (row.aiKind === 'fail') return 3;
+  return 0;
+}
+
+function buildAiCheckSnapshot(row) {
+  if (Array.isArray(row.aiCheckItems) && row.aiCheckItems.length) {
+    return {
+      items: row.aiCheckItems,
+      summary: row.aiCheckSummary || '—',
+      checkedAt: row.aiCheckedAt || row.submittedAt || '—'
+    };
+  }
+  const riskN = getAiRiskCount(row);
+  if (riskN === 0) {
+    const items = LISTING_AUDIT_ITEMS.map(def =>
+      def.code === 'completeness'
+        ? { ...def, value: '高', status: 'pass', evidence: '前 6 项均为「是」' }
+        : { ...def, value: '是', status: 'pass', evidence: '' }
+    );
+    return {
+      items,
+      summary: '商品基本信息合规，资料完整度为高，供应商侧 AI 合规校验通过。',
+      checkedAt: row.aiCheckedAt || row.submittedAt || '—'
+    };
+  }
+  const failCodes =
+    row.aiKind === 'fail'
+      ? ['title', 'intro', 'mainImg']
+      : row.aiKind === 'warn'
+        ? ['intro', 'noSensitive']
+        : ['intro'];
+  const items = LISTING_AUDIT_ITEMS.map(def => {
+    if (def.code === 'completeness') {
+      const val = riskN >= 3 ? '低' : '中';
+      return {
+        ...def,
+        value: val,
+        status: 'fail',
+        evidence: `存在 ${riskN} 项未通过审核项`
+      };
+    }
+    if (failCodes.includes(def.code)) {
+      const evidenceMap = {
+        title: '标题与类目匹配度不足或缺少关键规格',
+        intro: '简介有效文字不足或存在模板化文案',
+        mainImg: '主图不符合平台清晰度与主体要求',
+        noSensitive: '详情中存在需核对的宣传表述'
+      };
+      return { ...def, value: '否', status: 'fail', evidence: evidenceMap[def.code] || '未通过校验' };
+    }
+    return { ...def, value: '是', status: 'pass', evidence: '' };
+  });
+  return {
+    items,
+    summary:
+      row.aiCheckSummary ||
+      `共识别 ${riskN} 项风险，请结合明细核对后作出人工审核决定（供应商侧 AI 快照）。`,
+    checkedAt: row.aiCheckedAt || row.submittedAt || '—'
+  };
+}
+
+function aiComplianceTagHtml(row) {
+  const n = getAiRiskCount(row);
+  if (n === 0) {
     return '<span class="mini-tag tag-ai-pass"><i class="fas fa-check"></i> 合规无风险</span>';
-  if (aiKind === 'warn')
-    return '<span class="mini-tag tag-ai-warn"><i class="fas fa-exclamation"></i> 语义/宣传需核对</span>';
-  if (aiKind === 'fail')
-    return '<span class="mini-tag tag-ai-fail"><i class="fas fa-times"></i> 类目规格需整改</span>';
-  return '<span class="mini-tag tag-ai-pass">—</span>';
+  }
+  const cls = row.aiKind === 'fail' ? 'tag-ai-fail' : 'tag-ai-warn';
+  const icon = row.aiKind === 'fail' ? 'fa-times' : 'fa-triangle-exclamation';
+  return `<span class="mini-tag ${cls}"><i class="fas ${icon}"></i> ${n}项风险</span>`;
 }
 
 function aiTagCell(row) {
-  if (row.listStatus !== 'pending') return '<span class="text-xs text-slate-400">—</span>';
-  return aiTagHtml(row.aiKind);
+  if (row.aiKind == null && !row.aiCheckItems) {
+    return '<span class="text-xs text-slate-400">—</span>';
+  }
+  return aiComplianceTagHtml(row);
+}
+
+function renderAdminAiCheckItemsHtml(items) {
+  return items
+    .map(item => {
+      const cls = item.status === 'pass' ? 'pass' : item.status === 'fail' ? 'fail' : '';
+      const valCls = item.status === 'pass' ? 'pass' : item.status === 'fail' ? 'fail' : '';
+      return `
+        <div class="admin-ai-check-item ${cls}">
+          <div>
+            <div class="admin-ai-check-name">${escapeHtml(item.name)}</div>
+            ${item.evidence ? `<div class="admin-ai-check-evidence">${escapeHtml(item.evidence)}</div>` : ''}
+          </div>
+          <span class="admin-ai-check-val ${valCls}">${escapeHtml(item.value || '—')}</span>
+        </div>`;
+    })
+    .join('');
+}
+
+window.closeAdminAiAuditResult = function closeAdminAiAuditResult() {
+  const modal = document.getElementById('adminAiResultModal');
+  const body = document.getElementById('adminAiResultBody');
+  if (body) body.innerHTML = '';
+  if (modal) modal.hidden = true;
+};
+
+window.openAdminAiAuditResult = function openAdminAiAuditResult(rowId) {
+  const row = auditQueue.find(x => x.id === rowId);
+  if (!row || (row.aiKind == null && !row.aiCheckItems)) return;
+  const snap = buildAiCheckSnapshot(row);
+  const modal = document.getElementById('adminAiResultModal');
+  const body = document.getElementById('adminAiResultBody');
+  const sub = document.getElementById('adminAiResultSub');
+  if (!modal || !body) return;
+
+  const riskN = getAiRiskCount(row);
+  const statusText = riskN === 0 ? '合规无风险' : `${riskN}项风险`;
+  if (sub) {
+    sub.textContent = `${escapeHtml(row.name)} · 校验时间：${snap.checkedAt} · ${statusText}`;
+  }
+
+  body.innerHTML = `
+    <div class="admin-ai-readonly-note">
+      <i class="fas fa-lock text-slate-400"></i>
+      以下内容为供应商提交审核时附带的 <strong>AI 合规校验快照</strong>，仅供运营核对参考，不可在此重新发起校验。
+    </div>
+    <div class="admin-ai-section-title">审核项目 <span class="admin-ai-layer-tag">上架审核层</span></div>
+    <div class="admin-ai-check-grid">${renderAdminAiCheckItemsHtml(snap.items)}</div>
+    <div class="admin-ai-summary">
+      <div class="admin-ai-summary-label"><i class="fas fa-wand-magic-sparkles"></i> AI 合规总结</div>
+      ${escapeHtml(snap.summary)}
+    </div>`;
+
+  modal.hidden = false;
+};
+
+function aiResultBtnHtml(row) {
+  if (row.aiKind == null && !row.aiCheckItems) return '';
+  const idEsc = escapeAttr(row.id);
+  return `<button type="button" class="btn-audit btn-audit-primary" onclick="openAdminAiAuditResult('${idEsc}')"><i class="fas fa-shield-halved"></i>AI审核结果</button>`;
 }
 
 function listStatusCellHtml(row) {
@@ -801,6 +959,7 @@ function auditKindCellHtml(row) {
 
 function rowActionsHtml(r) {
   const idEsc = escapeAttr(r.id);
+  const aiBtn = aiResultBtnHtml(r);
   const useChangeDetailPage =
     r.auditKind === 'CHANGE_INFO' && r.beforeSnapshot && r.afterSnapshot;
   const detail = useChangeDetailPage
@@ -811,6 +970,7 @@ function rowActionsHtml(r) {
   if (r.listStatus === 'pending') {
     return `
       ${detail}
+      ${aiBtn}
       ${preview}
       <button type="button" class="btn-audit btn-audit-pass" onclick="auditApprove('${idEsc}')"><i class="fas fa-check"></i>通过</button>
       <button type="button" class="btn-audit btn-audit-reject" onclick="openRejectModal('${idEsc}')"><i class="fas fa-ban"></i>驳回</button>`;
@@ -818,16 +978,18 @@ function rowActionsHtml(r) {
   if (r.listStatus === 'online') {
     return `
       ${detail}
+      ${aiBtn}
       ${preview}
       <button type="button" class="btn-audit border border-amber-200 bg-amber-50 text-amber-950 hover:bg-amber-100" onclick="auditSetOffline('${idEsc}')"><i class="fas fa-arrow-down"></i>下架</button>`;
   }
   if (r.listStatus === 'offline') {
     return `
       ${detail}
+      ${aiBtn}
       ${preview}
       <button type="button" class="btn-audit btn-audit-pass" onclick="auditSetOnline('${idEsc}')"><i class="fas fa-arrow-up"></i>上架</button>`;
   }
-  return `${detail}${preview}`;
+  return `${detail}${aiBtn}${preview}`;
 }
 
 function renderShelfTabs() {
@@ -980,6 +1142,7 @@ function renderAuditProductTable() {
 function bindAuditModals() {
   const detailModal = document.getElementById('auditDetailModal');
   const rejectModal = document.getElementById('rejectModal');
+  const aiModal = document.getElementById('adminAiResultModal');
 
   if (detailModal) {
     detailModal.addEventListener('click', ev => {
@@ -1003,6 +1166,7 @@ function bindAuditModals() {
     if (ev.key !== 'Escape') return;
     if (detailModal && !detailModal.hidden) closeAuditDetailModal();
     if (rejectModal && !rejectModal.hidden) closeRejectModal();
+    if (aiModal && !aiModal.hidden) closeAdminAiAuditResult();
   });
 }
 

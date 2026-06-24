@@ -296,6 +296,272 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
+    .compliance-overview {
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border: 1px solid transparent;
+    }
+
+    .compliance-overview.is-pass {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+    }
+
+    .compliance-overview.is-warn {
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+
+    .compliance-overview.is-block {
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    .compliance-overview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .compliance-overview-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .compliance-overall-tag {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .compliance-overall-tag.is-pass {
+      background: #d1fae5;
+      color: #047857;
+    }
+
+    .compliance-overall-tag.is-warn {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .compliance-overall-tag.is-block {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .compliance-overview-summary {
+      font-size: 12px;
+      line-height: 1.75;
+      color: #475569;
+    }
+
+    .compliance-check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .compliance-check-card {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .compliance-check-card.is-clickable {
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .compliance-check-card.is-clickable:active {
+      border-color: #fca5a5;
+      box-shadow: 0 2px 10px rgba(226, 35, 26, 0.08);
+    }
+
+    .check-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .check-card-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .check-status-tag {
+      flex-shrink: 0;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .check-status-tag.is-pass {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .check-status-tag.is-warn {
+      background: #fffbeb;
+      color: #b45309;
+    }
+
+    .check-status-tag.is-block {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .check-card-foot {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .check-card-action {
+      color: var(--primary);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .compliance-detail-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      background: rgba(15, 23, 42, 0.45);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .compliance-detail-overlay.show {
+      display: flex;
+    }
+
+    .compliance-detail-sheet {
+      width: min(390px, 100%);
+      max-height: min(78vh, 640px);
+      background: #fff;
+      border-radius: 18px 18px 0 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: sheetUp 0.24s ease;
+    }
+
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .compliance-detail-head {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .compliance-detail-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .compliance-detail-basis {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #64748b;
+    }
+
+    .compliance-detail-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .compliance-detail-body {
+      padding: 14px 16px 20px;
+      overflow: auto;
+    }
+
+    .detail-block {
+      padding: 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+      margin-bottom: 10px;
+    }
+
+    .detail-block-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .detail-block-text {
+      font-size: 12px;
+      line-height: 1.75;
+      color: #475569;
+    }
+
+    .subcheck-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .subcheck-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .subcheck-item-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .subcheck-item-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .subcheck-item-detail {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #64748b;
+    }
   </style>
 </head>
 <body>
@@ -325,6 +591,12 @@
           <div class="m-info-label" style="margin-bottom:6px;">审批人员</div>
           <div id="approverTags"></div>
         </div>
+      </section>
+
+      <section class="m-card">
+        <div class="m-section-title"><i class="fa-solid fa-shield-halved text-red-500"></i>采购单合规性校验</div>
+        <div class="compliance-overview" id="complianceOverview"></div>
+        <div class="compliance-check-list" id="complianceCheckList"></div>
       </section>
 
       <section class="m-card">
@@ -368,8 +640,24 @@
 
   <div class="toast" id="toast"></div>
 
+  <div class="compliance-detail-overlay" id="complianceDetailOverlay" onclick="if(event.target===this) closeComplianceDetail()">
+    <div class="compliance-detail-sheet" onclick="event.stopPropagation()">
+      <div class="compliance-detail-head">
+        <div style="min-width:0; flex:1;">
+          <div class="compliance-detail-title" id="complianceDetailTitle">--</div>
+          <div class="compliance-detail-basis" id="complianceDetailBasis">--</div>
+        </div>
+        <button class="compliance-detail-close" type="button" onclick="closeComplianceDetail()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="compliance-detail-body" id="complianceDetailBody"></div>
+    </div>
+  </div>
+
   <script>
     const APPROVAL_STORAGE_KEY = 'gcPurchaseApprovalPayload';
+    let complianceChecks = [];
 
     function formatCurrency(value) {
       return `￥${Number(value || 0).toFixed(2)}`;
@@ -393,26 +681,256 @@
       });
     }
 
-    function getFallbackPayload() {
+    function getComplianceStatusMeta(status) {
+      const map = {
+        pass: { cls: 'is-pass', label: '通过' },
+        warn: { cls: 'is-warn', label: '需关注' },
+        block: { cls: 'is-block', label: '不通过' }
+      };
+      return map[status] || map.pass;
+    }
+
+    function getOverallStatusMeta(status) {
+      const map = {
+        pass: { cls: 'is-pass', label: '整体可提交' },
+        warn: { cls: 'is-warn', label: '存在待关注项' },
+        block: { cls: 'is-block', label: '暂不建议提交' }
+      };
+      return map[status] || map.warn;
+    }
+
+    function isNonPassStatus(status) {
+      return status === 'warn' || status === 'block';
+    }
+
+    function buildFallbackCompliance(product) {
+      const price = Number(product.price || 0);
+      const floor = Number(product.floor || price * 0.9);
+      const ceiling = Number(product.ceiling || price * 1.1);
+      const priceReasonable = price <= ceiling;
+      const supplierScore = Number(product.supplierScore || 4.8);
+      const supplierStable = supplierScore >= 4.6;
+      const inspectionOk = !product.inspectionReport || product.inspectionReport.status === '有效';
+      const supplierStatus = inspectionOk && supplierStable ? 'pass' : 'warn';
+
       return {
-        purchaseNo: 'PO20260520001',
+        overallStatus: supplierStatus === 'warn' ? 'warn' : 'pass',
+        summaryText: supplierStatus === 'warn'
+          ? '本次采购单已完成前 6 项一级合规分析，整体可继续处理，但存在 1 项需关注内容。当前价格、供应商资质与发票信息基本满足要求，建议在提交前再次确认关注项。'
+          : '本次采购单已完成前 6 项一级合规分析，商品信息、价格区间、供应商履约、发票主体和收货信息均满足当前采购要求，建议按当前采购单信息提交。',
+        reportStatus: 'ready',
+        reportNo: `RPT-${product.purchaseNo || 'PO20260520001'}`,
+        checks: [
+          {
+            title: '商品基础信息完整性校验',
+            status: 'pass',
+            basis: '核验商品名称、规格型号、计价单位、采购编码和供应商等基础字段。',
+            successText: '商品名称、规格型号、采购编码、计价单位和供应商信息齐全，可进入采购单审核流程。',
+            children: [
+              { title: '商品名称完整性', detail: `商品名称已登记：${product.name}`, status: 'pass' },
+              { title: '规格型号完整性', detail: `规格型号已登记：${product.model || '标准规格'}`, status: 'pass' },
+              { title: '计价与数量合法性', detail: `计价单位为${product.unit || '件'}，下单数量为 ${product.qty || 1}${product.unit || '件'}，数量合法。`, status: 'pass' },
+              { title: '采购标识完整性', detail: '采购编码已登记；供应商信息已绑定。', status: 'pass' }
+            ]
+          },
+          {
+            title: '采购制度与类目匹配校验',
+            status: 'pass',
+            basis: '核验商品是否具备采购基础资料，是否可进入当前采购场景。',
+            successText: '当前商品已具备基础采购资料，适配当前采购确认流程，未发现明显类目冲突。',
+            children: [
+              { title: '采购场景匹配', detail: '当前商品可进入商城下单确认流程，未发现采购制度冲突。', status: 'pass' },
+              { title: '类目适配性', detail: '商品类目与当前政采场景匹配，未命中限制采购类目。', status: 'pass' },
+              { title: '流程准入条件', detail: '当前采购单具备基础资料、价格与履约信息，可继续进行合规分析。', status: 'pass' },
+              { title: '审批留痕适配', detail: '采购单字段满足后续审批、留痕和报告归档需要。', status: 'pass' }
+            ]
+          },
+          {
+            title: '价格合理性校验',
+            status: priceReasonable ? 'pass' : 'warn',
+            basis: `对比当前下单价 ${formatCurrency(price)} 与平台建议区间 ${formatCurrency(floor)} - ${formatCurrency(ceiling)}。`,
+            successText: priceReasonable
+              ? '当前下单价位于平台建议采购区间内，价格合理性通过。'
+              : '当前下单价高于平台建议上限，建议复核预算或重新议价。',
+            children: [
+              { title: '平台建议区间对比', detail: `当前下单价 ${formatCurrency(price)}；建议区间 ${formatCurrency(floor)} - ${formatCurrency(ceiling)}。`, status: priceReasonable ? 'pass' : 'warn' },
+              { title: '上限偏离情况', detail: priceReasonable ? '当前价格未高于建议上限，价格风险可控。' : '当前价格高于建议上限，建议复核预算或议价。', status: priceReasonable ? 'pass' : 'warn' },
+              { title: '预算可接受性', detail: '采购单总额与当前采购金额规模匹配，未发现明显异常金额波动。', status: 'pass' },
+              { title: '成交合理性判断', detail: priceReasonable ? '价格处于合理采购区间，可作为当前采购单参考价。' : '当前价格存在偏高风险，不建议直接确认。', status: priceReasonable ? 'pass' : 'warn' }
+            ]
+          },
+          {
+            title: '供应商履约与资质校验',
+            status: supplierStatus,
+            basis: `结合供应商综合评分 ${supplierScore.toFixed(1)}、商品好评率 ${product.goodRate || '98.0%'} 和安全资料状态。`,
+            successText: supplierStatus === 'pass'
+              ? '供应商履约评分稳定，安全资料有效，资质表现正常。'
+              : '供应商资料存在待关注项，建议在提交前补充复核。',
+            children: [
+              { title: '综合评分稳定性', detail: `供应商综合评分 ${supplierScore.toFixed(1)}，处于${supplierStable ? '稳定' : '待关注'}区间。`, status: supplierStable ? 'pass' : 'warn' },
+              { title: '商品评价表现', detail: `商品好评率 ${product.goodRate || '98.0%'}，可作为履约表现辅助参考。`, status: 'pass' },
+              { title: '资质安全资料', detail: inspectionOk ? '安全资料状态有效，到期时间符合要求。' : '安全资料状态异常，建议补充复核。', status: inspectionOk ? 'pass' : 'warn' },
+              { title: '履约风险判断', detail: supplierStatus === 'pass' ? '当前供应商履约风险较低，可继续下单。' : '当前供应商存在待关注履约项。', status: supplierStatus === 'pass' ? 'pass' : 'warn' }
+            ]
+          },
+          {
+            title: '发票主体一致性校验',
+            status: 'pass',
+            basis: '核验发票类型、抬头与纳税人识别号是否完整，是否可用于当前采购单留档。',
+            successText: '发票主体信息完整，可用于采购单归档和后续审批。',
+            children: [
+              { title: '发票类型校验', detail: '当前发票类型为：增值税普通发票。', status: 'pass' },
+              { title: '发票抬头校验', detail: '发票抬头已登记：天创信总公司。', status: 'pass' },
+              { title: '税号校验', detail: '纳税人识别号已登记。', status: 'pass' },
+              { title: '归档适配性', detail: '当前发票主体满足采购单留档和审批要求。', status: 'pass' }
+            ]
+          },
+          {
+            title: '收货信息有效性校验',
+            status: 'pass',
+            basis: '核验配送地址、收货人及交付时效信息是否具备采购单履约条件。',
+            successText: '配送地址与收货人信息完整，且在当前可配送范围内。',
+            children: [
+              { title: '配送地址完整性', detail: '当前配送地址已登记。', status: 'pass' },
+              { title: '收货人信息完整性', detail: '当前收货人信息已登记。', status: 'pass' },
+              { title: '交付时效确认', detail: '预计交付信息已确认。', status: 'pass' },
+              { title: '履约可达性', detail: '当前地址与联系人信息满足履约要求。', status: 'pass' }
+            ]
+          }
+        ]
+      };
+    }
+
+    function resolveComplianceData(data) {
+      if (data.compliance && Array.isArray(data.compliance.checks) && data.compliance.checks.length) {
+        return {
+          overallStatus: data.compliance.overallStatus || data.complianceStatus || 'pass',
+          summaryText: data.compliance.summaryText || data.complianceSummary || '',
+          reportStatus: data.compliance.reportStatus || 'ready',
+          reportNo: data.compliance.reportNo || `RPT-${data.purchaseNo || ''}`,
+          checks: data.compliance.checks.map(item => ({ ...item, children: (item.children || []).map(child => ({ ...child })) }))
+        };
+      }
+      return buildFallbackCompliance({
+        purchaseNo: data.purchaseNo,
+        name: data.product && data.product.name,
+        model: data.product && data.product.model,
+        unit: data.product && data.product.unit,
+        qty: data.product && data.product.qty,
+        price: data.product && data.product.price,
+        supplierScore: 4.5,
+        goodRate: '97.5%',
+        inspectionReport: { status: '待复核', expiry: '2026-12-31' }
+      });
+    }
+
+    function renderComplianceSection(data) {
+      const compliance = resolveComplianceData(data);
+      complianceChecks = compliance.checks;
+      const overallMeta = getOverallStatusMeta(compliance.overallStatus);
+      const passCount = compliance.checks.filter(item => item.status === 'pass').length;
+      const warnCount = compliance.checks.filter(item => item.status === 'warn').length;
+      const blockCount = compliance.checks.filter(item => item.status === 'block').length;
+
+      document.getElementById('complianceOverview').className = `compliance-overview ${overallMeta.cls}`;
+      document.getElementById('complianceOverview').innerHTML = `
+        <div class="compliance-overview-head">
+          <div class="compliance-overview-title">合规分析结论</div>
+          <span class="compliance-overall-tag ${overallMeta.cls}">${overallMeta.label}</span>
+        </div>
+        <div class="compliance-overview-summary">${escapeHtml(compliance.summaryText || '已完成采购单合规性校验。')}</div>
+        <div class="compliance-overview-summary" style="margin-top:6px;">校验结果：通过 ${passCount} 项${warnCount ? ` · 需关注 ${warnCount} 项` : ''}${blockCount ? ` · 不通过 ${blockCount} 项` : ''}${compliance.reportStatus === 'ready' ? ' · 报告已生成' : ''}</div>
+      `;
+
+      document.getElementById('complianceCheckList').innerHTML = compliance.checks.map((item, index) => {
+        const meta = getComplianceStatusMeta(item.status);
+        const clickable = isNonPassStatus(item.status);
+        const actionHtml = clickable
+          ? '<span class="check-card-action">查看详情 <i class="fa-solid fa-chevron-right"></i></span>'
+          : '<span>—</span>';
+        return `
+          <div class="compliance-check-card ${clickable ? 'is-clickable' : ''}" ${clickable ? `onclick="openComplianceDetail(${index})"` : ''}>
+            <div class="check-card-head">
+              <div class="check-card-title">${escapeHtml(item.title)}</div>
+              <span class="check-status-tag ${meta.cls}">${meta.label}</span>
+            </div>
+            <div class="check-card-foot">
+              <span>二级校验项 ${(item.children || []).length} 项</span>
+              ${actionHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openComplianceDetail(index) {
+      const item = complianceChecks[index];
+      if (!item || !isNonPassStatus(item.status)) return;
+      const meta = getComplianceStatusMeta(item.status);
+      document.getElementById('complianceDetailTitle').innerHTML = `${escapeHtml(item.title)} <span class="check-status-tag ${meta.cls}" style="margin-left:6px; vertical-align:middle;">${meta.label}</span>`;
+      document.getElementById('complianceDetailBasis').textContent = item.basis || '';
+      document.getElementById('complianceDetailBody').innerHTML = `
+        <div class="detail-block">
+          <div class="detail-block-title">一级分析结论</div>
+          <div class="detail-block-text">${escapeHtml(item.successText || '')}</div>
+        </div>
+        <div class="detail-block">
+          <div class="detail-block-title">对应二级校验项目</div>
+          ${(item.children || []).map(child => {
+            const childMeta = getComplianceStatusMeta(child.status || 'pass');
+            return `
+              <div class="subcheck-item">
+                <div class="subcheck-item-head">
+                  <div class="subcheck-item-title">${escapeHtml(child.title)}</div>
+                  <span class="check-status-tag ${childMeta.cls}">${childMeta.label}</span>
+                </div>
+                <div class="subcheck-item-detail">${escapeHtml(child.detail || '')}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      document.getElementById('complianceDetailOverlay').classList.add('show');
+    }
+
+    function closeComplianceDetail() {
+      document.getElementById('complianceDetailOverlay').classList.remove('show');
+    }
+
+    function getFallbackPayload() {
+      const purchaseNo = 'PO20260520001';
+      const product = {
+        name: '激光打印机 黑白双面网络款',
+        model: 'LP-260DN',
+        image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=120&h=120&fit=crop',
+        unit: '台',
+        price: 1899,
+        qty: 1,
+        subtotal: 1899,
+        supplier: '办公设备专营店',
+        storeName: '平台店铺',
+        supplierScore: 4.5,
+        goodRate: '97.5%',
+        floor: 1780,
+        ceiling: 2050,
+        inspectionReport: { status: '待复核', expiry: '2026-12-31' }
+      };
+      const compliance = buildFallbackCompliance({ ...product, purchaseNo });
+      return {
+        purchaseNo,
         purchaser: '采购专员',
         purchaserDepartment: '采购管理部',
         initiatedAt: new Date().toLocaleString('zh-CN', { hour12: false }),
         procurementBasis: { plan: null, budget: null, files: [] },
         remark: '',
-        approvers: [{ name: '王主任', phone: '13800138001', department: '采购管理部' }],
-        product: {
-          name: '中性笔 0.5mm 黑色 12支/盒',
-          model: '0.5mm',
-          image: 'https://images.unsplash.com/photo-1583484963886-cce2f525b1a8?w=120&h=120&fit=crop',
-          unit: '盒',
-          price: 24.9,
-          qty: 1,
-          subtotal: 24.9,
-          supplier: '得力政企集采店',
-          storeName: '京东'
-        },
+        approvers: [
+          { name: '王主任', phone: '13800138001', department: '采购管理部' },
+          { name: '李科长', phone: '13800138002', department: '财务审核部' }
+        ],
+        complianceSummary: compliance.summaryText,
+        complianceStatus: compliance.overallStatus,
+        compliance,
+        product,
         invoice: {
           type: '增值税普通发票',
           title: '天创信总公司',
@@ -426,9 +944,9 @@
           phone: '138****5621',
           time: '48小时内发货'
         },
-        totalAmount: 24.9,
+        totalAmount: 1899,
         shippingFee: 0,
-        payableAmount: 24.9
+        payableAmount: 1899
       };
     }
 
@@ -471,6 +989,8 @@
       document.getElementById('approverTags').innerHTML = (data.approvers || []).map(item =>
         `<span class="approver-tag">${escapeHtml(item.name)} · ${escapeHtml(item.department)}</span>`
       ).join('') || '<span class="approver-tag" style="background:#f1f5f9;color:#64748b;">暂无审批人员</span>';
+
+      renderComplianceSection(data);
 
       const p = data.product || {};
       document.getElementById('productCardWrap').innerHTML = `

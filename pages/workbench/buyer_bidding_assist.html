@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>竞价/询价 | 采购工作台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { background:#f8fafc; color:#0f172a; margin:0; }
+    .page-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 8px 20px rgba(15,23,42,.04); }
+    .stat-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+    .stat-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; }
+    .badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; white-space:nowrap; }
+    .b-teal { background:#f0fdfa; color:#0f766e; }
+    .b-blue { background:#eff6ff; color:#1d4ed8; }
+    .b-amber { background:#fffbeb; color:#b45309; }
+    .b-green { background:#ecfdf5; color:#047857; }
+    .b-slate { background:#f1f5f9; color:#475569; }
+    .b-red { background:#fef2f2; color:#b91c1c; }
+    .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; cursor:pointer; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+    .btn:hover { border-color:#cbd5e1; }
+    .btn-primary { background:#2563eb; border-color:#2563eb; color:#fff; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-teal { background:#0f766e; border-color:#0f766e; color:#fff; }
+    .btn-teal:hover { background:#115e59; }
+    .btn-danger { background:#dc2626; border-color:#dc2626; color:#fff; }
+    .btn-link { border:none; background:none; color:#2563eb; padding:0; height:auto; font-weight:700; }
+    .btn-link:hover { text-decoration:underline; }
+    .btn-link-teal { border:none; background:none; color:#0f766e; padding:0; height:auto; font-weight:700; }
+    .btn-link-teal:hover { text-decoration:underline; color:#115e59; }
+    th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
+    td, th { padding:14px 16px; border-bottom:1px solid #f1f5f9; text-align:left; vertical-align:middle; }
+    tbody tr:hover td { background:#fafcff; }
+    tbody tr:last-child td { border-bottom:none; }
+    .filter-tabs { display:inline-flex; padding:3px; border-radius:10px; background:#f8fafc; border:1px solid #e2e8f0; }
+    .filter-tab { height:30px; min-width:52px; padding:0 14px; border:none; border-radius:8px; background:transparent; color:#64748b; font-size:12px; font-weight:800; cursor:pointer; }
+    .filter-tab.active { background:#fff; color:#0f766e; box-shadow:0 1px 4px rgba(15,23,42,.08); }
+    .doc-cell { display:flex; align-items:flex-start; gap:10px; min-width:180px; }
+    .doc-icon { width:34px; height:34px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px; background:#d1fae5; color:#0f766e; }
+    .doc-icon.pdf { background:#fee2e2; color:#b91c1c; }
+    .doc-icon.word { background:#dbeafe; color:#1d4ed8; }
+    .doc-name { font-weight:800; color:#0f172a; line-height:1.35; font-size:13px; }
+    .doc-tip { font-size:11px; color:#94a3b8; margin-top:3px; }
+    .money { font-weight:800; color:#dc2626; font-variant-numeric:tabular-nums; }
+    .bi-rule-deadline, .t-muted { color:#64748b; font-size:12px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .bi-rule-budget, .t-budget { font-weight:700; color:#334155; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .bi-rule-step, .t-step { color:#64748b; font-size:12px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .history-table-wrap { overflow-x:auto; }
+    .history-table-wrap table { min-width:1280px; }
+    .row-actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .empty-box { padding:48px 20px; text-align:center; color:#94a3b8; font-size:13px; }
+    .empty-box i { display:block; font-size:32px; margin-bottom:12px; color:#cbd5e1; }
+    .hidden-input { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+    .hidden { display:none !important; }
+
+    /* 弹窗 */
+    .dialog { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,.45); z-index:100; padding:20px; }
+    .dialog.open { display:flex; }
+    .dialog-panel { background:#fff; border-radius:16px; width:100%; max-width:480px; max-height:calc(100vh - 40px); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 24px 56px rgba(15,23,42,.2); }
+    .dialog-panel.lg { max-width:620px; }
+    .dialog-panel.xl { max-width:min(1100px, calc(100vw - 32px)); max-height:min(88vh, 760px); }
+    .dialog-head { padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .dialog-head h4 { margin:0; font-size:16px; font-weight:800; color:#0f172a; }
+    .dialog-head-main { display:flex; align-items:center; gap:10px; min-width:0; flex:1; }
+    .dialog-body { padding:16px 20px; overflow-y:auto; font-size:14px; color:#475569; line-height:1.65; flex:1; min-height:0; }
+    .dialog-foot { padding:14px 20px; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+    .dialog-x { width:34px; height:34px; border-radius:10px; border:1px solid #e2e8f0; background:#fff; cursor:pointer; color:#64748b; flex-shrink:0; }
+    .dialog-back { height:34px; padding:0 12px; border-radius:10px; border:1px solid #e2e8f0; background:#fff; color:#475569; font-size:13px; font-weight:700; cursor:pointer; }
+    .dialog-back.hidden { display:none; }
+
+    .quote-summary { background:linear-gradient(135deg,#f0fdfa 0%,#fff 100%); border:1px solid #ccfbf1; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:13px; color:#334155; }
+    .quote-hint { font-size:11px; color:#64748b; margin-bottom:10px; }
+    .quote-rows { display:flex; flex-direction:column; gap:8px; }
+    .quote-row { display:grid; grid-template-columns:138px 1fr 88px auto 56px; gap:10px; align-items:center; padding:10px 12px; background:#f8fafc; border-radius:10px; font-size:12px; border:1px solid #eef2f7; }
+    .quote-row .t-time { color:#64748b; }
+    .quote-row .t-sup { font-weight:800; color:#0f172a; }
+    .quote-row .t-amt { font-weight:900; color:#dc2626; text-align:right; }
+    .flag-valid { font-size:10px; font-weight:800; padding:3px 8px; border-radius:999px; background:#d1fae5; color:#047857; }
+    .flag-invalid { font-size:10px; font-weight:800; padding:3px 8px; border-radius:999px; background:#f1f5f9; color:#64748b; }
+
+    .item-table-wrap { overflow:visible; border:1px solid #e8eef5; border-radius:12px; }
+    .item-table { width:100%; min-width:0; border-collapse:collapse; font-size:13px; table-layout:fixed; }
+    .item-table col.col-name { width:15%; }
+    .item-table col.col-spec { width:22%; }
+    .item-table col.col-qty { width:11%; }
+    .item-table col.col-ref { width:17%; }
+    .item-table col.col-price { width:17%; }
+    .item-table col.col-sub { width:18%; }
+    .item-table th { padding:10px 12px; font-size:12px; }
+    .item-table td { padding:10px 12px; word-break:break-word; }
+    .item-table .t-money { text-align:right; white-space:nowrap; }
+    .item-meta { margin:0 0 14px; padding:12px 14px; border-radius:10px; background:#f8fafc; border:1px solid #e8eef5; font-size:13px; color:#64748b; }
+    .item-summary { margin-top:14px; padding:12px 14px; border-radius:10px; background:#f0fdf4; border:1px solid #bbf7d0; font-size:13px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+
+    @media (max-width:980px) {
+      .quote-row { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="p-5 max-w-[1680px] mx-auto">
+    <!-- 页头 -->
+    <div class="page-card p-5 mb-5 flex items-center justify-between flex-wrap gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center"><i class="fas fa-gavel text-xl"></i></div>
+        <div>
+          <h1 class="text-2xl font-bold">竞价/询价</h1>
+          <p class="text-sm text-slate-500 mt-1">上传采购需求文件，AI 提取品类、规格与预算，推荐商品与供应商并发起竞价 / 询价。</p>
+        </div>
+      </div>
+      <input id="planBidAssistantFile" class="hidden-input" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx">
+      <button class="btn btn-teal" type="button" onclick="document.getElementById('planBidAssistantFile').click()">
+        <i class="fas fa-cloud-arrow-up"></i> 上传采购需求文件
+      </button>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5">
+      <div class="stat-card">
+        <div><div class="text-sm text-slate-500">总记录</div><div class="text-3xl font-bold mt-2" id="statTotal">0</div></div>
+        <div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-layer-group"></i></div>
+      </div>
+      <div class="stat-card">
+        <div><div class="text-sm text-slate-500">报价中</div><div class="text-3xl font-bold text-amber-600 mt-2" id="statQuoting">0</div></div>
+        <div class="stat-icon bg-amber-50 text-amber-600"><i class="fas fa-spinner"></i></div>
+      </div>
+      <div class="stat-card">
+        <div><div class="text-sm text-slate-500">待确认下单</div><div class="text-3xl font-bold text-teal-700 mt-2" id="statPending">0</div></div>
+        <div class="stat-icon bg-teal-50 text-teal-700"><i class="fas fa-clipboard-check"></i></div>
+      </div>
+      <div class="stat-card">
+        <div><div class="text-sm text-slate-500">已下单</div><div class="text-3xl font-bold text-green-600 mt-2" id="statOrdered">0</div></div>
+        <div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-circle-check"></i></div>
+      </div>
+      <div class="stat-card">
+        <div><div class="text-sm text-slate-500">已终止 / 流标</div><div class="text-3xl font-bold text-red-600 mt-2" id="statClosed">0</div></div>
+        <div class="stat-icon bg-red-50 text-red-600"><i class="fas fa-ban"></i></div>
+      </div>
+    </div>
+
+    <!-- 筛选栏 -->
+    <div class="page-card p-4 mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div class="filter-tabs" role="group" aria-label="筛选采购形式">
+        <button type="button" class="filter-tab bi-filter active" data-filter="all" onclick="planBidSetFilter('all')">全部</button>
+        <button type="button" class="filter-tab bi-filter" data-filter="bidding" onclick="planBidSetFilter('bidding')">竞价</button>
+        <button type="button" class="filter-tab bi-filter" data-filter="inquiry" onclick="planBidSetFilter('inquiry')">询价</button>
+      </div>
+      <span class="text-xs text-slate-400 font-semibold">演示数据 · 与最价方案页共享记录</span>
+    </div>
+
+    <!-- 历史记录表格 -->
+    <div class="page-card overflow-hidden history-table-wrap" id="planBidHistoryWrap">
+      <table class="w-full text-sm">
+        <thead>
+          <tr>
+            <th>采购文件</th>
+            <th>采购形式</th>
+            <th>参与供应商</th>
+            <th>报价截止时间</th>
+            <th>预算上限（元）</th>
+            <th>最小降价幅度（元）</th>
+            <th>当前状态</th>
+            <th>当前报价</th>
+            <th>报价供应商</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="planBidHistoryBody"></tbody>
+      </table>
+    </div>
+    <div class="page-card empty-box hidden" id="planBidHistoryEmpty">
+      <i class="fa-regular fa-folder-open"></i>
+      暂无符合条件的记录，请上传采购需求文件发起第一单
+    </div>
+  </div>
+
+  <!-- 报价详情弹窗 -->
+  <div class="dialog" id="biModalQuotes" role="dialog" aria-modal="true" onclick="if(event.target===this)planBidCloseQuotesModal()">
+    <div class="dialog-panel lg" id="biModalQuotesBox" onclick="event.stopPropagation()">
+      <div class="dialog-head">
+        <div class="dialog-head-main">
+          <button type="button" class="dialog-back hidden" id="biModalQuotesBack" onclick="planBidBackToQuoteList()"><i class="fas fa-arrow-left"></i> 返回</button>
+          <h4 id="biModalQuotesTitle">报价详情</h4>
+        </div>
+        <button type="button" class="dialog-x" onclick="planBidCloseQuotesModal()" aria-label="关闭"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="dialog-body" id="biModalQuotesBody"></div>
+      <div class="dialog-foot">
+        <button type="button" class="btn" onclick="planBidCloseQuotesModal()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 确认下单 -->
+  <div class="dialog" id="biModalConfirm" role="dialog" aria-modal="true" onclick="if(event.target===this)planBidCloseModal('biModalConfirm')">
+    <div class="dialog-panel" onclick="event.stopPropagation()">
+      <div class="dialog-head">
+        <h4 id="biModalConfirmTitle">确认下单</h4>
+        <button type="button" class="dialog-x" onclick="planBidCloseModal('biModalConfirm')" aria-label="关闭"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="dialog-body" id="biModalConfirmBody"></div>
+      <div class="dialog-foot">
+        <button type="button" class="btn" onclick="planBidCloseModal('biModalConfirm')">取消</button>
+        <button type="button" class="btn btn-teal" id="biModalConfirmOk">确认下单</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 停止采购 -->
+  <div class="dialog" id="biModalStop" role="dialog" aria-modal="true" onclick="if(event.target===this)planBidCloseModal('biModalStop')">
+    <div class="dialog-panel" onclick="event.stopPropagation()">
+      <div class="dialog-head">
+        <h4 id="biModalStopTitle">停止采购</h4>
+        <button type="button" class="dialog-x" onclick="planBidCloseModal('biModalStop')" aria-label="关闭"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="dialog-body" id="biModalStopBody"></div>
+      <div class="dialog-foot">
+        <button type="button" class="btn" onclick="planBidCloseModal('biModalStop')">取消</button>
+        <button type="button" class="btn btn-danger" id="biModalStopOk">确认停止</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.PLAN_BID_ASSIST_CONFIG = {
+      resultUrl: '../bid_assist_result.html',
+      returnUrl: 'buyer_bidding_assist.html?embed=1',
+      workbenchStyle: true
+    };
+  </script>
+  <script src="../../assets/plan_bid_assist.js"></script>
+</body>
+</html>

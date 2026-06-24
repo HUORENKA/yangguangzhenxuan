@@ -755,6 +755,10 @@ async function handleBulkFiles(fileList) {
 
 /* ---------- AI 演示：不耦合提交 ---------- */
 window.runAiComplianceDemo = function runAiComplianceDemo() {
+  if (isMyProductsPage() && typeof window.runAiComplianceOnMyProducts === 'function') {
+    window.runAiComplianceOnMyProducts();
+    return;
+  }
   if (isMyProductsPage() && typeof window.getSelectedPendingProductIds === 'function') {
     const ids = window.getSelectedPendingProductIds();
     if (!ids.length) {

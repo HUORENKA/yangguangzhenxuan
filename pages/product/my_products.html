@@ -74,6 +74,378 @@
     .status-offline { background: #e2e8f0; color: #475569; }
     .status-rejected { background: #fee2e2; color: #b91c1c; }
     .status-draft { background: #f1f5f9; color: #475569; }
+    .status-draft-ai-pending { background: #fef3c7; color: #b45309; }
+    .status-draft-ai-pass { background: #dcfce7; color: #166534; }
+    .status-draft-ai-fail { background: #fee2e2; color: #b91c1c; }
+
+    /* ── AI 合规校验弹窗 ── */
+    .ai-compliance-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 130;
+    }
+    .ai-compliance-overlay.show { display: flex; }
+
+    .ai-compliance-modal {
+      width: min(960px, 98vw);
+      max-height: min(92vh, 880px);
+      background: #fff;
+      border-radius: 22px;
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      box-shadow: 0 32px 64px rgba(15, 23, 42, 0.24);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .ai-compliance-head {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      background: linear-gradient(135deg, #fff7f7 0%, #ffffff 55%);
+    }
+    .ai-compliance-head-main { min-width: 0; flex: 1; }
+    .ai-compliance-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ai-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .ai-status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+    .ai-status-tag.run { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .ai-status-tag.pass { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+    .ai-status-tag.fail { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+    .ai-status-tag.view { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
+    .ai-btn-ghost {
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ai-btn-ghost:hover { background: #f9fafb; }
+
+    .ai-batch-bar {
+      padding: 16px 24px;
+      background: linear-gradient(180deg, #fffbfb 0%, #ffffff 100%);
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .ai-batch-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .ai-batch-title { font-size: 15px; font-weight: 800; color: #111827; }
+    .ai-batch-hint { font-size: 12px; color: #64748b; margin-top: 3px; }
+    .ai-metric-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ai-metric-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .ai-metric-pill strong { color: #0f172a; font-weight: 800; }
+    .ai-queue-scroll {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ai-queue-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 100%;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ai-queue-chip:hover { box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08); }
+    .ai-queue-chip.active { border-color: #fca5a5; background: #fff7f7; }
+    .ai-queue-chip.done-pass { border-color: #bbf7d0; background: #f0fdf4; }
+    .ai-queue-chip.done-fail { border-color: #fecaca; background: #fef2f2; }
+    .ai-queue-chip.pending { opacity: 0.75; }
+    .ai-queue-chip-name {
+      font-weight: 600;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 280px;
+    }
+    .ai-queue-chip-result {
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .ai-queue-chip-result.pass { color: #15803d; }
+    .ai-queue-chip-result.fail { color: #b91c1c; }
+    .ai-queue-chip-result.running { color: #1d4ed8; }
+    .ai-queue-chip-result.pending { color: #94a3b8; }
+
+    .ai-compliance-main {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 18px 24px 20px;
+      background: #fafbfc;
+    }
+    .ai-product-results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .ai-product-audit-block {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      background: #fff;
+      padding: 18px 20px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+      scroll-margin-top: 12px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .ai-product-audit-block.active {
+      border-color: #fca5a5;
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.12), 0 10px 24px rgba(239, 68, 68, 0.08);
+    }
+    .ai-product-audit-block.done-pass { border-color: #bbf7d0; }
+    .ai-product-audit-block.done-fail { border-color: #fecaca; }
+    .ai-product-audit-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .ai-product-audit-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.45;
+    }
+    .ai-product-audit-sku {
+      font-size: 12px;
+      color: #94a3b8;
+      font-family: ui-monospace, monospace;
+      margin-top: 4px;
+    }
+    .ai-product-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .ai-product-status.pass { background: #dcfce7; color: #15803d; }
+    .ai-product-status.fail { background: #fee2e2; color: #b91c1c; }
+    .ai-product-status.running { background: #dbeafe; color: #1d4ed8; }
+    .ai-product-status.pending { background: #f1f5f9; color: #64748b; }
+    .ai-block-section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #475569;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-block-section-title .layer-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .ai-block-summary {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #fff7ed 0%, #ffffff 100%);
+      border: 1px solid #fed7aa;
+      font-size: 14px;
+      line-height: 1.75;
+      color: #475569;
+    }
+    .ai-block-summary-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #c2410c;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ai-subcheck-grid { display: grid; gap: 10px; }
+    .ai-subcheck-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 13px 14px;
+      background: #f8fafc;
+      transition: all 0.25s ease;
+    }
+    .ai-subcheck-item.pending { opacity: 0.55; }
+    .ai-subcheck-item.active {
+      border-color: #93c5fd;
+      background: #eff6ff;
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.12);
+    }
+    .ai-subcheck-item.pass {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+    .ai-subcheck-item.fail {
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+    .ai-subcheck-item.summary {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+    }
+    .ai-subcheck-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .ai-subcheck-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-subcheck-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      background: #e2e8f0;
+      color: #64748b;
+    }
+    .ai-subcheck-item.active .ai-subcheck-icon { background: #dbeafe; color: #2563eb; }
+    .ai-subcheck-item.pass .ai-subcheck-icon { background: #dcfce7; color: #16a34a; }
+    .ai-subcheck-item.fail .ai-subcheck-icon { background: #fee2e2; color: #dc2626; }
+    .ai-subcheck-desc {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 6px;
+      line-height: 1.55;
+      padding-left: 36px;
+    }
+    .ai-subcheck-evidence {
+      font-size: 12px;
+      color: #b45309;
+      margin-top: 6px;
+      line-height: 1.55;
+      padding-left: 36px;
+    }
+    .ai-subcheck-val {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+    .ai-subcheck-val.pass { background: #dcfce7; color: #15803d; }
+    .ai-subcheck-val.fail { background: #fee2e2; color: #b91c1c; }
+    .ai-subcheck-val.pending { background: #f1f5f9; color: #94a3b8; }
+    .ai-subcheck-val.running { background: #dbeafe; color: #1d4ed8; }
+
+    .ai-compliance-foot {
+      padding: 14px 24px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: #fff;
+    }
+    .ai-foot-hint {
+      font-size: 12px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ai-foot-actions { display: flex; gap: 10px; }
+
+    .ai-chip-expired {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+    }
 
     .result-badge {
       display: inline-flex;
@@ -873,7 +1245,7 @@
           <div id="mpEditBadge" class="text-xs font-black uppercase tracking-[0.14em] text-red-600">单笔录入 · 编辑</div>
           <h3 id="mpEditTitle" class="text-xl font-black text-slate-900 mt-1">编辑商品</h3>
           <p class="text-sm text-slate-500 mt-2 leading-6">
-            与「上架商品」弹窗一致填写；保存后将写回「我的商品」列表与预览快照（原型）。待提交/未通过商品可无主图占位后补全。
+            与「上架商品」弹窗一致填写；保存后将写回「我的商品」列表与预览快照（原型）。<strong class="text-amber-700">若商品曾通过 AI 合规校验，保存修改后将失效并需重新校验。</strong>
           </p>
         </div>
         <button type="button" class="assistant-close rounded-full bg-slate-100 text-slate-500 w-10 h-10 border-0" onclick="closeAddProductModal()" aria-label="关闭">
@@ -986,6 +1358,65 @@
     </div>
   </div>
 
+  <div class="ai-compliance-overlay" id="aiComplianceOverlay" onclick="if (event.target === this) closeAiComplianceModal()">
+    <div class="ai-compliance-modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <div class="ai-compliance-head">
+        <div class="ai-compliance-head-main">
+          <div class="ai-compliance-title">
+            <i class="fas fa-shield-halved text-red-500"></i>
+            <span id="aiComplianceModalTitle">AI 合规校验</span>
+          </div>
+        </div>
+        <div class="ai-head-actions">
+          <span class="ai-status-tag view" id="aiModalStatusTag"><i class="fas fa-circle-info"></i> 待开始</span>
+          <button type="button" class="ai-btn-ghost" onclick="closeAiComplianceModal()" aria-label="关闭">
+            <i class="fa-solid fa-xmark"></i> 关闭
+          </button>
+        </div>
+      </div>
+
+      <div class="ai-batch-bar" id="aiBatchBar">
+        <div class="ai-batch-head">
+          <div>
+            <div class="ai-batch-title">本批次商品队列</div>
+            <div class="ai-batch-hint" id="aiBatchHint">勾选商品后发起校验，系统将逐件完成分析</div>
+          </div>
+          <div class="ai-metric-row" id="aiMetricRow">
+            <span class="ai-metric-pill"><i class="fas fa-layer-group text-slate-400"></i> 总数 <strong id="aiMetricTotal">0</strong></span>
+            <span class="ai-metric-pill"><i class="fas fa-spinner text-blue-500"></i> 完成 <strong id="aiMetricDone">0</strong></span>
+            <span class="ai-metric-pill"><i class="fas fa-circle-check text-green-600"></i> 通过 <strong id="aiMetricPass">0</strong></span>
+            <span class="ai-metric-pill"><i class="fas fa-circle-xmark text-red-600"></i> 拦截 <strong id="aiMetricFail">0</strong></span>
+          </div>
+        </div>
+        <div class="ai-queue-scroll" id="aiProductQueue"></div>
+      </div>
+
+      <div class="ai-compliance-main">
+        <div class="ai-product-results-list" id="aiProductResultsArea">
+          <div class="ai-product-audit-block">
+            <div class="ai-block-section-title">审核项目 <span class="layer-tag">上架审核层</span></div>
+            <div class="ai-subcheck-grid" id="aiSubcheckGrid"></div>
+            <div class="ai-block-summary">
+              <div class="ai-block-summary-label"><i class="fas fa-wand-magic-sparkles"></i> AI 合规总结</div>
+              <div id="aiSummaryText">请勾选商品后发起校验，系统将逐件展示审核结果。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-compliance-foot">
+        <div class="ai-foot-hint" id="aiFootHint">
+          <i class="fas fa-circle-info text-slate-400"></i>
+          <span>校验通过后方可提交平台审核；信息变更后须重新校验</span>
+        </div>
+        <div class="ai-foot-actions">
+          <button type="button" class="dialog-btn dialog-btn-cancel" id="aiRecheckBtn" style="display:none" onclick="retryAiComplianceFromModal()">重新校验</button>
+          <button type="button" class="dialog-btn dialog-btn-confirm" onclick="closeAiComplianceModal()">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="dialog-overlay" id="globalDialogOverlay">
     <div class="dialog-card">
       <div class="dialog-head">
@@ -1085,30 +1516,486 @@
     };
 
     window.runAiCheckOnDraftProducts = function runAiCheckOnDraftProducts(ids) {
-      ids.forEach(id => {
-        const item = products.find(p => p.id === id);
-        if (item && item.status === 'draft') {
-          item.summary = '（演示）AI 合规校验已完成，可勾选后提交审核。';
-        }
+      window.runAiComplianceOnMyProducts(ids);
+    };
+
+    /** 【上架审核层】校验项（与商品标签体系.xlsx 一致） */
+    const LISTING_AUDIT_ITEMS = [
+      { code: 'title', name: '商品名称', desc: '标题规范、品名完整、与类目一致', icon: 'fa-tag' },
+      { code: 'intro', name: '简介充分', desc: '简介与描述有效文字不少于 30 字', icon: 'fa-align-left' },
+      { code: 'mainImg', name: '主图合格', desc: '主图清晰、主体为商品本身', icon: 'fa-image' },
+      { code: 'consistency', name: '图文一致', desc: '标题、参数与图片信息一致', icon: 'fa-object-group' },
+      { code: 'noWatermark', name: '无水印导流', desc: '无外链、水印及导流信息', icon: 'fa-ban' },
+      { code: 'noSensitive', name: '无敏感违规', desc: '无敏感词及违规宣传', icon: 'fa-shield-virus' },
+      { code: 'completeness', name: '资料完整度', desc: '综合前 6 项自动汇总', icon: 'fa-chart-pie' }
+    ];
+
+    let aiModalState = { targets: [], activeId: null, running: false, lastIds: [] };
+
+    function buildProductContentFingerprint(item) {
+      const extra = PREVIEW_BY_ID[item.id] || {};
+      return JSON.stringify({
+        name: item.name,
+        spec: item.spec,
+        price: extra.price,
+        unit: extra.unit,
+        catPath: extra.catPath,
+        specs: extra.specs,
+        mainImage: extra.mainImage,
+        subImages: extra.subImages,
+        detailImages: extra.detailImages
       });
-      renderTable();
-      if (typeof showDialog === 'function') {
-        showDialog({
-          title: '已完成',
-          message: `（原型演示）已对选中的 ${ids.length} 件待提交商品标记为「合规已检查」。`,
-          confirmText: '知道了'
-        });
+    }
+
+    function isAiCheckStale(item) {
+      if (item.status !== 'draft') return false;
+      if (item.aiCheckStatus !== 'pass' && item.aiCheckStatus !== 'fail') return false;
+      if (!item.aiContentHash) return true;
+      return item.aiContentHash !== buildProductContentFingerprint(item);
+    }
+
+    function invalidateAiCheck(item, reason) {
+      if (!item) return false;
+      const hadValidCheck = item.aiCheckStatus === 'pass' || item.aiCheckStatus === 'fail';
+      item.aiCheckStatus = 'none';
+      item.aiContentHash = null;
+      item.aiCheckItems = null;
+      item.aiCheckedAt = null;
+      item.aiCheckExpired = hadValidCheck;
+      item.summary = reason || '商品信息已变更，请重新进行 AI 合规校验。';
+      item.issues = [];
+      return hadValidCheck;
+    }
+
+    function getDraftAiCheckStatus(item) {
+      if (item.status !== 'draft') return null;
+      if (isAiCheckStale(item)) return 'none';
+      return item.aiCheckStatus || 'none';
+    }
+
+    function aiExpiredChipHtml(item) {
+      if (item.status !== 'draft') return '';
+      if (item.aiCheckExpired || isAiCheckStale(item)) {
+        return `<span class="ai-chip-expired"><i class="fas fa-arrows-rotate"></i>信息已变更 · 需重新校验</span>`;
       }
+      return '';
+    }
+
+    function mockAiCheckProduct(item) {
+      const extra = PREVIEW_BY_ID[item.id] || {};
+      const incomplete =
+        item.name.includes('信息待完善') ||
+        !String(extra.mainImage || '').trim() ||
+        !(typeof extra.price === 'number' && extra.price > 0);
+
+      if (!incomplete) {
+        const items = LISTING_AUDIT_ITEMS.map(def => {
+          if (def.code === 'completeness') {
+            return { ...def, value: '高', status: 'pass', evidence: '前 6 项均为「是」' };
+          }
+          return { ...def, value: '是', status: 'pass', evidence: '' };
+        });
+        return {
+          aiCheckStatus: 'pass',
+          result: 'pass',
+          aiCheckItems: items,
+          aiCheckSummary: '商品基本信息合规，资料完整度为高，可提交平台审核。',
+          summary: 'AI 合规校验通过，可提交平台审核。',
+          issues: []
+        };
+      }
+
+      const items = [
+        { code: 'title', name: '商品名称', desc: '标题规范、品名完整、与类目一致', icon: 'fa-tag', value: '否', status: 'fail', evidence: '标题含「信息待完善」，缺少可识别品名及关键规格' },
+        { code: 'intro', name: '简介充分', desc: '简介与描述有效文字不少于 30 字', icon: 'fa-align-left', value: '否', status: 'fail', evidence: '简介有效文字不足 30 字，且为模板化文案' },
+        { code: 'mainImg', name: '主图合格', desc: '主图清晰、主体为商品本身', icon: 'fa-image', value: '否', status: 'fail', evidence: '未配置有效主图或主图不符合要求' },
+        { code: 'consistency', name: '图文一致', desc: '标题、参数与图片信息一致', icon: 'fa-object-group', value: '是', status: 'pass', evidence: '' },
+        { code: 'noWatermark', name: '无水印导流', desc: '无外链、水印及导流信息', icon: 'fa-ban', value: '是', status: 'pass', evidence: '' },
+        { code: 'noSensitive', name: '无敏感违规', desc: '无敏感词及违规宣传', icon: 'fa-shield-virus', value: '是', status: 'pass', evidence: '' },
+        { code: 'completeness', name: '资料完整度', desc: '综合前 6 项自动汇总', icon: 'fa-chart-pie', value: '低', status: 'fail', evidence: '商品名称=否，简介充分=否，主图合格=否' }
+      ];
+      return {
+        aiCheckStatus: 'fail',
+        result: 'fail',
+        aiCheckItems: items,
+        aiCheckSummary: '商品资料不完整，存在 3 项拦截问题，请完善后重新校验。',
+        summary: 'AI 合规校验未通过：商品名称、简介充分、主图合格未达标，资料完整度为低。',
+        issues: items
+          .filter(i => i.status === 'fail' && i.code !== 'completeness')
+          .map(i => ({
+            level: '红色阻断',
+            type: '上架审核层',
+            field: i.name,
+            desc: i.evidence,
+            advice: '请按提示修改商品信息后重新执行 AI 合规校验。'
+          }))
+      };
+    }
+
+    function applyAiCheckResultToProduct(item, checkResult) {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      item.aiCheckStatus = checkResult.aiCheckStatus;
+      item.aiCheckItems = checkResult.aiCheckItems;
+      item.aiCheckSummary = checkResult.aiCheckSummary;
+      item.aiCheckedAt = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      item.aiContentHash = buildProductContentFingerprint(item);
+      item.aiCheckExpired = false;
+      item.result = checkResult.result;
+      item.summary = checkResult.summary;
+      item.issues = checkResult.issues;
+    }
+
+    function setAiModalStatus(mode, text) {
+      const el = document.getElementById('aiModalStatusTag');
+      if (!el) return;
+      el.className = 'ai-status-tag ' + mode;
+      const icons = { run: 'fa-spinner fa-spin', pass: 'fa-circle-check', fail: 'fa-circle-xmark', view: 'fa-circle-info' };
+      el.innerHTML = `<i class="fas ${icons[mode] || icons.view}"></i> ${text}`;
+    }
+
+    function updateAiMetrics(done, pass, fail, total) {
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+      set('aiMetricTotal', total);
+      set('aiMetricDone', done);
+      set('aiMetricPass', pass);
+      set('aiMetricFail', fail);
+    }
+
+    function getQueueResultLabel(item, done, activeId) {
+      if (done === 'pass') return { text: '通过', cls: 'pass' };
+      if (done === 'fail') return { text: '拦截', cls: 'fail' };
+      if (item.id === activeId && aiModalState.running) return { text: '校验中', cls: 'running' };
+      return { text: '待检', cls: 'pending' };
+    }
+
+    function renderAiQueueItems(targets, activeId, doneMap) {
+      const queue = document.getElementById('aiProductQueue');
+      if (!queue) return;
+      queue.innerHTML = targets
+        .map(item => {
+          const idEsc = item.id.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+          const done = doneMap[item.id];
+          let cls = 'ai-queue-chip';
+          if (item.id === activeId) cls += ' active';
+          else if (done === 'pass') cls += ' done-pass';
+          else if (done === 'fail') cls += ' done-fail';
+          else if (!done) cls += ' pending';
+          const result = getQueueResultLabel(item, done, activeId);
+          return `
+            <div class="${cls}" onclick="selectAiQueueProduct('${idEsc}')" title="${item.name} · ${result.text}">
+              <span class="ai-queue-chip-name">${item.name}</span>
+              <span class="ai-queue-chip-result ${result.cls}">${result.text}</span>
+            </div>`;
+        })
+        .join('');
+    }
+
+    function renderAiSubcheckGridHtml(items, phaseMap) {
+      const list = items || LISTING_AUDIT_ITEMS;
+      return list
+        .map(def => {
+          const phase = phaseMap ? phaseMap[def.code] : def.status || 'pending';
+          const val = def.value || (phase === 'active' ? '检测中' : phase === 'pending' ? '待检' : '—');
+          const valCls =
+            phase === 'pass' || def.status === 'pass'
+              ? 'pass'
+              : phase === 'fail' || def.status === 'fail'
+                ? 'fail'
+                : phase === 'active'
+                  ? 'running'
+                  : 'pending';
+          const itemCls =
+            phase === 'active'
+              ? 'active'
+              : phase === 'pass' || def.status === 'pass'
+                ? 'pass'
+                : phase === 'fail' || def.status === 'fail'
+                  ? 'fail'
+                  : def.code === 'completeness' && def.status
+                    ? 'summary'
+                    : 'pending';
+          return `
+            <div class="ai-subcheck-item ${itemCls}">
+              <div class="ai-subcheck-top">
+                <div class="ai-subcheck-title">
+                  <span class="ai-subcheck-icon"><i class="fas ${def.icon || 'fa-check'}"></i></span>
+                  ${def.name}
+                </div>
+                <span class="ai-subcheck-val ${valCls}">${val}</span>
+              </div>
+              <div class="ai-subcheck-desc">${def.desc}</div>
+              ${def.evidence ? `<div class="ai-subcheck-evidence"><i class="fas fa-triangle-exclamation"></i> ${def.evidence}</div>` : ''}
+            </div>`;
+        })
+        .join('');
+    }
+
+    function renderAiSubcheckGrid(items, phaseMap) {
+      const grid = document.getElementById('aiSubcheckGrid');
+      if (!grid) return;
+      grid.innerHTML = renderAiSubcheckGridHtml(items, phaseMap);
+    }
+
+    function getAiProductStatusBadge(item, mode) {
+      if (mode === 'running' || (item.id === aiModalState.activeId && aiModalState.running)) {
+        return '<span class="ai-product-status running"><i class="fas fa-spinner fa-spin"></i>校验中</span>';
+      }
+      if (item.aiCheckStatus === 'pass') {
+        return '<span class="ai-product-status pass"><i class="fas fa-circle-check"></i>通过</span>';
+      }
+      if (item.aiCheckStatus === 'fail') {
+        return '<span class="ai-product-status fail"><i class="fas fa-circle-xmark"></i>拦截</span>';
+      }
+      return '<span class="ai-product-status pending"><i class="fas fa-clock"></i>待检</span>';
+    }
+
+    function renderAiProductAuditBlock(item, opts) {
+      const options = opts || {};
+      const blockCls = [
+        'ai-product-audit-block',
+        options.active ? 'active' : '',
+        item.aiCheckStatus === 'pass' ? 'done-pass' : '',
+        item.aiCheckStatus === 'fail' ? 'done-fail' : ''
+      ]
+        .filter(Boolean)
+        .join(' ');
+      const items = item.aiCheckItems || (options.running ? LISTING_AUDIT_ITEMS : null);
+      const summary = options.running
+        ? options.summaryText || `正在分析「${item.name}」…`
+        : item.aiCheckSummary || item.summary || '—';
+      const gridHtml = options.running
+        ? `<div class="ai-subcheck-grid" id="aiSubcheckGrid">${renderAiSubcheckGridHtml(items || LISTING_AUDIT_ITEMS, options.phaseMap || null)}</div>`
+        : `<div class="ai-subcheck-grid">${renderAiSubcheckGridHtml(items || LISTING_AUDIT_ITEMS, null)}</div>`;
+      const summaryId = options.running ? ' id="aiSummaryText"' : '';
+      return `
+        <div class="${blockCls}" id="ai-block-${item.id}" data-product-id="${item.id}">
+          <div class="ai-product-audit-head">
+            <div>
+              <div class="ai-product-audit-name">${item.name}</div>
+              <div class="ai-product-audit-sku">${getSku(item)}</div>
+            </div>
+            ${getAiProductStatusBadge(item, options.running ? 'running' : 'done')}
+          </div>
+          <div class="ai-block-section-title">审核项目 <span class="layer-tag">上架审核层</span></div>
+          ${gridHtml}
+          <div class="ai-block-summary">
+            <div class="ai-block-summary-label"><i class="fas fa-wand-magic-sparkles"></i> AI 合规总结</div>
+            <div${summaryId}>${summary}</div>
+          </div>
+        </div>`;
+    }
+
+    function renderAllProductsAuditResults(targets, activeId) {
+      const area = document.getElementById('aiProductResultsArea');
+      if (!area) return;
+      area.innerHTML = targets.map(t => renderAiProductAuditBlock(t, { active: t.id === activeId })).join('');
+    }
+
+    function mountRunningProductShell(item) {
+      const area = document.getElementById('aiProductResultsArea');
+      if (!area) return;
+      area.innerHTML = renderAiProductAuditBlock(item, {
+        running: true,
+        active: true,
+        summaryText: `正在分析「${item.name}」…`,
+        phaseMap: Object.fromEntries(LISTING_AUDIT_ITEMS.map(d => [d.code, 'pending']))
+      });
+    }
+
+    function showAiProductDetail(item) {
+      if (!item) return;
+      aiModalState.activeId = item.id;
+      if (aiModalState.running) {
+        mountRunningProductShell(item);
+        return;
+      }
+      renderAllProductsAuditResults(aiModalState.targets, item.id);
+      const block = document.getElementById(`ai-block-${item.id}`);
+      if (block) block.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    window.selectAiQueueProduct = function selectAiQueueProduct(productId) {
+      const item = aiModalState.targets.find(p => p.id === productId);
+      if (!item || aiModalState.running) return;
+      if (!item.aiCheckItems) return;
+      aiModalState.activeId = productId;
+      const doneMap = {};
+      aiModalState.targets.forEach(t => {
+        if (t.aiCheckItems) doneMap[t.id] = t.aiCheckStatus;
+      });
+      renderAiQueueItems(aiModalState.targets, productId, doneMap);
+      showAiProductDetail(item);
+    };
+
+    window.closeAiComplianceModal = function closeAiComplianceModal() {
+      if (aiModalState.running) return;
+      const preservedIds = aiModalState.lastIds.slice();
+      document.getElementById('aiComplianceOverlay').classList.remove('show');
+      aiModalState = { targets: [], activeId: null, running: false, lastIds: preservedIds };
+    };
+
+    window.retryAiComplianceFromModal = function retryAiComplianceFromModal() {
+      if (aiModalState.lastIds.length) {
+        closeAiComplianceModal();
+        setTimeout(() => window.runAiComplianceOnMyProducts(aiModalState.lastIds), 200);
+      }
+    };
+
+    function openAiComplianceModalView(productId) {
+      const item = products.find(p => p.id === productId);
+      if (!item || getDraftAiCheckStatus(item) === 'none') return;
+      aiModalState = { targets: [item], activeId: item.id, running: false, lastIds: [item.id] };
+      document.getElementById('aiComplianceModalTitle').textContent = 'AI 合规校验结果';
+      setAiModalStatus(item.aiCheckStatus === 'pass' ? 'pass' : 'fail', item.aiCheckStatus === 'pass' ? '校验通过' : '校验未通过');
+      updateAiMetrics(1, item.aiCheckStatus === 'pass' ? 1 : 0, item.aiCheckStatus === 'fail' ? 1 : 0, 1);
+      document.getElementById('aiBatchHint').textContent = '以下为各商品审核明细，点击上方队列可定位';
+      renderAiQueueItems([item], item.id, { [item.id]: item.aiCheckStatus });
+      renderAllProductsAuditResults([item], item.id);
+      document.getElementById('aiRecheckBtn').style.display = '';
+      document.getElementById('aiComplianceOverlay').classList.add('show');
+    }
+
+    window.openAiCheckResult = function openAiCheckResult(productId) {
+      openAiComplianceModalView(productId);
+    };
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function runAiCheckAnimationForProduct(item, index, total) {
+      aiModalState.activeId = item.id;
+      const doneMap = {};
+      aiModalState.targets.forEach((t, i) => {
+        if (i < index) doneMap[t.id] = t.aiCheckStatus;
+      });
+      renderAiQueueItems(aiModalState.targets, item.id, doneMap);
+      mountRunningProductShell(item);
+
+      const result = mockAiCheckProduct(item);
+      const phaseMap = Object.fromEntries(LISTING_AUDIT_ITEMS.map(d => [d.code, 'pending']));
+
+      for (let i = 0; i < LISTING_AUDIT_ITEMS.length; i++) {
+        const def = LISTING_AUDIT_ITEMS[i];
+        phaseMap[def.code] = 'active';
+        renderAiSubcheckGrid(
+          LISTING_AUDIT_ITEMS.map(d => ({
+            ...d,
+            value:
+              d.code === def.code
+                ? '检测中'
+                : phaseMap[d.code] === 'pass' || phaseMap[d.code] === 'fail'
+                  ? (result.aiCheckItems.find(x => x.code === d.code) || {}).value
+                  : '待检',
+            status: phaseMap[d.code] === 'pass' || phaseMap[d.code] === 'fail' ? phaseMap[d.code] : undefined,
+            evidence: (result.aiCheckItems.find(x => x.code === d.code) || {}).evidence
+          })),
+          phaseMap
+        );
+        await sleep(260);
+        const ci = result.aiCheckItems.find(x => x.code === def.code);
+        phaseMap[def.code] = ci ? ci.status : 'pass';
+      }
+
+      applyAiCheckResultToProduct(item, result);
+      const summaryEl = document.getElementById('aiSummaryText');
+      if (summaryEl) summaryEl.textContent = result.aiCheckSummary;
+
+      const passCount = aiModalState.targets.filter(t => t.aiCheckStatus === 'pass').length;
+      const failCount = aiModalState.targets.filter(t => t.aiCheckStatus === 'fail').length;
+      updateAiMetrics(index + 1, passCount, failCount, total);
+      doneMap[item.id] = result.aiCheckStatus;
+      renderAiQueueItems(aiModalState.targets, null, doneMap);
+    }
+
+    window.runAiComplianceOnMyProducts = async function runAiComplianceOnMyProducts(idsArg) {
+      const ids = Array.isArray(idsArg) ? idsArg : window.getSelectedPendingProductIds();
+      if (!ids.length) {
+        showDialog({ title: '提示', message: '请先在「待提交」列表中勾选要校验的商品。', type: 'warn' });
+        return;
+      }
+
+      const targets = ids.map(id => products.find(p => p.id === id && p.status === 'draft')).filter(Boolean);
+      if (!targets.length) {
+        showDialog({ title: '提示', message: '所选商品均不在「待提交」状态。', type: 'warn' });
+        return;
+      }
+
+      aiModalState = { targets, activeId: null, running: true, lastIds: ids.slice() };
+      document.getElementById('aiComplianceModalTitle').textContent = 'AI 合规校验';
+      setAiModalStatus('run', '校验中');
+      updateAiMetrics(0, 0, 0, targets.length);
+      document.getElementById('aiBatchHint').textContent = '按顺序逐件校验，完成后将展示全部商品审核明细';
+      renderAiQueueItems(targets, null, {});
+      mountRunningProductShell(targets[0]);
+      document.getElementById('aiRecheckBtn').style.display = 'none';
+      document.getElementById('aiComplianceOverlay').classList.add('show');
+
+      for (let i = 0; i < targets.length; i++) {
+        await runAiCheckAnimationForProduct(targets[i], i, targets.length);
+      }
+
+      aiModalState.running = false;
+      const passN = targets.filter(t => t.aiCheckStatus === 'pass').length;
+      const failN = targets.filter(t => t.aiCheckStatus === 'fail').length;
+      document.getElementById('aiComplianceModalTitle').textContent = 'AI 合规校验结果';
+      setAiModalStatus(failN > 0 ? 'fail' : 'pass', failN > 0 ? '存在拦截项' : '全部通过');
+      document.getElementById('aiBatchHint').textContent = '以下为各商品审核明细，点击上方队列可定位';
+      document.getElementById('aiRecheckBtn').style.display = '';
+      renderAllProductsAuditResults(targets, targets[0] ? targets[0].id : null);
+      renderTable();
     };
 
     window.submitDraftProductsByIds = function submitDraftProductsByIds(ids) {
       if (!ids.length) return;
-      const n = ids.length;
       if (typeof showDialog !== 'function') return;
 
+      const items = ids.map(id => products.find(p => p.id === id && p.status === 'draft')).filter(Boolean);
+      if (!items.length) {
+        showDialog({ title: '提示', message: '所选商品均不在「待提交」状态。', type: 'warn' });
+        return;
+      }
+
+      const stale = items.filter(p => isAiCheckStale(p));
+      if (stale.length) {
+        stale.forEach(p => invalidateAiCheck(p, '商品信息已变更，校验结果已失效，请重新进行 AI 合规校验。'));
+        renderTable();
+        showDialog({
+          title: '校验结果已失效',
+          message: `以下商品信息已变更，原 AI 校验结果已失效，请重新执行「AI 合规校验」：\n${stale.map(p => '· ' + p.name).join('\n')}`,
+          type: 'warn',
+          confirmText: '知道了'
+        });
+        return;
+      }
+
+      const notChecked = items.filter(p => getDraftAiCheckStatus(p) === 'none');
+      if (notChecked.length) {
+        showDialog({
+          title: '请先进行 AI 合规校验',
+          message: `以下商品尚未完成 AI 合规校验，请先勾选后点击「AI 合规校验」：\n${notChecked.map(p => '· ' + p.name).join('\n')}`,
+          type: 'warn',
+          confirmText: '知道了'
+        });
+        return;
+      }
+
+      const failed = items.filter(p => getDraftAiCheckStatus(p) === 'fail');
+      if (failed.length) {
+        showDialog({
+          title: 'AI 合规校验未通过',
+          message: `以下商品未通过 AI 合规校验，请修改后重新校验再提交：\n${failed.map(p => '· ' + p.name).join('\n')}`,
+          type: 'error',
+          confirmText: '知道了'
+        });
+        return;
+      }
+
+      const n = items.length;
       showDialog({
         title: '提交审核',
-        message: `确认将选中的 ${n} 件商品提交平台审核吗？`,
+        message: `确认将选中的 ${n} 件商品提交平台审核吗？\n（已通过 AI 合规校验）`,
         cancelText: '取消',
         confirmText: '确认提交',
         onConfirm: () => {
@@ -1121,7 +2008,7 @@
               {
                 level: '处理中',
                 type: '流程状态',
-                field: 'AI复核',
+                field: '平台审核',
                 desc: '已提交审核，等待平台处理。',
                 advice: '无需操作，等待系统输出最终结果。'
               }
@@ -1255,9 +2142,10 @@
         category: '办公设备',
         spec: '-',
         status: 'draft',
+        aiCheckStatus: 'none',
         result: 'pass',
         submittedAt: '2026-05-12 09:25',
-        summary: '尚未提交审核，暂无 AI 校验记录。',
+        summary: '尚未进行 AI 合规校验。',
         issues: []
       },
       {
@@ -1267,9 +2155,10 @@
         category: '办公设备',
         spec: '-',
         status: 'draft',
+        aiCheckStatus: 'none',
         result: 'pass',
         submittedAt: '2026-05-11 17:08',
-        summary: '尚未提交审核，暂无 AI 校验记录。',
+        summary: '尚未进行 AI 合规校验。',
         issues: []
       }
     ];
@@ -1365,14 +2254,14 @@
         detailImages: []
       },
       'DRAFT-202605-002': {
-        price: 0,
+        price: 2899,
         unit: '台',
         catPath: ['办公设备', '打印输出', '多功能一体机'],
-        specs: { 规格摘要: '草稿 · 未定稿参数' },
+        specs: { 规格摘要: '高速文档扫描 · 双面 ADF' },
         warehouseStocks: { 华东一号仓: 0, 华北物流中心: 0, 华南保税仓: 0, 西南协同仓: 0, 华中中心仓: 0 },
-        mainImage: '',
+        mainImage: 'https://picsum.photos/seed/myprod-scan-main/520/520',
         subImages: [],
-        detailImages: []
+        detailImages: ['https://picsum.photos/seed/myprod-scan-d/820/460']
       }
     };
 
@@ -1618,8 +2507,22 @@
       return parseSubmittedDay(item.submittedAt);
     }
 
-    function getStatusBadge(status) {
-      const meta = statusMeta[status];
+    function getStatusBadge(item) {
+      if (typeof item === 'string') {
+        const meta = statusMeta[item];
+        return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+      }
+      if (item.status === 'draft') {
+        const ai = getDraftAiCheckStatus(item);
+        const draftAiMeta = {
+          none: { label: '待提交-需AI审核', className: 'status-badge status-draft-ai-pending', icon: 'fa-shield-halved' },
+          pass: { label: '待提交-AI审核通过', className: 'status-badge status-draft-ai-pass', icon: 'fa-circle-check' },
+          fail: { label: '待提交-AI审核不通过', className: 'status-badge status-draft-ai-fail', icon: 'fa-circle-xmark' }
+        };
+        const meta = draftAiMeta[ai] || draftAiMeta.none;
+        return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+      }
+      const meta = statusMeta[item.status];
       return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
     }
 
@@ -1696,6 +2599,21 @@
         subImages: [...(product.subImages || [])],
         detailImages: [...(product.detailImages || [])]
       };
+      if (item && (item.status === 'draft' || item.status === 'rejected')) {
+        const hadCheck = invalidateAiCheck(
+          item,
+          '商品信息已变更，请重新进行 AI 合规校验后再提交审核。'
+        );
+        if (hadCheck && typeof showDialog === 'function') {
+          showDialog({
+            title: '需重新 AI 合规校验',
+            message:
+              '商品信息已保存。\n因内容发生变更，原 AI 合规校验结果已失效，请重新点击「AI 合规校验」通过后再提交审核。',
+            type: 'warn',
+            confirmText: '知道了'
+          });
+        }
+      }
       renderTable();
     }
 
@@ -1768,8 +2686,18 @@
               </button>`;
 
       if (item.status === 'draft' || item.status === 'rejected') {
+        const aiStatus = getDraftAiCheckStatus(item);
+        const aiResultBtn =
+          aiStatus === 'pass' || aiStatus === 'fail'
+            ? `
+              <button class="action-btn action-btn-secondary" type="button" onclick="openAiCheckResult('${id}')">
+                <i class="fas fa-shield-halved"></i>
+                <span>查看AI审核结果</span>
+              </button>`
+            : '';
         return (
           previewBtn +
+          aiResultBtn +
           `
               <button class="action-btn action-btn-secondary" type="button" onclick="goEdit('${id}')">
                 <i class="fas fa-pen"></i>
@@ -1867,11 +2795,12 @@
           ${checkCell}
           <td class="px-5 py-4">
             <div class="font-semibold text-slate-900">${item.name}</div>
+            ${aiExpiredChipHtml(item)}
             ${changePendingChipHtml(item.id)}
           </td>
           <td class="px-5 py-4 font-mono text-sm text-slate-700">${getSku(item)}</td>
           <td class="px-5 py-4 text-sm text-slate-600">${formatCategoryCell(item)}</td>
-          <td class="px-5 py-4">${getStatusBadge(item.status)}</td>
+          <td class="px-5 py-4">${getStatusBadge(item)}</td>
           <td class="px-5 py-4 text-slate-500">${getSubmittedDate(item)}</td>
           <td class="px-5 py-4">
             <div class="flex flex-wrap gap-2">
@@ -1915,7 +2844,7 @@
       if (!item) return;
 
       document.getElementById('drawerTitle').textContent = item.name;
-      document.getElementById('drawerStatus').innerHTML = getStatusBadge(item.status);
+      document.getElementById('drawerStatus').innerHTML = getStatusBadge(item);
       document.getElementById('drawerResult').innerHTML = getResultBadge(item.result);
       document.getElementById('drawerIssuesCount').textContent = item.issues.length;
       document.getElementById('drawerSummary').textContent = item.summary;
@@ -2057,11 +2986,10 @@
           category: p.cat1 || '未分类',
           spec,
           status,
+          aiCheckStatus: status === 'draft' ? 'none' : undefined,
           result: 'pass',
           submittedAt,
-          summary: status === 'draft'
-            ? '尚未提交审核，暂无 AI 校验记录。'
-            : '新提交商品，等待平台审核（原型）。',
+          summary: status === 'draft' ? '尚未进行 AI 合规校验。' : '新提交商品，等待平台审核（原型）。',
           issues: status === 'draft' ? [] : [
             {
               level: '处理中',

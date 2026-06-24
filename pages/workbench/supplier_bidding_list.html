@@ -48,7 +48,12 @@
       box-shadow:0 24px 56px rgba(15,23,42,.2);
     }
     .modal-box.w-detail { max-width:800px; }
-    .modal-box.w-quote { max-width:560px; }
+    .modal-box.w-quote { max-width:920px; }
+    .ref-link { color:#0f766e; font-weight:600; text-decoration:none; }
+    .ref-link:hover { text-decoration:underline; }
+    .max-price { font-weight:700; color:#64748b; font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .in-field-over { border-color:#dc2626 !important; background:#fef2f2; }
+    tr.row-over-limit { background:#fff7f7; }
     .modal-head { padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-shrink:0; }
     .modal-head h3 { margin:0; font-size:17px; font-weight:800; color:#0f172a; }
     .modal-x { width:36px; height:36px; border-radius:10px; border:1px solid #e2e8f0; background:#fff; cursor:pointer; color:#64748b; flex-shrink:0; }
@@ -183,22 +188,12 @@
         <div id="quoteRuleBanner"></div>
 
         <div class="inner-card">
-          <h4 class="font-bold text-slate-900 text-base mb-4">提交报价</h4>
-          <div class="seg mb-5">
-            <button type="button" id="mSegTotal" class="active" onclick="setModalSeg(true)">方式 A · 报总价</button>
-            <button type="button" id="mSegLines" onclick="setModalSeg(false)">方式 B · 按商品单价</button>
+          <h4 class="font-bold text-slate-900 text-base mb-4">按商品单价报价</h4>
+          <p class="text-xs text-slate-500 mb-3">填写各行报价，自动汇总总价；单行报价<strong class="text-slate-700">不得超过平台最高价</strong>，超出将无法提交。</p>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse text-sm" id="mLinesTable"></table>
           </div>
-          <div id="mPanelTotal">
-            <label class="block text-xs font-bold text-slate-500 mb-1">含税总价（演示）</label>
-            <input type="number" class="in-field" id="mInputTotal" placeholder="请输入金额" min="1" step="1">
-          </div>
-          <div id="mPanelLines" class="hidden">
-            <p class="text-xs text-slate-500 mb-2">填写各行单价，自动汇总总价。</p>
-            <div class="overflow-x-auto">
-              <table class="w-full border-collapse text-sm" id="mLinesTable"></table>
-            </div>
-            <div class="mt-3 text-right font-bold">汇总：<span class="money text-lg" id="mSumLines">¥0</span></div>
-          </div>
+          <div class="mt-3 text-right font-bold">汇总：<span class="money text-lg" id="mSumLines">¥0</span></div>
           <div class="mt-6 flex flex-wrap gap-3 items-center">
             <button type="button" class="btn btn-primary btn-lg" onclick="submitModalQuote()"><i class="fas fa-paper-plane mr-2"></i>提交报价</button>
             <span class="text-xs text-slate-400">提交后立即写入演示数据（sessionStorage），关闭弹窗后列表刷新可见。</span>
@@ -222,31 +217,31 @@
   /** supply: in_stock | no_stock | not_listed */
   var PROJECT_DEMAND = {
     S1: { budget: 120000, lines: [
-      { name: '会议控制器', qty: 2, spec: '支持中控/WiFi', supply: 'in_stock' },
-      { name: '高清摄像机', qty: 4, spec: '1080P及以上', supply: 'no_stock' },
-      { name: '音箱套装', qty: 2, spec: '会议室吊装', supply: 'not_listed' }
+      { name: '会议控制器', qty: 2, spec: '支持中控/WiFi', supply: 'in_stock', refName: '中控会议主机 MC-200', refId: 'P10021', maxPrice: 28500 },
+      { name: '高清摄像机', qty: 4, spec: '1080P及以上', supply: 'no_stock', refName: '1080P 会议摄像机 CAM-HD01', refId: 'P10022', maxPrice: 8600 },
+      { name: '音箱套装', qty: 2, spec: '会议室吊装', supply: 'not_listed', refName: '吊顶式会议音箱 SPK-88', refId: 'P10023', maxPrice: 4200 }
     ]},
     S2: { budget: 90000, lines: [
-      { name: 'A4复印纸', qty: 100, spec: '70g / 500张×8包', supply: 'in_stock' },
-      { name: '硒鼓', qty: 20, spec: 'HP 85A 兼容', supply: 'not_listed' }
+      { name: 'A4复印纸', qty: 100, spec: '70g / 500张×8包', supply: 'in_stock', refName: '得力 A4 复印纸 70g 8包装', refId: 'P20001', maxPrice: 1280 },
+      { name: '硒鼓', qty: 20, spec: 'HP 85A 兼容', supply: 'not_listed', refName: 'HP 85A 兼容硒鼓 CE285A', refId: 'P20002', maxPrice: 420 }
     ]},
     S8: { budget: 400000, lines: [
-      { name: '绿地养护', qty: 12, spec: '单位：万平方米·年', supply: 'in_stock' }
+      { name: '绿地养护', qty: 12, spec: '单位：万平方米·年', supply: 'in_stock', refName: '市政绿化养护服务（参考）', refId: 'P30001', maxPrice: 38000 }
     ]},
     S3: { budget: 200000, lines: [
-      { name: '人体工学椅', qty: 30, spec: '可调节腰托', supply: 'no_stock' }
+      { name: '人体工学椅', qty: 30, spec: '可调节腰托', supply: 'no_stock', refName: '人体工学办公椅 OG-300', refId: 'P40001', maxPrice: 1680 }
     ]},
     S4: { budget: 80000, lines: [
-      { name: '网线箱', qty: 40, spec: '六类非屏蔽', supply: 'in_stock' }
+      { name: '网线箱', qty: 40, spec: '六类非屏蔽', supply: 'in_stock', refName: '六类非屏蔽网线 305m/箱', refId: 'P50001', maxPrice: 680 }
     ]},
     S5: { budget: 260000, lines: [
-      { name: '台式机', qty: 50, spec: '国产化配置清单见附件', supply: 'no_stock' }
+      { name: '台式机', qty: 50, spec: '国产化配置清单见附件', supply: 'no_stock', refName: '信创台式机 TC-5000（参考配置）', refId: 'P60001', maxPrice: 5800 }
     ]},
     S6: { budget: 150000, lines: [
-      { name: '服务费（年）', qty: 1, spec: '24小时常驻岗', supply: 'not_listed' }
+      { name: '服务费（年）', qty: 1, spec: '24小时常驻岗', supply: 'not_listed', refName: '保安驻场服务（平台参考）', refId: 'P70001', maxPrice: 168000 }
     ]},
     S7: { budget: 999999, lines: [
-      { name: '复印纸', qty: 500, spec: '集中采购框架协议', supply: 'in_stock' }
+      { name: '复印纸', qty: 500, spec: '集中采购框架协议', supply: 'in_stock', refName: '复印纸 A4 80g 5包装', refId: 'P20003', maxPrice: 980 }
     ]}
   };
 
@@ -345,16 +340,6 @@
 
   /* ---------- 报价弹窗 ---------- */
   var modalQuotePid = null;
-  var modalUseTotal = true;
-
-  window.setModalSeg = function (total) {
-    modalUseTotal = total;
-    document.getElementById('mSegTotal').classList.toggle('active', total);
-    document.getElementById('mSegLines').classList.toggle('active', !total);
-    document.getElementById('mPanelTotal').classList.toggle('hidden', !total);
-    document.getElementById('mPanelLines').classList.toggle('hidden', total);
-    if (!total) recalcModalLines();
-  };
 
   window.recalcModalLines = function () {
     var rows = document.querySelectorAll('#mLinesTable tbody tr');
@@ -363,19 +348,63 @@
       var p = tr.querySelector('.m-p-unit');
       var q = parseFloat(tr.dataset.qty) || 0;
       var price = parseFloat(p && p.value) || 0;
+      var maxP = parseFloat(tr.dataset.maxPrice);
+      var overLimit = !isNaN(maxP) && price > maxP;
       sum += price * q;
       var sub = tr.querySelector('.m-line-sub');
       if (sub) sub.textContent = fmtMoney(price * q);
+      if (p) p.classList.toggle('in-field-over', overLimit);
+      tr.classList.toggle('row-over-limit', overLimit);
     });
     var el = document.getElementById('mSumLines');
     if (el) el.textContent = fmtMoney(sum);
     return sum;
   };
 
+  function getMaxPriceViolations() {
+    var rows = document.querySelectorAll('#mLinesTable tbody tr');
+    var violations = [];
+    rows.forEach(function (tr) {
+      var maxP = parseFloat(tr.dataset.maxPrice);
+      if (isNaN(maxP)) return;
+      var p = tr.querySelector('.m-p-unit');
+      var price = parseFloat(p && p.value);
+      if (isNaN(price) || price <= 0) return;
+      if (price > maxP) {
+        var nameCell = tr.querySelector('td');
+        violations.push({
+          name: nameCell ? nameCell.textContent : '商品',
+          price: price,
+          maxPrice: maxP
+        });
+      }
+    });
+    return violations;
+  }
+
   function buildModalLinesTable(lines) {
-    var thead = '<thead><tr><th class="text-left p-2 bg-slate-50">商品/服务</th><th class="p-2 bg-slate-50">数量</th><th class="p-2 bg-slate-50">单价（元）</th><th class="p-2 bg-slate-50">小计</th></tr></thead>';
+    var thead = '<thead><tr>'
+      + '<th class="text-left p-2 bg-slate-50">商品名称</th>'
+      + '<th class="text-left p-2 bg-slate-50">平台参考商品</th>'
+      + '<th class="text-left p-2 bg-slate-50">规格</th>'
+      + '<th class="p-2 bg-slate-50">数量</th>'
+      + '<th class="p-2 bg-slate-50 whitespace-nowrap">平台最高价</th>'
+      + '<th class="p-2 bg-slate-50">报价</th>'
+      + '<th class="p-2 bg-slate-50">小计</th>'
+      + '</tr></thead>';
     var tbody = '<tbody>' + lines.map(function (L) {
-      return '<tr data-qty="' + L.qty + '"><td class="p-2 border-t border-slate-100">' + esc(L.name) + '</td><td class="p-2 border-t border-slate-100">' + L.qty + '</td><td class="p-2 border-t border-slate-100"><input type="number" class="in-field m-p-unit max-w-[140px]" min="0" step="1" placeholder="0" oninput="recalcModalLines()"></td><td class="p-2 border-t border-slate-100 m-line-sub money">¥0</td></tr>';
+      var refCell = L.refName
+        ? '<a class="ref-link" href="../product.html?id=' + encodeURIComponent(L.refId || '') + '" target="_blank" rel="noopener noreferrer">' + esc(L.refName) + '</a>'
+        : '<span class="text-slate-400">—</span>';
+      return '<tr data-qty="' + L.qty + '"' + (L.maxPrice != null ? ' data-max-price="' + L.maxPrice + '"' : '') + '>'
+        + '<td class="p-2 border-t border-slate-100 font-semibold">' + esc(L.name) + '</td>'
+        + '<td class="p-2 border-t border-slate-100">' + refCell + '</td>'
+        + '<td class="p-2 border-t border-slate-100 text-slate-600">' + esc(L.spec || '—') + '</td>'
+        + '<td class="p-2 border-t border-slate-100 text-center">' + L.qty + '</td>'
+        + '<td class="p-2 border-t border-slate-100 text-center max-price">' + (L.maxPrice != null ? fmtMoney(L.maxPrice) : '—') + '</td>'
+        + '<td class="p-2 border-t border-slate-100"><input type="number" class="in-field m-p-unit max-w-[120px]" min="0" step="0.01" placeholder="0" oninput="recalcModalLines()"></td>'
+        + '<td class="p-2 border-t border-slate-100 m-line-sub money whitespace-nowrap">¥0</td>'
+        + '</tr>';
     }).join('') + '</tbody>';
     document.getElementById('mLinesTable').innerHTML = thead + tbody;
   }
@@ -410,16 +439,8 @@
       rb.innerHTML = '<div class="rule-banner-sm rule-inq"><strong>询价：</strong>不展示他人报价；截止前可多次提交，<strong>有效报价为您最新一条</strong>。</div>';
     }
 
-    modalUseTotal = true;
-    document.getElementById('mSegTotal').classList.add('active');
-    document.getElementById('mSegLines').classList.remove('active');
-    document.getElementById('mPanelTotal').classList.remove('hidden');
-    document.getElementById('mPanelLines').classList.add('hidden');
-
-    document.getElementById('mInputTotal').value = '';
-    document.getElementById('mInputTotal').placeholder = r.mine != null ? ('当前有效 ' + fmtMoney(r.mine)) : '请输入金额';
-
     buildModalLinesTable(dem.lines);
+    recalcModalLines();
     renderModalHist(r);
 
     document.getElementById('modalQuote').classList.add('open');
@@ -437,18 +458,20 @@
     var dem = PROJECT_DEMAND[id];
     if (!r || !dem) return;
 
-    var amount;
-    var wayLabel = modalUseTotal ? '总价' : '明细汇总';
-    var note = '';
-    if (modalUseTotal) {
-      amount = parseFloat(document.getElementById('mInputTotal').value);
-      if (!amount || amount <= 0) { alert('请输入有效总价'); return; }
-      note = '方式A 总价';
-    } else {
-      amount = recalcModalLines();
-      if (!amount || amount <= 0) { alert('请填写各行单价'); return; }
-      note = '方式B 明细汇总';
+    var amount = recalcModalLines();
+    if (!amount || amount <= 0) { alert('请填写各行报价'); return; }
+
+    var maxViolations = getMaxPriceViolations();
+    if (maxViolations.length) {
+      alert('以下商品报价超过平台最高价，请调整后重新提交：\n\n'
+        + maxViolations.map(function (v) {
+          return '「' + v.name + '」报价 ' + fmtMoney(v.price) + '，平台最高价 ' + fmtMoney(v.maxPrice);
+        }).join('\n'));
+      return;
     }
+
+    var wayLabel = '明细汇总';
+    var note = '按商品单价';
 
     if (dem.budget && amount > dem.budget) {
       if (!confirm('金额超过演示预算 ' + fmtMoney(dem.budget) + '，仍要提交演示吗？')) return;
@@ -549,7 +572,7 @@
       }
       act += '<button type="button" class="btn inline-flex items-center" onclick="openDetailModal(\'' + r.id + '\')">详情</button>';
       if (r.st === 'won') {
-        act += ' <a class="btn inline-flex items-center text-green-700 border-green-200" href="./supplier_order_list.html">待确认订单</a>';
+        act += ' <a class="btn inline-flex items-center text-green-700 border-green-200" href="./supplier_order_list.html">查看订单</a>';
       }
       var mineWarn = '';
       if (r.mode === 'bidding' && r.lowest != null && r.mine != null && r.mine >= r.lowest && r.st === 'quoting') {

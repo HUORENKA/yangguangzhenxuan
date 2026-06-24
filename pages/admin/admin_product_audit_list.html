@@ -299,6 +299,114 @@
       background: #ffffff;
       border: 1px solid #dbe2ea;
     }
+
+    /* AI 合规校验结果（只读 · 供应商侧快照） */
+    .admin-ai-overlay {
+      position: fixed; inset: 0; z-index: 1100;
+      background: rgba(15, 23, 42, 0.52);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .admin-ai-overlay[hidden] { display: none !important; }
+    .admin-ai-dialog {
+      width: min(720px, 96vw);
+      max-height: min(88vh, 820px);
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #e8e8e8;
+      box-shadow: 0 28px 56px rgba(15, 23, 42, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .admin-ai-head {
+      padding: 18px 22px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, #fff7f7 0%, #fff 100%);
+    }
+    .admin-ai-title { font-size: 17px; font-weight: 800; color: #111827; }
+    .admin-ai-sub { font-size: 12px; color: #64748b; margin-top: 6px; line-height: 1.6; }
+    .admin-ai-body { padding: 18px 22px 22px; overflow-y: auto; flex: 1; }
+    .admin-ai-foot {
+      padding: 12px 22px;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .admin-ai-readonly-note {
+      font-size: 12px;
+      color: #64748b;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 14px;
+    }
+    .admin-ai-section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .admin-ai-layer-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .admin-ai-check-grid { display: grid; gap: 8px; }
+    .admin-ai-check-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 13px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+      font-size: 13px;
+    }
+    .admin-ai-check-item.pass { border-color: #bbf7d0; background: #f0fdf4; }
+    .admin-ai-check-item.fail { border-color: #fecaca; background: #fef2f2; }
+    .admin-ai-check-name { font-weight: 700; color: #1e293b; }
+    .admin-ai-check-evidence { font-size: 12px; color: #b45309; margin-top: 4px; line-height: 1.5; }
+    .admin-ai-check-val {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .admin-ai-check-val.pass { background: #dcfce7; color: #15803d; }
+    .admin-ai-check-val.fail { background: #fee2e2; color: #b91c1c; }
+    .admin-ai-summary {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fff7ed 0%, #fff 100%);
+      border: 1px solid #fed7aa;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #475569;
+    }
+    .admin-ai-summary-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #c2410c;
+      margin-bottom: 6px;
+    }
   </style>
 </head>
 <body>
@@ -451,9 +559,9 @@
             <th>提报供应商</th>
             <th>上架时间</th>
             <th>审核类型</th>
-            <th>AI 初审结论</th>
+            <th>AI 合规校验</th>
             <th>当前状态</th>
-            <th class="text-right min-w-[260px]">操作</th>
+            <th class="text-right min-w-[320px]">操作</th>
           </tr>
         </thead>
         <tbody id="auditTableBody">
@@ -468,6 +576,25 @@
   <!-- 查看详情：新建上架为供应商表单镜像；信息变更为前后快照对比 -->
   <div id="auditDetailModal" class="audit-detail-snapshot-overlay" hidden>
     <div id="auditDetailMount"></div>
+  </div>
+
+  <!-- AI 合规校验结果（只读） -->
+  <div id="adminAiResultModal" class="admin-ai-overlay" hidden onclick="if (event.target === this) closeAdminAiAuditResult()">
+    <div class="admin-ai-dialog" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <div class="admin-ai-head">
+        <div>
+          <div class="admin-ai-title"><i class="fas fa-shield-halved text-red-500"></i> AI 合规校验结果</div>
+          <div class="admin-ai-sub" id="adminAiResultSub">供应商侧校验快照 · 只读</div>
+        </div>
+        <button type="button" class="assistant-close-ro rounded-full bg-slate-100 text-slate-500 border-0 shrink-0" style="width:40px;height:40px" onclick="closeAdminAiAuditResult()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="admin-ai-body" id="adminAiResultBody"></div>
+      <div class="admin-ai-foot">
+        <button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200" onclick="closeAdminAiAuditResult()">关闭</button>
+      </div>
+    </div>
   </div>
 
   <!-- 驳回 -->

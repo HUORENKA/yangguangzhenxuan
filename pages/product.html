@@ -3866,10 +3866,6 @@
             <i class="fa-solid fa-phone"></i>
             <div><strong>售后电话</strong><br><span id="servicePhone"></span></div>
           </div>
-          <div class="supplier-info-item">
-            <i class="fa-solid fa-truck"></i>
-            <div><strong>服务范围</strong><br><span id="serviceRegion"></span></div>
-          </div>
         </div>
 
         <button class="supplier-store-btn" type="button" onclick="showToast('已打开供应商主页')">
@@ -4276,7 +4272,7 @@
       <div class="order-basis-head">
         <div>
           <div class="ai-title"><i class="fa-solid fa-link text-indigo-500"></i>关联采购依据</div>
-          <div class="text-sm text-gray-500 mt-1">请按步骤补充本次下单的采购计划、采购预算、按供应商关联合同及采购依据文件，便于后续审计追溯。</div>
+          <div class="text-sm text-gray-500 mt-1">请按步骤补充本次下单的采购计划、采购预算及采购依据文件，便于后续审计追溯。</div>
         </div>
         <button class="order-basis-close" type="button" onclick="closeOrderBasisModal()">
           <i class="fa-solid fa-xmark"></i>
@@ -4300,13 +4296,6 @@
           </div>
           <div class="order-basis-step" id="basisStepNav3">
             <span class="order-basis-step-index">3</span>
-            <div class="order-basis-step-text">
-              <div class="order-basis-step-label">选择合同</div>
-              <div class="order-basis-step-desc">按供应商关联 AI 合同或上传本地合同</div>
-            </div>
-          </div>
-          <div class="order-basis-step" id="basisStepNav4">
-            <span class="order-basis-step-index">4</span>
             <div class="order-basis-step-text">
               <div class="order-basis-step-label">采购依据</div>
               <div class="order-basis-step-desc">上传依据文件并完成下单前留痕</div>
@@ -4347,20 +4336,6 @@
             <div class="basis-step-head">
               <div>
                 <div class="basis-step-kicker">STEP 3</div>
-                <div class="basis-step-title">按供应商选择合同</div>
-                <div class="basis-step-desc-text">每个供应商必须关联一份合同：左侧下拉中可对<strong> AI 生成</strong>合同执行<strong>预览 / 选择</strong>，对<strong>用户上传</strong>归档合同执行<strong>预览 / 下载</strong>；关联成功后仍可点击<strong>预览</strong>核对正文示意。右侧 <strong>上传合同</strong> 提交本地文件。用户上传类归档合同不可作为关联。</div>
-              </div>
-            </div>
-            <div class="basis-contract-stack" id="orderContractSupplierRoot"></div>
-            <input class="basis-upload-input" id="orderContractLocalInput" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleOrderContractLocalUpload(event)">
-          </div>
-        </section>
-
-        <section class="basis-step-panel" id="basisStepPanel4">
-          <div class="basis-step-card">
-            <div class="basis-step-head">
-              <div>
-                <div class="basis-step-kicker">STEP 4</div>
                 <div class="basis-step-title">上传采购依据文件</div>
                 <div class="basis-step-desc-text">支持补充采购申请单、审批单、比价截图、会议纪要等材料，用于订单留痕与后续审计追溯。</div>
               </div>
@@ -4382,7 +4357,7 @@
         <div class="basis-summary-tip" id="basisSelectedSummary"></div>
       </div>
       <div class="order-basis-foot">
-        <div class="order-basis-foot-note">采购计划、预算可跳过；<strong>合同按供应商必填</strong>。若计划、预算与依据文件均为空，下单前将二次确认。</div>
+        <div class="order-basis-foot-note">采购计划、预算可跳过；若计划、预算与依据文件均为空，下单前将二次确认。</div>
         <div class="order-basis-actions">
           <button class="btn-ghost" type="button" onclick="closeOrderBasisModal()">取消</button>
           <button class="btn-ghost" id="orderBasisPrevBtn" type="button" onclick="goPrevOrderBasisStep()">上一步</button>
@@ -4435,7 +4410,7 @@
     let portraitGenerating = false;
     let procurementPlanOptions = [];
     let procurementBudgetOptions = [];
-    const ORDER_BASIS_TOTAL_STEPS = 4;
+    const ORDER_BASIS_TOTAL_STEPS = 3;
     let orderBasisStep = 1;
     let selectedPlanId = '';
     let selectedBudgetId = '';
@@ -4820,7 +4795,6 @@
       setSupplierMetric('scoreDelivery', currentProduct.deliveryScore);
       setSupplierMetric('scoreService', currentProduct.serviceScore);
       document.getElementById('servicePhone').textContent = currentProduct.phone;
-      document.getElementById('serviceRegion').textContent = currentProduct.region;
       document.getElementById('goodRate').textContent = currentProduct.goodRate;
 
       renderDetailPurchaseCard();
@@ -5895,10 +5869,7 @@
       const selectedBudget = getBasisById('budget', selectedBudgetId);
       const planLabel = selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联';
       const budgetLabel = selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联';
-      const contractPart = orderBasisStep >= 3
-        ? formatContractLinkageSummaryFragment()
-        : '合同【待关联】';
-      return `关联概况：采购计划【${planLabel}】；采购预算【${budgetLabel}】；${contractPart}；采购依据文件【${uploadedBasisFiles.length}个】`;
+      return `关联概况：采购计划【${planLabel}】；采购预算【${budgetLabel}】；采购依据文件【${uploadedBasisFiles.length}个】`;
     }
 
     function renderBasisSelectedSummary() {
@@ -5961,27 +5932,9 @@
         return;
       }
 
-      if (orderBasisStep === 3) {
-        const suppliers = getOrderContractSupplierLines();
-        if (!suppliers.length) {
-          el.className = 'basis-summary-tip basis-summary-tip--warn';
-          el.innerHTML = `<div class="basis-summary-main">未识别到订单供应商，无法关联合同。</div>${foot}`;
-          return;
-        }
-        const missing = suppliers.filter(s => !isSupplierContractComplete(s.supplierId));
-        if (missing.length) {
-          el.className = 'basis-summary-tip basis-summary-tip--warn';
-          el.innerHTML = `<div class="basis-summary-main">尚有 ${missing.length} 个供应商未完成合同关联：请选择一份 <strong>AI 生成</strong> 合同，或点击 <strong>上传合同</strong> 提交本地文件。</div>${foot}`;
-          return;
-        }
-        el.className = 'basis-summary-tip basis-summary-tip--ok';
-        el.innerHTML = `<div class="basis-summary-main">已为 ${suppliers.length} 个供应商完成合同关联，进入下一步可补充采购依据文件。</div>${foot}`;
-        return;
-      }
-
       const selectedPlan = getBasisById('plan', selectedPlanId);
       const selectedBudget = getBasisById('budget', selectedBudgetId);
-      const line = `当前关联：采购计划【${selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联'}】；采购预算【${selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联'}】；${formatContractLinkageSummaryFragment()}；采购依据文件【${uploadedBasisFiles.length}个】`;
+      const line = `当前关联：采购计划【${selectedPlan ? escapeBasisText(selectedPlan.name) : '未关联'}】；采购预算【${selectedBudget ? escapeBasisText(selectedBudget.name) : '未关联'}】；采购依据文件【${uploadedBasisFiles.length}个】`;
       el.className = 'basis-summary-tip basis-summary-tip--neutral';
       el.innerHTML = `<div class="basis-summary-main">${line}</div>${foot}`;
     }
@@ -6330,20 +6283,18 @@
       const note = document.querySelector('.order-basis-foot-note');
       if (!prevBtn || !skipBtn || !nextBtn || !note) return;
       prevBtn.style.display = orderBasisStep === 1 ? 'none' : 'inline-flex';
-      skipBtn.style.display = orderBasisStep === 3 ? 'none' : 'inline-flex';
-      skipBtn.textContent = orderBasisStep === 4 ? '跳过上传' : '跳过';
-      nextBtn.textContent = orderBasisStep === 4 ? '确认并下单' : '下一步';
+      skipBtn.style.display = 'inline-flex';
+      skipBtn.textContent = orderBasisStep === 3 ? '跳过上传' : '跳过';
+      nextBtn.textContent = orderBasisStep === 3 ? '确认并下单' : '下一步';
       note.textContent = orderBasisStep === 1
         ? '如当前订单暂无明确采购计划，可点击“跳过”进入下一步。'
         : orderBasisStep === 2
-          ? '如预算信息暂未确认，可点击“跳过”进入「选择合同」步骤。'
-          : orderBasisStep === 3
-            ? '合同为必填：下拉列表内可先「预览」再「选择」AI 合同；用户上传归档合同可「预览 / 下载」。关联后可通过「预览」再次核对正文示意。亦可「上传合同」作为关联。'
-            : '支持补充采购依据文件留痕；若采购计划、预算与依据文件均为空，系统会在下单前再次确认。';
+          ? '如预算信息暂未确认，可点击“跳过”进入「采购依据」步骤。'
+          : '支持补充采购依据文件留痕；若采购计划、预算与依据文件均为空，系统会在下单前再次确认。';
     }
 
     function renderOrderBasisStepChrome() {
-      [1, 2, 3, 4].forEach(step => {
+      [1, 2, 3].forEach(step => {
         const nav = document.getElementById(`basisStepNav${step}`);
         const panel = document.getElementById(`basisStepPanel${step}`);
         if (!nav || !panel) return;
@@ -6369,11 +6320,7 @@
         document.getElementById('orderBudgetList').innerHTML = renderBasisItems('budget', procurementBudgetOptions, selectedBudgetId);
         orderBasisListsInitialized.budget = true;
       }
-      if (step === 3 && !orderBasisListsInitialized.contract) {
-        renderOrderContractSupplierStep();
-        orderBasisListsInitialized.contract = true;
-      }
-      if (step === 4 && !orderBasisListsInitialized.files) {
+      if (step === 3 && !orderBasisListsInitialized.files) {
         renderBasisFileList();
         orderBasisListsInitialized.files = true;
       }
@@ -6387,9 +6334,6 @@
         document.getElementById('orderBudgetList').innerHTML = renderBasisItems('budget', procurementBudgetOptions, selectedBudgetId);
         orderBasisListsInitialized.budget = true;
       } else if (step === 3) {
-        renderOrderContractSupplierStep();
-        orderBasisListsInitialized.contract = true;
-      } else if (step === 4) {
         renderBasisFileList();
         orderBasisListsInitialized.files = true;
       }
@@ -6398,7 +6342,6 @@
     function goToOrderBasisStep(step) {
       normalizeBasisSelections();
       orderBasisStep = Math.max(1, Math.min(ORDER_BASIS_TOTAL_STEPS, step));
-      if (orderBasisStep === 3) ensureDemoContractSelections();
       ensureOrderBasisStepContent(orderBasisStep);
       renderOrderBasisStepChrome();
     }
@@ -6468,14 +6411,14 @@
         addedCount += 1;
       });
       event.target.value = '';
-      refreshOrderBasisStepContent(4);
+      refreshOrderBasisStepContent(3);
       renderBasisSelectedSummary();
       if (addedCount) showToast(`已添加 ${addedCount} 个采购依据文件`);
     }
 
     function removeBasisFile(id) {
       uploadedBasisFiles = uploadedBasisFiles.filter(item => item.id !== id);
-      refreshOrderBasisStepContent(4);
+      refreshOrderBasisStepContent(3);
       renderBasisSelectedSummary();
       showToast('已移除采购依据文件');
     }
@@ -6538,7 +6481,6 @@
         confirmOrderBasisAndProceed();
         return;
       }
-      if (orderBasisStep === 3 && !validateOrderContractsOrToast()) return;
       openContractDropdownSupplierId = null;
       goToOrderBasisStep(orderBasisStep + 1);
     }
@@ -6555,17 +6497,12 @@
         return;
       }
       if (orderBasisStep === 3) {
-        showToast('合同为必填：请为每个供应商选择 AI 合同或上传本地合同');
+        confirmOrderBasisAndProceed();
         return;
       }
-      confirmOrderBasisAndProceed();
     }
 
     function confirmOrderBasisAndProceed() {
-      if (!validateOrderContractsOrToast()) {
-        goToOrderBasisStep(3);
-        return;
-      }
       if (!selectedPlanId && !selectedBudgetId && !uploadedBasisFiles.length) {
         const proceed = window.confirm('当前未关联采购计划、采购预算，也未上传采购依据文件，是否继续采购？');
         if (!proceed) return;

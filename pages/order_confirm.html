@@ -2142,6 +2142,25 @@
         approvers: approvers.filter(item => selectedApproverIds.includes(item.id)).map(item => ({ ...item, selected: true })),
         complianceSummary: complianceState.summaryText,
         complianceStatus: complianceState.overallStatus,
+        compliance: {
+          overallStatus: complianceState.overallStatus,
+          summaryText: complianceState.summaryText,
+          reportStatus: complianceState.reportStatus,
+          reportNo: `RPT-${orderData.orderNo}`,
+          checks: complianceState.checks
+            .filter(item => item.type === 'analysis')
+            .map(item => ({
+              title: item.title,
+              status: item.runtimeStatus || item.status,
+              basis: item.basis,
+              successText: item.successText,
+              children: (item.children || []).map(child => ({
+                title: child.title,
+                detail: child.detail,
+                status: child.status || 'pass'
+              }))
+            }))
+        },
         product: {
           name: orderData.name,
           model: orderData.model,

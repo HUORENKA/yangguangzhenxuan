@@ -317,8 +317,7 @@
       color: var(--text-main);
     }
 
-    .filter-left,
-    .filter-right {
+    .filter-left {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -361,14 +360,63 @@
       color: var(--text-main);
     }
 
-    .filter-right {
+    .results-footer {
+      margin-top: 20px;
+      padding: 16px 18px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
       color: var(--text-sub);
       font-size: 13px;
       font-weight: 600;
     }
 
-    .filter-right b {
+    .results-footer-meta b {
       color: var(--brand);
+    }
+
+    .results-pagination {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      height: 34px;
+      min-width: 72px;
+      padding: 0 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(203, 213, 225, 0.95);
+      background: #fff;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: var(--brand-light);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      min-width: 64px;
+      text-align: center;
+      color: var(--text-main);
+      font-weight: 700;
     }
 
     .ai-strip {
@@ -894,14 +942,21 @@
           <option value="全部">属性</option>
         </select>
       </div>
-      <div class="filter-right">
-        <span>共 <b id="resultCount">0</b> 件商品</span>
-        <span id="pageInfo">1 / 100</span>
-      </div>
     </section>
 
     <section class="results-wrap">
       <div class="product-grid" id="productGrid"></div>
+    </section>
+
+    <section class="results-footer" id="resultsFooter">
+      <div class="results-footer-meta">
+        <span>共 <b id="resultCount">0</b> 件商品</span>
+      </div>
+      <div class="results-pagination">
+        <button class="page-btn" type="button" id="pagePrevBtn" disabled>上一页</button>
+        <span class="page-info" id="pageInfo">1 / 1</span>
+        <button class="page-btn" type="button" id="pageNextBtn" disabled>下一页</button>
+      </div>
     </section>
   </main>
   </div>
@@ -1177,6 +1232,8 @@
       }
     ];
 
+    const PAGE_SIZE = 24;
+
     const state = {
       tab: 'hot',
       query: '',
@@ -1185,6 +1242,7 @@
       region: '全部',
       city: '全部',
       attr: '全部',
+      page: 1,
       cart: { 'GC-001': 1, 'GC-005': 2 }
     };
 
@@ -1323,7 +1381,7 @@
       document.querySelectorAll('.tab-item[data-tab]').forEach(btn => {
         btn.addEventListener('click', () => {
           state.tab = btn.dataset.tab;
-          render();
+          render(true);
         });
       });
     }
@@ -1353,14 +1411,27 @@
       document.querySelectorAll('.suggest-chip').forEach(btn => {
         btn.addEventListener('click', () => {
           state.attr = state.attr === btn.dataset.suggest ? '全部' : btn.dataset.suggest;
-          render();
+          render(true);
         });
       });
     }
 
-    function renderCounts(list) {
+    function getPageMeta(list) {
+      const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+      state.page = Math.min(Math.max(1, state.page), totalPages);
+      return {
+        totalPages,
+        page: state.page,
+        start: (state.page - 1) * PAGE_SIZE
+      };
+    }
+
+    function renderCounts(list, pageMeta) {
+      const meta = pageMeta || getPageMeta(list);
       $('resultCount').textContent = list.length;
-      $('pageInfo').textContent = `1 / ${Math.max(1, Math.ceil(list.length / 24))}`;
+      $('pageInfo').textContent = `${meta.page} / ${meta.totalPages}`;
+      $('pagePrevBtn').disabled = meta.page <= 1;
+      $('pageNextBtn').disabled = meta.page >= meta.totalPages;
     }
 
     function scrollToResults() {
@@ -1377,14 +1448,16 @@
       return item.tags[0] || '猜你喜欢';
     }
 
-    function renderCards(list) {
+    function renderCards(list, pageMeta) {
       const grid = $('productGrid');
+      const meta = pageMeta || getPageMeta(list);
+      const pageList = list.slice(meta.start, meta.start + PAGE_SIZE);
       if (!list.length) {
         grid.innerHTML = `<div class="empty-box">未找到符合条件的商品，请调整搜索条件或清空筛选。</div>`;
         return;
       }
 
-      grid.innerHTML = list.map(item => {
+      grid.innerHTML = pageList.map(item => {
         const marker = Math.max(6, Math.min(94, ((item.price - item.floor) / (item.ceiling - item.floor)) * 100));
         return `
           <article class="product-card" onclick="window.open('product.html?id=${item.id}', '_blank')">
@@ -1632,21 +1705,29 @@
       setTimeout(() => toast.remove(), 1700);
     }
 
-    function render() {
+    function render(resetPage) {
+      if (resetPage) state.page = 1;
       renderTabs();
       renderSelectOptions();
       const list = currentResults();
-      renderCounts(list);
+      const pageMeta = getPageMeta(list);
+      renderCounts(list, pageMeta);
       renderSuggestTags();
-      renderCards(list);
+      renderCards(list, pageMeta);
       document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.sort === state.sort);
       });
     }
 
+    function goToPage(nextPage) {
+      state.page = nextPage;
+      render();
+      scrollToResults();
+    }
+
     function runSearch(scrollResults) {
       state.query = $('searchInput').value.trim();
-      render();
+      render(true);
       if (scrollResults) scrollToResults();
     }
 
@@ -1660,29 +1741,38 @@
       $('searchTypeSelect').addEventListener('change', event => {
         state.searchType = event.target.value;
         updateSearchPlaceholder();
-        if (state.query.trim()) render();
+        if (state.query.trim()) render(true);
       });
 
       document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           state.sort = btn.dataset.sort;
-          render();
+          render(true);
         });
       });
 
       $('regionSelect').addEventListener('change', event => {
         state.region = event.target.value;
-        render();
+        render(true);
       });
 
       $('citySelect').addEventListener('change', event => {
         state.city = event.target.value;
-        render();
+        render(true);
       });
 
       $('attrSelect').addEventListener('change', event => {
         state.attr = event.target.value;
-        render();
+        render(true);
+      });
+
+      $('pagePrevBtn').addEventListener('click', () => {
+        if (state.page <= 1) return;
+        goToPage(state.page - 1);
+      });
+
+      $('pageNextBtn').addEventListener('click', () => {
+        goToPage(state.page + 1);
       });
 
       bindCompareTabs();
