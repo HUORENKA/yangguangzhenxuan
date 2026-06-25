@@ -922,7 +922,10 @@
     noticeReady: false,
     noticeSource: '',
     noticeFileName: '',
-    noticeHtml: ''
+    noticeHtml: '',
+    fromProduct: false,
+    policyFile: '',
+    storedProcurementBasis: null
   };
 
   var METHOD_LABELS = { direct: '直接采购', bidding: '竞价采购', inquiry: '询价采购' };
@@ -989,7 +992,35 @@
     return '¥' + Number(v).toLocaleString('zh-CN');
   }
 
+  function loadProductLaunch() {
+    try {
+      var raw = sessionStorage.getItem('bidAssistProductLaunch');
+      if (!raw) return false;
+      var d = JSON.parse(raw);
+      state.fromProduct = true;
+      state.fileName = d.fileName || d.policyFile || '商城商品采购';
+      state.policyFile = d.policyFile || state.fileName;
+      state.uploadedAt = d.uploadedAt || new Date().toLocaleString('zh-CN', { hour12: false });
+      state.budget = d.budget || 90000;
+      state.storedProcurementBasis = d.procurementBasis || null;
+      state.lines = (d.lines || []).map(function (L) {
+        var copy = Object.assign({}, L);
+        if (L.product) copy.product = Object.assign({}, L.product);
+        return copy;
+      });
+      state.suppliers = [
+        { id: 's1', name: '京采云商贸有限公司', region: '北京', score: 92, cover: 1, source: 'auto', invited: true },
+        { id: 's2', name: '政采优选数码科技', region: '北京', score: 89, cover: 1, source: 'auto', invited: true },
+        { id: 's3', name: '北京华政科技', region: '北京', score: 86, cover: 1, source: 'auto', invited: true }
+      ];
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   function loadDemo() {
+    if (loadProductLaunch()) return;
     try {
       var raw = sessionStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -1026,6 +1057,35 @@
     var fIcon = fileIconClass(state.fileName);
     document.getElementById('sourceChip').innerHTML = '<i class="fa-solid ' + fIcon + '"></i> ' + esc(state.fileName);
     document.getElementById('budgetInput').value = state.budget || '';
+
+    if (state.fromProduct) {
+      var amt = calcMatchedAmount();
+      document.getElementById('summaryCard').innerHTML = ''
+        + '<div class="summary-top">'
+        + '<div class="summary-left">'
+        + '<div class="summary-icon"><i class="fa-solid fa-store"></i></div>'
+        + '<div>'
+        + '<h2 class="summary-title">商城商品转入 · 竞价/询价采购</h2>'
+        + '<div class="summary-meta">'
+        + '<span><i class="fa-solid fa-file-lines"></i> 依据文件：' + esc(state.policyFile || state.fileName) + '</span>'
+        + '<span><i class="fa-solid fa-clock"></i> ' + esc(state.uploadedAt) + '</span>'
+        + '<span><i class="fa-solid fa-yen-sign"></i> 参考采购金额 ' + fmtMoney(amt) + '</span>'
+        + '</div></div></div></div>'
+        + '<hr class="summary-divider">'
+        + '<div class="summary-body">'
+        + '<div class="ai-row">'
+        + '<div class="ai-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>'
+        + '<div class="ai-text">因依据文件要求，本次采购需以<strong>竞价/询价</strong>方式发起。当前已匹配 <strong style="color:var(--primary)">' + matched + '</strong> 项商城选购商品，'
+        + '请确认采购数量、邀请供应商并配置规则后发起。</div>'
+        + '</div>'
+        + '<div class="summary-stats">'
+        + '<div class="summary-stat"><div class="stat-label">采购需求</div><div class="stat-value">' + state.lines.length + '</div></div>'
+        + '<div class="summary-stat"><div class="stat-label">已匹配商品</div><div class="stat-value" style="color:var(--primary)">' + matched + '</div></div>'
+        + '<div class="summary-stat"><div class="stat-label">预算上限（元）</div><div class="stat-value">' + fmtMoney(state.budget) + '</div></div>'
+        + '</div></div>';
+      return;
+    }
+
     document.getElementById('summaryCard').innerHTML = ''
       + '<div class="summary-top">'
       + '<div class="summary-left">'
@@ -1360,9 +1420,21 @@
 
   function getBidAssistReturnLabel() {
     try {
-      if (sessionStorage.getItem('bidAssistReturnUrl')) return '返回竞价/询价';
+      var u = sessionStorage.getItem('bidAssistReturnUrl') || '';
+      if (/product\.html/i.test(u)) return '返回商品详情';
+      if (u) return '返回竞价/询价';
     } catch (e) {}
     return '返回最价方案';
+  }
+
+  function applyProductLaunchChrome() {
+    if (!state.fromProduct) return;
+    var brand = document.querySelector('.brand span');
+    if (brand) brand.textContent = '竞价/询价采购发起';
+    var subTitle = document.querySelector('.sub-bar-title');
+    if (subTitle) {
+      subTitle.innerHTML = '<i class="fa-solid fa-store" style="color:#16a34a;margin-right:8px;"></i>商城商品转入 · 确认匹配商品与采购方式后发起';
+    }
   }
 
   function initBidAssistReturnLink() {
@@ -1507,6 +1579,11 @@
       bidding: '确认并发起竞价',
       inquiry: '确认并发起询价'
     };
+    if (state.fromProduct && state.storedProcurementBasis) {
+      if (method === 'direct') executeDirectPurchase(state.storedProcurementBasis);
+      else executeBiddingInquiry(state.storedProcurementBasis);
+      return;
+    }
     if (!window.OrderBasisModal || typeof window.OrderBasisModal.open !== 'function') {
       if (method === 'direct') executeDirectPurchase(null);
       else executeBiddingInquiry(null);
@@ -1542,6 +1619,7 @@
 
   initBidAssistReturnLink();
   loadDemo();
+  applyProductLaunchChrome();
   renderSummary();
   renderDemandTable();
   renderSuppliers();

@@ -577,7 +577,11 @@
     }
 
     .address-form-overlay,
-    .recipient-delete-overlay {
+    .recipient-delete-overlay,
+    .tender-choice-overlay,
+    .tender-block-overlay,
+    .direct-proc-choice-overlay,
+    .bid-required-overlay {
       position: fixed;
       inset: 0;
       z-index: 210;
@@ -589,18 +593,93 @@
     }
 
     .address-form-overlay.show,
-    .recipient-delete-overlay.show {
+    .recipient-delete-overlay.show,
+    .tender-choice-overlay.show,
+    .tender-block-overlay.show,
+    .direct-proc-choice-overlay.show,
+    .bid-required-overlay.show {
       display: flex;
     }
 
     .address-form-modal,
-    .recipient-delete-modal {
+    .recipient-delete-modal,
+    .tender-choice-modal,
+    .tender-block-modal,
+    .direct-proc-choice-modal,
+    .bid-required-modal {
       width: min(640px, 100%);
       max-height: 90vh;
       overflow: auto;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    .tender-choice-modal { width: min(520px, 100%); }
+    .tender-block-modal { width: min(560px, 100%); }
+    .direct-proc-choice-modal { width: min(540px, 100%); }
+    .bid-required-modal { width: min(580px, 100%); }
+
+    .tender-choice-body,
+    .tender-block-body,
+    .direct-proc-choice-body,
+    .bid-required-body {
+      padding: 20px 24px 8px;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .tender-choice-demo-tip {
+      margin: 0 0 12px;
+      color: #dc2626;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.65;
+    }
+
+    .tender-choice-actions {
+      display: flex;
+      gap: 12px;
+      padding: 16px 24px 24px;
+    }
+
+    .tender-choice-btn {
+      flex: 1;
+      height: 46px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid #dbe2ea;
+      background: #fff;
+      color: #334155;
+      transition: all 0.18s ease;
+    }
+
+    .tender-choice-btn:hover {
+      border-color: #93c5fd;
+      color: #1d4ed8;
+      background: #f8fbff;
+    }
+
+    .tender-choice-btn.primary {
+      border: none;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    }
+
+    .tender-choice-btn.primary:hover {
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.28);
+    }
+
+    .tender-block-text {
+      margin: 0;
+      color: #334155;
+      font-size: 15px;
+      line-height: 1.8;
     }
 
     .address-form-head,
@@ -4267,6 +4346,79 @@
     </div>
   </div>
 
+  <div class="tender-choice-overlay" id="tenderChoiceOverlay" onclick="if(event.target===this) closeTenderChoiceModal()">
+    <div class="tender-choice-modal" onclick="event.stopPropagation()">
+      <div class="recipient-delete-head">
+        <div class="recipient-delete-title">请选择采购方式</div>
+        <button class="recipient-delete-close" type="button" onclick="closeTenderChoiceModal()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="tender-choice-body">
+        <p class="tender-choice-demo-tip">【演示弹窗】本步骤仅用于原型流程演示，不代表真实招标判定结果。</p>
+        请确认本次采购是否需要进行招标。选择后将进入对应的下单或采购发起流程。
+      </div>
+      <div class="tender-choice-actions">
+        <button class="tender-choice-btn" type="button" onclick="chooseTenderRequired()">需招标</button>
+        <button class="tender-choice-btn primary" type="button" onclick="chooseTenderNotRequired()">不需招标</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tender-block-overlay" id="tenderBlockOverlay" onclick="if(event.target===this) closeTenderBlockModal()">
+    <div class="tender-block-modal" onclick="event.stopPropagation()">
+      <div class="recipient-delete-head">
+        <div class="recipient-delete-title">无法商城直采</div>
+        <button class="recipient-delete-close" type="button" onclick="closeTenderBlockModal()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="tender-block-body">
+        <p class="tender-block-text" id="tenderBlockMessage"></p>
+      </div>
+      <div class="recipient-delete-foot">
+        <button class="recipient-delete-btn confirm" type="button" onclick="closeTenderBlockModal()">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="direct-proc-choice-overlay" id="directProcChoiceOverlay" onclick="if(event.target===this) closeDirectProcChoiceModal()">
+    <div class="direct-proc-choice-modal" onclick="event.stopPropagation()">
+      <div class="recipient-delete-head">
+        <div class="recipient-delete-title">请选择采购路径</div>
+        <button class="recipient-delete-close" type="button" onclick="closeDirectProcChoiceModal()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="direct-proc-choice-body">
+        <p class="tender-choice-demo-tip">【演示弹窗】本步骤仅用于原型流程演示，不代表真实采购方式判定结果。</p>
+        请确认本次采购是否支持商城直采，或须以竞价/询价方式发起。
+      </div>
+      <div class="tender-choice-actions">
+        <button class="tender-choice-btn primary" type="button" onclick="chooseDirectProcSupport()">支持直采</button>
+        <button class="tender-choice-btn" type="button" onclick="chooseDirectProcBidRequired()">必须竞价/询价</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bid-required-overlay" id="bidRequiredOverlay" onclick="if(event.target===this) closeBidRequiredModal()">
+    <div class="bid-required-modal" onclick="event.stopPropagation()">
+      <div class="recipient-delete-head">
+        <div class="recipient-delete-title">确认采购方式</div>
+        <button class="recipient-delete-close" type="button" onclick="closeBidRequiredModal()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="bid-required-body">
+        <p class="tender-block-text" id="bidRequiredMessage"></p>
+      </div>
+      <div class="tender-choice-actions">
+        <button class="tender-choice-btn" type="button" onclick="chooseBidRequiredDirectPurchase()">直接采购</button>
+        <button class="tender-choice-btn primary" type="button" onclick="chooseLaunchBidInquiry()">发起竞价/询价</button>
+      </div>
+    </div>
+  </div>
+
   <div class="order-basis-overlay" id="orderBasisOverlay" onclick="if(event.target===this) closeOrderBasisModal()">
     <div class="order-basis-modal" onclick="event.stopPropagation()">
       <div class="order-basis-head">
@@ -4411,6 +4563,8 @@
     let procurementPlanOptions = [];
     let procurementBudgetOptions = [];
     const ORDER_BASIS_TOTAL_STEPS = 3;
+    /** 商城直采演示限额（超过则需招标，无法在商城直接下单） */
+    const MALL_DIRECT_PURCHASE_LIMIT = 1000;
     let orderBasisStep = 1;
     let selectedPlanId = '';
     let selectedBudgetId = '';
@@ -6508,7 +6662,99 @@
         if (!proceed) return;
       }
       closeOrderBasisModal();
+      openDirectProcChoiceModal();
+    }
+
+    function getBidPolicyFileName() {
+      if (uploadedBasisFiles.length) return uploadedBasisFiles[0].name;
+      const plan = getBasisById('plan', selectedPlanId);
+      if (plan && plan.name) return plan.name;
+      return '单位采购管理制度.pdf';
+    }
+
+    function openDirectProcChoiceModal() {
+      document.getElementById('directProcChoiceOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDirectProcChoiceModal() {
+      document.getElementById('directProcChoiceOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function chooseDirectProcSupport() {
+      closeDirectProcChoiceModal();
       proceedToOrderConfirm();
+    }
+
+    function chooseDirectProcBidRequired() {
+      closeDirectProcChoiceModal();
+      openBidRequiredModal();
+    }
+
+    function openBidRequiredModal() {
+      const fileName = getBidPolicyFileName();
+      document.getElementById('bidRequiredMessage').innerHTML =
+        '因 <strong style="color:#b45309">' + escapeBasisText(fileName) + '</strong> 文件要求，本次采购需要以竞价/询价方式发起，请您再次确认采购方式。';
+      document.getElementById('bidRequiredOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeBidRequiredModal() {
+      document.getElementById('bidRequiredOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function chooseBidRequiredDirectPurchase() {
+      closeBidRequiredModal();
+      proceedToOrderConfirm();
+    }
+
+    function buildProductBidLaunchSession() {
+      const payload = buildOrderConfirmPayload();
+      const lineAmount = getOrderLineAmount();
+      const budget = Math.max(Math.ceil(lineAmount * 1.05), lineAmount + 500);
+      const spec = getProductParamValue('型号') || getProductParamValue('规格') || currentProduct.name;
+      const policyFile = getBidPolicyFileName();
+      const uploadedAt = new Date().toLocaleString('zh-CN', { hour12: false });
+      sessionStorage.setItem('gcOrderConfirmPayload', JSON.stringify(payload));
+      sessionStorage.setItem('bidAssistProductLaunch', JSON.stringify({
+        fileName: policyFile,
+        policyFile: policyFile,
+        uploadedAt: uploadedAt,
+        budget: budget,
+        lineAmount: lineAmount,
+        lines: [{
+          id: 1,
+          name: currentProduct.name,
+          spec: spec,
+          reqQty: currentQty,
+          qty: currentQty,
+          unit: currentProduct.unit,
+          note: '商城商品转入',
+          matched: true,
+          product: {
+            name: currentProduct.name,
+            refId: currentProduct.id || currentProduct.code || '',
+            supplier: currentProduct.supplier,
+            maxPrice: currentProduct.price,
+            img: (currentProduct.images && currentProduct.images[0]) || ''
+          }
+        }],
+        procurementBasis: payload.procurementBasis
+      }));
+      sessionStorage.setItem('bidAssistDemo', JSON.stringify({
+        file: policyFile,
+        uploadedAt: uploadedAt,
+        budget: budget
+      }));
+      sessionStorage.setItem('bidAssistReturnUrl', window.location.pathname + window.location.search);
+    }
+
+    function chooseLaunchBidInquiry() {
+      closeBidRequiredModal();
+      buildProductBidLaunchSession();
+      window.location.href = './bid_assist_result.html';
     }
 
     function showToast(message) {
@@ -6600,7 +6846,40 @@
     }
 
     function goToOrderConfirm() {
+      openTenderChoiceModal();
+    }
+
+    function openTenderChoiceModal() {
+      document.getElementById('tenderChoiceOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeTenderChoiceModal() {
+      document.getElementById('tenderChoiceOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    function chooseTenderRequired() {
+      closeTenderChoiceModal();
+      openTenderBlockModal();
+    }
+
+    function chooseTenderNotRequired() {
+      closeTenderChoiceModal();
       openOrderBasisModal();
+    }
+
+    function openTenderBlockModal() {
+      const limitText = formatBasisMoney(MALL_DIRECT_PURCHASE_LIMIT);
+      document.getElementById('tenderBlockMessage').innerHTML =
+        '您刚才采购商品金额超过 <strong style="color:#b45309">' + limitText + '</strong>，无法在国采E购商城中下单。请您根据单位要求，采用招投标等方式发起采购。';
+      document.getElementById('tenderBlockOverlay').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeTenderBlockModal() {
+      document.getElementById('tenderBlockOverlay').classList.remove('show');
+      document.body.style.overflow = '';
     }
 
     function proceedToOrderConfirm() {
