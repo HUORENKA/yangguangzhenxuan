@@ -6719,6 +6719,7 @@
       const uploadedAt = new Date().toLocaleString('zh-CN', { hour12: false });
       sessionStorage.setItem('gcOrderConfirmPayload', JSON.stringify(payload));
       sessionStorage.setItem('bidAssistProductLaunch', JSON.stringify({
+        source: 'product',
         fileName: policyFile,
         policyFile: policyFile,
         uploadedAt: uploadedAt,
@@ -6754,7 +6755,7 @@
     function chooseLaunchBidInquiry() {
       closeBidRequiredModal();
       buildProductBidLaunchSession();
-      window.location.href = './bid_assist_result.html';
+      window.location.href = './bid_assist_result.html?source=product';
     }
 
     function showToast(message) {

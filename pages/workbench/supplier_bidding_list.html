@@ -28,7 +28,7 @@
     .col-lowest-hidden .col-lowest { display:none; }
     .money { font-weight:800; color:#dc2626; font-variant-numeric:tabular-nums; }
     .hint-xs { font-size:11px; color:#94a3b8; margin-top:4px; }
-    table.data-wide { min-width:1080px; }
+    table.data-wide { min-width:1180px; }
     .wrap-table { overflow-x:auto; }
 
     /* 供货状态 */
@@ -48,7 +48,39 @@
       box-shadow:0 24px 56px rgba(15,23,42,.2);
     }
     .modal-box.w-detail { max-width:800px; }
-    .modal-box.w-quote { max-width:920px; }
+    .modal-box.w-quote { max-width:1100px; }
+    .bid-product-cell { min-width:140px; }
+    .bid-product-name { font-weight:700; color:#0f172a; line-height:1.45; }
+    .bid-product-spec { font-size:11px; color:#94a3b8; margin-top:3px; line-height:1.4; }
+    .bid-product-empty { font-size:12px; color:#94a3b8; }
+    .bid-product-action {
+      margin-top:6px; padding:0; border:none; background:none;
+      color:#0f766e; font-size:12px; font-weight:800; cursor:pointer;
+    }
+    .bid-product-action:hover { text-decoration:underline; color:#115e59; }
+    .picker-overlay {
+      position:fixed; inset:0; background:rgba(15,23,42,.52); z-index:110;
+      display:none; align-items:center; justify-content:center; padding:20px;
+    }
+    .picker-overlay.open { display:flex; }
+    .picker-box {
+      background:#fff; border-radius:16px; width:100%; max-width:720px; max-height:min(88vh,680px);
+      display:flex; flex-direction:column; overflow:hidden;
+      box-shadow:0 24px 56px rgba(15,23,42,.22);
+    }
+    .picker-body { padding:16px 20px; overflow-y:auto; flex:1; }
+    .picker-demand-tip {
+      margin:0 0 14px; padding:10px 12px; border-radius:10px;
+      background:#f8fafc; border:1px solid #e2e8f0; font-size:13px; color:#475569; line-height:1.6;
+    }
+    .picker-item {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      padding:12px 14px; border:1px solid #e2e8f0; border-radius:12px; margin-bottom:10px; background:#fff;
+    }
+    .picker-item:hover { border-color:#99f6e4; background:#fafcff; }
+    .picker-item-name { font-weight:800; color:#0f172a; font-size:14px; }
+    .picker-item-spec { font-size:12px; color:#64748b; margin-top:4px; }
+    .picker-empty { text-align:center; padding:28px 16px; color:#94a3b8; font-size:13px; }
     .ref-link { color:#0f766e; font-weight:600; text-decoration:none; }
     .ref-link:hover { text-decoration:underline; }
     .max-price { font-weight:700; color:#64748b; font-variant-numeric:tabular-nums; white-space:nowrap; }
@@ -128,7 +160,8 @@
         <table class="w-full text-sm data-wide">
           <thead>
             <tr>
-              <th>项目 / 单号</th>
+              <th>编号</th>
+              <th>竞/询价文件</th>
               <th>采购形式</th>
               <th>采购单位</th>
               <th class="col-lowest">当前公示最低价<br><span class="font-normal text-xs text-slate-400">竞价可见 · 不含供应商</span></th>
@@ -209,6 +242,27 @@
     </div>
   </div>
 
+  <!-- 参与竞价商品选择 -->
+  <div class="picker-overlay" id="bidProductPicker" onclick="if(event.target===this)closeBidProductPicker()">
+    <div class="picker-box" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h3 id="pickerTitle">选择参与竞价商品</h3>
+          <p id="pickerSub" class="text-sm text-slate-500 mt-1"></p>
+        </div>
+        <button type="button" class="modal-x" onclick="closeBidProductPicker()" aria-label="关闭"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="picker-body">
+        <p class="picker-demand-tip" id="pickerDemandTip"></p>
+        <div class="seg mb-4" id="pickerSeg">
+          <button type="button" class="active" data-picker-tab="same" onclick="switchPickerTab('same')">同品同规</button>
+          <button type="button" data-picker-tab="similar" onclick="switchPickerTab('similar')">相近品规</button>
+        </div>
+        <div id="pickerList"></div>
+      </div>
+    </div>
+  </div>
+
 <script>
 (function () {
   var STORAGE_KEY = 'supplierRfQ_demoRows';
@@ -251,15 +305,102 @@
     not_listed: { cls: 'sup-none', text: '未上架' }
   };
 
+  /** 供应商自有商品库（演示）：同品同规 / 相近品规 */
+  var SUPPLIER_LINE_CATALOG = {
+    'S1-0': {
+      same: [{ id: 'sp-s1-0-1', name: '自主品牌中控 MC-200 Pro', spec: '支持中控/WiFi/RS232' }],
+      similar: [
+        { id: 'sp-s1-0-2', name: '会议控制主机 MC-180', spec: 'WiFi/中控/HDMI' },
+        { id: 'sp-s1-0-3', name: '智能会议中控盒 X1', spec: '支持WiFi/网口' }
+      ]
+    },
+    'S1-1': {
+      same: [{ id: 'sp-s1-1-1', name: '1080P 会议摄像机 Pro-CAM', spec: '1080P/3倍变焦/HDMI' }],
+      similar: [
+        { id: 'sp-s1-1-2', name: '高清会议摄像头 HD-100', spec: '1080P/USB' },
+        { id: 'sp-s1-1-3', name: '广角会议摄像机 W-CAM02', spec: '1080P/120°广角' }
+      ]
+    },
+    'S1-2': {
+      same: [{ id: 'sp-s1-2-1', name: '吊顶音箱 SPK-88A', spec: '会议室吊装/8Ω' }],
+      similar: [
+        { id: 'sp-s1-2-2', name: '吸顶式会议音箱 CS-60', spec: '吊装/6Ω' },
+        { id: 'sp-s1-2-3', name: '嵌入式音箱 EM-50', spec: '天花板嵌入' }
+      ]
+    },
+    'S2-0': {
+      same: [{ id: 'sp-s2-0-1', name: '本店 A4 复印纸 70g 8包装', spec: 'A4/70g/500张×8' }],
+      similar: [{ id: 'sp-s2-0-2', name: 'A4 复印纸 80g 5包装', spec: 'A4/80g/500张×5' }]
+    },
+    'S2-1': {
+      same: [{ id: 'sp-s2-1-1', name: '本店 HP 85A 兼容硒鼓', spec: 'CE285A 兼容' }],
+      similar: [{ id: 'sp-s2-1-2', name: 'HP 85A 再生硒鼓', spec: '兼容/2600页' }]
+    }
+  };
+
+  function catalogKey(pid, idx) {
+    return pid + '-' + idx;
+  }
+
+  function getLineCatalog(pid, idx) {
+    var key = catalogKey(pid, idx);
+    if (SUPPLIER_LINE_CATALOG[key]) return SUPPLIER_LINE_CATALOG[key];
+    var dem = PROJECT_DEMAND[pid];
+    if (!dem || !dem.lines[idx]) return { same: [], similar: [] };
+    var L = dem.lines[idx];
+    return {
+      same: [{ id: 'sp-gen-' + pid + '-' + idx + '-s', name: '本店「' + L.name + '」（同规）', spec: L.spec || '—' }],
+      similar: [
+        { id: 'sp-gen-' + pid + '-' + idx + '-a', name: L.name + ' 替代款 A', spec: '相近规格 · 演示' },
+        { id: 'sp-gen-' + pid + '-' + idx + '-b', name: L.name + ' 替代款 B', spec: '相近规格 · 演示' }
+      ]
+    };
+  }
+
+  function bidProductStorageKey(pid) {
+    return 'supplierBidProducts_' + pid;
+  }
+
+  function loadBidProductSelections(pid) {
+    try {
+      return JSON.parse(sessionStorage.getItem(bidProductStorageKey(pid)) || '{}');
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveBidProductSelections(pid, map) {
+    sessionStorage.setItem(bidProductStorageKey(pid), JSON.stringify(map));
+  }
+
+  function initBidProductsForProject(pid, lines) {
+    var saved = loadBidProductSelections(pid);
+    var result = {};
+    lines.forEach(function (L, i) {
+      if (saved[i]) {
+        result[i] = saved[i];
+        return;
+      }
+      if (L.supply === 'in_stock') {
+        var cat = getLineCatalog(pid, i);
+        if (cat.same && cat.same.length) result[i] = Object.assign({}, cat.same[0]);
+      }
+    });
+    return result;
+  }
+
+  var modalBidProducts = {};
+  var pickerContext = { pid: null, lineIdx: null, tab: 'same' };
+
   var BASE = [
-    { id:'S1', code:'BID20260507001', title:'会议室音视频改造项目', mode:'bidding', buyer:'市级机关后勤事务管理局', lowest:86200, mine:90500, st:'quoting', deadline:'2026-05-10 18:00' },
-    { id:'S2', code:'RFQ20260507002', title:'年度耗材集中采购', mode:'inquiry', buyer:'区级政府采购中心', lowest:null, mine:42800, st:'quoting', deadline:'2026-05-09 18:00' },
-    { id:'S8', code:'BID20260507008', title:'绿化养护外包（首场竞价）', mode:'bidding', buyer:'市园林绿化管理处', lowest:null, mine:null, st:'quoting', deadline:'2026-05-12 18:00' },
-    { id:'S3', code:'BID20260506003', title:'办公家具更新项目', mode:'bidding', buyer:'海淀区教育局', lowest:128000, mine:131200, st:'waiting', deadline:'2026-05-06 18:00' },
-    { id:'S4', code:'RFQ20260505004', title:'机房布线耗材', mode:'inquiry', buyer:'信息中心', lowest:null, mine:59900, st:'won', deadline:'2026-05-05 18:00' },
-    { id:'S5', code:'BID20260504005', title:'国产化终端竞价', mode:'bidding', buyer:'市级大数据中心', lowest:210000, mine:218000, st:'lost', deadline:'2026-05-04 18:00' },
-    { id:'S6', code:'RFQ20260503006', title:'保安服务费询价', mode:'inquiry', buyer:'物业管理中心', lowest:null, mine:null, st:'failed', deadline:'2026-05-03 18:00' },
-    { id:'S7', code:'BID20260502007', title:'复印纸框架协议竞价', mode:'bidding', buyer:'财政局采购办', lowest:null, mine:null, st:'terminated', deadline:'2026-05-02 18:00' }
+    { id:'S1', code:'BID20260507001', title:'会议室音视频改造项目', rfqFile:'会议室音视频改造项目.pdf', docType:'pdf', mode:'bidding', buyer:'市级机关后勤事务管理局', lowest:86200, mine:90500, st:'quoting', deadline:'2026-05-10 18:00' },
+    { id:'S2', code:'RFQ20260507002', title:'年度耗材集中采购', rfqFile:'年度耗材集中采购.xlsx', docType:'excel', mode:'inquiry', buyer:'区级政府采购中心', lowest:null, mine:42800, st:'quoting', deadline:'2026-05-09 18:00' },
+    { id:'S8', code:'BID20260507008', title:'绿化养护外包（首场竞价）', rfqFile:'', mode:'bidding', buyer:'市园林绿化管理处', lowest:null, mine:null, st:'quoting', deadline:'2026-05-12 18:00' },
+    { id:'S3', code:'BID20260506003', title:'办公家具更新项目', rfqFile:'办公家具更新项目.xlsx', docType:'excel', mode:'bidding', buyer:'海淀区教育局', lowest:128000, mine:131200, st:'waiting', deadline:'2026-05-06 18:00' },
+    { id:'S4', code:'RFQ20260505004', title:'机房布线耗材', rfqFile:'机房布线耗材询价.pdf', docType:'pdf', mode:'inquiry', buyer:'信息中心', lowest:null, mine:59900, st:'won', deadline:'2026-05-05 18:00' },
+    { id:'S5', code:'BID20260504005', title:'国产化终端竞价', rfqFile:'国产化终端竞价方案.pdf', docType:'pdf', mode:'bidding', buyer:'市级大数据中心', lowest:210000, mine:218000, st:'lost', deadline:'2026-05-04 18:00' },
+    { id:'S6', code:'RFQ20260503006', title:'保安服务费询价', rfqFile:'', mode:'inquiry', buyer:'物业管理中心', lowest:null, mine:null, st:'failed', deadline:'2026-05-03 18:00' },
+    { id:'S7', code:'BID20260502007', title:'复印纸框架协议竞价', rfqFile:'复印纸框架协议.docx', docType:'word', mode:'bidding', buyer:'财政局采购办', lowest:null, mine:null, st:'terminated', deadline:'2026-05-02 18:00' }
   ];
 
   function loadRows() {
@@ -338,8 +479,113 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
+  function bidProductDetailLink(id, name) {
+    if (!id) return esc(name);
+    return '<a class="ref-link" href="../product.html?id=' + encodeURIComponent(id) + '" target="_blank" rel="noopener noreferrer">' + esc(name) + '</a>';
+  }
+
   /* ---------- 报价弹窗 ---------- */
   var modalQuotePid = null;
+
+  function renderBidProductCell(pid, idx) {
+    var p = modalBidProducts[idx];
+    if (p && p.name) {
+      return ''
+        + '<td class="p-2 border-t border-slate-100 bid-product-cell">'
+        + '<div class="bid-product-name">' + bidProductDetailLink(p.id, p.name) + '</div>'
+        + '<div class="bid-product-spec">' + esc(p.spec || '—') + '</div>'
+        + '<button type="button" class="bid-product-action" onclick="openBidProductPicker(' + idx + ')"><i class="fas fa-arrows-rotate"></i> 更换</button>'
+        + '</td>';
+    }
+    return ''
+      + '<td class="p-2 border-t border-slate-100 bid-product-cell">'
+      + '<div class="bid-product-empty">未关联自有商品</div>'
+      + '<button type="button" class="bid-product-action" onclick="openBidProductPicker(' + idx + ')"><i class="fas fa-plus"></i> 添加</button>'
+      + '</td>';
+  }
+
+  function rebuildModalLinesTable() {
+    var pid = modalQuotePid;
+    var dem = PROJECT_DEMAND[pid];
+    if (!pid || !dem) return;
+    var prices = {};
+    document.querySelectorAll('#mLinesTable tbody tr').forEach(function (tr) {
+      var idx = tr.getAttribute('data-line-idx');
+      var inp = tr.querySelector('.m-p-unit');
+      if (idx != null && inp && inp.value) prices[idx] = inp.value;
+    });
+    dem.lines.forEach(function (L, i) {
+      L._savedPrice = prices[i] || '';
+    });
+    buildModalLinesTable(dem.lines, pid);
+    recalcModalLines();
+  }
+
+  window.openBidProductPicker = function (lineIdx) {
+    var pid = modalQuotePid;
+    var dem = PROJECT_DEMAND[pid];
+    if (!pid || !dem || !dem.lines[lineIdx]) return;
+    var L = dem.lines[lineIdx];
+    pickerContext = { pid: pid, lineIdx: lineIdx, tab: 'same' };
+    document.getElementById('pickerTitle').textContent = '选择参与竞价商品';
+    document.getElementById('pickerSub').textContent = '竞价需求：' + L.name;
+    document.getElementById('pickerDemandTip').innerHTML = '采购需求 <strong>' + esc(L.name) + '</strong>'
+      + ' · 规格 ' + esc(L.spec || '—')
+      + ' · 平台参考 <strong>' + esc(L.refName || '—') + '</strong>';
+    switchPickerTab('same');
+    document.getElementById('bidProductPicker').classList.add('open');
+  };
+
+  window.closeBidProductPicker = function () {
+    document.getElementById('bidProductPicker').classList.remove('open');
+    pickerContext = { pid: null, lineIdx: null, tab: 'same' };
+  };
+
+  window.switchPickerTab = function (tab) {
+    pickerContext.tab = tab;
+    document.querySelectorAll('#pickerSeg button').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-picker-tab') === tab);
+    });
+    renderPickerList();
+  };
+
+  function renderPickerList() {
+    var pid = pickerContext.pid;
+    var idx = pickerContext.lineIdx;
+    var tab = pickerContext.tab;
+    var listEl = document.getElementById('pickerList');
+    if (pid == null || idx == null) {
+      listEl.innerHTML = '';
+      return;
+    }
+    var cat = getLineCatalog(pid, idx);
+    var items = tab === 'same' ? (cat.same || []) : (cat.similar || []);
+    if (!items.length) {
+      listEl.innerHTML = '<div class="picker-empty">暂无' + (tab === 'same' ? '同品同规' : '相近品规') + '商品，可切换标签查看其他候选。</div>';
+      return;
+    }
+    listEl.innerHTML = items.map(function (item, i) {
+      return ''
+        + '<div class="picker-item">'
+        + '<div><div class="picker-item-name">' + bidProductDetailLink(item.id, item.name) + '</div>'
+        + '<div class="picker-item-spec">' + esc(item.spec || '—') + '</div></div>'
+        + '<button type="button" class="btn btn-primary" onclick="selectBidProduct(' + idx + ',' + i + ',\'' + tab + '\')">选用</button>'
+        + '</div>';
+    }).join('');
+  }
+
+  window.selectBidProduct = function (lineIdx, itemIdx, tab) {
+    var pid = pickerContext.pid;
+    if (!pid) return;
+    var cat = getLineCatalog(pid, lineIdx);
+    var list = tab === 'same' ? (cat.same || []) : (cat.similar || []);
+    var item = list[itemIdx];
+    if (!item) return;
+    modalBidProducts[lineIdx] = Object.assign({}, item);
+    saveBidProductSelections(pid, modalBidProducts);
+    closeBidProductPicker();
+    rebuildModalLinesTable();
+  };
 
   window.recalcModalLines = function () {
     var rows = document.querySelectorAll('#mLinesTable tbody tr');
@@ -382,27 +628,30 @@
     return violations;
   }
 
-  function buildModalLinesTable(lines) {
+  function buildModalLinesTable(lines, pid) {
     var thead = '<thead><tr>'
       + '<th class="text-left p-2 bg-slate-50">商品名称</th>'
       + '<th class="text-left p-2 bg-slate-50">平台参考商品</th>'
+      + '<th class="text-left p-2 bg-slate-50">参与竞价商品</th>'
       + '<th class="text-left p-2 bg-slate-50">规格</th>'
       + '<th class="p-2 bg-slate-50">数量</th>'
       + '<th class="p-2 bg-slate-50 whitespace-nowrap">平台最高价</th>'
       + '<th class="p-2 bg-slate-50">报价</th>'
       + '<th class="p-2 bg-slate-50">小计</th>'
       + '</tr></thead>';
-    var tbody = '<tbody>' + lines.map(function (L) {
+    var tbody = '<tbody>' + lines.map(function (L, idx) {
       var refCell = L.refName
         ? '<a class="ref-link" href="../product.html?id=' + encodeURIComponent(L.refId || '') + '" target="_blank" rel="noopener noreferrer">' + esc(L.refName) + '</a>'
         : '<span class="text-slate-400">—</span>';
-      return '<tr data-qty="' + L.qty + '"' + (L.maxPrice != null ? ' data-max-price="' + L.maxPrice + '"' : '') + '>'
+      var savedPrice = L._savedPrice ? ' value="' + esc(String(L._savedPrice)) + '"' : '';
+      return '<tr data-qty="' + L.qty + '" data-line-idx="' + idx + '"' + (L.maxPrice != null ? ' data-max-price="' + L.maxPrice + '"' : '') + '>'
         + '<td class="p-2 border-t border-slate-100 font-semibold">' + esc(L.name) + '</td>'
         + '<td class="p-2 border-t border-slate-100">' + refCell + '</td>'
+        + renderBidProductCell(pid, idx)
         + '<td class="p-2 border-t border-slate-100 text-slate-600">' + esc(L.spec || '—') + '</td>'
         + '<td class="p-2 border-t border-slate-100 text-center">' + L.qty + '</td>'
         + '<td class="p-2 border-t border-slate-100 text-center max-price">' + (L.maxPrice != null ? fmtMoney(L.maxPrice) : '—') + '</td>'
-        + '<td class="p-2 border-t border-slate-100"><input type="number" class="in-field m-p-unit max-w-[120px]" min="0" step="0.01" placeholder="0" oninput="recalcModalLines()"></td>'
+        + '<td class="p-2 border-t border-slate-100"><input type="number" class="in-field m-p-unit max-w-[120px]" min="0" step="0.01" placeholder="0"' + savedPrice + ' oninput="recalcModalLines()"></td>'
         + '<td class="p-2 border-t border-slate-100 m-line-sub money whitespace-nowrap">¥0</td>'
         + '</tr>';
     }).join('') + '</tbody>';
@@ -439,7 +688,9 @@
       rb.innerHTML = '<div class="rule-banner-sm rule-inq"><strong>询价：</strong>不展示他人报价；截止前可多次提交，<strong>有效报价为您最新一条</strong>。</div>';
     }
 
-    buildModalLinesTable(dem.lines);
+    modalBidProducts = initBidProductsForProject(id, dem.lines);
+    dem.lines.forEach(function (L) { delete L._savedPrice; });
+    buildModalLinesTable(dem.lines, id);
     recalcModalLines();
     renderModalHist(r);
 
@@ -448,7 +699,9 @@
 
   window.closeQuoteModal = function () {
     document.getElementById('modalQuote').classList.remove('open');
+    closeBidProductPicker();
     modalQuotePid = null;
+    modalBidProducts = {};
   };
 
   window.submitModalQuote = function () {
@@ -460,6 +713,14 @@
 
     var amount = recalcModalLines();
     if (!amount || amount <= 0) { alert('请填写各行报价'); return; }
+
+    var unlinked = dem.lines.map(function (L, i) {
+      return modalBidProducts[i] ? null : L.name;
+    }).filter(Boolean);
+    if (unlinked.length) {
+      alert('以下需求行尚未关联参与竞价商品，请先添加：\n\n' + unlinked.join('\n'));
+      return;
+    }
 
     var maxViolations = getMaxPriceViolations();
     if (maxViolations.length) {
@@ -503,7 +764,11 @@
       time: new Date().toLocaleString('zh-CN', { hour12:false }),
       way: wayLabel,
       amount: amount,
-      note: note
+      note: note,
+      bidProducts: dem.lines.map(function (_, i) {
+        var p = modalBidProducts[i];
+        return p ? { name: p.name, spec: p.spec || '' } : null;
+      })
     });
     saveHist(hm);
 
@@ -558,6 +823,22 @@
     document.getElementById('kpiEnd').textContent = cnt(function (r) { return r.st === 'terminated' || r.st === 'failed'; });
   }
 
+  function rfqDocIcon(dt) {
+    if (dt === 'pdf') return { cls: 'text-red-500', icon: 'fa-file-pdf' };
+    if (dt === 'word') return { cls: 'text-blue-600', icon: 'fa-file-word' };
+    return { cls: 'text-green-600', icon: 'fa-file-excel' };
+  }
+
+  function renderRfqFileCell(r) {
+    if (!r.rfqFile) return '<td><span class="text-slate-400">—</span></td>';
+    var ic = rfqDocIcon(r.docType);
+    return ''
+      + '<td><div class="flex items-start gap-2 text-sm">'
+      + '<i class="fas ' + ic.icon + ' ' + ic.cls + ' mt-0.5"></i>'
+      + '<span class="text-slate-700">' + esc(r.rfqFile) + '</span>'
+      + '</div></td>';
+  }
+
   function renderBody(rows) {
     var tb = document.getElementById('tbody');
     tb.innerHTML = rows.map(function (r) {
@@ -579,7 +860,8 @@
         mineWarn = '<div class="hint-xs text-orange-600"><i class="fas fa-triangle-exclamation"></i> 高于或等于最低价，提交将被拦截</div>';
       }
       return '<tr>'
-        + '<td><div class="font-semibold text-slate-900">' + r.code + '</div><div class="text-slate-600 mt-1">' + r.title + '</div></td>'
+        + '<td><span class="font-semibold text-slate-900">' + esc(r.code) + '</span></td>'
+        + renderRfqFileCell(r)
         + '<td>' + tag + '</td>'
         + '<td>' + r.buyer + '</td>'
         + '<td class="col-lowest">' + lowCell + '</td>'
@@ -591,7 +873,7 @@
     }).join('');
 
     if (!rows.length) {
-      tb.innerHTML = '<tr><td colspan="8" class="text-center py-10 text-slate-400">暂无数据</td></tr>';
+      tb.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-slate-400">暂无数据</td></tr>';
     }
   }
 

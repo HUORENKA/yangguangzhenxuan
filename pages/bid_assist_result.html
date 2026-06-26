@@ -594,6 +594,7 @@
     .method-body { padding: 0 20px 20px; border-top: 1px solid var(--border); }
     .method-body.hidden { display: none; }
     .method-panel.hidden { display: none; }
+    .method-tab.hidden { display: none; }
     .method-block {
       border: 1px solid #e8eef5;
       border-radius: 16px;
@@ -992,6 +993,14 @@
     return '¥' + Number(v).toLocaleString('zh-CN');
   }
 
+  function getPageEntrySource() {
+    try {
+      return new URLSearchParams(window.location.search).get('source') || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   function loadProductLaunch() {
     try {
       var raw = sessionStorage.getItem('bidAssistProductLaunch');
@@ -1020,7 +1029,17 @@
   }
 
   function loadDemo() {
-    if (loadProductLaunch()) return;
+    var entrySource = getPageEntrySource();
+
+    if (entrySource === 'product') {
+      if (loadProductLaunch()) return;
+      state.fromProduct = false;
+    } else {
+      /* 最价方案 / 采购方案助手入口：忽略并清除商品转入缓存，走原有完整流程 */
+      try { sessionStorage.removeItem('bidAssistProductLaunch'); } catch (e) {}
+      state.fromProduct = false;
+    }
+
     try {
       var raw = sessionStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -1115,8 +1134,61 @@
       + '</div></div>';
   }
 
+  function renderDemandTableHead() {
+    var theadRow = document.querySelector('#demandTable thead tr');
+    if (!theadRow) return;
+    if (state.fromProduct) {
+      theadRow.innerHTML = ''
+        + '<th>采购商品</th>'
+        + '<th style="width:110px">平台参考价</th>'
+        + '<th style="width:88px">采购数量</th>'
+        + '<th style="width:150px">操作</th>';
+      return;
+    }
+    theadRow.innerHTML = ''
+      + '<th>采购需求</th>'
+      + '<th>需求规格</th>'
+      + '<th style="width:110px">匹配状态</th>'
+      + '<th>平台参考商品</th>'
+      + '<th style="width:110px">平台参考价</th>'
+      + '<th style="width:88px">采购数量</th>'
+      + '<th style="width:150px">操作</th>';
+  }
+
   function renderDemandTable() {
     var tb = document.getElementById('demandBody');
+    if (state.fromProduct) {
+      tb.innerHTML = state.lines.map(function (L) {
+        if (L.matched && L.product) {
+          var P = L.product;
+          return ''
+            + '<tr data-id="' + L.id + '">'
+            + '<td><div class="product-cell">'
+            + '<img class="product-thumb" src="' + esc(P.img) + '" alt="' + esc(P.name) + '" onerror="this.style.display=\'none\'">'
+            + '<div class="product-info">'
+            + '<div class="product-name"><a href="./product.html?id=' + encodeURIComponent(P.refId || '') + '" target="_blank" rel="noopener noreferrer">' + esc(P.name) + '</a></div>'
+            + '<div class="product-supplier">' + esc(P.supplier) + '</div>'
+            + (L.spec ? '<div class="req-spec">' + esc(L.spec) + '</div>' : '')
+            + '</div></div></td>'
+            + '<td><span class="max-price">' + fmtMoney(P.maxPrice) + '</span></td>'
+            + '<td><input class="qty-input" type="number" min="1" value="' + L.qty + '" onchange="updateQty(' + L.id + ', this.value)"></td>'
+            + '<td><div class="action-group">'
+            + '<button type="button" class="action-link" onclick="alert(\'演示：打开换品搜索\')"><i class="fa-solid fa-arrows-rotate"></i> 换品</button>'
+            + '</div></td>'
+            + '</tr>';
+        }
+        return ''
+          + '<tr class="row-warn" data-id="' + L.id + '">'
+          + '<td><div class="req-name">' + esc(L.name) + '</div>'
+          + (L.spec ? '<div class="req-spec">' + esc(L.spec) + '</div>' : '')
+          + '<div class="req-spec">需求：' + L.reqQty + ' ' + esc(L.unit) + '</div></td>'
+          + '<td class="unmatched-cell">—</td>'
+          + '<td class="unmatched-cell">' + L.qty + ' ' + esc(L.unit) + '</td>'
+          + '<td><button type="button" class="action-link" onclick="searchMatchProduct(' + L.id + ')"><i class="fa-solid fa-magnifying-glass"></i> 搜索</button></td>'
+          + '</tr>';
+      }).join('');
+      return;
+    }
     tb.innerHTML = state.lines.map(function (L) {
       if (L.matched && L.product) {
         var P = L.product;
@@ -1386,6 +1458,7 @@
   };
 
   window.setPurchaseMethod = function (method) {
+    if (state.fromProduct && method === 'direct') return;
     state.purchaseMethod = method;
     state.procMode = method;
 
@@ -1435,6 +1508,13 @@
     if (subTitle) {
       subTitle.innerHTML = '<i class="fa-solid fa-store" style="color:#16a34a;margin-right:8px;"></i>商城商品转入 · 确认匹配商品与采购方式后发起';
     }
+    var directTab = document.getElementById('methodDirect');
+    if (directTab) directTab.classList.add('hidden');
+    var sectionSub = document.querySelector('.section-head .section-subtitle');
+    if (sectionSub) {
+      sectionSub.textContent = '确认商城选购商品、采购数量与邀请供应商后发起竞价 / 询价。';
+    }
+    renderDemandTableHead();
   }
 
   function initBidAssistReturnLink() {
@@ -1513,8 +1593,13 @@
   function executeBiddingInquiry(basis) {
     var method = state.purchaseMethod;
     var deadline = document.getElementById('deadlineInput').value;
+    var codePrefix = method === 'inquiry' ? 'RFQ' : 'BID';
+    var d = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var bidCode = codePrefix + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + String(Date.now()).slice(-3);
     var record = {
       id: 'h' + Date.now(),
+      code: bidCode,
       file: state.fileName,
       docType: state.fileName.indexOf('.pdf') !== -1 ? 'pdf' : (state.fileName.indexOf('.doc') !== -1 ? 'word' : 'excel'),
       mode: method,
@@ -1620,6 +1705,7 @@
   initBidAssistReturnLink();
   loadDemo();
   applyProductLaunchChrome();
+  renderDemandTableHead();
   renderSummary();
   renderDemandTable();
   renderSuppliers();
