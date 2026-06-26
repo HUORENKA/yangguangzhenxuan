@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>标签库配置 | 标签管理</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <link rel="stylesheet" href="admin_tag_common.css">
+  <link rel="stylesheet" href="admin_tag_platform_lib.css">
+</head>
+<body class="tag-admin-page tag-platform-page">
+  <div class="tag-page-inner">
+    <div class="tag-page-hero tag-page-hero-compact">
+      <div class="tag-page-hero-icon"><i class="fas fa-database"></i></div>
+      <div>
+        <div class="text-sm text-slate-500 mb-0.5">标签管理 / <span class="text-slate-800 font-medium">标签库配置</span></div>
+        <h1>标签库配置</h1>
+        <p>维护平台级标签定义与打标规则；商品标签库、供应商标签库据此自动生成</p>
+      </div>
+    </div>
+
+    <div class="tag-main-card tag-platform-card">
+      <div class="tag-tab-bar">
+        <div class="tag-inner-tabs" id="libTabRow"></div>
+        <div class="tag-tab-actions">
+          <button type="button" class="btn btn-outline btn-sm" id="btnAddLib"><i class="fas fa-plus"></i> 新增库</button>
+          <button type="button" class="btn btn-primary btn-sm" id="btnAddTag"><i class="fas fa-plus"></i> 新增标签</button>
+        </div>
+      </div>
+      <div class="tag-panel-body tag-platform-body">
+        <div class="tag-dict-layout" id="dictLayout">
+          <div class="tag-panel tag-tree-panel" id="treePanel">
+            <div class="tag-panel-head tag-tree-head">
+              <span class="tag-panel-title"><i class="fas fa-sitemap"></i>标签树</span>
+              <div class="tree-head-actions">
+                <button type="button" class="btn btn-outline btn-sm" id="btnImportTag"><i class="fas fa-file-import"></i> 导入</button>
+                <button type="button" class="btn btn-outline btn-sm" id="btnExportTag"><i class="fas fa-file-export"></i> 导出</button>
+              </div>
+            </div>
+            <div class="tag-tree-body" id="tagTreeBody"></div>
+          </div>
+          <div class="tag-panel tag-config-panel" id="configPanel">
+            <div class="tag-panel-head"><span class="tag-panel-title"><i class="fas fa-pen-to-square"></i>标签配置</span></div>
+            <div class="tag-detail-panel" id="tagDetailPanel">
+              <div class="empty-detail"><i class="fas fa-tags"></i><p>请在左侧选择标签节点，或点击右上角「新增标签」</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="libModal" hidden>
+    <div class="modal-box">
+      <div class="modal-header">新增标签库</div>
+      <div class="modal-body">
+        <div class="form-grid" style="grid-template-columns:1fr">
+          <div class="form-item"><label>标签库名称</label><input class="form-input" id="newLibName" placeholder="如：采购单位标签"></div>
+          <div class="form-item"><label>标签库编码</label><input class="form-input" id="newLibCode" placeholder="如：buyer_org"></div>
+          <div class="form-item"><label>说明（选填）</label><textarea class="form-input" id="newLibDesc" rows="2"></textarea></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="btnCloseLibModal">取消</button>
+        <button type="button" class="btn btn-primary" id="btnSaveLib">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin_tag_shared.js"></script>
+  <script src="admin_tag_platform_lib_app.js"></script>
+</body>
+</html>

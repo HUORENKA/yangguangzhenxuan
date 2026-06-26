@@ -715,9 +715,14 @@
       po: { id: 'po', name: '采购单管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_po', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:file-document', sort: 9 },
       orders: { id: 'orders', name: '订单管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_orders', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:shopping', sort: 10 },
       settlement: { id: 'settlement', name: '平台结算管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'operator_platform_settlement', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:cash-multiple', sort: 11 },
-      system: { id: 'system', name: '系统管理', type: 'dir', typeLabel: '目录', status: 'normal', statusLabel: '正常', route: 'xtgl', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:cog', sort: 12 },
+      tagManage: { id: 'tagManage', name: '标签管理', type: 'dir', typeLabel: '目录', status: 'normal', statusLabel: '正常', route: 'bqgl', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:tag-multiple', sort: 12 },
+      tagPlatformLib: { id: 'tagPlatformLib', name: '标签库配置', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_tag_platform_lib', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '标签管理', icon: 'mdi:database', sort: 3 },
+      tagProductLib: { id: 'tagProductLib', name: '商品标签库', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_tag_product_lib', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '标签管理', icon: 'mdi:package-variant', sort: 1 },
+      tagSupplierLib: { id: 'tagSupplierLib', name: '供应商标签库', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_tag_supplier_lib', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '标签管理', icon: 'mdi:store', sort: 2 },
+      tagLog: { id: 'tagLog', name: '标签维护日志', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_tag_log', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '标签管理', icon: 'mdi:history', sort: 4 },
+      system: { id: 'system', name: '系统管理', type: 'dir', typeLabel: '目录', status: 'normal', statusLabel: '正常', route: 'xtgl', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:cog', sort: 13 },
       menuManage: { id: 'menuManage', name: '菜单管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_menu_manage', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '系统管理', icon: 'mdi:file-tree', sort: 1 },
-      cockpit: { id: 'cockpit', name: '数据驾驶舱', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_cockpit', external: 'yes', externalLabel: '是', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:monitor-dashboard', sort: 13 }
+      cockpit: { id: 'cockpit', name: '数据驾驶舱', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_cockpit', external: 'yes', externalLabel: '是', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:monitor-dashboard', sort: 14 }
     };
 
     var treeStructure = [
@@ -743,6 +748,12 @@
         { id: 'po', label: '采购单管理', type: 'menu' },
         { id: 'orders', label: '订单管理', type: 'menu' },
         { id: 'settlement', label: '平台结算管理', type: 'menu' },
+        { id: 'tagManage', label: '标签管理', type: 'dir', children: [
+          { id: 'tagProductLib', label: '商品标签库', type: 'menu' },
+          { id: 'tagSupplierLib', label: '供应商标签库', type: 'menu' },
+          { id: 'tagPlatformLib', label: '标签库配置', type: 'menu' },
+          { id: 'tagLog', label: '标签维护日志', type: 'menu' }
+        ]},
         { id: 'system', label: '系统管理', type: 'dir', children: [
           { id: 'menuManage', label: '菜单管理', type: 'menu' }
         ]},

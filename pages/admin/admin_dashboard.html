@@ -789,6 +789,27 @@
         <i class="fas fa-file-invoice-dollar"></i>
         <span>平台结算管理</span>
       </a>
+      <div class="admin-menu-group" id="menuGroupTag">
+        <button type="button" class="admin-menu-item admin-menu-parent" onclick="toggleAdminMenuGroup('menuGroupTag')">
+          <i class="fas fa-tags"></i>
+          <span>标签管理</span>
+          <i class="fas fa-chevron-down sub-arrow"></i>
+        </button>
+        <div class="admin-submenu">
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_tag_product_lib.html" onclick="openAdminSubPage(this, 'admin_tag_product_lib.html', '标签管理 / 商品标签库')">
+            <i class="fas fa-box"></i><span>商品标签库</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_tag_supplier_lib.html" onclick="openAdminSubPage(this, 'admin_tag_supplier_lib.html', '标签管理 / 供应商标签库')">
+            <i class="fas fa-store"></i><span>供应商标签库</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_tag_platform_lib.html" onclick="openAdminSubPage(this, 'admin_tag_platform_lib.html', '标签管理 / 标签库配置')">
+            <i class="fas fa-database"></i><span>标签库配置</span>
+          </a>
+          <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_tag_log.html" onclick="openAdminSubPage(this, 'admin_tag_log.html', '标签管理 / 标签维护日志')">
+            <i class="fas fa-clock-rotate-left"></i><span>标签维护日志</span>
+          </a>
+        </div>
+      </div>
       <a href="javascript:void(0)" class="admin-menu-item" data-page-key="admin_menu_manage.html" onclick="openAdminSubPage(this, 'admin_menu_manage.html', '菜单管理')">
         <span class="icon-menu-mgmt" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M3 4.25A1.25 1.25 0 0 1 4.25 3h5.5A1.25 1.25 0 0 1 11 4.25V6.5H3V4.25zm10.5 0A1.25 1.25 0 0 1 14.75 3h5.5A1.25 1.25 0 0 1 21.5 4.25V6.5H13.5V4.25zM3 10.25A1.25 1.25 0 0 1 4.25 9h4.25A1.25 1.25 0 0 1 9.5 10.25v2.25H3v-2.25zm8.5 0a1.25 1.25 0 0 1 1.25-1.25h4.25A1.25 1.25 0 0 1 17.25 10.25v2.25H11.5v-2.25zM3 16.25A1.25 1.25 0 0 1 4.25 15h5.75A1.25 1.25 0 0 1 11.25 16.25v2.25H3v-2.25zm9.5 0a1.25 1.25 0 0 1 1.25-1.25h5.75A1.25 1.25 0 0 1 19.5 16.25v2.25H12.5v-2.25z"/><path stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M7.375 6.5v3.75M7.375 12.5v3.75"/></svg></span>
         <span>菜单管理</span>
@@ -1178,6 +1199,10 @@
       'admin_po.html': '采购单管理',
       'admin_orders.html': '订单管理',
       'operator_platform_settlement.html': '平台结算管理',
+      'admin_tag_platform_lib.html': '标签管理 / 标签库配置',
+      'admin_tag_product_lib.html': '标签管理 / 商品标签库',
+      'admin_tag_supplier_lib.html': '标签管理 / 供应商标签库',
+      'admin_tag_log.html': '标签管理 / 标签维护日志',
       'admin_menu_manage.html': '菜单管理',
       'admin_system_user.html?scope=supplier': '供应商管理 / 用户管理',
       'admin_system_role.html?scope=supplier': '供应商管理 / 角色管理',

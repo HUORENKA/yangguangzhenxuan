@@ -1,0 +1,187 @@
+/* 标签库配置 · 布局优化 */
+.tag-platform-page .tag-page-hero-compact {
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+.tag-platform-page .tag-page-hero-compact h1 { font-size: 20px; }
+.tag-platform-page .tag-page-hero-compact p { margin-top: 2px; }
+
+.tag-platform-card {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 168px);
+  height: auto;
+}
+
+.tag-tab-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 12px 0 0;
+  background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
+  flex-shrink: 0;
+}
+.tag-tab-bar .tag-inner-tabs {
+  border-bottom: none;
+  flex: 1;
+  min-width: 0;
+}
+.tag-tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 0;
+  flex-shrink: 0;
+}
+
+.tag-platform-body {
+  flex: 1;
+  min-height: 0;
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.tag-platform-body .tag-dict-layout {
+  flex: 1;
+  min-height: 480px;
+  height: auto;
+  align-items: stretch;
+  grid-template-columns: minmax(280px, 320px) 1fr;
+}
+
+.tag-dict-layout.create-mode {
+  grid-template-columns: 1fr !important;
+}
+.tag-dict-layout.create-mode .tag-tree-panel {
+  display: none;
+}
+
+.tag-tree-head {
+  gap: 8px;
+}
+.tag-panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.tree-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.tag-platform-body .tag-tree-panel {
+  min-height: 480px;
+  max-height: calc(100vh - 220px);
+  height: auto;
+  align-self: start;
+  position: sticky;
+  top: 0;
+}
+.tag-platform-body .tag-config-panel {
+  min-height: 480px;
+  height: auto;
+  overflow: visible;
+}
+.tag-platform-body .tag-config-panel.tag-panel {
+  overflow: visible;
+}
+.tag-platform-body .tag-panel {
+  min-height: 0;
+}
+.tag-platform-body .tag-tree-panel.tag-panel {
+  height: auto;
+}
+.tag-platform-body .tag-tree-body {
+  min-height: 200px;
+  max-height: calc(100vh - 280px);
+  flex: 1;
+  overflow-y: auto;
+}
+.tag-platform-body .tag-detail-panel {
+  flex: none;
+  height: auto;
+  min-height: auto;
+  max-height: none;
+  overflow: visible;
+  padding: 12px 14px 16px;
+  display: block;
+}
+
+.tag-config-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: auto;
+  overflow: visible;
+}
+.tag-config-inner .form-grid-compact {
+  gap: 10px 14px;
+}
+.tag-config-inner .form-grid-compact.form-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 1200px) {
+  .tag-config-inner .form-grid-compact.form-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.tag-config-inner textarea.form-input {
+  min-height: 56px;
+  resize: vertical;
+}
+.tag-config-inner .rule-section,
+.tag-config-inner .enum-section {
+  margin-top: 8px;
+  padding-top: 10px;
+}
+.tag-config-inner .rule-section-title,
+.tag-config-inner .form-section-title {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.tag-config-inner .detail-head {
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+.tag-config-inner .detail-head h3 {
+  font-size: 16px;
+}
+.tag-config-inner .detail-actions {
+  margin-top: 12px;
+  padding-top: 10px;
+  flex-shrink: 0;
+}
+.tag-config-panel .tag-panel-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.tag-config-inner .enum-section .data-table th,
+.tag-config-inner .enum-section .data-table td {
+  padding: 8px 10px;
+}
+.tag-config-inner .hint-box {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+.tag-config-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-bottom: 4px;
+  font-family: inherit;
+}
+.tag-config-back:hover { color: var(--primary); }
