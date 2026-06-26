@@ -91,12 +91,12 @@
   };
 
   var PLAN_BID_HISTORY = [
-    { id: 'h1', file: '会议室音视频改造项目.pdf', docType: 'pdf', mode: 'bidding', suppliers: '5 家', status: 'quoting', deadline: '2026-06-27T18:00', budget: 95000, bidStep: 500, lowest: 86200, lowestSupplier: '声谷科技公司', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-06 10:15', supplier: '蓝天系统集成', amount: 90500, valid: true }, { time: '2026-05-06 14:22', supplier: '声谷科技公司', amount: 88000, valid: true }, { time: '2026-05-07 09:05', supplier: '京采云商贸', amount: 87000, valid: true }, { time: '2026-05-07 11:20', supplier: '蓝天系统集成', amount: 89800, valid: false }, { time: '2026-05-07 14:32', supplier: '声谷科技公司', amount: 86200, valid: true }] },
-    { id: 'h2', file: '年度耗材集中采购.xlsx', docType: 'excel', mode: 'inquiry', suppliers: '4 家', status: 'pending_confirm', deadline: '2026-06-25T18:00', budget: 50000, bidStep: null, lowest: 42800, lowestSupplier: '京采云商贸', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-07 08:40', supplier: '政采优选数码', amount: 46500, valid: true }, { time: '2026-05-07 10:12', supplier: '京采云商贸', amount: 44200, valid: true }, { time: '2026-05-07 11:05', supplier: '北京华政科技', amount: 45100, valid: true }, { time: '2026-05-07 13:48', supplier: '京采云商贸', amount: 42800, valid: true }, { time: '2026-05-07 15:22', supplier: '政采优选数码', amount: 43900, valid: true }] },
-    { id: 'h3', file: '办公家具更新项目.xlsx', docType: 'excel', mode: 'bidding', suppliers: '6 家', status: 'ordered', deadline: '2026-05-08T18:00', budget: 140000, bidStep: 1000, lowest: 128000, lowestSupplier: '中采智联供应链', procurementBasis: PLAN_BID_DEMO_BASIS.furniture, quotes: [{ time: '2026-05-04 16:10', supplier: '国采办公服务中心', amount: 136500, valid: true }, { time: '2026-05-05 09:30', supplier: '中采智联供应链', amount: 131200, valid: true }, { time: '2026-05-05 14:55', supplier: '北京华政科技', amount: 129800, valid: true }, { time: '2026-05-06 11:18', supplier: '中采智联供应链', amount: 128000, valid: true }] },
-    { id: 'h4', file: '机房布线耗材询价.pdf', docType: 'pdf', mode: 'inquiry', suppliers: '3 家', status: 'terminated', deadline: '2026-05-05T18:00', budget: 65000, bidStep: null, lowest: 59900, lowestSupplier: '北京华政科技', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-03 13:20', supplier: '京采云商贸', amount: 62800, valid: true }, { time: '2026-05-03 17:45', supplier: '北京华政科技', amount: 61200, valid: true }, { time: '2026-05-04 09:10', supplier: '北京华政科技', amount: 59900, valid: true }, { time: '2026-05-04 10:02', supplier: '政采优选数码', amount: 60500, valid: false }] },
-    { id: 'h5', file: '保安服务费竞价.docx', docType: 'word', mode: 'bidding', suppliers: '4 家', status: 'failed', deadline: '2026-05-06T18:00', budget: 120000, bidStep: 500, lowest: null, lowestSupplier: null, procurementBasis: PLAN_BID_DEMO_BASIS.minimal, quotes: [{ time: '2026-05-05 09:00', supplier: '甲保安服务有限公司', amount: 120000, valid: false }, { time: '2026-05-05 11:30', supplier: '乙安防服务中心', amount: 118000, valid: false }, { time: '2026-05-05 15:10', supplier: '丙安保集团', amount: 121500, valid: false }] },
-    { id: 'h6', file: '绿化养护外包询价.xlsx', docType: 'excel', mode: 'inquiry', suppliers: '5 家', status: 'quoting', deadline: '2026-06-30T18:00', budget: 35000, bidStep: null, lowest: 31500, lowestSupplier: '政采优选数码', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-07 07:50', supplier: '绿化园林工程队', amount: 35200, valid: true }, { time: '2026-05-07 09:18', supplier: '政采优选数码', amount: 33200, valid: true }, { time: '2026-05-07 12:40', supplier: '京采云商贸', amount: 32800, valid: true }, { time: '2026-05-07 16:05', supplier: '政采优选数码', amount: 31500, valid: true }, { time: '2026-05-07 18:22', supplier: '绿化园林工程队', amount: 31800, valid: true }] }
+    { id: 'h1', code: 'BID20260507001', file: '会议室音视频改造项目.pdf', docType: 'pdf', mode: 'bidding', suppliers: '5 家', status: 'quoting', deadline: '2026-06-27T18:00', budget: 95000, bidStep: 500, lowest: 86200, lowestSupplier: '声谷科技公司', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-06 10:15', supplier: '蓝天系统集成', amount: 90500, valid: true }, { time: '2026-05-06 14:22', supplier: '声谷科技公司', amount: 88000, valid: true }, { time: '2026-05-07 09:05', supplier: '京采云商贸', amount: 87000, valid: true }, { time: '2026-05-07 11:20', supplier: '蓝天系统集成', amount: 89800, valid: false }, { time: '2026-05-07 14:32', supplier: '声谷科技公司', amount: 86200, valid: true }] },
+    { id: 'h2', code: 'RFQ20260507002', file: '年度耗材集中采购.xlsx', docType: 'excel', mode: 'inquiry', suppliers: '4 家', status: 'pending_confirm', deadline: '2026-06-25T18:00', budget: 50000, bidStep: null, lowest: 42800, lowestSupplier: '京采云商贸', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-07 08:40', supplier: '政采优选数码', amount: 46500, valid: true }, { time: '2026-05-07 10:12', supplier: '京采云商贸', amount: 44200, valid: true }, { time: '2026-05-07 11:05', supplier: '北京华政科技', amount: 45100, valid: true }, { time: '2026-05-07 13:48', supplier: '京采云商贸', amount: 42800, valid: true }, { time: '2026-05-07 15:22', supplier: '政采优选数码', amount: 43900, valid: true }] },
+    { id: 'h3', code: 'BID20260506003', file: '办公家具更新项目.xlsx', docType: 'excel', mode: 'bidding', suppliers: '6 家', status: 'ordered', deadline: '2026-05-08T18:00', budget: 140000, bidStep: 1000, lowest: 128000, lowestSupplier: '中采智联供应链', procurementBasis: PLAN_BID_DEMO_BASIS.furniture, quotes: [{ time: '2026-05-04 16:10', supplier: '国采办公服务中心', amount: 136500, valid: true }, { time: '2026-05-05 09:30', supplier: '中采智联供应链', amount: 131200, valid: true }, { time: '2026-05-05 14:55', supplier: '北京华政科技', amount: 129800, valid: true }, { time: '2026-05-06 11:18', supplier: '中采智联供应链', amount: 128000, valid: true }] },
+    { id: 'h4', code: 'RFQ20260505004', file: '机房布线耗材询价.pdf', docType: 'pdf', mode: 'inquiry', suppliers: '3 家', status: 'terminated', deadline: '2026-05-05T18:00', budget: 65000, bidStep: null, lowest: 59900, lowestSupplier: '北京华政科技', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-03 13:20', supplier: '京采云商贸', amount: 62800, valid: true }, { time: '2026-05-03 17:45', supplier: '北京华政科技', amount: 61200, valid: true }, { time: '2026-05-04 09:10', supplier: '北京华政科技', amount: 59900, valid: true }, { time: '2026-05-04 10:02', supplier: '政采优选数码', amount: 60500, valid: false }] },
+    { id: 'h5', code: 'RFQ20260503006', file: '保安服务费竞价.docx', docType: 'word', mode: 'bidding', suppliers: '4 家', status: 'failed', deadline: '2026-05-06T18:00', budget: 120000, bidStep: 500, lowest: null, lowestSupplier: null, procurementBasis: PLAN_BID_DEMO_BASIS.minimal, quotes: [{ time: '2026-05-05 09:00', supplier: '甲保安服务有限公司', amount: 120000, valid: false }, { time: '2026-05-05 11:30', supplier: '乙安防服务中心', amount: 118000, valid: false }, { time: '2026-05-05 15:10', supplier: '丙安保集团', amount: 121500, valid: false }] },
+    { id: 'h6', code: 'BID20260507008', file: '绿化养护外包询价.xlsx', docType: 'excel', mode: 'inquiry', suppliers: '5 家', status: 'quoting', deadline: '2026-06-30T18:00', budget: 35000, bidStep: null, lowest: 31500, lowestSupplier: '政采优选数码', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-07 07:50', supplier: '绿化园林工程队', amount: 35200, valid: true }, { time: '2026-05-07 09:18', supplier: '政采优选数码', amount: 33200, valid: true }, { time: '2026-05-07 12:40', supplier: '京采云商贸', amount: 32800, valid: true }, { time: '2026-05-07 16:05', supplier: '政采优选数码', amount: 31500, valid: true }, { time: '2026-05-07 18:22', supplier: '绿化园林工程队', amount: 31800, valid: true }] }
   ];
 
   function planBidGetHistory() {
@@ -127,6 +127,36 @@
 
   function planBidEsc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function planBidRowCode(row) {
+    return planBidEsc(row.code || '—');
+  }
+
+  function planBidGenerateCode(mode) {
+    var prefix = mode === 'inquiry' ? 'RFQ' : 'BID';
+    var d = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var dateStr = '' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+    var seq = String(Date.now()).slice(-3);
+    return prefix + dateStr + seq;
+  }
+
+  function planBidDocFileCellHtml(row, wb) {
+    if (!row.file) {
+      return wb
+        ? '<td><span style="color:#94a3b8">—</span></td>'
+        : '<td><span class="bi-doc-empty" style="color:#94a3b8">—</span></td>';
+    }
+    var ic = planBidDocIcon(row.docType);
+    if (wb) {
+      return ''
+        + '<td><div class="doc-cell"><div class="doc-icon ' + ic.cls + '"><i class="fa-solid ' + ic.icon + '"></i></div>'
+        + '<div><div class="doc-name">' + planBidEsc(row.file) + '</div></div></div></td>';
+    }
+    return ''
+      + '<td><div class="bi-doc-cell"><div class="bi-doc-icon ' + ic.cls + '"><i class="fa-solid ' + ic.icon + '"></i></div>'
+      + '<div><div class="bi-doc-name">' + planBidEsc(row.file) + '</div></div></div></td>';
   }
 
   function planBidFmtSuppliers(text) {
@@ -409,7 +439,6 @@
       var canStop = row.status === 'quoting' || row.status === 'pending_confirm';
       var canConfirm = row.status === 'pending_confirm' && row.lowest != null && row.lowestSupplier;
       var hasQuotes = row.quotes && row.quotes.length;
-      var ic = planBidDocIcon(row.docType);
       var wb = planBidIsWorkbench();
 
       if (wb) {
@@ -420,9 +449,8 @@
           + (!hasQuotes ? 'disabled style="opacity:.35;cursor:not-allowed"' : '') + '>查看报价详情</button>';
         return ''
           + '<tr data-id="' + row.id + '" data-status="' + row.status + '">'
-          + '<td><div class="doc-cell"><div class="doc-icon ' + ic.cls + '"><i class="fa-solid ' + ic.icon + '"></i></div>'
-          + '<div><div class="doc-name">' + planBidEsc(row.file) + '</div>'
-          + '<div class="doc-tip">演示 · ' + row.id + '</div></div></div></td>'
+          + '<td><span class="font-semibold text-slate-900">' + planBidRowCode(row) + '</span></td>'
+          + planBidDocFileCellHtml(row, true)
           + '<td><span class="badge ' + modeBadge + '">' + modeText + '</span></td>'
           + '<td>' + planBidEsc(planBidFmtSuppliers(row.suppliers)) + '</td>'
           + planBidRuleColsHtml(row)
@@ -442,9 +470,8 @@
         + (!hasQuotes ? 'disabled' : '') + '>查看报价详情</button>';
       return ''
         + '<tr data-id="' + row.id + '">'
-        + '<td><div class="bi-doc-cell"><div class="bi-doc-icon ' + ic.cls + '"><i class="fa-solid ' + ic.icon + '"></i></div>'
-        + '<div><div class="bi-doc-name">' + planBidEsc(row.file) + '</div>'
-        + '<div class="bi-doc-tip">演示 · ' + row.id + '</div></div></div></td>'
+        + '<td><span class="bi-doc-name" style="font-weight:800">' + planBidRowCode(row) + '</span></td>'
+        + planBidDocFileCellHtml(row, false)
         + '<td><span class="bi-tag-mode ' + modeCls + '">' + modeText + '</span></td>'
         + '<td>' + planBidEsc(planBidFmtSuppliers(row.suppliers)) + '</td>'
         + planBidRuleColsHtml(row)
@@ -634,6 +661,7 @@
         var fileName = this.files[0].name;
         var cfg = window.PLAN_BID_ASSIST_CONFIG || {};
         try {
+          sessionStorage.removeItem('bidAssistProductLaunch');
           sessionStorage.setItem('bidAssistDemo', JSON.stringify({
             file: fileName,
             uploadedAt: new Date().toLocaleString('zh-CN', { hour12: false }),
