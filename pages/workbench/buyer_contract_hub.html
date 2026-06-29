@@ -18,7 +18,9 @@
     .b-slate { background:#f1f5f9; color:#475569; }
     .b-muted { background:#f4f4f5; color:#52525b; }
     .b-violet { background:#f5f3ff; color:#6d28d9; }
+    .b-red { background:#fef2f2; color:#b91c1c; }
     .btn { height:32px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700; border:1px solid #dbe2ea; background:#fff; color:#475569; cursor:pointer; }
+    .btn-link { border:none; background:none; color:#2563eb; padding:0 6px; height:auto; font-weight:600; }
     .btn-primary { background:#4f46e5; border-color:#4f46e5; color:#fff; }
     .btn-danger { background:#fef2f2; border-color:#fecaca; color:#b91c1c; }
     .btn-orange { background:linear-gradient(135deg,#ff7a18,#ff4d00); border:none; color:#fff; height:38px; padding:0 18px; font-weight:700; border-radius:8px; cursor:pointer; }
@@ -31,17 +33,102 @@
     .hub-tab-pane.active { display:block; }
     .modal-overlay { position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:100; display:none; align-items:center; justify-content:center; padding:16px; }
     .modal-overlay.show { display:flex; }
+    /* 抽屉 z-index 为 200/210，嵌套弹窗须在其之上才能居中显示 */
+    .modal-overlay.layer-above-drawer { z-index:250; }
     .modal-box { background:#fff; border-radius:14px; max-width:440px; width:100%; padding:20px; box-shadow:0 22px 48px rgba(15,23,42,.2); }
-    .reject-modal { max-width:min(92vw,560px); }
-    .reject-update-panel { display:none; margin-top:12px; border:1px dashed #cbd5e1; border-radius:12px; padding:12px; background:#fafafa; }
-    .reject-update-panel.show { display:block; }
-    .reject-method-pane { display:none; }
-    .reject-method-pane.active { display:block; }
     .modal-box.ai-gen-modal { max-width:min(92vw,800px); padding:22px 24px; }
+    .return-modal { max-width:min(92vw,480px); }
     .ai-gen-loading { display:none; margin-top:12px; font-size:13px; color:#64748b; align-items:center; gap:8px; }
     .ai-gen-loading.show { display:flex; }
     .ai-spin { width:16px; height:16px; border:2px solid #e2e8f0; border-top-color:#ff6a00; border-radius:50%; animation:spin .75s linear infinite; }
     @keyframes spin { to { transform:rotate(360deg); } }
+
+    .drawer-mask { position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:200; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .drawer-mask.show { opacity:1; pointer-events:auto; }
+    .contract-drawer { position:fixed; top:0; right:0; bottom:0; width:min(920px,96vw); background:#f8fafc; z-index:210; transform:translateX(100%); transition:transform .28s ease; display:flex; flex-direction:column; box-shadow:-12px 0 40px rgba(15,23,42,.12); }
+    .contract-drawer.show { transform:translateX(0); }
+    .drawer-head { background:#fff; border-bottom:1px solid #e2e8f0; padding:16px 20px; flex-shrink:0; }
+    .drawer-head-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .drawer-title { font-size:18px; font-weight:800; color:#0f172a; }
+    .drawer-close { width:36px; height:36px; border-radius:8px; border:1px solid #e2e8f0; background:#fff; cursor:pointer; color:#64748b; }
+    .drawer-actions { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+    .drawer-action-btn { height:36px; padding:0 18px; border-radius:8px; font-size:13px; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .drawer-action-btn.confirm { background:#16a34a; color:#fff; }
+    .drawer-action-btn.upload { background:#dc2626; color:#fff; }
+    .drawer-action-btn.return { background:#fff; color:#b45309; border:1px solid #fcd34d; }
+    .drawer-status-bar { background:#fff; border-bottom:1px solid #e2e8f0; padding:18px 20px; flex-shrink:0; }
+    .drawer-status-no { font-size:13px; color:#64748b; margin-bottom:6px; }
+    .drawer-status-title { font-size:22px; font-weight:800; color:#0f172a; margin-bottom:16px; }
+    .process-steps { display:flex; align-items:flex-start; gap:0; overflow-x:auto; padding-bottom:4px; }
+    .process-step { flex:1; min-width:140px; text-align:center; position:relative; }
+    .process-step:not(:last-child)::after { content:''; position:absolute; top:18px; left:55%; width:90%; height:2px; background:#e2e8f0; z-index:0; }
+    .process-step.done:not(:last-child)::after { background:#16a34a; }
+    .process-icon { width:36px; height:36px; border-radius:50%; background:#f1f5f9; color:#94a3b8; display:inline-flex; align-items:center; justify-content:center; margin:0 auto 8px; position:relative; z-index:1; font-size:14px; }
+    .process-step.done .process-icon { background:#dcfce7; color:#16a34a; }
+    .process-step.current .process-icon { background:#eff6ff; color:#2563eb; box-shadow:0 0 0 3px #dbeafe; }
+    .process-label { font-size:12px; font-weight:700; color:#475569; }
+    .process-time { font-size:11px; color:#94a3b8; margin-top:4px; }
+    .drawer-body { flex:1; overflow-y:auto; padding:16px 20px 24px; }
+    .section-card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; margin-bottom:12px; overflow:hidden; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f8fafc; cursor:pointer; user-select:none; }
+    .section-head-title { font-size:14px; font-weight:800; color:#0f172a; }
+    .section-body { padding:16px; border-top:1px solid #f1f5f9; display:none; }
+    .section-card.open .section-body { display:block; }
+    .section-card.open .section-chevron { transform:rotate(180deg); }
+    .section-chevron { transition:transform .2s; color:#94a3b8; }
+    .info-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 24px; font-size:13px; }
+    .info-grid .label { color:#64748b; margin-bottom:2px; }
+    .info-grid .value { color:#0f172a; font-weight:600; }
+    .contract-file-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; padding:10px 0; border-bottom:1px solid #f1f5f9; }
+    .contract-file-row:last-child { border-bottom:none; }
+    .file-tag { font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; }
+    .file-tag.latest { background:#ecfdf5; color:#047857; }
+    .file-tag.voided { background:#f4f4f5; color:#71717a; text-decoration:line-through; }
+    .mini-table { width:100%; font-size:12px; border-collapse:collapse; }
+    .mini-table th { background:#f8fafc; padding:8px 10px; font-size:12px; }
+    .mini-table td { padding:8px 10px; border-bottom:1px solid #f1f5f9; }
+
+    .compliance-overlay { position:fixed; inset:0; background:rgba(15,23,42,.55); z-index:300; display:none; align-items:center; justify-content:center; padding:12px; }
+    .compliance-overlay.show { display:flex; }
+    .compliance-modal { width:min(1280px,98vw); height:min(88vh,860px); background:#0f172a; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 28px 60px rgba(0,0,0,.35); }
+    .compliance-head { padding:16px 20px; border-bottom:1px solid rgba(255,255,255,.08); display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-shrink:0; }
+    .compliance-head-title { color:#f8fafc; font-size:18px; font-weight:800; }
+    .compliance-head-sub { color:#94a3b8; font-size:12px; margin-top:4px; }
+    .compliance-close { width:36px; height:36px; border-radius:8px; border:1px solid rgba(255,255,255,.15); background:transparent; color:#cbd5e1; cursor:pointer; flex-shrink:0; }
+    .compliance-body { flex:1; display:grid; grid-template-columns:240px 1fr 320px; min-height:0; background:#1e293b; }
+    .compliance-col { border-right:1px solid rgba(255,255,255,.06); display:flex; flex-direction:column; min-height:0; }
+    .compliance-col:last-child { border-right:none; }
+    .compliance-col-head { padding:12px 14px; font-size:13px; font-weight:700; color:#e2e8f0; border-bottom:1px solid rgba(255,255,255,.06); flex-shrink:0; }
+    .compliance-col-body { flex:1; overflow-y:auto; padding:12px; }
+    .clause-item { display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:8px; font-size:12px; color:#cbd5e1; cursor:pointer; margin-bottom:4px; }
+    .clause-item:hover, .clause-item.active { background:rgba(255,255,255,.08); color:#fff; }
+    .clause-risk-count { min-width:20px; height:20px; border-radius:999px; background:#f97316; color:#fff; font-size:11px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+    .clause-risk-count.zero { background:#334155; color:#94a3b8; }
+    .contract-text-pane { background:#fff; margin:12px; border-radius:10px; padding:16px 18px; overflow-y:auto; flex:1; font-size:13px; line-height:1.75; color:#334155; }
+    .contract-text-pane h4 { font-size:14px; font-weight:800; color:#0f172a; margin:16px 0 8px; }
+    .contract-text-pane h4:first-child { margin-top:0; }
+    .risk-stats { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+    .risk-stat { flex:1; min-width:80px; padding:10px; border-radius:8px; text-align:center; }
+    .risk-stat.high { background:rgba(220,38,38,.15); }
+    .risk-stat.mid { background:rgba(249,115,22,.15); }
+    .risk-stat.low { background:rgba(59,130,246,.15); }
+    .risk-stat-num { font-size:20px; font-weight:800; }
+    .risk-stat.high .risk-stat-num { color:#f87171; }
+    .risk-stat.mid .risk-stat-num { color:#fb923c; }
+    .risk-stat.low .risk-stat-num { color:#60a5fa; }
+    .risk-stat-label { font-size:11px; color:#94a3b8; margin-top:2px; }
+    .risk-card { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:10px 12px; margin-bottom:8px; cursor:pointer; }
+    .risk-card.active { border-color:#3b82f6; background:rgba(59,130,246,.12); }
+    .risk-card-title { font-size:12px; font-weight:700; color:#f1f5f9; margin-bottom:4px; }
+    .risk-card-meta { font-size:11px; color:#94a3b8; }
+    .risk-detail-box { margin-top:12px; padding:12px; background:rgba(255,255,255,.04); border-radius:10px; border:1px solid rgba(255,255,255,.08); }
+    .risk-detail-box h5 { font-size:12px; font-weight:700; color:#e2e8f0; margin:0 0 8px; }
+    .risk-detail-box p { font-size:11px; color:#94a3b8; line-height:1.6; margin:0 0 8px; }
+    .compliance-foot { padding:12px 20px; background:#0f172a; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; }
+    .compliance-foot .btn { height:36px; padding:0 16px; }
+    .compliance-foot-actions { display:flex; gap:10px; flex-shrink:0; }
+    .compliance-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#94a3b8; gap:12px; }
+    .compliance-loading .ai-spin { width:32px; height:32px; border-width:3px; border-top-color:#3b82f6; }
   </style>
 </head>
 <body>
@@ -65,9 +152,7 @@
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <thead>
-              <tr><th>模板名称</th><th>合同来源</th><th>上传/更新日期</th><th>默认模板</th><th>状态</th><th>操作</th></tr>
-            </thead>
+            <thead><tr><th>模板名称</th><th>合同来源</th><th>上传/更新日期</th><th>默认模板</th><th>状态</th><th>操作</th></tr></thead>
             <tbody id="tplTableBody"></tbody>
           </table>
         </div>
@@ -75,20 +160,23 @@
 
       <div id="hubPane-signing" class="hub-tab-pane">
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-5">
-          <div class="stat-card"><div><div class="text-sm text-slate-500">合同总数</div><div class="text-3xl font-bold mt-2" id="statTotal">52</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-layer-group"></i></div></div>
-          <div class="stat-card"><div><div class="text-sm text-slate-500">采购单审批中</div><div class="text-3xl font-bold text-slate-700 mt-2">8</div></div><div class="stat-icon bg-slate-50 text-slate-600"><i class="fas fa-clipboard-list"></i></div></div>
-          <div class="stat-card"><div><div class="text-sm text-slate-500">待供应商确认</div><div class="text-3xl font-bold text-amber-600 mt-2">12</div></div><div class="stat-icon bg-amber-50 text-amber-600"><i class="fas fa-building"></i></div></div>
-          <div class="stat-card"><div><div class="text-sm text-slate-500">待确认</div><div class="text-3xl font-bold text-blue-600 mt-2">9</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-user-check"></i></div></div>
-          <div class="stat-card"><div><div class="text-sm text-slate-500">已签署</div><div class="text-3xl font-bold text-green-600 mt-2">21</div></div><div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-circle-check"></i></div></div>
-          <div class="stat-card"><div><div class="text-sm text-slate-500">已作废</div><div class="text-3xl font-bold text-zinc-600 mt-2">2</div></div><div class="stat-icon bg-zinc-100 text-zinc-600"><i class="fas fa-ban"></i></div></div>
+          <div class="stat-card"><div><div class="text-sm text-slate-500">合同总数</div><div class="text-3xl font-bold mt-2" id="statTotal">0</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-layer-group"></i></div></div>
+          <div class="stat-card"><div><div class="text-sm text-slate-500">采购单审批中</div><div class="text-3xl font-bold text-slate-700 mt-2" id="statPo">0</div></div><div class="stat-icon bg-slate-50 text-slate-600"><i class="fas fa-clipboard-list"></i></div></div>
+          <div class="stat-card"><div><div class="text-sm text-slate-500">待供应商确认</div><div class="text-3xl font-bold text-amber-600 mt-2" id="statSupplier">0</div></div><div class="stat-icon bg-amber-50 text-amber-600"><i class="fas fa-building"></i></div></div>
+          <div class="stat-card"><div><div class="text-sm text-slate-500">待处理</div><div class="text-3xl font-bold text-blue-600 mt-2" id="statMine">0</div></div><div class="stat-icon bg-blue-50 text-blue-600"><i class="fas fa-user-check"></i></div></div>
+          <div class="stat-card"><div><div class="text-sm text-slate-500">已签署</div><div class="text-3xl font-bold text-green-600 mt-2" id="statSigned">0</div></div><div class="stat-icon bg-green-50 text-green-600"><i class="fas fa-circle-check"></i></div></div>
+          <div class="stat-card"><div><div class="text-sm text-slate-500">已作废</div><div class="text-3xl font-bold text-zinc-600 mt-2" id="statVoided">0</div></div><div class="stat-icon bg-zinc-100 text-zinc-600"><i class="fas fa-ban"></i></div></div>
         </div>
         <div class="flex flex-wrap gap-3 mb-4">
-          <input id="signKw" class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="关键词：合同编号 / 名称 / 供应商" onkeydown="if(event.key==='Enter') renderSigningTable()">
+          <input id="signKw" class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" placeholder="关键词：合同名称" onkeydown="if(event.key==='Enter') renderSigningTable()">
           <select id="signStatus" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
             <option value="">全部状态</option>
             <option value="po-approving">采购单审批中</option>
             <option value="pending-supplier">待供应商确认</option>
             <option value="pending-confirm">待确认</option>
+            <option value="contract-updated">合同更新</option>
+            <option value="buyer-returned">采购方退回</option>
+            <option value="supplier-returned">供应商退回</option>
             <option value="signed">已签署</option>
             <option value="voided">已作废</option>
           </select>
@@ -98,7 +186,7 @@
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr><th>合同编号</th><th>合同名称</th><th>供应商</th><th>关联单据</th><th>状态</th><th>发起时间</th><th>操作</th></tr>
+              <tr><th>序号</th><th>合同编号</th><th>合同名称</th><th>订单编号</th><th>供应商</th><th>签署状态</th><th>创建时间</th><th>操作</th></tr>
             </thead>
             <tbody id="signTableBody"></tbody>
           </table>
@@ -107,15 +195,11 @@
     </div>
   </div>
 
-  <!-- AI 生成合同模板 -->
   <div id="aiTplModal" class="modal-overlay" onclick="if(event.target===this) closeAiTplModal()">
     <div class="modal-box ai-gen-modal" onclick="event.stopPropagation()">
-      <div class="flex items-center gap-2 text-base font-bold text-slate-900 mb-4">
-        <i class="fa-solid fa-wand-magic-sparkles text-violet-600"></i>
-        AI 生成合同模板
-      </div>
+      <div class="flex items-center gap-2 text-base font-bold text-slate-900 mb-4"><i class="fa-solid fa-wand-magic-sparkles text-violet-600"></i> AI 生成合同模板</div>
       <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-end">
-        <select id="aiTplTypeSelect" class="border border-slate-300 rounded-lg px-3 py-2 text-sm min-w-[160px] flex-shrink-0">
+        <select id="aiTplTypeSelect" class="border border-slate-300 rounded-lg px-3 py-2 text-sm min-w-[160px]">
           <option value="">选择合同类型</option>
           <option value="办公用品采购合同">办公用品采购合同</option>
           <option value="IT设备采购合同">IT设备采购合同</option>
@@ -129,42 +213,58 @@
     </div>
   </div>
 
-  <div id="rejectModal" class="modal-overlay" onclick="if(event.target===this) closeRejectModal()">
-    <div class="modal-box reject-modal" onclick="event.stopPropagation()">
-      <div class="text-lg font-bold text-slate-900 mb-2">退回合同</div>
-      <p class="text-sm text-slate-500 mb-3">请核对下方「当前合同」信息。如需替换合同文本，可在该卡片内展开「更新合同」，从平台选用（支持预览）或上传新版本；然后填写退回理由。</p>
-      <div class="rounded-lg border border-slate-200 bg-slate-50 p-3 mb-4">
-        <div class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">当前合同</div>
-        <div id="rejectCurrentContractBody" class="text-sm"></div>
-        <div class="mt-3 pt-3 border-t border-slate-200">
-          <button type="button" id="rejectToggleUpdateBtn" class="btn btn-primary" onclick="toggleRejectUpdatePanel()"><i class="fas fa-file-contract mr-1"></i>更新合同</button>
-          <div id="rejectUpdatePanel" class="reject-update-panel">
-            <div class="text-sm font-semibold text-slate-800 mb-2">请选择更新方式</div>
-            <div class="flex flex-wrap gap-2 mb-3">
-              <button type="button" id="rejectMethodSystem" class="btn btn-primary" onclick="setRejectUpdateMethod('system')">从系统选择</button>
-              <button type="button" id="rejectMethodUpload" class="btn" onclick="setRejectUpdateMethod('upload')">上传合同</button>
-            </div>
-            <div id="rejectPaneSystem" class="reject-method-pane active">
-              <label class="block text-xs font-semibold text-slate-600 mb-1">平台内已有合同或模板</label>
-              <div class="flex flex-wrap gap-2 items-stretch">
-                <select id="rejectSystemSelect" class="flex-1 min-w-[200px] border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white" onchange="onRejectSystemSelectChange()"></select>
-                <button type="button" id="rejectSystemPreviewBtn" class="btn whitespace-nowrap self-center" onclick="previewRejectSystemSelection()" disabled>预览</button>
-              </div>
-            </div>
-            <div id="rejectPaneUpload" class="reject-method-pane">
-              <input type="file" id="rejectUploadInput" class="hidden" accept=".pdf,.doc,.docx" onchange="handleRejectUpload(this)">
-              <button type="button" class="btn" onclick="document.getElementById('rejectUploadInput').click()"><i class="fas fa-folder-open mr-1"></i>选择文件</button>
-              <span id="rejectUploadFileName" class="text-sm text-slate-600 ml-2 align-middle"></span>
-              <p class="text-xs text-slate-500 mt-2 mb-0">支持 PDF、Word（.doc / .docx）。提交后将作为修订稿通知对方重新确认。</p>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- 退回至供应商 -->
+  <div id="returnModal" class="modal-overlay layer-above-drawer" onclick="if(event.target===this) closeReturnModal()">
+    <div class="modal-box return-modal" onclick="event.stopPropagation()">
+      <div class="text-lg font-bold text-slate-900 mb-2">退回至供应商</div>
+      <p class="text-sm text-slate-500 mb-3">请填写退回理由，合同将退回供应商重新处理。</p>
       <label class="block text-sm font-semibold text-slate-700 mb-1">退回理由 <span class="text-red-500">*</span></label>
-      <textarea id="rejectReason" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm min-h-[100px] mb-4" placeholder="例如：条款与采购单约定不一致，请修订后重新提交。"></textarea>
+      <textarea id="returnReason" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm min-h-[100px] mb-4" placeholder="例如：付款条款与采购单约定不一致，请修订后重新提交。"></textarea>
       <div class="flex justify-end gap-2">
-        <button type="button" class="btn" onclick="closeRejectModal()">取消</button>
-        <button type="button" class="btn btn-danger" onclick="submitReject()">确认退回</button>
+        <button type="button" class="btn" onclick="closeReturnModal()">取消</button>
+        <button type="button" class="btn btn-danger" onclick="submitReturnToSupplier()">确认退回</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 合同详情抽屉 -->
+  <div id="drawerMask" class="drawer-mask" onclick="closeContractDrawer()"></div>
+  <aside id="contractDrawer" class="contract-drawer">
+    <div class="drawer-head">
+      <div class="drawer-head-row">
+        <div class="drawer-title">合同详情</div>
+        <button type="button" class="drawer-close" onclick="closeContractDrawer()"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div id="drawerActions" class="drawer-actions"></div>
+    </div>
+    <div class="drawer-status-bar">
+      <div class="drawer-status-no" id="drawerContractNo">合同编号：—</div>
+      <div class="drawer-status-title" id="drawerStatusTitle">—</div>
+      <div class="process-steps" id="drawerProcessSteps"></div>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+  <input type="file" id="contractUploadInput" class="hidden" accept=".pdf,.doc,.docx" onchange="handleContractUpload(this)">
+
+  <!-- 合同合规性校验 -->
+  <div id="complianceOverlay" class="compliance-overlay" onclick="if(event.target===this) closeComplianceModal()">
+    <div class="compliance-modal" onclick="event.stopPropagation()">
+      <div class="compliance-head">
+        <div>
+          <div class="compliance-head-title"><i class="fas fa-shield-halved mr-2"></i>合同合规性校验</div>
+          <div class="compliance-head-sub">结构化解析合同，定位风险，生成可执行修改建议</div>
+        </div>
+        <button type="button" class="compliance-close" onclick="closeComplianceModal()"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="compliance-body" id="complianceBody">
+        <div class="compliance-loading" style="grid-column:1/-1;background:#1e293b;"><span class="ai-spin"></span><span>正在解析合同并检测合规风险…</span></div>
+      </div>
+      <div class="compliance-foot">
+        <button type="button" class="btn btn-primary" onclick="applyComplianceAndSign()">应用合同并签署</button>
+        <div class="compliance-foot-actions">
+          <button type="button" class="btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#e2e8f0;" onclick="reuploadCompliance()">重新上传</button>
+          <button type="button" class="btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#e2e8f0;" onclick="cancelCompliance()">取消</button>
+        </div>
       </div>
     </div>
   </div>
@@ -178,38 +278,69 @@
     ];
     var templates = [];
 
-    function normalizeTpl(row) {
-      if (!row.source) row.source = 'upload';
+    function makeContractFiles(name, onlyLatest) {
+      var base = name || '采购合同';
+      if (onlyLatest) return [{ id:'f1', name: base + '.pdf', tag:'最新', status:'latest', uploadedAt: new Date().toISOString().slice(0,19).replace('T',' ') }];
+      return [
+        { id:'f1', name: base + '_系统生成.pdf', tag:'作废', status:'voided', uploadedAt:'2026-06-24 17:49:51' },
+        { id:'f2', name: base + '_修订版.pdf', tag:'最新', status:'latest', uploadedAt:'2026-06-25 10:22:18' }
+      ];
+    }
+    function makeOrderItems(doc, name, price) {
+      return [{ doc: doc, name: name || 'MSA ABS安全帽', spec:'—', unit:'个', price: price || '50.00', qty:1, subtotal: price || '50.00' }];
+    }
+
+    var signingContractsDefaults = [
+      { id:'HT003202606240005', name:'admin-京东-采购合同-[DD003202606240005]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240005', status:'pending-supplier', label:'待供应商确认', started:'2026-06-24 17:49:51', orderAmt:'¥50.00', currency:'人民币', recipient:'aa', phone:'13055255481', address:'北京市市辖区东城区bbbbb', contractFiles: makeContractFiles('admin-京东-采购合同', true), orderItems: makeOrderItems('DD003202606240005') },
+      { id:'HT003202606240004', name:'admin-京东-采购合同-[DD003202606240004]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240004', status:'contract-updated', label:'合同更新', lastUpdatedBy:'buyer', started:'2026-06-24 17:49:51', orderAmt:'¥150.00', currency:'人民币', contractFiles: makeContractFiles('admin-京东-采购合同-v2', false), orderItems: makeOrderItems('DD003202606240004', 'A4复印纸', '150.00'), history:[{ step:'更新合同', actor:'采购方', created:'2026-06-24 18:20:00', processed:'2026-06-24 18:20:00', opinion:'采购方上传修订版合同' }] },
+      { id:'HT003202606240003', name:'admin-京东-采购合同-[DD003202606240003]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240003', status:'buyer-returned', label:'采购方退回', started:'2026-06-24 17:49:51', orderAmt:'¥6,495', currency:'人民币', contractFiles: makeContractFiles('admin-京东-采购合同', false), orderItems: makeOrderItems('DD003202606240003', '交换机', '6495.00'), history:[{ step:'采购方退回', actor:'采购方', created:'2026-06-25 09:15:00', processed:'2026-06-25 09:15:00', opinion:'付款条款与采购单约定不一致，请修订后重新提交' }] },
+      { id:'HT003202606240002', name:'admin-京东-采购合同-[DD003202606240002]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240002', status:'supplier-returned', label:'供应商退回', started:'2026-06-24 17:49:51', orderAmt:'¥3,200', currency:'人民币', contractFiles: makeContractFiles('admin-京东-采购合同', false), orderItems: makeOrderItems('DD003202606240002', '打印机', '3200.00') },
+      { id:'HT20260427001', name:'商用台式机采购合同', vendor:'北京联想直营科技', buyer:'北京市海淀区政务服务中心', doc:'ORD20260427008', status:'contract-updated', label:'合同更新', lastUpdatedBy:'supplier', started:'2026-04-27 09:30', orderAmt:'¥52,990', currency:'人民币', contractFiles: makeContractFiles('商用台式机采购合同', false), orderItems: makeOrderItems('ORD20260427008', '联想台式机', '52990.00'), history:[{ step:'更新合同', actor:'供应商', created:'2026-04-27 10:05:00', processed:'2026-04-27 10:05:00', opinion:'上传修订版合同并通过合规性校验' }] },
+      { id:'HT20260415002', name:'会议室改造工程合同', vendor:'中建装饰工程有限公司', buyer:'北京市财政局采购中心', doc:'PO20260415002', status:'pending-confirm', label:'待确认', started:'2026-04-15 08:45', orderAmt:'¥386,000', currency:'人民币', contractFiles: makeContractFiles('会议室改造工程合同', true), orderItems: makeOrderItems('PO20260415002', '会议室改造', '386000.00') },
+      { id:'HT20260421006', name:'办公耗材年度框架合同', vendor:'浙江得力办公用品有限公司', buyer:'北京市海淀区政务服务中心', doc:'PO20260421006', status:'signed', label:'已签署', started:'2026-04-21 16:00', orderAmt:'—', currency:'人民币', contractFiles: makeContractFiles('办公耗材年度框架合同', true), orderItems: makeOrderItems('PO20260421006', '框架协议', '—') },
+      { id:'HT20260425003', name:'机房布线施工合同', vendor:'中通服建设有限公司', buyer:'朝阳区信息化管理中心', doc:'PO20260425003', status:'po-approving', label:'采购单审批中', started:'2026-04-25 11:05', orderAmt:'¥128,000', currency:'人民币' },
+      { id:'HT20260418009', name:'物业服务补充协议', vendor:'绿城服务集团', buyer:'北京市海淀区政务服务中心', doc:'PO20260418009', status:'voided', label:'已作废', started:'2026-04-18 10:12', orderAmt:'—', currency:'人民币' }
+    ];
+
+    var signingContracts = [];
+    var drawerContractId = '';
+    var drawerMode = 'view';
+    var pendingUploadFileName = '';
+    var complianceRisks = [
+      { id:'r1', clause:'第3条', title:'条款描述不清晰', level:'中风险', type:'合规风险', status:'待处理', desc:'「按行业标准执行」等模糊表述可能导致履约争议。', suggestion:'补充明确的时间节点、验收标准与执行流程。' },
+      { id:'r2', clause:'第7条', title:'售后服务条款缺失', level:'高风险', type:'履约风险', status:'待处理', desc:'未约定售后响应时限与维修责任划分。', suggestion:'增加 7×24 响应、48 小时到场等可量化指标。' },
+      { id:'r3', clause:'第3条', title:'质量标准引用不当', level:'中风险', type:'合规风险', status:'待处理', desc:'引用已废止的国家标准编号。', suggestion:'更新为现行有效标准 GB/T 相关版本。' },
+      { id:'r4', clause:'第5条', title:'付款节点与订单不一致', level:'中风险', type:'合规风险', status:'待处理', desc:'合同约定预付款比例与采购单约定存在偏差。', suggestion:'调整为与采购单一致的 30% 预付款 + 70% 验收后付款。' },
+      { id:'r5', clause:'第7条', title:'违约责任不对等', level:'中风险', type:'履约风险', status:'待处理', desc:'供应商违约罚金上限明显低于采购方。', suggestion:'建议双方违约责任条款保持对等。' },
+      { id:'r6', clause:'第2条', title:'交付地址描述不完整', level:'中风险', type:'履约风险', status:'待处理', desc:'缺少具体楼层与联系人信息。', suggestion:'补充完整收货地址与签收授权人。' }
+    ];
+    var complianceClauses = [
+      { id:1, title:'第1条 合同标的', risks:0 }, { id:2, title:'第2条 交付与验收', risks:1 },
+      { id:3, title:'第3条 质量标准', risks:2 }, { id:4, title:'第4条 价格与税费', risks:0 },
+      { id:5, title:'第5条 付款方式', risks:1 }, { id:6, title:'第6条 知识产权', risks:0 },
+      { id:7, title:'第7条 售后服务', risks:2 }, { id:8, title:'第8条 违约责任', risks:0 },
+      { id:9, title:'第9条 争议解决', risks:0 }
+    ];
+    var selectedRiskId = 'r1';
+    var selectedClauseId = 3;
+
+    function normalizeSigning(row) {
+      if (!row.buyer) row.buyer = '北京市海淀区政务服务中心';
+      if (!row.contractFiles) row.contractFiles = makeContractFiles(row.name, true);
+      if (!row.orderItems) row.orderItems = makeOrderItems(row.doc);
+      if (!row.currency) row.currency = '人民币';
+      if (row.status === 'contract-updated' && !row.lastUpdatedBy) row.lastUpdatedBy = 'supplier';
       return row;
     }
 
     function loadTemplatesFromStorage() {
       try {
         var raw = sessionStorage.getItem('buyerContractTplMock');
-        if (raw) return JSON.parse(raw).map(normalizeTpl);
+        if (raw) return JSON.parse(raw).map(function (r) { if (!r.source) r.source = 'upload'; return r; });
       } catch (e) {}
-      return defaultTemplates.map(function (x) { return Object.assign({}, x); }).map(normalizeTpl);
+      return defaultTemplates.map(function (x) { return Object.assign({}, x); });
     }
-
-    function persistTemplates() {
-      try { sessionStorage.setItem('buyerContractTplMock', JSON.stringify(templates)); } catch (e) {}
-    }
-
-    var signingContractsDefaults = [
-      { id:'HT20260427001', name:'商用台式机采购合同', vendor:'北京联想直营科技', buyer:'北京市海淀区政务服务中心', doc:'ORD20260427008', status:'pending-confirm', label:'待确认', started:'2026-04-27 09:30', orderSummary:'联想台式机 ×5 · 订单待发货', orderAmt:'¥52,990' },
-      { id:'HT20260426018', name:'网络设备供货合同', vendor:'新华三官方旗舰店', buyer:'北京市海淀区政务服务中心', doc:'ORD20260426021', status:'pending-supplier', label:'待供应商确认', started:'2026-04-26 14:20', orderSummary:'交换机 ×2 · 已下单', orderAmt:'¥6,495' },
-      { id:'HT20260425003', name:'机房布线施工合同', vendor:'中通服建设有限公司', buyer:'朝阳区信息化管理中心', doc:'PO20260425003', status:'po-approving', label:'采购单审批中', started:'2026-04-25 11:05', orderSummary:'布线工程 · 采购单审核中', orderAmt:'¥128,000' },
-      { id:'HT20260421006', name:'办公耗材年度框架合同', vendor:'浙江得力办公用品有限公司', buyer:'北京市海淀区政务服务中心', doc:'PO20260421006', status:'signed', label:'已签署', started:'2026-04-21 16:00', orderSummary:'框架协议 · 关联多笔订单', orderAmt:'—' },
-      { id:'HT20260418009', name:'物业服务补充协议', vendor:'绿城服务集团', buyer:'北京市海淀区政务服务中心', doc:'PO20260418009', status:'voided', label:'已作废', started:'2026-04-18 10:12', orderSummary:'物业服务 · 已终止', orderAmt:'—' },
-      { id:'HT20260415002', name:'会议室改造工程合同', vendor:'中建装饰工程有限公司', buyer:'北京市财政局采购中心', doc:'PO20260415002', status:'pending-confirm', label:'待确认', started:'2026-04-15 08:45', orderSummary:'改造工程一期 · 待入场', orderAmt:'¥386,000' }
-    ];
-
-    var signingContracts = [];
-
-    function normalizeSigning(row) {
-      if (!row.buyer) row.buyer = '北京市海淀区政务服务中心';
-      return row;
-    }
+    function persistTemplates() { try { sessionStorage.setItem('buyerContractTplMock', JSON.stringify(templates)); } catch (e) {} }
 
     function loadSigningFromStorage() {
       try {
@@ -218,13 +349,12 @@
       } catch (e) {}
       return signingContractsDefaults.map(function (x) { return Object.assign({}, x); }).map(normalizeSigning);
     }
-
-    function persistSigning() {
-      try { sessionStorage.setItem('buyerContractSigningMock', JSON.stringify(signingContracts)); } catch (e) {}
-    }
+    function persistSigning() { try { sessionStorage.setItem('buyerContractSigningMock', JSON.stringify(signingContracts)); } catch (e) {} }
 
     templates = loadTemplatesFromStorage();
     signingContracts = loadSigningFromStorage();
+
+    function escapeHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
     function switchHubTab(key) {
       document.querySelectorAll('.hub-tab').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-hub-tab') === key); });
@@ -234,10 +364,39 @@
       try { sessionStorage.setItem('buyerContractHubTab', key); } catch (e) {}
     }
 
+    function buyerNeedsProcess(c) {
+      if (!c) return false;
+      if (c.status === 'pending-confirm') return true;
+      if (c.status === 'supplier-returned') return true;
+      if (c.status === 'contract-updated' && c.lastUpdatedBy === 'supplier') return true;
+      return false;
+    }
+
+    function buyerDrawerMode(c) {
+      if (!buyerNeedsProcess(c)) return null;
+      if (c.status === 'supplier-returned') return 'return-only';
+      return 'full';
+    }
+
+    function buyerFacingLabel(c) {
+      if (c.status === 'po-approving') return '采购单审批中';
+      if (c.status === 'pending-supplier') return '待供应商确认';
+      if (c.status === 'pending-confirm') return '待确认';
+      if (c.status === 'contract-updated') return '合同更新';
+      if (c.status === 'buyer-returned') return '采购方退回';
+      if (c.status === 'supplier-returned') return '供应商退回';
+      if (c.status === 'signed') return '已签署';
+      if (c.status === 'voided') return '已作废';
+      return c.label;
+    }
+
     function badgeClass(st) {
       if (st === 'po-approving') return 'b-slate';
       if (st === 'pending-supplier') return 'b-warn';
       if (st === 'pending-confirm') return 'b-blue';
+      if (st === 'contract-updated') return 'b-violet';
+      if (st === 'buyer-returned') return 'b-red';
+      if (st === 'supplier-returned') return 'b-warn';
       if (st === 'signed') return 'b-green';
       return 'b-muted';
     }
@@ -258,13 +417,8 @@
           '<button type="button" class="btn" onclick="previewTpl(\'' + t.id + '\')">预览</button>' +
           '<button type="button" class="btn" onclick="downloadTpl(\'' + t.id + '\')">下载</button>' +
           (!t.isDefault ? '<button type="button" class="btn btn-primary" onclick="setDefaultTpl(\'' + t.id + '\')">设为默认</button>' : '') +
-          '<button type="button" class="btn btn-danger" onclick="deleteTpl(\'' + t.id + '\')">删除</button>' +
-          '</td></tr>';
+          '<button type="button" class="btn btn-danger" onclick="deleteTpl(\'' + t.id + '\')">删除</button></td></tr>';
       }).join('');
-    }
-
-    function escapeHtml(s) {
-      return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function handleTplUpload(inp) {
@@ -272,304 +426,57 @@
       if (!f) return;
       var name = f.name.replace(/\.\w+$/, '');
       templates.unshift({ id:'t' + (++tplSeed), name:name || '未命名模板', source:'upload', updated:new Date().toISOString().slice(0,10), isDefault:false, enabled:true });
-      inp.value = '';
-      persistTemplates();
-      renderTemplates();
+      inp.value = ''; persistTemplates(); renderTemplates();
       alert('已添加模板（原型）：' + name);
     }
-
-    function openAiTplModal() {
-      document.getElementById('aiTplModal').classList.add('show');
-      document.getElementById('aiTplLoading').classList.remove('show');
-      document.getElementById('aiTplDescInput').value = '';
-      document.getElementById('aiTplTypeSelect').value = '';
-    }
-    function closeAiTplModal() {
-      document.getElementById('aiTplModal').classList.remove('show');
-      document.getElementById('aiTplLoading').classList.remove('show');
-    }
-
+    function openAiTplModal() { document.getElementById('aiTplModal').classList.add('show'); document.getElementById('aiTplLoading').classList.remove('show'); document.getElementById('aiTplDescInput').value = ''; document.getElementById('aiTplTypeSelect').value = ''; }
+    function closeAiTplModal() { document.getElementById('aiTplModal').classList.remove('show'); }
     function runAiTplGenerate() {
       var type = document.getElementById('aiTplTypeSelect').value.trim();
       var txt = document.getElementById('aiTplDescInput').value.trim();
-      if (!type && !txt) {
-        alert('请先选择合同类型或输入描述');
-        return;
-      }
-      var loading = document.getElementById('aiTplLoading');
-      loading.classList.add('show');
+      if (!type && !txt) { alert('请先选择合同类型或输入描述'); return; }
+      document.getElementById('aiTplLoading').classList.add('show');
       var base = type || txt.slice(0, 14);
       setTimeout(function () {
-        loading.classList.remove('show');
+        document.getElementById('aiTplLoading').classList.remove('show');
         var name = 'AI生成_' + base.replace(/\s/g,'').slice(0, 18) + '_模板';
         templates.unshift({ id:'t' + (++tplSeed), name:name, source:'ai', updated:new Date().toISOString().slice(0,10), isDefault:false, enabled:true });
-        persistTemplates();
-        renderTemplates();
-        closeAiTplModal();
+        persistTemplates(); renderTemplates(); closeAiTplModal();
         alert('已生成模板（原型）：' + name);
       }, 1600);
     }
+    function renameTpl(id) { var t = templates.find(function (x) { return x.id === id; }); if (!t) return; var next = window.prompt('请输入新的模板名称', t.name || ''); if (next === null) return; next = String(next).trim(); if (!next) { alert('模板名称不能为空'); return; } t.name = next; t.updated = new Date().toISOString().slice(0,10); persistTemplates(); renderTemplates(); }
+    function previewTpl(id) { var t = templates.find(function (x) { return x.id === id; }); if (t) alert('预览模板：' + t.name); }
+    function downloadTpl(id) { var t = templates.find(function (x) { return x.id === id; }); if (t) alert('下载模板：' + t.name); }
+    function setDefaultTpl(id) { templates.forEach(function (x) { x.isDefault = (x.id === id); }); persistTemplates(); renderTemplates(); }
+    function deleteTpl(id) { if (!confirm('确认删除该模板？')) return; templates = templates.filter(function (x) { return x.id !== id; }); persistTemplates(); renderTemplates(); }
 
-    function renameTpl(id) {
-      var t = templates.find(function (x) { return x.id === id; });
-      if (!t) return;
-      var next = window.prompt('请输入新的模板名称', t.name || '');
-      if (next === null) return;
-      next = String(next).trim();
-      if (!next) {
-        alert('模板名称不能为空');
-        return;
-      }
-      t.name = next;
-      t.updated = new Date().toISOString().slice(0, 10);
-      persistTemplates();
-      renderTemplates();
+    function updateSigningStats() {
+      document.getElementById('statTotal').textContent = String(signingContracts.length);
+      document.getElementById('statPo').textContent = String(signingContracts.filter(function (c) { return c.status === 'po-approving'; }).length);
+      document.getElementById('statSupplier').textContent = String(signingContracts.filter(function (c) { return c.status === 'pending-supplier'; }).length);
+      document.getElementById('statMine').textContent = String(signingContracts.filter(function (c) { return buyerNeedsProcess(c); }).length);
+      document.getElementById('statSigned').textContent = String(signingContracts.filter(function (c) { return c.status === 'signed'; }).length);
+      document.getElementById('statVoided').textContent = String(signingContracts.filter(function (c) { return c.status === 'voided'; }).length);
     }
 
-    function previewTpl(id) {
-      var t = templates.find(function (x) { return x.id === id; });
-      if (t) alert('预览模板：' + t.name);
-    }
-    function downloadTpl(id) {
-      var t = templates.find(function (x) { return x.id === id; });
-      if (t) alert('下载模板：' + t.name);
-    }
-    function setDefaultTpl(id) {
-      templates.forEach(function (x) { x.isDefault = (x.id === id); });
-      persistTemplates();
-      renderTemplates();
-    }
-    function deleteTpl(id) {
-      if (!confirm('确认删除该模板？')) return;
-      templates = templates.filter(function (x) { return x.id !== id; });
-      persistTemplates();
-      renderTemplates();
-    }
-
-    var rejectTargetId = '';
-    var rejectUpdateMethod = 'system';
-
-    function fillRejectCurrentContractBox() {
-      var el = document.getElementById('rejectCurrentContractBody');
-      if (!el) return;
-      var c = signingContracts.find(function (x) { return x.id === rejectTargetId; });
-      if (!c) {
-        el.innerHTML = '<p class="text-slate-500 m-0">未找到合同信息</p>';
-        return;
-      }
-      el.innerHTML =
-        '<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">' +
-        '<div><span class="text-slate-500">合同编号</span><span class="font-semibold text-slate-900 ml-2">' + escapeHtml(c.id) + '</span></div>' +
-        '<div><span class="text-slate-500">状态</span><span class="ml-2">' + escapeHtml(c.label) + '</span></div>' +
-        '<div class="sm:col-span-2"><span class="text-slate-500">合同名称</span><span class="font-semibold text-slate-900 ml-2">' + escapeHtml(c.name) + '</span></div>' +
-        '<div><span class="text-slate-500">供应商</span><span class="ml-2">' + escapeHtml(c.vendor) + '</span></div>' +
-        '<div><span class="text-slate-500">关联单据</span><span class="ml-2">' + escapeHtml(c.doc) + '</span></div>' +
-        '</div>';
-    }
-
-    function resetRejectUpdatePanel() {
-      rejectUpdateMethod = 'system';
-      var panel = document.getElementById('rejectUpdatePanel');
-      var btn = document.getElementById('rejectToggleUpdateBtn');
-      if (panel) panel.classList.remove('show');
-      if (btn) btn.innerHTML = '<i class="fas fa-file-contract mr-1"></i>更新合同';
-      var sel = document.getElementById('rejectSystemSelect');
-      if (sel) sel.innerHTML = '';
-      var inp = document.getElementById('rejectUploadInput');
-      if (inp) inp.value = '';
-      var fn = document.getElementById('rejectUploadFileName');
-      if (fn) fn.textContent = '';
-      setRejectUpdateMethod('system');
-      onRejectSystemSelectChange();
-    }
-
-    function toggleRejectUpdatePanel() {
-      var panel = document.getElementById('rejectUpdatePanel');
-      var btn = document.getElementById('rejectToggleUpdateBtn');
-      if (!panel || !btn) return;
-      var opening = !panel.classList.contains('show');
-      if (opening) {
-        panel.classList.add('show');
-        btn.innerHTML = '<i class="fas fa-chevron-up mr-1"></i>收起更新';
-        populateRejectSystemSelect();
-        setRejectUpdateMethod('system');
-      } else {
-        panel.classList.remove('show');
-        btn.innerHTML = '<i class="fas fa-file-contract mr-1"></i>更新合同';
-        var sel = document.getElementById('rejectSystemSelect');
-        if (sel) sel.innerHTML = '';
-        var inp = document.getElementById('rejectUploadInput');
-        if (inp) inp.value = '';
-        var fn = document.getElementById('rejectUploadFileName');
-        if (fn) fn.textContent = '';
-        onRejectSystemSelectChange();
-      }
-    }
-
-    function populateRejectSystemSelect() {
-      var sel = document.getElementById('rejectSystemSelect');
-      if (!sel) return;
-      sel.innerHTML = '<option value="">请选择平台内的合同或模板…</option>';
-      signingContracts.forEach(function (sc) {
-        if (sc.id === rejectTargetId) return;
-        var opt = document.createElement('option');
-        opt.value = 'sign:' + sc.id;
-        opt.textContent = '合同 · ' + sc.id + ' · ' + sc.name;
-        sel.appendChild(opt);
-      });
-      templates.forEach(function (t) {
-        var opt = document.createElement('option');
-        opt.value = 'tpl:' + t.id;
-        opt.textContent = '模板 · ' + t.name;
-        sel.appendChild(opt);
-      });
-      onRejectSystemSelectChange();
-    }
-
-    function setRejectUpdateMethod(m) {
-      rejectUpdateMethod = m;
-      var bs = document.getElementById('rejectMethodSystem');
-      var bu = document.getElementById('rejectMethodUpload');
-      var ps = document.getElementById('rejectPaneSystem');
-      var pu = document.getElementById('rejectPaneUpload');
-      if (bs && bu) {
-        bs.classList.toggle('btn-primary', m === 'system');
-        bu.classList.toggle('btn-primary', m === 'upload');
-      }
-      if (ps && pu) {
-        ps.classList.toggle('active', m === 'system');
-        pu.classList.toggle('active', m === 'upload');
-      }
-      onRejectSystemSelectChange();
-    }
-
-    function onRejectSystemSelectChange() {
-      var sel = document.getElementById('rejectSystemSelect');
-      var previewBtn = document.getElementById('rejectSystemPreviewBtn');
-      if (!previewBtn) return;
-      previewBtn.disabled = !(sel && sel.value && rejectUpdateMethod === 'system');
-    }
-
-    function previewRejectSystemSelection() {
-      var sel = document.getElementById('rejectSystemSelect');
-      var v = sel && sel.value;
-      if (!v) {
-        alert('请先在下拉框中选择合同或模板');
-        return;
-      }
-      var idx = v.indexOf(':');
-      var kind = idx === -1 ? '' : v.slice(0, idx);
-      var id = idx === -1 ? v : v.slice(idx + 1);
-      if (kind === 'sign') {
-        var c = signingContracts.find(function (x) { return x.id === id; });
-        if (c) {
-          alert('预览合同正文（原型）：' + c.id + ' · ' + c.name + '\n实际系统将打开在线预览 / PDF。');
-        } else {
-          alert('未找到所选合同');
-        }
-      } else if (kind === 'tpl') {
-        var t = templates.find(function (x) { return x.id === id; });
-        if (t) {
-          alert('预览模板（原型）：' + t.name + '\n实际系统将打开模板预览。');
-        } else {
-          alert('未找到所选模板');
-        }
-      }
-    }
-
-    function handleRejectUpload(inp) {
-      var f = inp.files && inp.files[0];
-      var el = document.getElementById('rejectUploadFileName');
-      if (el) el.textContent = f ? f.name : '';
-    }
+    function getContract(id) { return signingContracts.find(function (x) { return x.id === id; }); }
 
     function btnSigningOps(c) {
-      var st = c.status;
       var parts = [];
-      parts.push('<button type="button" class="btn" onclick="goDetail(\'' + c.id + '\')">查看</button>');
-      if (st === 'pending-confirm') {
-        parts.push('<button type="button" class="btn btn-primary" onclick="doConfirm(\'' + c.id + '\')">确认</button>');
-        parts.push('<button type="button" class="btn btn-danger" onclick="openRejectModal(\'' + c.id + '\')">退回</button>');
+      if (buyerNeedsProcess(c)) {
+        parts.push('<button type="button" class="btn-link" onclick="openContractDrawer(\'' + c.id + '\',\'process\')">处理</button>');
+        parts.push('<button type="button" class="btn-link" onclick="previewContractFile(\'' + c.id + '\')">查看合同</button>');
+      } else {
+        parts.push('<button type="button" class="btn-link" onclick="openContractDrawer(\'' + c.id + '\',\'view\')">查看</button>');
+        if (c.status !== 'po-approving' && c.status !== 'voided') {
+          parts.push('<button type="button" class="btn-link" onclick="previewContractFile(\'' + c.id + '\')">查看合同</button>');
+        }
       }
-      if (st === 'voided') {
-        parts.push('<button type="button" class="btn btn-danger" onclick="deleteSigning(\'' + c.id + '\')">删除</button>');
+      if (c.status === 'voided') {
+        parts.push('<button type="button" class="btn-link" style="color:#b91c1c" onclick="deleteSigning(\'' + c.id + '\')">删除</button>');
       }
       return parts.join('');
-    }
-
-    function openRejectModal(contractId) {
-      rejectTargetId = contractId;
-      document.getElementById('rejectReason').value = '';
-      resetRejectUpdatePanel();
-      fillRejectCurrentContractBox();
-      document.getElementById('rejectModal').classList.add('show');
-    }
-    function closeRejectModal() {
-      document.getElementById('rejectModal').classList.remove('show');
-      resetRejectUpdatePanel();
-      rejectTargetId = '';
-    }
-    function submitReject() {
-      var reason = document.getElementById('rejectReason').value.trim();
-      if (!reason) { alert('请填写退回理由'); return; }
-      var c = signingContracts.find(function (x) { return x.id === rejectTargetId; });
-      if (!c || c.status !== 'pending-confirm') { closeRejectModal(); return; }
-      var panel = document.getElementById('rejectUpdatePanel');
-      var upd = panel && panel.classList.contains('show');
-      var updHint = '';
-      if (upd) {
-        if (rejectUpdateMethod === 'system') {
-          var v = document.getElementById('rejectSystemSelect').value;
-          if (!v) {
-            alert('请从系统中选择一份合同或模板，或切换为「上传合同」上传文件');
-            return;
-          }
-          var selEl = document.getElementById('rejectSystemSelect');
-          var opt = selEl && selEl.selectedOptions && selEl.selectedOptions[0];
-          updHint = '\n（合同文本更新：' + (opt ? opt.textContent : v) + '）';
-        } else {
-          var inp = document.getElementById('rejectUploadInput');
-          if (!inp || !inp.files || !inp.files[0]) {
-            alert('请先上传合同文件，或切换为「从系统选择」');
-            return;
-          }
-          updHint = '\n（合同文本更新：已上传「' + inp.files[0].name + '」）';
-        }
-      } else {
-        updHint = '\n（未指定合同文本更新）';
-      }
-      if (!confirm('确认退回合同「' + c.name + '」？' + updHint)) return;
-      c.status = 'voided';
-      c.label = '已作废';
-      persistSigning();
-      closeRejectModal();
-      renderSigningTable();
-      alert('已退回（原型演示）。');
-    }
-
-    function doConfirm(contractId) {
-      var c = signingContracts.find(function (x) { return x.id === contractId; });
-      if (!c || c.status !== 'pending-confirm') return;
-      if (!confirm('确认通过合同「' + c.name + '」？')) return;
-      c.status = 'signed';
-      c.label = '已签署';
-      persistSigning();
-      renderSigningTable();
-      alert('已确认签署（原型演示）。');
-    }
-
-    function deleteSigning(contractId) {
-      var c = signingContracts.find(function (x) { return x.id === contractId; });
-      if (!c || c.status !== 'voided') return;
-      if (!confirm('确认从列表中删除该作废合同记录？（原型演示）')) return;
-      signingContracts = signingContracts.filter(function (x) { return x.id !== contractId; });
-      persistSigning();
-      renderSigningTable();
-      alert('已删除');
-    }
-
-    function goDetail(contractId) {
-      location.href = 'buyer_contract_detail.html?id=' + encodeURIComponent(contractId);
     }
 
     function renderSigningTable() {
@@ -578,31 +485,258 @@
       var filtered = signingContracts.filter(function (c) {
         if (st && c.status !== st) return false;
         if (!kw) return true;
-        var blob = (c.id + ' ' + c.name + ' ' + c.vendor).toLowerCase();
+        var blob = (c.id + ' ' + c.name + ' ' + c.vendor + ' ' + (c.doc || '')).toLowerCase();
         return blob.indexOf(kw) !== -1;
       });
+      updateSigningStats();
       var tbody = document.getElementById('signTableBody');
-      document.getElementById('statTotal').textContent = String(signingContracts.length);
-      tbody.innerHTML = filtered.map(function (c) {
-        return '<tr><td class="font-semibold">' + escapeHtml(c.id) + '</td><td>' + escapeHtml(c.name) + '</td><td>' + escapeHtml(c.vendor) + '</td><td>' + escapeHtml(c.doc) + '</td>' +
-          '<td><span class="badge ' + badgeClass(c.status) + '">' + escapeHtml(c.label) + '</span></td><td>' + escapeHtml(c.started) + '</td><td class="space-x-1 whitespace-nowrap">' + btnSigningOps(c) + '</td></tr>';
+      tbody.innerHTML = filtered.map(function (c, i) {
+        return '<tr><td>' + (i + 1) + '</td><td class="font-semibold">' + escapeHtml(c.id) + '</td><td>' + escapeHtml(c.name) + '</td><td>' + escapeHtml(c.doc) + '</td><td>' + escapeHtml(c.vendor) + '</td>' +
+          '<td><span class="badge ' + badgeClass(c.status) + '">' + escapeHtml(buyerFacingLabel(c)) + '</span></td><td>' + escapeHtml(c.started) + '</td><td class="space-x-1 whitespace-nowrap">' + btnSigningOps(c) + '</td></tr>';
       }).join('');
-      if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-slate-500 py-10">暂无数据</td></tr>';
+      if (!filtered.length) tbody.innerHTML = '<tr><td colspan="8" class="text-center text-slate-500 py-10">暂无数据</td></tr>';
+    }
+
+    function resetSigningFilter() { document.getElementById('signKw').value = ''; document.getElementById('signStatus').value = ''; renderSigningTable(); }
+
+    function previewContractFile(contractId) {
+      var c = getContract(contractId);
+      if (!c) return;
+      var latest = (c.contractFiles || []).find(function (f) { return f.status === 'latest'; }) || (c.contractFiles || [])[0];
+      alert('查看合同（原型）：' + (latest ? latest.name : c.name) + '\n实际系统将打开在线 PDF 预览。');
+    }
+    function downloadContractFile(fileName) { alert('下载合同（原型）：' + fileName); }
+
+    function renderProcessSteps(c) {
+      var needsProcess = buyerNeedsProcess(c);
+      var step2Time = '—';
+      if (c.status === 'po-approving') step2Time = '待解锁';
+      else if (c.status === 'pending-supplier') step2Time = '待供应商确认';
+      else if (c.status === 'contract-updated') step2Time = (c.lastUpdatedBy === 'supplier' ? '供应商已更新' : '我方已更新');
+      else if (c.status === 'buyer-returned') step2Time = '已退回供应商';
+      else if (c.status === 'supplier-returned') step2Time = '供应商退回';
+      else if (needsProcess) step2Time = '待我方确认';
+      var steps = [
+        { label:'创建合同', icon:'fa-file-lines', time: c.started, done: c.status !== 'po-approving', current: c.status === 'po-approving' },
+        { label:'审核中', icon:'fa-user-check', time: step2Time, done: c.status === 'signed', current: c.status !== 'po-approving' && c.status !== 'signed' && !needsProcess ? (c.status === 'pending-supplier' || c.status === 'buyer-returned' || c.status === 'supplier-returned') : needsProcess },
+        { label:'审核结果', icon:'fa-circle-check', time: c.status === 'signed' ? '已完成' : '—', done: c.status === 'signed', current: needsProcess }
+      ];
+      if (needsProcess) { steps[1].current = false; steps[1].done = true; steps[2].current = true; }
+      return steps.map(function (s) {
+        return '<div class="process-step' + (s.done ? ' done' : '') + (s.current ? ' current' : '') + '"><div class="process-icon"><i class="fas ' + s.icon + '"></i></div><div class="process-label">' + s.label + '</div><div class="process-time">' + escapeHtml(s.time) + '</div></div>';
+      }).join('');
+    }
+
+    function renderContractFilesHtml(files) {
+      if (!files || !files.length) return '<p class="text-slate-500 text-sm">暂无合同文件</p>';
+      return files.slice().sort(function (a, b) { return a.status === 'latest' ? -1 : b.status === 'latest' ? 1 : 0; }).map(function (f) {
+        var tagCls = f.status === 'latest' ? 'latest' : 'voided';
+        return '<div class="contract-file-row"><span class="file-tag ' + tagCls + '">' + escapeHtml(f.tag) + '</span><span class="text-sm font-semibold text-slate-800">' + escapeHtml(f.name) + '</span><span class="text-xs text-slate-400">' + escapeHtml(f.uploadedAt || '') + '</span>' +
+          '<button type="button" class="btn-link" onclick="alert(\'查看合同（原型）\')">查看合同</button><button type="button" class="btn-link" onclick="downloadContractFile(' + JSON.stringify(f.name) + ')">下载合同</button></div>';
+      }).join('');
+    }
+
+    function renderDrawerSections(c) {
+      var items = c.orderItems || [];
+      var itemsHtml = items.length ? '<table class="mini-table"><thead><tr><th>序号</th><th>订单编号</th><th>商品名称</th><th>规格型号</th><th>计量单位</th><th>单价</th><th>数量</th><th>小计</th></tr></thead><tbody>' +
+        items.map(function (it, idx) { return '<tr><td>' + (idx+1) + '</td><td>' + escapeHtml(it.doc) + '</td><td>' + escapeHtml(it.name) + '</td><td>' + escapeHtml(it.spec) + '</td><td>' + escapeHtml(it.unit) + '</td><td>¥' + escapeHtml(it.price) + '</td><td>' + it.qty + '</td><td>¥' + escapeHtml(it.subtotal) + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="text-slate-500 text-sm">暂无明细</p>';
+      var sections = [
+        { title:'01 订单信息', body:'<div class="info-grid"><div><div class="label">订单编号</div><div class="value">' + escapeHtml(c.doc) + '</div></div><div><div class="label">采购单位</div><div class="value">' + escapeHtml(c.buyer) + '</div></div><div><div class="label">供应商名称</div><div class="value">' + escapeHtml(c.vendor) + '</div></div><div><div class="label">收货人</div><div class="value">' + escapeHtml(c.recipient || '—') + '</div></div><div><div class="label">联系电话</div><div class="value">' + escapeHtml(c.phone || '—') + '</div></div><div style="grid-column:1/-1"><div class="label">收货地址</div><div class="value">' + escapeHtml(c.address || '—') + '</div></div></div>' },
+        { title:'02 合同信息', body:'<div class="info-grid mb-3"><div><div class="label">合同名称</div><div class="value">' + escapeHtml(c.name) + '</div></div><div><div class="label">商品总价</div><div class="value">' + escapeHtml((c.orderAmt || '').replace('¥','') || '—') + '</div></div><div><div class="label">币种</div><div class="value">' + escapeHtml(c.currency || '人民币') + '</div></div></div><div class="label mb-2" style="color:#64748b;font-weight:600;font-size:13px">合同文件</div>' + renderContractFilesHtml(c.contractFiles) },
+        { title:'03 订单明细', body: itemsHtml },
+        { title:'04 处理历史', body:'<table class="mini-table"><thead><tr><th>步骤</th><th>办理人</th><th>创建时间</th><th>被处理时间</th><th>处理意见</th></tr></thead><tbody>' + ((c.history && c.history.length) ? c.history.map(function (h) { return '<tr><td>' + escapeHtml(h.step) + '</td><td>' + escapeHtml(h.actor) + '</td><td>' + escapeHtml(h.created) + '</td><td>' + escapeHtml(h.processed) + '</td><td>' + escapeHtml(h.opinion) + '</td></tr>'; }).join('') : '<tr><td colspan="5" class="text-center text-slate-400 py-6">暂无数据</td></tr>') + '</tbody></table>' }
+      ];
+      return sections.map(function (sec, idx) {
+        return '<div class="section-card' + (idx === 0 ? ' open' : '') + '" onclick="toggleSection(this, event)"><div class="section-head"><span class="section-head-title">' + sec.title + '</span><i class="fas fa-chevron-down section-chevron"></i></div><div class="section-body">' + sec.body + '</div></div>';
+      }).join('');
+    }
+
+    function toggleSection(el, ev) { if (ev.target.closest('.btn-link')) return; el.classList.toggle('open'); }
+
+    function renderBuyerDrawerActions(c) {
+      var mode = buyerDrawerMode(c);
+      var actionsEl = document.getElementById('drawerActions');
+      if (!mode || drawerMode !== 'process') {
+        actionsEl.innerHTML = '';
+        actionsEl.style.display = 'none';
+        return;
+      }
+      var html = '';
+      if (mode === 'full') {
+        html += '<button type="button" class="drawer-action-btn confirm" onclick="doConfirmSign()"><i class="fas fa-check"></i>确认签署</button>';
+      }
+      html += '<button type="button" class="drawer-action-btn upload" onclick="triggerContractUpload()"><i class="fas fa-file-contract"></i>更新合同</button>';
+      html += '<button type="button" class="drawer-action-btn return" onclick="openReturnModal()"><i class="fas fa-rotate-left"></i>退回</button>';
+      actionsEl.innerHTML = html;
+      actionsEl.style.display = 'flex';
+    }
+
+    function refreshContractDrawer() {
+      var c = getContract(drawerContractId);
+      if (!c) return;
+      document.getElementById('drawerContractNo').textContent = '合同编号：' + c.id;
+      document.getElementById('drawerStatusTitle').textContent = buyerFacingLabel(c);
+      document.getElementById('drawerProcessSteps').innerHTML = renderProcessSteps(c);
+      document.getElementById('drawerBody').innerHTML = renderDrawerSections(c);
+      renderBuyerDrawerActions(c);
+    }
+
+    function openContractDrawer(contractId, mode) {
+      var c = getContract(contractId);
+      if (!c) return;
+      drawerContractId = contractId;
+      drawerMode = mode || 'view';
+      refreshContractDrawer();
+      document.getElementById('drawerMask').classList.add('show');
+      document.getElementById('contractDrawer').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeContractDrawer() {
+      document.getElementById('drawerMask').classList.remove('show');
+      document.getElementById('contractDrawer').classList.remove('show');
+      document.body.style.overflow = '';
+      drawerContractId = '';
+    }
+
+    function doConfirmSign() {
+      var c = getContract(drawerContractId);
+      if (!c || buyerDrawerMode(c) !== 'full') return;
+      if (!confirm('确认签署合同「' + c.name + '」？')) return;
+      var now = new Date().toISOString().slice(0,19).replace('T',' ');
+      c.status = 'signed'; c.label = '已签署';
+      if (!c.history) c.history = [];
+      c.history.unshift({ step:'采购方确认签署', actor:'采购方', created: now, processed: now, opinion:'确认签署，合同生效' });
+      persistSigning(); closeContractDrawer(); renderSigningTable();
+      alert('已确认签署（原型演示）。');
+    }
+
+    function openReturnModal() {
+      document.getElementById('returnReason').value = '';
+      document.getElementById('returnModal').classList.add('show');
+      setTimeout(function () { document.getElementById('returnReason').focus(); }, 80);
+    }
+    function closeReturnModal() {
+      document.getElementById('returnModal').classList.remove('show');
+    }
+
+    function submitReturnToSupplier() {
+      var reason = document.getElementById('returnReason').value.trim();
+      if (!reason) { alert('请填写退回理由'); return; }
+      var c = getContract(drawerContractId);
+      if (!c || !buyerNeedsProcess(c)) { closeReturnModal(); return; }
+      if (!confirm('确认退回合同「' + c.name + '」至供应商？')) return;
+      var now = new Date().toISOString().slice(0,19).replace('T',' ');
+      c.status = 'buyer-returned'; c.label = '采购方退回';
+      if (!c.history) c.history = [];
+      c.history.unshift({ step:'采购方退回', actor:'采购方', created: now, processed: now, opinion: reason });
+      persistSigning(); closeReturnModal(); closeContractDrawer(); renderSigningTable();
+      alert('已退回至供应商（原型演示）。');
+    }
+
+    function triggerContractUpload() { document.getElementById('contractUploadInput').click(); }
+    function handleContractUpload(inp) {
+      var f = inp.files && inp.files[0];
+      if (!f) return;
+      pendingUploadFileName = f.name; inp.value = '';
+      openComplianceModal();
+    }
+
+    function openComplianceModal() {
+      document.getElementById('complianceBody').innerHTML = '<div class="compliance-loading" style="grid-column:1/-1;background:#1e293b;"><span class="ai-spin"></span><span>正在解析合同并检测合规风险…</span></div>';
+      document.getElementById('complianceOverlay').classList.add('show');
+      setTimeout(function () { renderComplianceContent(); }, 1800);
+    }
+    function closeComplianceModal() { document.getElementById('complianceOverlay').classList.remove('show'); }
+
+    function cancelCompliance() {
+      pendingUploadFileName = '';
+      closeComplianceModal();
+    }
+
+    function reuploadCompliance() {
+      closeComplianceModal();
+      pendingUploadFileName = '';
+      setTimeout(function () { triggerContractUpload(); }, 200);
+    }
+
+    function renderComplianceContent() {
+      var high = complianceRisks.filter(function (r) { return r.level === '高风险'; }).length;
+      var mid = complianceRisks.filter(function (r) { return r.level === '中风险'; }).length;
+      var low = complianceRisks.filter(function (r) { return r.level === '低风险'; }).length;
+      var selected = complianceRisks.find(function (r) { return r.id === selectedRiskId; }) || complianceRisks[0];
+      var clauseHtml = complianceClauses.map(function (cl) {
+        var cnt = complianceRisks.filter(function (r) { return r.clause === '第' + cl.id + '条'; }).length;
+        return '<div class="clause-item' + (cl.id === selectedClauseId ? ' active' : '') + '" onclick="selectComplianceClause(' + cl.id + ')"><span>' + escapeHtml(cl.title) + '</span><span class="clause-risk-count' + (cnt ? '' : ' zero') + '">' + cnt + '</span></div>';
+      }).join('');
+      var riskCards = complianceRisks.map(function (r) {
+        return '<div class="risk-card' + (r.id === selectedRiskId ? ' active' : '') + '" onclick="selectComplianceRisk(\'' + r.id + '\')"><div class="risk-card-title">' + escapeHtml(r.title) + '</div><div class="risk-card-meta">' + escapeHtml(r.level) + ' · ' + escapeHtml(r.type) + '</div></div>';
+      }).join('');
+      document.getElementById('complianceBody').innerHTML =
+        '<div class="compliance-col"><div class="compliance-col-head">合同结构</div><div class="compliance-col-body"><div style="font-size:11px;color:#94a3b8;margin-bottom:10px;">' + escapeHtml(pendingUploadFileName || '上传合同') + '</div>' + clauseHtml + '</div></div>' +
+        '<div class="compliance-col" style="background:#334155;"><div class="compliance-col-head">合同正文</div><div class="contract-text-pane"><h4>采购合同</h4><p>甲方（采购方）与乙方（供应商）就采购事宜达成如下协议：</p><h4>第3条 质量标准</h4><p>产品质量应符合<strong>行业标准</strong>及国家相关规范。</p><h4>第5条 付款方式</h4><p>甲方于合同签订后支付 50% 预付款，验收合格后支付剩余款项。</p><h4>第7条 售后服务</h4><p>乙方提供产品质保服务，具体响应时限双方另行约定。</p></div></div>' +
+        '<div class="compliance-col"><div class="compliance-col-head">风险处理</div><div class="compliance-col-body"><div class="risk-stats"><div class="risk-stat high"><div class="risk-stat-num">' + high + '</div><div class="risk-stat-label">高风险</div></div><div class="risk-stat mid"><div class="risk-stat-num">' + mid + '</div><div class="risk-stat-label">中风险</div></div><div class="risk-stat low"><div class="risk-stat-num">' + low + '</div><div class="risk-stat-label">低风险</div></div></div>' + riskCards +
+        '<div class="risk-detail-box"><h5>' + escapeHtml(selected.title) + '</h5><p><strong>条款：</strong>' + escapeHtml(selected.clause) + '</p><p><strong>风险描述：</strong>' + escapeHtml(selected.desc) + '</p><p><strong>修改建议：</strong>' + escapeHtml(selected.suggestion) + '</p></div></div></div>';
+    }
+    function selectComplianceClause(id) { selectedClauseId = id; var hit = complianceRisks.find(function (r) { return r.clause === '第' + id + '条'; }); if (hit) selectedRiskId = hit.id; renderComplianceContent(); }
+    function selectComplianceRisk(id) { selectedRiskId = id; renderComplianceContent(); }
+
+    function applyComplianceAndSign() {
+      var c = getContract(drawerContractId);
+      if (!c || !pendingUploadFileName) { closeComplianceModal(); return; }
+      var now = new Date().toISOString().slice(0,19).replace('T',' ');
+      var files = c.contractFiles || [];
+      files.forEach(function (f) { if (f.status === 'latest') { f.status = 'voided'; f.tag = '作废'; } });
+      files.unshift({ id:'f' + Date.now(), name: pendingUploadFileName, tag:'最新', status:'latest', uploadedAt: now });
+      c.contractFiles = files;
+      if (!c.history) c.history = [];
+      var canSign = buyerDrawerMode(c) === 'full';
+      if (canSign) {
+        c.status = 'signed';
+        c.label = '已签署';
+        c.history.unshift({ step:'应用合同并签署', actor:'采购方', created: now, processed: now, opinion:'上传新版合同并通过合规性校验（检出 ' + complianceRisks.length + ' 项风险，已阅），确认签署' });
+        persistSigning();
+        closeComplianceModal();
+        pendingUploadFileName = '';
+        closeContractDrawer();
+        renderSigningTable();
+        alert('已应用新版合同并确认签署（原型演示）。');
+      } else {
+        c.status = 'contract-updated';
+        c.label = '合同更新';
+        c.lastUpdatedBy = 'buyer';
+        c.history.unshift({ step:'更新合同', actor:'采购方', created: now, processed: now, opinion:'上传新版合同并通过合规性校验（检出 ' + complianceRisks.length + ' 项风险，已阅）' });
+        persistSigning();
+        closeComplianceModal();
+        pendingUploadFileName = '';
+        if (document.getElementById('contractDrawer').classList.contains('show')) refreshContractDrawer();
+        renderSigningTable();
+        alert('已应用新版合同（原型演示），状态为「合同更新」，待供应商处理。');
       }
     }
 
-    function resetSigningFilter() {
-      document.getElementById('signKw').value = '';
-      document.getElementById('signStatus').value = '';
-      renderSigningTable();
+    function deleteSigning(contractId) {
+      var c = getContract(contractId);
+      if (!c || c.status !== 'voided') return;
+      if (!confirm('确认从列表中删除该作废合同记录？')) return;
+      signingContracts = signingContracts.filter(function (x) { return x.id !== contractId; });
+      persistSigning(); renderSigningTable();
     }
 
     (function init() {
-      var tab = sessionStorage.getItem('buyerContractHubTab') || 'templates';
+      var tab = sessionStorage.getItem('buyerContractHubTab') || 'signing';
       switchHubTab(tab);
       renderTemplates();
       renderSigningTable();
+      var params = new URLSearchParams(location.search);
+      var openId = params.get('id');
+      var action = params.get('action') || 'view';
+      if (openId) {
+        setTimeout(function () {
+          openContractDrawer(openId, action === 'process' ? 'process' : 'view');
+          history.replaceState(null, '', location.pathname);
+        }, 120);
+      }
     })();
   </script>
 </body>

@@ -233,14 +233,12 @@
   <div class="dlg-overlay" id="shipDlg">
     <div class="dlg" onclick="event.stopPropagation()">
       <div class="dlg-hd">
-        <span>登记发货（快递）</span>
+        <span>登记发货</span>
         <button type="button" class="btn btn-sm" onclick="closeShipDlg()">&times;</button>
       </div>
       <div class="dlg-bd">
-        <div class="alert-mock"><i class="fa-solid fa-plug-circle-bolt mr-1"></i>可勾选<strong>同订单下多条待发商品</strong>合并一次发货，每条按<strong>全部待发数量</strong>发出。可<strong>上传物流单</strong>识别信息，或手动填写后<strong>校验</strong>回填承运商、发货时间。</div>
-        <p class="text-sm mb-3"><strong>订单</strong> <span id="shipDlgOrderNo"></span> · <span id="shipDlgBuyer"></span> · <span id="shipDlgLineHint" class="text-slate-500"></span></p>
+        <div class="alert-mock"><i class="fa-solid fa-plug-circle-bolt mr-1"></i>可勾选<strong>同订单下多条待发商品</strong>合并一次发货，每条按<strong>全部待发数量</strong>发出。可<strong>上传物流单</strong>识别信息，或手动填写后<strong>校验</strong>回填承运商。</div>
         <div class="field">
-          <label>本批发货明细（可勾选同订单其他待发商品，勾选即发全部待发数量）</label>
           <table class="ship-line-table">
             <thead>
               <tr>
@@ -277,15 +275,9 @@
           </div>
           <div class="hint field" id="waybillValidateMsg"></div>
         </div>
-        <div class="row2">
-          <div class="field">
-            <label>承运商（接口回填）</label>
-            <input class="ipt w-full" id="inpCarrier" readonly placeholder="请先校验物流单号">
-          </div>
-          <div class="field">
-            <label>发货时间（接口回填）</label>
-            <input class="ipt w-full" id="inpShipTimeApi" readonly placeholder="请先校验物流单号">
-          </div>
+        <div class="field">
+          <label>快递公司</label>
+          <input class="ipt w-full" id="inpCarrier" readonly placeholder="请先校验物流单号">
         </div>
       </div>
       <div class="dlg-ft">
@@ -854,22 +846,10 @@
       shipTargetOrderId = orderId;
       shipTargetLineId = lineId || null;
       lastWaybillValidation = null;
-      document.getElementById('shipDlgOrderNo').textContent = orderId;
-      document.getElementById('shipDlgBuyer').textContent = o.buyerName;
-      const hintEl = document.getElementById('shipDlgLineHint');
-      if (lineId) {
-        const ln = o.lines.find(l => l.lineId === lineId);
-        hintEl.textContent = ln
-          ? '当前商品：' + ln.name + '（已默认勾选，可勾选同订单其他待发商品一并发货）'
-          : '';
-      } else {
-        hintEl.textContent = '请勾选本订单待发商品';
-      }
       document.getElementById('inpShipperName').value = '';
       document.getElementById('inpShipperPhone').value = '';
       document.getElementById('inpWaybill').value = '';
       document.getElementById('inpCarrier').value = '';
-      document.getElementById('inpShipTimeApi').value = '';
       document.getElementById('waybillValidateMsg').textContent = '';
       const preview = document.getElementById('uploadSlipPreview');
       preview.classList.remove('show');
@@ -921,13 +901,11 @@
         lastWaybillValidation = null;
         msgEl.innerHTML = `<span style="color:#b91c1c">${escapeHtml(res.msg)}</span>`;
         document.getElementById('inpCarrier').value = '';
-        document.getElementById('inpShipTimeApi').value = '';
         return;
       }
       lastWaybillValidation = { carrier: res.carrier, shipTimeApi: res.shipTimeApi };
       document.getElementById('inpCarrier').value = res.carrier;
-      document.getElementById('inpShipTimeApi').value = res.shipTimeApi;
-      msgEl.innerHTML = '<span style="color:#047857"><i class="fa-solid fa-check"></i> 校验成功（模拟接口），承运商与时间已回填</span>';
+      msgEl.innerHTML = '<span style="color:#047857"><i class="fa-solid fa-check"></i> 校验成功（模拟接口），承运商已回填</span>';
     }
 
     function submitShipment() {

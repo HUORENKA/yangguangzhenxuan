@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../../assets/custom.css">
     <style>
+        .text-primary { color: #E2231A; }
+        .bg-primary { background-color: #E2231A; }
+        .border-primary { border-color: #E2231A; }
         .tab-active {
             border-bottom: 2px solid #E1251B;
             color: #E1251B;
@@ -104,6 +107,87 @@
             color: white;
             border-color: #E1251B;
         }
+        /* 上传物流弹窗（对齐登记发货） */
+        .dlg-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,.5);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .dlg-overlay.show { display: flex; }
+        .dlg {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 720px;
+            width: 100%;
+            max-height: 92vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 48px rgba(15,23,42,.18);
+            border: 1px solid #e2e8f0;
+        }
+        .dlg-hd {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e8edf3;
+            font-weight: 800;
+            font-size: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dlg-bd { padding: 16px 20px; overflow-y: auto; flex: 1; }
+        .dlg-ft {
+            padding: 12px 20px;
+            border-top: 1px solid #e8edf3;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; }
+        .field .hint { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ipt-dlg { border: 1px solid #d8dee8; border-radius: 6px; padding: 8px 12px; font-size: 13px; width: 100%; }
+        .btn-dlg { height: 34px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 700; border: 1px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; }
+        .btn-dlg:hover { filter: brightness(0.98); }
+        .btn-dlg-primary { background: #E2231A; border-color: #E2231A; color: #fff; }
+        .btn-dlg-ghost-line { border: 1px solid #94a3b8; color: #334155; background: #fff; }
+        .btn-dlg-sm { height: 30px; padding: 0 10px; font-size: 12px; }
+        .waybill-row { display: flex; gap: 8px; align-items: flex-start; }
+        .waybill-row input { flex: 1; }
+        .ship-line-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .ship-line-table th, .ship-line-table td { border: 1px solid #e8edf3; padding: 8px 10px; }
+        .ship-line-table th { background: #f8fafc; font-weight: 700; color: #475569; }
+        .alert-mock {
+            padding: 8px 12px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #1e40af;
+            margin-bottom: 14px;
+        }
+        .upload-slip-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+        .upload-preview {
+            font-size: 12px; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0;
+            border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; display: none;
+        }
+        .upload-preview.show { display: block; }
+        .qty-readonly { font-weight: 800; color: #0f172a; text-align: center; }
+        .dlg-product-cell { display: flex; gap: 10px; align-items: flex-start; min-width: 0; }
+        .dlg-thumb {
+            width: 56px; height: 56px; border-radius: 6px; object-fit: cover;
+            border: 1px solid #e2e8f0; flex-shrink: 0; background: #f1f5f9;
+        }
+        .dlg-product-name { font-weight: 700; font-size: 13px; line-height: 1.4; color: #0f172a; }
+        .dlg-product-spec { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
+        .dlg-supplier { font-size: 12px; color: #334155; line-height: 1.5; }
+        .dlg-supplier-lbl { color: #94a3b8; font-size: 11px; display: block; margin-bottom: 2px; }
+        .ship-line-table .dlg-product-cell { min-width: 200px; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen p-4">
@@ -215,7 +299,7 @@
                                 </div>
                                 <div class="action-buttons">
                                     <span class="action-btn">查看信息</span>
-                                    <span class="action-btn action-btn-primary">上传物流单号</span>
+                                    <span class="action-btn action-btn-primary">登记退货物流</span>
                                 </div>
                             </div>
                             <div class="action-box">
@@ -490,7 +574,7 @@
         </div>
 
         <!-- ========== 待退货状态（3条） ========== -->
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return" data-return-id="TH20260113052">
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
                 <div class="flex items-center gap-4">
                     <span class="font-medium text-gray-900">退货单号：TH20260113052</span>
@@ -514,13 +598,13 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-2 min-w-[120px]">
-                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal()">上传物流单号</button>
+                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal('TH20260113052')">登记退货物流</button>
                     <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return" data-return-id="TH20260112088">
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
                 <div class="flex items-center gap-4">
                     <span class="font-medium text-gray-900">退货单号：TH20260112088</span>
@@ -544,13 +628,13 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-2 min-w-[120px]">
-                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal()">上传物流单号</button>
+                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal('TH20260112088')">登记退货物流</button>
                     <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return">
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return" data-return-id="TH20260111077">
             <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
                 <div class="flex items-center gap-4">
                     <span class="font-medium text-gray-900">退货单号：TH20260111077</span>
@@ -574,7 +658,7 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-2 min-w-[120px]">
-                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal()">上传物流单号</button>
+                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal('TH20260111077')">登记退货物流</button>
                     <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
                 </div>
             </div>
@@ -857,41 +941,199 @@
         </div>
     </div>
 
-    <!-- 物流单号上传模态框 -->
-    <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-primary text-white">
-                <h3 class="text-lg font-semibold">上传物流信息</h3>
-                <button onclick="hideUploadModal()" class="text-white hover:text-gray-200 text-xl">&times;</button>
+    <!-- 登记退货物流弹窗（对齐登记发货） -->
+    <div class="dlg-overlay" id="uploadModal">
+        <div class="dlg" onclick="event.stopPropagation()">
+            <div class="dlg-hd">
+                <span>登记退货物流</span>
+                <button type="button" class="btn-dlg btn-dlg-sm" onclick="hideUploadModal()">&times;</button>
             </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">物流公司</label>
-                    <select class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <option>顺丰速运</option>
-                        <option>中通快递</option>
-                        <option>圆通速递</option>
-                        <option>京东快递</option>
-                        <option>EMS</option>
-                    </select>
+            <div class="dlg-bd">
+                <div class="upload-slip-row">
+                    <input type="file" id="inpReturnLogisticsSlip" accept="image/*,.pdf" hidden>
+                    <button type="button" class="btn-dlg btn-dlg-ghost-line" id="btnReturnUploadSlip"><i class="fas fa-cloud-arrow-up mr-1"></i>上传物流单</button>
+                    <span class="text-xs text-slate-500">支持图片 / PDF，原型模拟 OCR 识别</span>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">物流单号</label>
-                    <input type="text" placeholder="请输入快递单号" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+                <div class="upload-preview" id="returnUploadSlipPreview"></div>
+                <div class="row2">
+                    <div class="field">
+                        <label>发货人姓名 <span style="color:#dc2626">*</span></label>
+                        <input class="ipt-dlg" id="inpReturnShipperName" placeholder="如：王明">
+                    </div>
+                    <div class="field">
+                        <label>发货人手机号 <span style="color:#dc2626">*</span></label>
+                        <input class="ipt-dlg" id="inpReturnShipperPhone" placeholder="如：138xxxx0000">
+                    </div>
                 </div>
-                <div class="bg-orange-50 p-3 rounded-lg flex gap-2">
-                    <i class="fas fa-info-circle text-orange-500 mt-1"></i>
-                    <p class="text-xs text-orange-700">请务必填写正确的单号，以便供应商及时签收并为您办理退款。</p>
+                <div class="field">
+                    <label>物流单号 <span style="color:#dc2626">*</span></label>
+                    <div class="waybill-row">
+                        <input type="text" class="ipt-dlg" id="inpReturnWaybill" placeholder="请输入运单号，或上传物流单自动识别">
+                        <button type="button" class="btn-dlg btn-dlg-ghost-line" id="btnReturnValidateWaybill">校验</button>
+                    </div>
+                    <div class="hint field" id="returnWaybillValidateMsg"></div>
+                </div>
+                <div class="field">
+                    <label>快递公司</label>
+                    <input class="ipt-dlg" id="inpReturnCarrier" readonly placeholder="请先校验物流单号">
                 </div>
             </div>
-            <div class="p-6 pt-0 flex gap-3">
-                <button onclick="hideUploadModal()" class="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50">取消</button>
-                <button onclick="submitUpload()" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90">确认提交</button>
+            <div class="dlg-ft">
+                <button class="btn-dlg" type="button" onclick="hideUploadModal()">取消</button>
+                <button class="btn-dlg btn-dlg-primary" type="button" onclick="submitUpload()">提交退货</button>
             </div>
         </div>
     </div>
 
     <script>
+        const returnOrders = [
+            {
+                id: 'TH20260113052',
+                supplierName: '晨光文具旗舰店',
+                lines: [{
+                    lineId: 'l1',
+                    name: '得力(deli) 0130 强力型订书机 50页厚层',
+                    spec: '规格：银黑色 适用23/6-23/10书钉',
+                    img: 'https://images.unsplash.com/photo-1512412023212-f09999392ef5?q=80&w=200&auto=format&fit=crop',
+                    qty: 5
+                }]
+            },
+            {
+                id: 'TH20260112088',
+                supplierName: '鼎盛办公用品',
+                lines: [{
+                    lineId: 'l1',
+                    name: '惠普(HP) LaserJet Pro M404dn 黑白激光打印机',
+                    spec: '规格：自动双面打印 网络打印',
+                    img: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=200&auto=format&fit=crop',
+                    qty: 1
+                }]
+            },
+            {
+                id: 'TH20260111077',
+                supplierName: '得力办公专营店',
+                lines: [{
+                    lineId: 'l1',
+                    name: '得力(deli) 5028 透明胶带 48mm×50m',
+                    spec: '规格：高粘性 办公透明胶带',
+                    img: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?q=80&w=200&auto=format&fit=crop',
+                    qty: 15
+                }]
+            }
+        ];
+
+        let returnTargetId = null;
+        let lastReturnWaybillValidation = null;
+
+        function escapeHtml(s) {
+            return String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function fmtNow() {
+            const d = new Date();
+            return d.toISOString().slice(0, 19).replace('T', ' ');
+        }
+
+        function mockWaybillLookup(waybill) {
+            const w = String(waybill || '').trim();
+            if (!w || w.length < 8) return { ok: false, msg: '请输入不少于 8 位的运单号' };
+            if (/^SF/i.test(w)) return { ok: true, carrier: '顺丰速运', shipTimeApi: fmtNow(), msg: '' };
+            if (/^JT/i.test(w)) return { ok: true, carrier: '极兔速递', shipTimeApi: fmtNow(), msg: '' };
+            if (/^JD/i.test(w) || /^JDVB/i.test(w)) return { ok: true, carrier: '京东物流', shipTimeApi: fmtNow(), msg: '' };
+            if (/^YT/i.test(w)) return { ok: true, carrier: '圆通速递', shipTimeApi: fmtNow(), msg: '' };
+            return { ok: true, carrier: '快递（承运商占位）', shipTimeApi: fmtNow(), msg: '' };
+        }
+
+        function mockOcrLogisticsSlip(fileName) {
+            const seed = (fileName || '').length % 3;
+            const samples = [
+                { waybill: 'SF' + Date.now().toString().slice(-12), shipperName: '王明', shipperPhone: '13800138001' },
+                { waybill: 'YT88776655443399', shipperName: '李芳', shipperPhone: '13900139002' },
+                { waybill: 'JDVB20260421008877', shipperName: '赵志强', shipperPhone: '13600008888' }
+            ];
+            return samples[seed];
+        }
+
+        function showUploadModal(returnId) {
+            const ro = returnOrders.find(x => x.id === returnId);
+            if (!ro) return;
+            returnTargetId = returnId;
+            lastReturnWaybillValidation = null;
+
+            document.getElementById('inpReturnShipperName').value = '';
+            document.getElementById('inpReturnShipperPhone').value = '';
+            document.getElementById('inpReturnWaybill').value = '';
+            document.getElementById('inpReturnCarrier').value = '';
+            document.getElementById('returnWaybillValidateMsg').textContent = '';
+            const preview = document.getElementById('returnUploadSlipPreview');
+            preview.classList.remove('show');
+            preview.innerHTML = '';
+            const fileInp = document.getElementById('inpReturnLogisticsSlip');
+            if (fileInp) fileInp.value = '';
+
+            document.getElementById('uploadModal').classList.add('show');
+        }
+
+        function hideUploadModal() {
+            returnTargetId = null;
+            document.getElementById('uploadModal').classList.remove('show');
+        }
+
+        function applyReturnOcrResult(ocr) {
+            document.getElementById('inpReturnWaybill').value = ocr.waybill || '';
+            document.getElementById('inpReturnShipperName').value = ocr.shipperName || '';
+            document.getElementById('inpReturnShipperPhone').value = ocr.shipperPhone || '';
+            runReturnWaybillValidate();
+        }
+
+        function runReturnWaybillValidate() {
+            const w = document.getElementById('inpReturnWaybill').value.trim();
+            const res = mockWaybillLookup(w);
+            const msgEl = document.getElementById('returnWaybillValidateMsg');
+            if (!res.ok) {
+                lastReturnWaybillValidation = null;
+                msgEl.innerHTML = `<span style="color:#b91c1c">${escapeHtml(res.msg)}</span>`;
+                document.getElementById('inpReturnCarrier').value = '';
+                return;
+            }
+            lastReturnWaybillValidation = { carrier: res.carrier, shipTimeApi: res.shipTimeApi };
+            document.getElementById('inpReturnCarrier').value = res.carrier;
+            msgEl.innerHTML = '<span style="color:#047857"><i class="fas fa-check"></i> 校验成功（模拟接口），快递公司已回填</span>';
+        }
+
+        function submitUpload() {
+            if (!returnTargetId) return;
+            const ro = returnOrders.find(x => x.id === returnTargetId);
+            if (!ro) return;
+
+            const name = document.getElementById('inpReturnShipperName').value.trim();
+            const phone = document.getElementById('inpReturnShipperPhone').value.trim();
+            const waybill = document.getElementById('inpReturnWaybill').value.trim();
+
+            if (!name || !/^1\d{10}$/.test(phone.replace(/\s+/g, ''))) {
+                alert('请填写发货人姓名与合规手机号');
+                return;
+            }
+            if (!waybill) {
+                alert('请填写物流单号并完成校验');
+                return;
+            }
+            if (!lastReturnWaybillValidation ||
+                document.getElementById('inpReturnWaybill').value.trim() !== waybill ||
+                document.getElementById('inpReturnCarrier').value !== lastReturnWaybillValidation.carrier) {
+                alert('请先点击「校验」通过后再提交退货');
+                return;
+            }
+
+            alert('物流信息提交成功！状态已更新为“退货中”（示意）');
+            hideUploadModal();
+            switchTab('shipping');
+        }
+
         function switchTab(status) {
             // 更新Tab样式
             const tabs = ['all', 'pending', 'return', 'shipping', 'completed', 'terminated'];
@@ -919,19 +1161,22 @@
             });
         }
 
-        function showUploadModal() {
-            document.getElementById('uploadModal').classList.remove('hidden');
-        }
-
-        function hideUploadModal() {
-            document.getElementById('uploadModal').classList.add('hidden');
-        }
-
-        function submitUpload() {
-            alert('物流信息提交成功！状态已更新为“退货中”');
-            hideUploadModal();
-            switchTab('shipping');
-        }
+        document.getElementById('btnReturnValidateWaybill').addEventListener('click', runReturnWaybillValidate);
+        document.getElementById('btnReturnUploadSlip').addEventListener('click', () => {
+            document.getElementById('inpReturnLogisticsSlip').click();
+        });
+        document.getElementById('inpReturnLogisticsSlip').addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const preview = document.getElementById('returnUploadSlipPreview');
+            preview.classList.add('show');
+            preview.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在识别物流单…';
+            setTimeout(() => {
+                const ocr = mockOcrLogisticsSlip(file.name);
+                preview.innerHTML = `<i class="fas fa-check"></i> 已识别：<strong>${escapeHtml(file.name)}</strong> → 运单号、发货人信息已填入，并已触发校验`;
+                applyReturnOcrResult(ocr);
+            }, 600);
+        });
 
         function toggleFlowchart() {
             const module = document.getElementById('flowchartModule');

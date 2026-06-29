@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>国采e购 | 首页</title>
+  <title>国采E购 | 首页</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&display=swap">
   <script src="../assets/mock.js" defer></script>
   <script src="../assets/mode_switcher.js"></script>
   <style>
@@ -51,17 +52,18 @@
       gap: 28px;
     }
     .brand {
-      display: flex; align-items: center; gap: 12px;
-      font-weight: 800; font-size: 28px; letter-spacing: -0.4px; flex: none;
-      white-space: nowrap;
+      display: flex; align-items: center; gap: 14px;
+      font-family: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", serif;
+      font-weight: 900; font-size: 34px; letter-spacing: 0.1em; flex: none;
+      white-space: nowrap; color: #0c2d6b; text-decoration: none;
     }
-    .brand-badge {
-      width: 48px; height: 48px; border-radius: 14px;
-      background: linear-gradient(135deg, var(--brand) 0%, #6d8cff 100%);
-      color: #fff; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 10px 22px rgba(47,107,255,0.28);
-      font-size: 20px;
+    .brand-logo {
+      width: 52px; height: 52px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      filter: drop-shadow(0 6px 14px rgba(26,79,160,0.22));
     }
+    .brand-logo svg { width: 100%; height: 100%; display: block; }
+    .brand-e { color: #2563eb; letter-spacing: 0; }
     .main-tabs {
       display: inline-flex;
       align-items: center;
@@ -1599,8 +1601,8 @@
       .topbar-inner { grid-template-columns: auto auto; height: auto; padding: 14px 0; gap: 14px; }
       .main-tabs { grid-column: 1 / -1; order: 3; width: 100%; overflow-x: auto; justify-content: flex-start; }
       .main-tab { flex: 0 0 auto; height: 40px; font-size: 14px; padding: 0 16px; }
-      .brand { font-size: 24px; }
-      .brand-badge { width: 42px; height: 42px; font-size: 18px; }
+      .brand { font-size: 28px; }
+      .brand-logo { width: 44px; height: 44px; }
       .mall-supplier-grid, .reco-products-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
       .capability-grid, .advantage-grid, .stats-row { grid-template-columns: 1fr; }
       .hero-intro { grid-template-columns: 1fr; }
@@ -1619,8 +1621,8 @@
       <div class="topbar-inner">
         <!-- 左：Logo -->
         <a class="brand" href="#top">
-          <span class="brand-badge"><i class="fa-solid fa-sparkles"></i></span>
-          <span>国采e购</span>
+          <span class="brand-logo"></span>
+          <span>国采<span class="brand-e">E</span>购</span>
         </a>
         <!-- 中：主功能 Tab -->
         <nav class="main-tabs" aria-label="采购主功能导航">
@@ -1631,10 +1633,6 @@
         </nav>
         <!-- 右：操作区 -->
         <div class="topbar-actions">
-          <a class="topbar-icon-btn" href="./workbench/workbench_home.html" title="">
-            <i class="fa-solid fa-briefcase"></i>
-            <span class="tip">工作台</span>
-          </a>
           <a class="topbar-icon-btn" href="#" title="">
             <i class="fa-solid fa-cart-shopping"></i>
             <span class="badge-dot"></span>
