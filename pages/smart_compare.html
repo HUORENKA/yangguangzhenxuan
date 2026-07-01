@@ -418,6 +418,10 @@
       color: var(--primary-dark);
     }
 
+    .ai-result-card {
+      background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+    }
+
     .section {
       margin-top: 18px;
     }
@@ -978,46 +982,18 @@
   </section>
 
   <main class="page-wrap" id="compareResult">
-    <section class="card hero">
-      <div class="hero-top">
-        <div>
-          <h1 class="hero-title">全网寻品询比结果</h1>
-          <div class="hero-subtitle">系统已基于你提供的图片或链接完成内容解析，并结合平台商品库输出推荐商品列表。你可以先查看 AI 内容分析，再从表格中进入商品详情。</div>
-        </div>
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <div id="sourceTypeChip" class="source-chip">来源：演示样例</div>
-          <button class="ff-back-btn" type="button" onclick="backToFinderEntry()" title="返回入口">
-            <i class="fa-solid fa-arrow-left"></i> 返回
-          </button>
-        </div>
-      </div>
-
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="hero-stat-label">识别商品名称</div>
-          <div id="heroProductName" class="hero-stat-value">A4复印纸</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-label">匹配候选商品</div>
-          <div id="heroMatchCount" class="hero-stat-value">6</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-label">最高匹配度</div>
-          <div id="heroMatchScore" class="hero-stat-value">96%</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-label">建议采购区间</div>
-          <div id="heroPriceRange" class="hero-stat-value">138元</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="card section-card">
+    <section class="section" style="margin-top: 0;">
+      <div class="card section-card ai-result-card">
         <div class="section-head">
           <div>
-            <h2 class="section-title">AI 内容分析</h2>
-            <div class="section-subtitle">展示图片/链接输入内容的解析结果，并支持在此位置重新上传图片或重新粘贴链接。</div>
+            <h2 class="section-title">AI寻品结果</h2>
+            <div class="section-subtitle">系统已基于你提供的图片或链接完成内容解析，并结合平台商品库输出寻品结果。支持在此重新上传图片或粘贴链接。</div>
+          </div>
+          <div class="analysis-actions">
+            <div id="sourceTypeChip" class="source-chip">来源：演示样例</div>
+            <button class="ff-back-btn" type="button" onclick="backToFinderEntry()" title="返回入口">
+              <i class="fa-solid fa-arrow-left"></i> 返回
+            </button>
           </div>
         </div>
 
@@ -1036,28 +1012,28 @@
             <div class="panel-title"><i class="fa-solid fa-brain"></i> 智能分析结果</div>
             <div class="analysis-result-grid">
               <div class="analysis-item">
-                <div class="analysis-item-label">识别商品名称</div>
+                <div class="analysis-item-label">名称</div>
                 <div id="analysisProductName" class="analysis-item-value">A4 复印纸</div>
               </div>
               <div class="analysis-item">
-                <div class="analysis-item-label">商品类目</div>
-                <div id="analysisCategory" class="analysis-item-value">办公用品 / 纸品耗材</div>
-              </div>
-              <div class="analysis-item">
-                <div class="analysis-item-label">品牌 / 型号</div>
+                <div class="analysis-item-label">品牌</div>
                 <div id="analysisBrand" class="analysis-item-value">晨鸣 / A4-70g</div>
               </div>
               <div class="analysis-item">
-                <div class="analysis-item-label">核心规格参数</div>
+                <div class="analysis-item-label">规格</div>
                 <div id="analysisSpec" class="analysis-item-value">A4 / 70g / 500张 / 8包</div>
               </div>
               <div class="analysis-item">
                 <div class="analysis-item-label">建议采购区间</div>
-                <div id="analysisPrice" class="analysis-item-value">138 - 165 元 / 箱</div>
+                <div id="analysisPriceRange" class="analysis-item-value">138 - 165 元 / 箱</div>
               </div>
               <div class="analysis-item">
-                <div class="analysis-item-label">AI 分析结论</div>
-                <div id="analysisConclusion" class="analysis-item-value">建议优先查看同品同规商品，再结合供应商评级与价格做选择。</div>
+                <div class="analysis-item-label">匹配商品</div>
+                <div id="analysisMatchedProducts" class="analysis-item-value">晨鸣 A4 复印纸 70g 500张*8包 等</div>
+              </div>
+              <div class="analysis-item">
+                <div class="analysis-item-label">匹配商品数</div>
+                <div id="analysisMatchCount" class="analysis-item-value">4</div>
               </div>
             </div>
 
@@ -1103,17 +1079,13 @@
     const emptyCompareImageInput = document.getElementById("emptyCompareImageInput");
 
     const sourceTypeChip = document.getElementById("sourceTypeChip");
-    const heroProductName = document.getElementById("heroProductName");
-    const heroMatchCount = document.getElementById("heroMatchCount");
-    const heroMatchScore = document.getElementById("heroMatchScore");
-    const heroPriceRange = document.getElementById("heroPriceRange");
     const sourcePreview = document.getElementById("sourcePreview");
     const analysisProductName = document.getElementById("analysisProductName");
-    const analysisCategory = document.getElementById("analysisCategory");
     const analysisBrand = document.getElementById("analysisBrand");
     const analysisSpec = document.getElementById("analysisSpec");
-    const analysisPrice = document.getElementById("analysisPrice");
-    const analysisConclusion = document.getElementById("analysisConclusion");
+    const analysisPriceRange = document.getElementById("analysisPriceRange");
+    const analysisMatchedProducts = document.getElementById("analysisMatchedProducts");
+    const analysisMatchCount = document.getElementById("analysisMatchCount");
     const keywordRow = document.getElementById("keywordRow");
     const recommendTableBody = document.getElementById("recommendTableBody");
 
@@ -1357,6 +1329,12 @@
       return images[index % images.length];
     }
 
+    function formatMatchedProducts(products) {
+      if (!products || !products.length) return "暂无匹配商品";
+      if (products.length === 1) return products[0].name;
+      return products[0].name + " 等 " + products.length + " 件";
+    }
+
     function renderPage(state) {
       if (!state) {
         showFinderEmpty(true);
@@ -1364,17 +1342,13 @@
       }
       showFinderEmpty(false);
       sourceTypeChip.textContent = "来源：" + state.sourceTypeLabel;
-      heroProductName.textContent = state.productName;
-      heroMatchCount.textContent = String(state.products.length);
-      heroMatchScore.textContent = state.maxScore;
-      heroPriceRange.textContent = state.priceRange.split(" - ")[0] || state.priceRange;
 
       analysisProductName.textContent = state.productName;
-      analysisCategory.textContent = state.category;
       analysisBrand.textContent = state.brand;
       analysisSpec.textContent = state.spec;
-      analysisPrice.textContent = state.priceRange;
-      analysisConclusion.textContent = state.conclusion;
+      analysisPriceRange.textContent = state.priceRange;
+      analysisMatchedProducts.textContent = formatMatchedProducts(state.products);
+      analysisMatchCount.textContent = String(state.products.length);
 
       if (state.previewType === "link") {
         sourcePreview.innerHTML = `

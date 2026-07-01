@@ -1564,20 +1564,48 @@
       });
     }
 
+    function buildAiComparePayloadFromRows(base, sameRows) {
+      const products = sameRows.map((row, idx) => {
+        const brandMatch = String(row.productName || '').match(/^([\u4e00-\u9fa5A-Za-z&·]+)/);
+        const scoreNum = Math.round(row.qualityScore || 90);
+        return {
+          id: row.id,
+          name: row.productName,
+          brand: brandMatch ? brandMatch[1] : '通用品牌',
+          price: row.price,
+          unit: '件',
+          supplier: row.supplier,
+          floor: row.floor,
+          ceiling: row.ceiling,
+          goodRate: +(scoreNum + idx * 0.3).toFixed(1),
+          isSource: !!row.isCurrent,
+          radar: {
+            afterSales: Math.min(98, scoreNum - 1 + idx),
+            credit: Math.min(98, scoreNum + 2 - idx),
+            delivery: Math.min(98, scoreNum - 3 + idx * 2),
+            fulfillment: Math.min(98, scoreNum - idx),
+            consistency: Math.min(98, scoreNum - 2),
+            priceReason: Math.min(98, 100 - idx * 4)
+          }
+        };
+      }).sort((a, b) => a.price - b.price);
+      products.forEach((p, i) => { p.priceRank = i + 1; });
+      return {
+        sourceId: base.id,
+        specLabel: base.category || base.name || '同品同规',
+        compareType: 'same',
+        generatedAt: new Date().toISOString(),
+        products
+      };
+    }
+
     function openComparePickerById(id) {
       const product = productById(id);
       if (!product) return;
-      currentCompareProduct = {
-        ...product,
-        compare: {
-          same: buildCompareRows(product, 'same'),
-          similar: buildCompareRows(product, 'similar')
-        }
-      };
-      resetComparePicker();
-      renderComparePickerTable();
-      $('comparePickerOverlay').classList.add('show');
-      document.body.style.overflow = 'hidden';
+      const sameRows = buildCompareRows(product, 'same');
+      const payload = buildAiComparePayloadFromRows(product, sameRows);
+      sessionStorage.setItem('aiComparePayload', JSON.stringify(payload));
+      window.open('./compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
     }
 
     function closeComparePicker() {

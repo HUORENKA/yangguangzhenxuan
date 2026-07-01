@@ -737,6 +737,19 @@
           history.replaceState(null, '', location.pathname);
         }, 120);
       }
+      if (params.get('open_compliance') === '1') {
+        try {
+          var raw = sessionStorage.getItem('aiContractComplianceDemo');
+          if (raw) {
+            var p = JSON.parse(raw);
+            if (p.fileName) pendingUploadFileName = p.fileName;
+          }
+        } catch (eOpen) {}
+        setTimeout(function () {
+          openComplianceModal();
+          history.replaceState(null, '', location.pathname);
+        }, 220);
+      }
     })();
   </script>
 </body>
