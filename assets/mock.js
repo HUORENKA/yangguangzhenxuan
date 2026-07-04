@@ -725,12 +725,12 @@ function initHomePageData() {
 
   // ---------- 入驻供应商（与合并首页 mall 区卡片数据保持一致） ----------
   homePageData.settledSuppliers = [
-    { id: 'store_001', name: '华为技术有限公司', business: '电子设备', goodsCount: 1280, score: 4.9, coverText: 'HUAWEI', coverClass: 'cover-huawei', link: './store/store_detail.html?id=store_001', sortOrder: 1 },
-    { id: 'store_002', name: '联想集团', business: '办公设备', goodsCount: 956, score: 4.8, coverText: 'LENOVO', coverClass: 'cover-lenovo', link: './store/store_detail.html?id=store_002', sortOrder: 2 },
-    { id: 'store_003', name: '京东物流', business: '物流服务', goodsCount: 2340, score: 4.9, coverText: 'JD LOGISTICS', coverClass: 'cover-jd', link: './store/store_detail.html?id=store_003', sortOrder: 3 },
-    { id: 'store_004', name: '中国电信', business: '通信服务', goodsCount: 676, score: 4.7, coverText: 'CHINA TELECOM', coverClass: 'cover-telecom', link: './store/store_detail.html?id=store_004', sortOrder: 4 },
-    { id: 'store_005', name: '得力集团', business: '办公用品', goodsCount: 3450, score: 4.8, coverText: 'DELI', coverClass: 'cover-deli', link: './store/store_detail.html?id=store_005', sortOrder: 5 },
-    { id: 'store_006', name: '海尔智家', business: '家电设备', goodsCount: 1890, score: 4.9, coverText: 'HAIER', coverClass: 'cover-haier', link: './store/store_detail.html?id=store_006', sortOrder: 6 }
+    { id: 'store_001', name: '华为技术有限公司', business: '电子设备', goodsCount: 1280, score: 4.9, coverText: 'HUAWEI', coverClass: 'cover-huawei', link: '../pages-new/store/store_detail.html?id=store_001', sortOrder: 1 },
+    { id: 'store_002', name: '联想集团', business: '办公设备', goodsCount: 956, score: 4.8, coverText: 'LENOVO', coverClass: 'cover-lenovo', link: '../pages-new/store/store_detail.html?id=store_002', sortOrder: 2 },
+    { id: 'store_003', name: '京东物流', business: '物流服务', goodsCount: 2340, score: 4.9, coverText: 'JD LOGISTICS', coverClass: 'cover-jd', link: '../pages-new/store/store_detail.html?id=store_003', sortOrder: 3 },
+    { id: 'store_004', name: '中国电信', business: '通信服务', goodsCount: 676, score: 4.7, coverText: 'CHINA TELECOM', coverClass: 'cover-telecom', link: '../pages-new/store/store_detail.html?id=store_004', sortOrder: 4 },
+    { id: 'store_005', name: '得力集团', business: '办公用品', goodsCount: 3450, score: 4.8, coverText: 'DELI', coverClass: 'cover-deli', link: '../pages-new/store/store_detail.html?id=store_005', sortOrder: 5 },
+    { id: 'store_006', name: '海尔智家', business: '家电设备', goodsCount: 1890, score: 4.9, coverText: 'HAIER', coverClass: 'cover-haier', link: '../pages-new/store/store_detail.html?id=store_006', sortOrder: 6 }
   ];
 
   // ---------- 底部商城信息（服务承诺条） ----------

@@ -552,6 +552,47 @@
   font-size: 13px;
   color: #64748b;
 }
+.bi-quote-supplement {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.bi-quote-supplement-item {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e8eef5;
+  min-width: 0;
+}
+.bi-quote-supplement-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+.bi-quote-supplement-value {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+  word-break: break-word;
+}
+.bi-quote-supplement-file-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  max-width: 100%;
+  word-break: break-all;
+}
+.bi-quote-supplement-file-btn:hover { text-decoration: underline; color: #115e59; }
 .bi-item-summary {
   margin-top: 14px;
   padding: 12px 14px;
@@ -575,6 +616,7 @@
 }
 
 @media (max-width: 720px) {
+  .bi-quote-supplement { grid-template-columns: 1fr; }
   .bid-assist-page { padding: 14px; }
   .bi-history-toolbar { width: 100%; justify-content: space-between; }
 }

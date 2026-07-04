@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>比质比价分析 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../assets/custom.css">
+  <style>
+    :root {
+      --primary: #E2231A;
+      --text-main: #111827;
+      --text-sub: #64748b;
+      --border: #e5e7eb;
+      --bg: #f5f7fb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(220, 38, 38, 0.2);
+    }
+    .topbar-inner {
+      max-width: 1200px; margin: 0 auto; padding: 14px 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .page-wrap { max-width: 1200px; margin: 0 auto; padding: 20px 20px 48px; }
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+    .hero { padding: 22px 24px; background: linear-gradient(135deg, #fff7f7 0%, #ffffff 100%); }
+    .hero-title { font-size: 24px; font-weight: 800; line-height: 1.35; }
+    .hero-sub { margin-top: 8px; color: var(--text-sub); font-size: 14px; line-height: 1.75; }
+    .hero-tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;
+    }
+    .section { margin-top: 16px; padding: 20px 22px; }
+    .section-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px;
+    }
+    .section-title i { color: var(--primary); font-size: 13px; }
+    .price-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .price-table th, .price-table td {
+      padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: left; vertical-align: middle;
+    }
+    .price-table th { background: #f8fafc; color: #64748b; font-weight: 700; font-size: 12px; }
+    .rank-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 30px; height: 24px; padding: 0 8px; border-radius: 8px;
+      font-weight: 800; font-size: 12px;
+    }
+    .rank-badge.r1 { background: #fef3c7; color: #b45309; }
+    .rank-badge.r2 { background: #f1f5f9; color: #475569; }
+    .rank-badge.r3 { background: #fff7ed; color: #c2410c; }
+    .price-val { font-weight: 800; color: var(--primary); }
+    .detail-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 6px 12px; border-radius: 8px; border: 1px solid #dbeafe;
+      background: #eff6ff; color: #2563eb; font-size: 12px; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+    }
+    .detail-btn:hover { background: #dbeafe; }
+    .brand-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .brand-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px; border: 1px solid #e2e8f0; border-radius: 14px; background: #fafbfc;
+    }
+    .brand-avatar {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: var(--primary); font-size: 15px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .brand-name { font-size: 14px; font-weight: 800; color: #0f172a; }
+    .brand-sup { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+    .rate-list { display: grid; gap: 12px; }
+    .rate-row {
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(100px, 160px) 52px;
+      align-items: center; gap: 12px; font-size: 13px;
+    }
+    .rate-label {
+      font-weight: 700; color: #334155;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .rate-bar { height: 10px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+    .rate-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #f97316, #ef4444); }
+    .rate-val { font-weight: 800; color: #ea580c; text-align: right; }
+    .radar-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .radar-card {
+      border: 1px solid #ebeef5; border-radius: 16px; padding: 14px 10px 16px;
+      background: #fafbfc; text-align: center;
+    }
+    .radar-sup {
+      font-size: 12px; font-weight: 800; color: #334155; margin-bottom: 6px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .radar-card canvas { display: block; margin: 0 auto; }
+    .recommend-banner {
+      margin-top: 16px; padding: 16px 18px; border-radius: 14px;
+      border: 1px solid #bbf7d0; background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+    }
+    .recommend-banner-title { font-size: 16px; font-weight: 800; color: #166534; }
+    .recommend-banner-reason { margin-top: 8px; font-size: 14px; line-height: 1.75; color: #166534; }
+    .empty-state { padding: 48px 20px; text-align: center; color: #94a3b8; font-size: 14px; line-height: 1.8; }
+    @media (max-width: 860px) {
+      .brand-grid, .radar-grid { grid-template-columns: 1fr; }
+      .rate-row { grid-template-columns: 1fr; gap: 6px; }
+    }
+  </style>
+  <script src="../assets/mode_switcher.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="font-extrabold text-lg"><i class="fa-solid fa-scale-balanced mr-2"></i>国采e购 · 比质比价分析</div>
+      <button class="bg-white/15 hover:bg-white/20 transition rounded-full px-4 py-2 text-sm font-bold" type="button" onclick="window.history.back()">
+        <i class="fa-solid fa-arrow-left mr-1"></i>返回
+      </button>
+    </div>
+  </header>
+
+  <main class="page-wrap" id="pageMain">
+    <section class="card hero" id="analysisHero">
+      <div class="hero-title">比质比价 · 同品同规分析</div>
+      <div class="hero-sub" id="heroSub">正在加载分析数据…</div>
+      <div class="hero-tags" id="heroTags"></div>
+      <div class="recommend-banner" id="recommendBanner" style="display:none">
+        <div class="recommend-banner-title" id="recommendTitle"></div>
+        <div class="recommend-banner-reason" id="recommendReason"></div>
+      </div>
+    </section>
+
+    <section class="card section" id="priceSection">
+      <div class="section-title"><i class="fa-solid fa-caret-right"></i> 比质比价商品</div>
+      <div style="overflow:auto">
+        <table class="price-table">
+          <thead>
+            <tr>
+              <th>排名</th><th>商品名称</th><th>品牌</th><th>供应商</th><th>报价</th><th>平台建议区间</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="priceTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card section" id="rateSection">
+      <div class="section-title"><i class="fa-solid fa-caret-right"></i> 好评率对比</div>
+      <div class="rate-list" id="rateList"></div>
+    </section>
+
+    <section class="card section" id="radarSection">
+      <div class="section-title"><i class="fa-solid fa-caret-right"></i> 供应商分析</div>
+      <div class="radar-grid" id="radarGrid"></div>
+    </section>
+  </main>
+
+  <script>
+    var RADAR_LABELS = ['售后服务', '信用认证', '交付能力', '履约评价', '图文一致', '价格合理'];
+    var comparePayload = null;
+
+    function escapeHtml(s) {
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function drawRadar(canvas, radar, legend) {
+      var values = [
+        radar.afterSales, radar.credit, radar.delivery,
+        radar.fulfillment, radar.consistency, radar.priceReason
+      ];
+      var ctx = canvas.getContext('2d');
+      var width = canvas.width;
+      var height = canvas.height;
+      var centerX = width / 2;
+      var centerY = height / 2 + 8;
+      var radius = 72;
+      var total = RADAR_LABELS.length;
+      var angleOf = function(i) { return -Math.PI / 2 + (i * Math.PI * 2 / total); };
+
+      ctx.clearRect(0, 0, width, height);
+
+      for (var level = 1; level <= 5; level++) {
+        var lr = radius * (level / 5);
+        ctx.beginPath();
+        for (var i = 0; i < total; i++) {
+          var a = angleOf(i);
+          var x = centerX + Math.cos(a) * lr;
+          var y = centerY + Math.sin(a) * lr;
+          ctx[i ? 'lineTo' : 'moveTo'](x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = level === 5 ? '#cbd5e1' : '#e8edf3';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      for (var j = 0; j < total; j++) {
+        var ang = angleOf(j);
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(centerX + Math.cos(ang) * radius, centerY + Math.sin(ang) * radius);
+        ctx.strokeStyle = '#e8edf3';
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+      values.forEach(function(v, idx) {
+        var ratio = Math.max(0, Math.min(100, v)) / 100;
+        var a = angleOf(idx);
+        var px = centerX + Math.cos(a) * radius * ratio;
+        var py = centerY + Math.sin(a) * radius * ratio;
+        ctx[idx ? 'lineTo' : 'moveTo'](px, py);
+      });
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(226, 35, 26, 0.18)';
+      ctx.fill();
+      ctx.strokeStyle = '#E2231A';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      values.forEach(function(v, idx) {
+        var ratio = Math.max(0, Math.min(100, v)) / 100;
+        var a = angleOf(idx);
+        var px = centerX + Math.cos(a) * radius * ratio;
+        var py = centerY + Math.sin(a) * radius * ratio;
+        ctx.beginPath();
+        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#E2231A';
+        ctx.fill();
+      });
+
+      ctx.font = '11px "Microsoft YaHei", sans-serif';
+      ctx.fillStyle = '#475569';
+      RADAR_LABELS.forEach(function(label, idx) {
+        var a = angleOf(idx);
+        var lr = radius + 22;
+        var lx = centerX + Math.cos(a) * lr;
+        var ly = centerY + Math.sin(a) * lr;
+        var metrics = ctx.measureText(label);
+        var drawX = lx - metrics.width / 2;
+        if (idx === 1 || idx === 2) drawX = lx;
+        if (idx === 4 || idx === 5) drawX = lx - metrics.width;
+        ctx.fillText(label, drawX, ly + 4);
+      });
+
+      if (legend) {
+        ctx.fillStyle = '#E2231A';
+        ctx.fillRect(12, 10, 12, 8);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '12px "Microsoft YaHei", sans-serif';
+        ctx.fillText(legend, 28, 18);
+      }
+    }
+
+    function buildRecommendReason(products) {
+      if (!products.length) return '';
+      var best = products[0];
+      return '在 ' + products.length + ' 款同品同规候选中，<strong>' + escapeHtml(best.supplier) + '</strong> 的 '
+        + escapeHtml(best.name) + ' 价格排名第 1（¥' + best.price.toFixed(best.price % 1 ? 2 : 0) + '），'
+        + '好评率 ' + best.goodRate + '%，综合供应商雷达评分表现较优，建议优先采购。';
+    }
+
+    function renderComparePage() {
+      var products = comparePayload.products || [];
+      if (!products.length) {
+        document.getElementById('pageMain').innerHTML = '<section class="card"><div class="empty-state">未找到比质比价分析数据，请从商品卡片点击「比质比价」进入。</div></section>';
+        return;
+      }
+
+      document.getElementById('heroSub').innerHTML = '参照规格：<strong>' + escapeHtml(comparePayload.specLabel || '同品同规') + '</strong>，系统已自动匹配同品同规商品并完成多维度对比分析。';
+      document.getElementById('heroTags').innerHTML = [
+        '<span class="hero-tag"><i class="fa-solid fa-clone"></i> 同品同规</span>',
+        '<span class="hero-tag"><i class="fa-solid fa-box"></i> ' + products.length + ' 款候选</span>',
+        '<span class="hero-tag"><i class="fa-solid fa-clock"></i> ' + new Date(comparePayload.generatedAt || Date.now()).toLocaleString('zh-CN') + '</span>'
+      ].join('');
+
+      var best = products[0];
+      document.getElementById('recommendBanner').style.display = 'block';
+      document.getElementById('recommendTitle').textContent = '推荐优选：' + best.supplier + ' · ' + best.brand;
+      document.getElementById('recommendReason').innerHTML = buildRecommendReason(products);
+
+      document.getElementById('priceTableBody').innerHTML = products.map(function(p) {
+        var rankCls = p.priceRank === 1 ? 'r1' : (p.priceRank === 2 ? 'r2' : 'r3');
+        var sourceNote = p.isSource ? ' <span style="color:#94a3b8;font-weight:600">（当前）</span>' : '';
+        return '<tr>' +
+          '<td><span class="rank-badge ' + rankCls + '">' + p.priceRank + '</span></td>' +
+          '<td><div style="font-weight:700">' + escapeHtml(p.name) + sourceNote + '</div></td>' +
+          '<td>' + escapeHtml(p.brand) + '</td>' +
+          '<td>' + escapeHtml(p.supplier) + '</td>' +
+          '<td><span class="price-val">¥' + p.price.toFixed(p.price % 1 ? 2 : 0) + '</span> / ' + escapeHtml(p.unit || '件') + '</td>' +
+          '<td>¥' + (p.floor || 0).toFixed(0) + ' - ¥' + (p.ceiling || 0).toFixed(0) + '</td>' +
+          '<td><a class="detail-btn" href="../pages/product.html?id=' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> 查看详情</a></td>' +
+          '</tr>';
+      }).join('');
+
+      document.getElementById('rateList').innerHTML = products.map(function(p) {
+        return '<div class="rate-row">' +
+          '<span class="rate-label" title="' + escapeHtml(p.name) + '">' + escapeHtml(p.name) + '</span>' +
+          '<div class="rate-bar"><div class="rate-fill" style="width:' + p.goodRate + '%"></div></div>' +
+          '<span class="rate-val">' + p.goodRate + '%</span></div>';
+      }).join('');
+
+      document.getElementById('radarGrid').innerHTML = products.map(function(p, i) {
+        return '<div class="radar-card">' +
+          '<div class="radar-sup">' + escapeHtml(p.supplier) + '</div>' +
+          '<canvas class="radar-canvas" data-idx="' + i + '" width="220" height="200" aria-label="' + escapeHtml(p.supplier) + ' 供应商雷达图"></canvas>' +
+          '<a class="detail-btn" style="margin-top:10px" href="../pages/product.html?id=' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> 查看详情</a>' +
+          '</div>';
+      }).join('');
+
+      document.querySelectorAll('.radar-canvas').forEach(function(canvas) {
+        var idx = parseInt(canvas.getAttribute('data-idx'), 10);
+        var item = products[idx];
+        if (item && item.radar) drawRadar(canvas, item.radar, item.brand);
+      });
+    }
+
+    function convertLegacyPayload(legacy) {
+      var same = (legacy.selectedRows && legacy.selectedRows.same) || [];
+      var source = legacy.sourceProduct || {};
+      var pool = [{
+        id: source.id,
+        name: source.name || source.productName,
+        price: source.price,
+        unit: '件',
+        supplier: source.supplier,
+        floor: source.floor,
+        ceiling: source.ceiling,
+        score: (source.qualityScore || 90) + '%',
+        isSource: true
+      }].concat(same.map(function(r) {
+        return {
+          id: r.id,
+          name: r.productName || r.name,
+          price: r.price,
+          unit: '件',
+          supplier: r.supplier,
+          floor: r.floor,
+          ceiling: r.ceiling,
+          score: (r.qualityScore || 88) + '%'
+        };
+      }));
+
+      return pool.map(function(p, idx) {
+        var scoreNum = parseInt(String(p.score), 10) || (90 - idx * 2);
+        var brandMatch = String(p.name || '').match(/^([\u4e00-\u9fa5A-Za-z&·]+)/);
+        return Object.assign({}, p, {
+          brand: brandMatch ? brandMatch[1] : '通用品牌',
+          goodRate: +(scoreNum + idx * 0.3).toFixed(1),
+          radar: {
+            afterSales: Math.min(98, scoreNum - 1 + idx),
+            credit: Math.min(98, scoreNum + 2 - idx),
+            delivery: Math.min(98, scoreNum - 3 + idx * 2),
+            fulfillment: Math.min(98, scoreNum - idx),
+            consistency: Math.min(98, scoreNum - 2),
+            priceReason: Math.min(98, 100 - idx * 4)
+          }
+        });
+      });
+    }
+
+    function bootstrap() {
+      var raw = sessionStorage.getItem('aiComparePayload');
+      if (raw) {
+        comparePayload = JSON.parse(raw);
+      } else {
+        var legacyRaw = sessionStorage.getItem('compareAnalysisPayload');
+        if (legacyRaw) {
+          var legacy = JSON.parse(legacyRaw);
+          var products = convertLegacyPayload(legacy);
+          products.sort(function(a, b) { return a.price - b.price; });
+          products.forEach(function(p, i) {
+            p.priceRank = i + 1;
+          });
+          comparePayload = {
+            specLabel: '同品同规',
+            compareType: 'same',
+            generatedAt: legacy.generatedAt || new Date().toISOString(),
+            products: products
+          };
+        }
+      }
+
+      if (!comparePayload || !comparePayload.products || !comparePayload.products.length) {
+        document.getElementById('pageMain').innerHTML = '<section class="card"><div class="empty-state">未找到比质比价分析数据，请从商品卡片点击「比质比价」进入。</div></section>';
+        return;
+      }
+
+      if (!comparePayload.products[0].priceRank) {
+        comparePayload.products.sort(function(a, b) { return a.price - b.price; });
+        comparePayload.products.forEach(function(p, i) { p.priceRank = i + 1; });
+      }
+
+      renderComparePage();
+    }
+
+    document.addEventListener('DOMContentLoaded', bootstrap);
+  </script>
+</body>
+</html>

@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全网寻品询比 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #6d28d9;
+      --primary-light: #f5f3ff;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border: #e2e8f0;
+      --bg: #f6f8fc;
+      --success: #16a34a;
+      --warning: #ea580c;
+      --info: #2563eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      box-shadow: 0 2px 18px rgba(124, 58, 237, 0.22);
+    }
+
+    .topbar-inner,
+    .page-wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .topbar-inner {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .top-link {
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.12);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .topbar-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+    .topbar-icon-btn {
+      position: relative; width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: #334155; font-size: 18px; cursor: pointer;
+      transition: background 0.18s, color 0.18s; text-decoration: none;
+    }
+    .topbar-icon-btn:hover { background: rgba(47,107,255,0.08); color: #2f6bff; }
+    .topbar-icon-btn .tip {
+      position: absolute; top: calc(100% + 10px); left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      white-space: nowrap; background: #1e293b; color: #fff;
+      font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 8px;
+      pointer-events: none; opacity: 0; transition: opacity 0.16s, transform 0.16s; z-index: 200;
+    }
+    .topbar-icon-btn:hover .tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .topbar-icon-btn .tip::before {
+      content: ""; position: absolute; bottom: 100%; left: 50%;
+      transform: translateX(-50%); border: 5px solid transparent; border-bottom-color: #1e293b;
+    }
+    .topbar-icon-btn .badge-dot {
+      position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+      border-radius: 50%; background: #ef4444; border: 2px solid #fff;
+    }
+    .topbar-divider { width: 1px; height: 22px; background: rgba(203,213,225,0.7); margin: 0 2px; }
+    .topbar-user {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer; position: relative; padding: 0 4px;
+    }
+    .topbar-user .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; box-shadow: 0 6px 14px rgba(37,99,235,0.22);
+    }
+    .topbar-user .username { font-size: 14px; font-weight: 700; color: #334155; }
+    .topbar-user .tip {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      white-space: nowrap; background: #1e293b; color: #fff;
+      font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 8px;
+      pointer-events: none; opacity: 0; transition: opacity 0.16s, transform 0.16s;
+      transform: translateY(-4px); z-index: 200;
+    }
+    .topbar-user:hover .tip { opacity: 1; transform: translateY(0); }
+    .topbar-user .tip::before {
+      content: ""; position: absolute; bottom: 100%; right: 14px;
+      border: 5px solid transparent; border-bottom-color: #1e293b;
+    }
+    .main-tabs {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+    }
+    .main-tab {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: rgba(255,255,255,0.86);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: all 0.18s ease;
+    }
+    .main-tab:hover { color: #fff; background: rgba(255,255,255,0.14); }
+    .main-tab.active {
+      color: var(--primary-dark);
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.16);
+    }
+
+    .page-wrap {
+      padding-top: 20px;
+      padding-bottom: 36px;
+    }
+    .empty-hero {
+      max-width: 1120px;
+      margin: 22px auto 0;
+      padding: 28px;
+      background: linear-gradient(135deg, #faf5ff 0%, #fff 100%);
+      border: 1px solid #ede9fe;
+      border-radius: 24px;
+      box-shadow: 0 14px 34px rgba(15,23,42,0.06);
+    }
+    .empty-title { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -0.6px; }
+    .empty-subtitle { margin: 10px 0 0; color: var(--text-sub); line-height: 1.8; font-size: 15px; }
+    .entry-grid { margin-top: 22px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+    .entry-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .entry-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: 0 18px 34px rgba(124,58,237,0.12); }
+    .entry-icon {
+      width: 46px; height: 46px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff; font-size: 18px;
+    }
+    .entry-card h3 { margin: 14px 0 8px; font-size: 20px; font-weight: 900; }
+    .entry-card p { margin: 0; color: var(--text-sub); line-height: 1.7; font-size: 14px; }
+    .hidden-input { display: none; }
+
+    /* ============ 全网寻品 · 入口区增强 ============ */
+    .finder-hero-wrap { max-width: 1120px; margin: 22px auto 0; padding: 0; }
+    .finder-hero-head { padding: 4px 4px 14px; }
+    .finder-hero-head h1 { margin: 0; font-size: 26px; font-weight: 900; letter-spacing: -0.4px; }
+    .finder-hero-head p { margin: 8px 0 0; color: var(--text-sub); font-size: 14px; line-height: 1.7; }
+
+    /* 顶部引导流程条 */
+    .ff-guide-bar {
+      display:flex; align-items:stretch; justify-content:space-between;
+      background:#fff; border:1px solid var(--border); border-radius:18px;
+      padding:14px 18px; box-shadow:0 8px 22px rgba(15,23,42,0.04);
+      margin-bottom:16px;
+    }
+    .ff-step { flex:1; display:flex; align-items:center; gap:10px; min-width:0; }
+    .ff-step-num {
+      width:30px; height:30px; border-radius:999px; flex:none;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff; font-weight:900; font-size:14px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 6px 14px rgba(124,58,237,0.28);
+    }
+    .ff-step-text { display:flex; flex-direction:column; min-width:0; }
+    .ff-step-title { font-size:13px; font-weight:800; color:#0f172a; line-height:1.2; }
+    .ff-step-desc { font-size:11px; color:var(--text-sub); margin-top:2px; line-height:1.4; }
+    .ff-arrow { display:flex; align-items:center; color:#cbd5e1; font-size:14px; padding:0 8px; flex:none; }
+    @media (max-width: 980px) {
+      .ff-guide-bar { flex-direction:column; gap:12px; }
+      .ff-arrow { display:none; }
+    }
+
+    /* 横向模块 */
+    .ff-block {
+      display:grid; grid-template-columns:35% 1fr; gap:22px;
+      background:#fff; border:1px solid var(--border); border-radius:18px;
+      padding:20px 22px; box-shadow:0 8px 22px rgba(15,23,42,0.04);
+      margin-bottom:14px;
+    }
+    .ff-block .ffb-left { display:flex; flex-direction:column; gap:8px; padding-right:14px; border-right:1px dashed #e2e8f0; }
+    .ff-block .ffb-icon { width:40px; height:40px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%); color:#fff; font-size:16px; }
+    .ff-block .ffb-title { font-size:18px; font-weight:900; margin:6px 0 0; letter-spacing:-0.2px; }
+    .ff-block .ffb-desc { font-size:13px; color:var(--text-sub); line-height:1.7; margin:0; }
+    .ff-block .ffb-meta { margin-top:6px; font-size:12px; color:var(--text-sub); display:flex; flex-direction:column; gap:5px; }
+    .ff-block .ffb-meta span i { color:var(--primary); margin-right:5px; }
+    .ff-block .ffb-right { display:flex; flex-direction:column; gap:12px; min-width:0; }
+
+    /* 主操作按钮 */
+    .ff-primary-btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      height:46px; padding:0 22px; border-radius:12px; cursor:pointer;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff; font-size:14px; font-weight:800; border:none;
+      box-shadow:0 8px 18px rgba(124,58,237,0.24); transition:transform .18s, box-shadow .18s;
+      align-self:flex-start;
+    }
+    .ff-primary-btn:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(124,58,237,0.32); }
+
+    /* 链接输入框 */
+    .ff-link-row { display:flex; gap:0; align-items:stretch; }
+    .ff-link-input {
+      flex:1; min-width:0; height:46px; padding:0 14px;
+      border:1px solid var(--border); border-right:none;
+      border-radius:12px 0 0 12px; outline:none; font-size:14px;
+      background:#fff; color:#0f172a; font-family:inherit;
+      transition:border-color .18s, box-shadow .18s;
+    }
+    .ff-link-input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(124,58,237,0.12); }
+    .ff-link-go {
+      height:46px; padding:0 20px; border:none; cursor:pointer;
+      border-radius:0 12px 12px 0;
+      background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+      color:#fff; font-size:14px; font-weight:800;
+      box-shadow:0 8px 18px rgba(124,58,237,0.24);
+      transition:transform .18s, box-shadow .18s;
+    }
+    .ff-link-go:hover { transform:translateY(-1px); box-shadow:0 12px 24px rgba(124,58,237,0.32); }
+
+    /* 最近列表（图片/链接共用） */
+    .ff-recent { display:flex; flex-direction:column; gap:8px; }
+    .ff-recent-label { font-size:12px; font-weight:800; color:#475569; letter-spacing:0.3px; }
+    .ff-recent-item {
+      display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;
+      background:#f8fafc; border:1px solid #eef2f7; transition:background .18s, border-color .18s;
+    }
+    .ff-recent-item:hover { background:#faf5ff; border-color:#ddd6fe; }
+    .ff-recent-icon { width:30px; height:30px; border-radius:9px; flex:none;
+      background:#ede9fe; color:#7c3aed; display:flex; align-items:center; justify-content:center; font-size:13px; }
+    .ff-recent-info { flex:1; min-width:0; }
+    .ff-recent-name { font-size:13px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ff-recent-meta { font-size:11px; color:var(--text-sub); margin-top:2px; }
+    .ff-recent-action {
+      flex:none; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:800;
+      color:#7c3aed; background:#ede9fe; border:1px solid #ddd6fe; cursor:pointer;
+    }
+    .ff-recent-action:hover { background:#ddd6fe; }
+
+    /* 来源平台标签 */
+    .ff-source-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+    @media (max-width: 980px) { .ff-source-grid { grid-template-columns:repeat(2,1fr); } }
+    .ff-source-tag {
+      display:flex; align-items:center; gap:9px; padding:10px 14px; border-radius:12px;
+      background:#faf5ff; border:1px solid #ddd6fe; cursor:pointer; transition:all .18s;
+    }
+    .ff-source-tag:hover { background:#ede9fe; transform:translateY(-2px); box-shadow:0 6px 14px rgba(124,58,237,0.14); }
+    .ff-source-tag i { color:var(--primary); font-size:14px; flex:none; }
+    .ff-source-tag span { font-size:13px; font-weight:800; color:#5b21b6; line-height:1.2; }
+
+    /* 底部能力说明条 */
+    .ff-ability-bar {
+      display:grid; grid-template-columns:repeat(5, minmax(0,1fr));
+      gap:10px; padding:14px 18px; border-radius:16px;
+      background:linear-gradient(135deg, #faf5ff 0%, #fff 100%);
+      border:1px solid #ede9fe;
+      margin-top:6px;
+    }
+    .ff-ability-item { display:flex; align-items:center; gap:8px; min-width:0; }
+    .ff-ability-item i { color:var(--primary); font-size:14px; flex:none; }
+    .ff-ability-item span { font-size:12px; font-weight:800; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    @media (max-width: 980px) { .ff-ability-bar { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width: 720px) {
+      .ff-block { grid-template-columns:1fr; }
+      .ff-block .ffb-left { padding-right:0; border-right:none; padding-bottom:14px; border-bottom:1px dashed #e2e8f0; }
+    }
+
+    /* 结果区返回按钮 */
+    .ff-back-btn {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:7px 14px; border-radius:999px;
+      background:#f8fafc; border:1px solid var(--border);
+      color:#334155; font-size:13px; font-weight:800; cursor:pointer;
+      transition:all 0.18s;
+    }
+    .ff-back-btn:hover { background:#ede9fe; border-color:#ddd6fe; color:#5b21b6; }
+    .ff-back-btn i { font-size:12px; }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+    }
+
+    .hero {
+      padding: 24px 26px;
+      background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+    }
+
+    .hero-subtitle {
+      margin-top: 10px;
+      color: var(--text-sub);
+      font-size: 15px;
+      line-height: 1.8;
+      max-width: 920px;
+    }
+
+    .source-chip {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(124, 58, 237, 0.08);
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .hero-stats {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .hero-stat {
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid #ede9fe;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .hero-stat-label {
+      color: var(--text-sub);
+      font-size: 12px;
+    }
+
+    .hero-stat-value {
+      margin-top: 6px;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .ai-result-card {
+      background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .section-card {
+      padding: 20px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .section-subtitle {
+      margin-top: 6px;
+      color: var(--text-sub);
+      font-size: 13px;
+    }
+
+    .analysis-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn,
+    .detail-btn {
+      height: 42px;
+      padding: 0 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #0f172a;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover,
+    .detail-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 400px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .analysis-panel {
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 18px;
+      min-height: 360px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .panel-title i {
+      color: var(--primary-dark);
+    }
+
+    .source-preview {
+      margin-top: 16px;
+      min-height: 180px;
+      border-radius: 18px;
+      border: 1px dashed #d8b4fe;
+      background: linear-gradient(135deg, #faf5ff 0%, #ffffff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .preview-image-card {
+      width: 100%;
+      height: 180px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ddd6fe 0%, #a78bfa 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      text-align: center;
+      padding: 20px;
+      line-height: 1.8;
+    }
+
+    .preview-link-card {
+      width: 100%;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid #e9d5ff;
+      padding: 18px;
+    }
+
+    .preview-link-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .mini-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .preview-link-title {
+      font-size: 16px;
+      line-height: 1.7;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .preview-link-url {
+      margin-top: 10px;
+      word-break: break-all;
+      color: var(--text-sub);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .source-summary {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .summary-item {
+      border-radius: 14px;
+      background: #f8fafc;
+      padding: 12px 14px;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .summary-value {
+      margin-top: 4px;
+      font-size: 14px;
+      line-height: 1.7;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .analysis-result-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .analysis-item {
+      border-radius: 16px;
+      background: #f8fafc;
+      padding: 14px 14px 12px;
+      border: 1px solid #edf2f7;
+    }
+
+    .analysis-item-label {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .analysis-item-value {
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 1.7;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .keyword-row {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .keyword-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--info);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .table-card {
+      padding: 20px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1040px;
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #eef2f7;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background: #fcfcff;
+    }
+
+    .product-name {
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.7;
+    }
+
+    .product-desc {
+      margin-top: 4px;
+      color: var(--text-sub);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .product-cell {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 260px;
+    }
+
+    .product-thumb {
+      width: 58px;
+      height: 58px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+      flex: none;
+      background: #f8fafc;
+      display: block;
+    }
+
+    .product-info {
+      min-width: 0;
+    }
+
+    .match-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 64px;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.1);
+      color: var(--success);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .tag-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .table-tag {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .table-tag.primary {
+      background: rgba(124, 58, 237, 0.08);
+      border-color: rgba(196, 181, 253, 0.9);
+      color: var(--primary-dark);
+    }
+
+    .price {
+      font-size: 20px;
+      font-weight: 800;
+      color: #dc2626;
+      white-space: nowrap;
+    }
+
+    .hidden-input {
+      display: none;
+    }
+
+    @media (max-width: 1100px) {
+      .hero-stats,
+      .analysis-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .topbar-inner,
+      .hero-top,
+      .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-stats,
+      .analysis-grid,
+      .analysis-result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .analysis-actions {
+        width: 100%;
+      }
+
+      .action-btn,
+      .detail-btn {
+        width: 100%;
+      }
+    }
+  </style>
+  <script src="../assets/mode_switcher.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-logo"></span>
+        <div>国采<span class="brand-e">E</span>购</div>
+      </div>
+      <nav class="main-tabs" aria-label="采购主功能导航">
+        <a class="main-tab" href="../pages/merged_home.html"><i class="fa-solid fa-store"></i> 商城首页</a>
+        <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 最价方案</a>
+        <a class="main-tab active" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
+      </nav>
+      <div class="topbar-actions">
+        <a class="topbar-icon-btn" href="#" title="">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="badge-dot"></span>
+          <span class="tip">购物车</span>
+        </a>
+        <div class="topbar-divider"></div>
+        <a class="topbar-icon-btn" href="./ai_assistant.html" title="">
+          <i class="fa-regular fa-bell"></i>
+          <span class="badge-dot"></span>
+          <span class="tip">消息通知</span>
+        </a>
+        <div class="topbar-user">
+          <div class="avatar">张</div>
+          <span class="username">张三</span>
+          <span class="tip">张三 · 采购专员</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="finder-hero-wrap" id="finderEmpty">
+    <input id="emptyCompareImageInput" class="hidden-input" type="file" accept="image/*">
+
+    <!-- 标题区 -->
+    <div class="finder-hero-head">
+      <h1>全网寻品</h1>
+      <p>上传商品图片或粘贴外部链接，AI 自动识别商品并匹配平台同类商品。该模块仅做寻品与查看，不提供「换品」操作。</p>
+    </div>
+
+    <!-- 顶部引导流程条 -->
+    <div class="ff-guide-bar">
+      <div class="ff-step">
+        <div class="ff-step-num">1</div>
+        <div class="ff-step-text">
+          <div class="ff-step-title">上传图片 / 粘贴链接</div>
+          <div class="ff-step-desc">支持图片或外部商城链接</div>
+        </div>
+      </div>
+      <div class="ff-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="ff-step">
+        <div class="ff-step-num">2</div>
+        <div class="ff-step-text">
+          <div class="ff-step-title">AI 识别商品信息</div>
+          <div class="ff-step-desc">提取标题、规格与参数</div>
+        </div>
+      </div>
+      <div class="ff-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="ff-step">
+        <div class="ff-step-num">3</div>
+        <div class="ff-step-text">
+          <div class="ff-step-title">平台同类智能匹配</div>
+          <div class="ff-step-desc">推荐平台合规同类商品</div>
+        </div>
+      </div>
+      <div class="ff-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="ff-step">
+        <div class="ff-step-num">4</div>
+        <div class="ff-step-text">
+          <div class="ff-step-title">查看推荐与商品详情</div>
+          <div class="ff-step-desc">完成对比并进入详情</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模块1：上传商品图片 -->
+    <div class="ff-block">
+      <div class="ffb-left">
+        <div class="ffb-icon"><i class="fa-solid fa-image"></i></div>
+        <h3 class="ffb-title">上传商品图片</h3>
+        <p class="ffb-desc">支持商品图、截图、参数图等图片输入，AI 识别后匹配平台同类商品。</p>
+        <div class="ffb-meta">
+          <span><i class="fa-regular fa-image"></i> 支持格式：JPG / PNG / WEBP</span>
+          <span><i class="fa-solid fa-circle-check"></i> 单图 ≤ 10MB，图片越清晰匹配越精准</span>
+        </div>
+      </div>
+      <div class="ffb-right">
+        <button class="ff-primary-btn" type="button" onclick="document.getElementById('emptyCompareImageInput').click()">
+          <i class="fa-solid fa-cloud-arrow-up"></i> 上传商品图片
+        </button>
+        <div class="ff-recent">
+          <div class="ff-recent-label">最近识别图片</div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-image"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">A4复印纸_截图.png</div>
+              <div class="ff-recent-meta">2026-04-24 · 已匹配 12 件平台同类</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderImage('A4复印纸_截图.png')">重新识别</button>
+          </div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-image"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">显示器外观图.jpg</div>
+              <div class="ff-recent-meta">2026-04-22 · 已匹配 8 件平台同类</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderImage('显示器外观图.jpg')">重新识别</button>
+          </div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-image"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">椅子参数图.webp</div>
+              <div class="ff-recent-meta">2026-04-19 · 已匹配 6 件平台同类</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderImage('椅子参数图.webp')">重新识别</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模块2：粘贴商品链接 -->
+    <div class="ff-block">
+      <div class="ffb-left">
+        <div class="ffb-icon"><i class="fa-solid fa-link"></i></div>
+        <h3 class="ffb-title">粘贴商品链接</h3>
+        <p class="ffb-desc">输入外部商城商品链接，AI 自动提取标题、参数和价格线索，并推荐平台商品。</p>
+        <div class="ffb-meta">
+          <span><i class="fa-solid fa-globe"></i> 支持来源：淘宝/天猫/京东/拼多多/1688/得物</span>
+          <span><i class="fa-solid fa-shield-halved"></i> 仅做寻品参考，不下载第三方资源</span>
+        </div>
+      </div>
+      <div class="ffb-right">
+        <div class="ff-link-row">
+          <input class="ff-link-input" id="finderLinkInput" type="text" placeholder="粘贴商品链接，如 https://item.taobao.com/...">
+          <button class="ff-link-go" type="button" onclick="recognizeFinderLinkInput()"><i class="fa-solid fa-magnifying-glass"></i> 识别</button>
+        </div>
+
+        <div class="ff-recent">
+          <div class="ff-recent-label">常见来源</div>
+          <div class="ff-source-grid">
+            <div class="ff-source-tag" onclick="recognizeFinderSource('淘宝')"><i class="fa-solid fa-bag-shopping"></i><span>淘宝</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('天猫')"><i class="fa-solid fa-store"></i><span>天猫</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('京东')"><i class="fa-solid fa-truck-fast"></i><span>京东</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('拼多多')"><i class="fa-solid fa-people-group"></i><span>拼多多</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('1688')"><i class="fa-solid fa-warehouse"></i><span>1688</span></div>
+            <div class="ff-source-tag" onclick="recognizeFinderSource('得物')"><i class="fa-solid fa-gem"></i><span>得物</span></div>
+          </div>
+        </div>
+
+        <div class="ff-recent">
+          <div class="ff-recent-label">最近链接</div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-link"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">item.taobao.com/item.htm?id=623415...</div>
+              <div class="ff-recent-meta">2026-04-23 · 标题：得力A4复印纸 70g 标准装</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderLink('https://item.taobao.com/item.htm?id=623415')">重新识别</button>
+          </div>
+          <div class="ff-recent-item">
+            <div class="ff-recent-icon"><i class="fa-solid fa-link"></i></div>
+            <div class="ff-recent-info">
+              <div class="ff-recent-name">item.jd.com/100012043978.html</div>
+              <div class="ff-recent-meta">2026-04-20 · 标题：联想ThinkPad E14 商务本</div>
+            </div>
+            <button class="ff-recent-action" type="button" onclick="recognizeFinderLink('https://item.jd.com/100012043978.html')">重新识别</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部分析能力说明条 -->
+    <div class="ff-ability-bar">
+      <div class="ff-ability-item"><i class="fa-solid fa-wand-magic-sparkles"></i><span>图片智能识别</span></div>
+      <div class="ff-ability-item"><i class="fa-solid fa-link"></i><span>链接内容解析</span></div>
+      <div class="ff-ability-item"><i class="fa-solid fa-tag"></i><span>商品信息提取</span></div>
+      <div class="ff-ability-item"><i class="fa-solid fa-arrows-left-right-to-line"></i><span>平台同类匹配</span></div>
+      <div class="ff-ability-item"><i class="fa-solid fa-scale-balanced"></i><span>价格对比分析</span></div>
+    </div>
+  </section>
+
+  <main class="page-wrap" id="compareResult">
+    <section class="section" style="margin-top: 0;">
+      <div class="card section-card ai-result-card">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">AI寻品结果</h2>
+            <div class="section-subtitle">系统已基于你提供的图片或链接完成内容解析，并结合平台商品库输出寻品结果。支持在此重新上传图片或粘贴链接。</div>
+          </div>
+          <div class="analysis-actions">
+            <div id="sourceTypeChip" class="source-chip">来源：演示样例</div>
+            <button class="ff-back-btn" type="button" onclick="backToFinderEntry()" title="返回入口">
+              <i class="fa-solid fa-arrow-left"></i> 返回
+            </button>
+          </div>
+        </div>
+
+        <div class="analysis-grid">
+          <div class="analysis-panel">
+            <div class="panel-title"><i class="fa-solid fa-photo-film"></i> 图片/链接内容分析</div>
+            <div id="sourcePreview" class="source-preview"></div>
+            <input id="compareImageInput" class="hidden-input" type="file" accept="image/*">
+            <div class="source-summary">
+              <button class="action-btn" type="button" onclick="document.getElementById('compareImageInput').click()"><i class="fa-solid fa-image"></i> 重新上传图片</button>
+              <button class="action-btn" type="button" onclick="repasteFinderLink()"><i class="fa-solid fa-link"></i> 重新粘贴链接</button>
+            </div>
+          </div>
+
+          <div class="analysis-panel">
+            <div class="panel-title"><i class="fa-solid fa-brain"></i> 智能分析结果</div>
+            <div class="analysis-result-grid">
+              <div class="analysis-item">
+                <div class="analysis-item-label">名称</div>
+                <div id="analysisProductName" class="analysis-item-value">A4 复印纸</div>
+              </div>
+              <div class="analysis-item">
+                <div class="analysis-item-label">品牌</div>
+                <div id="analysisBrand" class="analysis-item-value">晨鸣 / A4-70g</div>
+              </div>
+              <div class="analysis-item">
+                <div class="analysis-item-label">规格</div>
+                <div id="analysisSpec" class="analysis-item-value">A4 / 70g / 500张 / 8包</div>
+              </div>
+              <div class="analysis-item">
+                <div class="analysis-item-label">建议采购区间</div>
+                <div id="analysisPriceRange" class="analysis-item-value">138 - 165 元 / 箱</div>
+              </div>
+              <div class="analysis-item">
+                <div class="analysis-item-label">匹配商品</div>
+                <div id="analysisMatchedProducts" class="analysis-item-value">晨鸣 A4 复印纸 70g 500张*8包 等</div>
+              </div>
+              <div class="analysis-item">
+                <div class="analysis-item-label">匹配商品数</div>
+                <div id="analysisMatchCount" class="analysis-item-value">4</div>
+              </div>
+            </div>
+
+            <div class="keyword-row" id="keywordRow"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card table-card">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">平台推荐商品列表</h2>
+            <div class="section-subtitle">系统已根据识别结果推荐平台内相似商品，支持直接查看商品详情。</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>推荐商品</th>
+                <th>供应商</th>
+                <th>规格参数</th>
+                <th>匹配度</th>
+                <th>推荐标签</th>
+                <th>价格</th>
+                <th>交付时效</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="recommendTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "finderCompareDemo";
+    const compareImageInput = document.getElementById("compareImageInput");
+    const emptyCompareImageInput = document.getElementById("emptyCompareImageInput");
+
+    const sourceTypeChip = document.getElementById("sourceTypeChip");
+    const sourcePreview = document.getElementById("sourcePreview");
+    const analysisProductName = document.getElementById("analysisProductName");
+    const analysisBrand = document.getElementById("analysisBrand");
+    const analysisSpec = document.getElementById("analysisSpec");
+    const analysisPriceRange = document.getElementById("analysisPriceRange");
+    const analysisMatchedProducts = document.getElementById("analysisMatchedProducts");
+    const analysisMatchCount = document.getElementById("analysisMatchCount");
+    const keywordRow = document.getElementById("keywordRow");
+    const recommendTableBody = document.getElementById("recommendTableBody");
+
+    const scenarios = {
+      demo: {
+        sourceType: "demo",
+        sourceTypeLabel: "演示样例",
+        rawLabel: "演示样例：办公用 A4 复印纸识别输入",
+        sourceSummary: "系统识别为办公纸品类采购需求，适合进入平台商品询比。",
+        previewType: "image",
+        previewTitle: "采购演示样例",
+        previewSub: "A4复印纸 / 办公纸品",
+        productName: "A4 复印纸",
+        category: "办公用品 / 纸品耗材",
+        brand: "晨鸣 / A4-70g",
+        spec: "A4 / 70g / 500张 / 8包",
+        priceRange: "138 - 165 元 / 箱",
+        maxScore: "96%",
+        keywords: ["A4", "70g", "复印纸", "办公耗材", "整箱采购"],
+        conclusion: "建议优先查看同品同规商品，再结合供应商评级与价格做选择。",
+        products: [
+          {
+            name: "晨鸣 A4 复印纸 70g 500张*8包",
+            supplier: "晨鸣办公旗舰店",
+            spec: "A4 / 70g / 8包",
+            score: "96%",
+            tags: ["同品同规", "优选供应商"],
+            price: "138元/箱",
+            delivery: "次日达",
+            desc: "采购目录标准规格，适配日常办公打印。"
+          },
+          {
+            name: "得力 A4 打印复印纸 珊瑚海 70g",
+            supplier: "得力企业采购店",
+            spec: "A4 / 70g / 8包",
+            score: "94%",
+            tags: ["高匹配", "价格稳定"],
+            price: "145元/箱",
+            delivery: "48小时",
+            desc: "平台热销办公纸品，适合常规批量采购。"
+          },
+          {
+            name: "亚太森博 A4 办公复印纸 70g",
+            supplier: "森博纸品专区",
+            spec: "A4 / 70g / 8包",
+            score: "92%",
+            tags: ["高匹配"],
+            price: "142元/箱",
+            delivery: "72小时",
+            desc: "同类纸品备选，价格区间稳定。"
+          },
+          {
+            name: "APP 金光 A4 复印纸 70g 企业装",
+            supplier: "APP企业采购中心",
+            spec: "A4 / 70g / 8包",
+            score: "89%",
+            tags: ["品牌替代"],
+            price: "151元/箱",
+            delivery: "72小时",
+            desc: "可作为品牌替代方案参与询比。"
+          }
+        ]
+      },
+      image: {
+        sourceType: "image",
+        sourceTypeLabel: "图片识别",
+        rawLabel: "上传图片识别内容：办公采购商品图片",
+        sourceSummary: "系统已根据上传图片提取商品视觉特征与文字标签，适合匹配平台相似商品。",
+        previewType: "image",
+        previewTitle: "图片识别结果",
+        previewSub: "上传图片已完成解析",
+        productName: "办公投影仪",
+        category: "办公设备 / 会议显示",
+        brand: "极米 / 会议投影设备",
+        spec: "1080P / 商务会议 / 高清接口",
+        priceRange: "2899 - 3599 元 / 台",
+        maxScore: "95%",
+        keywords: ["投影仪", "会议设备", "高清显示", "商务办公", "多接口"],
+        conclusion: "优先查看参数一致的商务会议投影仪，并重点比较亮度、接口与售后服务。",
+        products: [
+          {
+            name: "极米 商务会议投影仪 高清版",
+            supplier: "极米政企旗舰店",
+            spec: "1080P / 商务型 / HDMI",
+            score: "95%",
+            tags: ["同品同规", "高匹配"],
+            price: "2999元/台",
+            delivery: "48小时",
+            desc: "与识别图片外观及参数相近，适合会议场景。"
+          },
+          {
+            name: "爱普生 办公会议投影仪 标准版",
+            supplier: "爱普生办公设备店",
+            spec: "1080P / 办公型 / 双接口",
+            score: "93%",
+            tags: ["品牌替代"],
+            price: "3199元/台",
+            delivery: "72小时",
+            desc: "同类场景替代方案，适配会议室采购。"
+          },
+          {
+            name: "明基 商务投影仪 企业版",
+            supplier: "明基企业采购专营店",
+            spec: "1080P / 商务型 / HDMI+USB",
+            score: "91%",
+            tags: ["接口更全"],
+            price: "3399元/台",
+            delivery: "72小时",
+            desc: "多接口方案，便于会议接入。"
+          }
+        ]
+      },
+      link: {
+        sourceType: "link",
+        sourceTypeLabel: "链接解析",
+        rawLabel: "粘贴链接识别内容：外部商品链接",
+        sourceSummary: "系统已根据粘贴链接提取商品标题、参数及价格线索，并匹配平台内相似商品。",
+        previewType: "link",
+        previewTitle: "外部平台商品链接",
+        previewSub: "链接解析完成",
+        productName: "人体工学办公椅",
+        category: "办公家具 / 办公座椅",
+        brand: "通用办公椅 / 人体工学款",
+        spec: "可升降 / 带头枕 / 腰托",
+        priceRange: "699 - 1080 元 / 把",
+        maxScore: "93%",
+        keywords: ["办公椅", "人体工学", "腰托", "升降调节", "办公家具"],
+        conclusion: "建议优先关注同类人体工学办公椅，重点比较腰托、头枕和承重能力。",
+        products: [
+          {
+            name: "得力 人体工学办公椅 腰托款",
+            supplier: "得力办公家具馆",
+            spec: "可升降 / 腰托 / 头枕",
+            score: "93%",
+            tags: ["高匹配", "价格更优"],
+            price: "768元/把",
+            delivery: "48小时",
+            desc: "参数与链接商品相近，采购性价比较高。"
+          },
+          {
+            name: "永艺 人体工学办公椅 商务版",
+            supplier: "永艺政企采购店",
+            spec: "可升降 / 腰托 / 滑轮",
+            score: "91%",
+            tags: ["优选供应商"],
+            price: "899元/把",
+            delivery: "72小时",
+            desc: "办公场景适配度高，售后服务稳定。"
+          },
+          {
+            name: "西昊 办公椅 会议室款",
+            supplier: "西昊办公专区",
+            spec: "升降 / 头枕 / 网布",
+            score: "88%",
+            tags: ["品牌替代"],
+            price: "980元/把",
+            delivery: "72小时",
+            desc: "可作为中高配替代商品参与询比。"
+          }
+        ]
+      }
+    };
+
+    function handleImageUpload(input) {
+      if (!input.files || !input.files[0]) return;
+      const name = input.files[0].name;
+      const nextState = {
+        sourceType: "image",
+        fileName: name,
+        sourceLabel: "图片识别",
+        rawValue: "上传图片：" + name
+      };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+      renderPage(buildState(nextState));
+      showFinderEmpty(false);
+    }
+
+    compareImageInput.addEventListener("change", function () {
+      handleImageUpload(this);
+    });
+    emptyCompareImageInput.addEventListener("change", function () {
+      handleImageUpload(this);
+    });
+
+    /*
+    compareImageInput.addEventListener("change", function () {
+      if (!this.files || !this.files[0]) return;
+      const name = this.files[0].name;
+      const nextState = {
+        sourceType: "image",
+        fileName: name,
+        sourceLabel: "图片识别",
+        rawValue: "上传图片：" + name
+      };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+      renderPage(buildState(nextState));
+    });
+    */
+
+    function getFinderState() {
+      try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function buildState(rawState) {
+      if (!rawState || !rawState.sourceType || !scenarios[rawState.sourceType]) {
+        return null;
+      }
+
+      const base = JSON.parse(JSON.stringify(scenarios[rawState.sourceType]));
+
+      if (rawState.sourceType === "image" && rawState.fileName) {
+        base.rawLabel = "上传图片：" + rawState.fileName;
+        base.previewSub = rawState.fileName;
+      }
+
+      if (rawState.sourceType === "link" && rawState.url) {
+        base.rawLabel = "粘贴链接：" + rawState.url;
+        base.previewUrl = rawState.url;
+      }
+
+      return base;
+    }
+
+    function getProductImage(product, index) {
+      if (product.img) return product.img;
+      const images = [
+        "https://images.unsplash.com/photo-1568667256549-094345857637?w=160&h=160&fit=crop",
+        "https://images.unsplash.com/photo-1536240478700-b869ad10e2cc?w=160&h=160&fit=crop",
+        "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=160&h=160&fit=crop",
+        "https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=160&h=160&fit=crop",
+      ];
+      const text = (product.name + " " + product.spec + " " + product.desc).toLowerCase();
+      if (text.includes("纸") || text.includes("复印")) return images[0];
+      if (text.includes("投影") || text.includes("会议")) return images[1];
+      if (text.includes("椅") || text.includes("人体工学")) return images[2];
+      return images[index % images.length];
+    }
+
+    function formatMatchedProducts(products) {
+      if (!products || !products.length) return "暂无匹配商品";
+      if (products.length === 1) return products[0].name;
+      return products[0].name + " 等 " + products.length + " 件";
+    }
+
+    function renderPage(state) {
+      if (!state) {
+        showFinderEmpty(true);
+        return;
+      }
+      showFinderEmpty(false);
+      sourceTypeChip.textContent = "来源：" + state.sourceTypeLabel;
+
+      analysisProductName.textContent = state.productName;
+      analysisBrand.textContent = state.brand;
+      analysisSpec.textContent = state.spec;
+      analysisPriceRange.textContent = state.priceRange;
+      analysisMatchedProducts.textContent = formatMatchedProducts(state.products);
+      analysisMatchCount.textContent = String(state.products.length);
+
+      if (state.previewType === "link") {
+        sourcePreview.innerHTML = `
+          <div class="preview-link-card">
+            <div class="preview-link-meta">
+              <span class="mini-chip">链接解析</span>
+              <span class="mini-chip">${state.sourceTypeLabel}</span>
+            </div>
+            <div class="preview-link-title">${state.previewTitle}</div>
+            <div class="preview-link-url">${state.previewUrl || "https://example.com/product/demo-link"}</div>
+            <div class="preview-link-url">${state.previewSub}</div>
+          </div>
+        `;
+      } else {
+        sourcePreview.innerHTML = `
+          <div class="preview-image-card">
+            <div>
+              <div>${state.previewTitle}</div>
+              <div style="margin-top: 8px; font-size: 13px; font-weight: 600; opacity: 0.92;">${state.previewSub}</div>
+            </div>
+          </div>
+        `;
+      }
+
+      keywordRow.innerHTML = state.keywords
+        .map(function (keyword) {
+          return '<span class="keyword-chip">' + keyword + '</span>';
+        })
+        .join("");
+
+      recommendTableBody.innerHTML = state.products
+        .map(function (product, index) {
+          const tags = product.tags
+            .map(function (tag, tagIndex) {
+              return '<span class="table-tag' + (tagIndex === 0 ? ' primary' : '') + '">' + tag + '</span>';
+            })
+            .join("");
+
+          const image = getProductImage(product, index);
+          return `
+            <tr>
+              <td>
+                <div class="product-cell">
+                  <img class="product-thumb" src="${image}" alt="${product.name}" loading="lazy" onerror="this.src='https://placehold.co/120x120/f1f5f9/94a3b8?text=商品'">
+                  <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-desc">${product.desc}</div>
+                  </div>
+                </div>
+              </td>
+              <td>${product.supplier}</td>
+              <td>${product.spec}</td>
+              <td><span class="match-badge">${product.score}</span></td>
+              <td><div class="tag-group">${tags}</div></td>
+              <td><span class="price">${product.price}</span></td>
+              <td>${product.delivery}</td>
+              <td>
+                <a class="detail-btn" href="../pages/product.html?from=smart_compare&rank=${index + 1}" target="_blank">
+                  <i class="fa-solid fa-eye"></i> 查看商品详情
+                </a>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    function repasteFinderLink() {
+      const url = window.prompt("请输入商品链接", "https://example.com/product/123456");
+      if (!url) return;
+      doRecognizeLink(url);
+    }
+
+    function doRecognizeLink(url) {
+      const nextState = {
+        sourceType: "link",
+        url: url,
+        sourceLabel: "链接解析",
+        rawValue: url
+      };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+      renderPage(buildState(nextState));
+      showFinderEmpty(false);
+    }
+
+    function recognizeFinderImage(name) {
+      const nextState = {
+        sourceType: "image",
+        fileName: name,
+        sourceLabel: "图片识别",
+        rawValue: "上传图片：" + name
+      };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+      renderPage(buildState(nextState));
+      showFinderEmpty(false);
+    }
+
+    function recognizeFinderLink(url) {
+      doRecognizeLink(url);
+    }
+
+    function recognizeFinderLinkInput() {
+      const el = document.getElementById('finderLinkInput');
+      const url = (el && el.value || '').trim();
+      if (!url) { window.alert('请先粘贴商品链接'); el && el.focus(); return; }
+      doRecognizeLink(url);
+    }
+
+    /* 按来源平台识别（示例链接，仅原型用） */
+    function recognizeFinderSource(source) {
+      const sampleMap = {
+        '淘宝':   'https://item.taobao.com/item.htm?id=623415',
+        '天猫':   'https://detail.tmall.com/item.htm?id=720915',
+        '京东':   'https://item.jd.com/100012043978.html',
+        '拼多多': 'https://mobile.yangkeduo.com/goods.html?goods_id=185902100',
+        '1688':   'https://detail.1688.com/offer/684591203912.html',
+        '得物':   'https://www.dewu.com/router/product/ProductDetail?spuId=1006300'
+      };
+      const url = sampleMap[source] || ('https://example.com/source/' + source);
+      doRecognizeLink(url);
+    }
+
+    function backToFinderEntry() {
+      sessionStorage.removeItem(STORAGE_KEY);
+      window.location.href = './smart_compare.html?fresh=1';
+    }
+
+    function showFinderEmpty(isEmpty) {
+      document.getElementById("finderEmpty").style.display = isEmpty ? "block" : "none";
+      document.getElementById("compareResult").style.display = isEmpty ? "none" : "block";
+    }
+
+    (function initComparePage() {
+      const params = new URLSearchParams(window.location.search);
+      const pasted = params.get("paste_link");
+      if (pasted && pasted.trim()) {
+        doRecognizeLink(pasted.trim());
+        try {
+          const u = new URL(window.location.href);
+          u.searchParams.delete("paste_link");
+          const qs = u.searchParams.toString();
+          window.history.replaceState({}, "", u.pathname + (qs ? "?" + qs : "") + u.hash);
+        } catch (eSkip) {}
+        return;
+      }
+      if (params.get("fresh") === "1") {
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
+      renderPage(buildState(getFinderState()));
+    })();
+  </script>
+<script src="../assets/unified_topbar.js"></script>
+</body>
+</html>

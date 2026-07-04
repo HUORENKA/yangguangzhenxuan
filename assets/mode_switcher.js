@@ -6,11 +6,12 @@
   }
 
   var path = window.location.pathname || "";
-  if (path.indexOf("/pages/") === -1) {
+  var pagesMarker = path.indexOf("/pages-new/") >= 0 ? "/pages-new/" : (path.indexOf("/pages/") >= 0 ? "/pages/" : "");
+  if (!pagesMarker) {
     return;
   }
 
-  var afterPages = path.split("/pages/")[1] || "";
+  var afterPages = path.split(pagesMarker)[1] || "";
   var parts = afterPages.split("/").filter(Boolean);
   if (!parts.length) return;
 
@@ -18,8 +19,8 @@
   var prefix = "";
   for (var i = 0; i < depth; i++) prefix += "../";
 
-  var procurementHref = prefix + "merged_home.html";
-  var managementHref = prefix + "workbench/workbench_home.html";
+  var procurementHref = prefix + (pagesMarker === "/pages-new/" ? "../pages/merged_home.html" : "merged_home.html");
+  var managementHref = prefix + (pagesMarker === "/pages-new/" ? "../pages/workbench/workbench_home.html" : "workbench/workbench_home.html");
   var isManagementMode = afterPages.indexOf("workbench/workbench_home.html") === 0;
 
   var oldFabs = document.querySelectorAll(".mode-switch-fab");

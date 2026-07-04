@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>竞价采购分析 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../assets/order_basis_modal.css">
+  <style>
+    :root {
+      --primary: #16a34a;
+      --primary-dark: #15803d;
+      --primary-light: #f0fdf4;
+      --primary-border: #bbf7d0;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border: #e2e8f0;
+      --bg: #f5f7fb;
+      --warn: #d97706;
+      --warn-bg: #fffbeb;
+      --warn-border: #fde68a;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding-bottom: 32px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff; box-shadow: 0 2px 16px rgba(22,163,74,0.22);
+    }
+    .topbar-inner {
+      max-width: 1440px; margin: 0 auto; padding: 0 20px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 17px; }
+    .brand-logo {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.24);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .top-link {
+      height: 34px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.12);
+      display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
+    }
+    .top-chip {
+      height: 34px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.14);
+      display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
+    }
+
+    .sub-bar {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 0 20px; display: flex; align-items: center; gap: 12px;
+      position: sticky; top: 64px; z-index: 90; box-shadow: 0 2px 8px rgba(15,23,42,0.04);
+    }
+    .sub-bar-title { font-size: 15px; font-weight: 800; color: var(--text-main); padding: 14px 0; }
+    .sub-bar-back {
+      margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 999px; background: #f8fafc;
+      border: 1px solid var(--border); color: #334155; font-size: 13px; font-weight: 800; cursor: pointer;
+    }
+    .sub-bar-back:hover { background: #dcfce7; border-color: var(--primary-border); color: var(--primary-dark); }
+
+    .page-wrap { max-width: 1440px; margin: 0 auto; padding: 0 20px 24px; }
+
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.05);
+    }
+    .summary-card {
+      margin-top: 20px;
+      padding: 22px 26px;
+      background: linear-gradient(135deg, var(--primary-light) 0%, #fff 100%);
+      border-color: var(--primary-border);
+      margin-bottom: 18px;
+    }
+    .summary-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .summary-left { display: flex; gap: 14px; align-items: flex-start; }
+    .summary-icon {
+      width: 44px; height: 44px; border-radius: 14px; flex: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px;
+      box-shadow: 0 10px 20px rgba(22,163,74,0.2);
+    }
+    .summary-title { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+    .summary-meta { margin-top: 8px; display: flex; gap: 18px; flex-wrap: wrap; color: var(--text-sub); font-size: 13px; }
+    .summary-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .view-file-link {
+      display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px;
+      border-radius: 999px; border: 1px solid rgba(22,163,74,0.3); background: rgba(22,163,74,0.07);
+      color: var(--primary); font-size: 12px; font-weight: 700; cursor: pointer;
+      text-decoration: none; transition: all 0.18s; margin-left: 12px; vertical-align: middle;
+    }
+    .view-file-link:hover { background: rgba(22,163,74,0.14); border-color: var(--primary); }
+    .summary-divider { margin: 16px 0; border: none; border-top: 1px solid rgba(187,247,208,0.7); }
+    .summary-body {
+      display: grid; grid-template-columns: minmax(0,1fr) auto;
+      gap: 24px; align-items: center;
+    }
+    .ai-row { display: flex; gap: 12px; align-items: flex-start; }
+    .ai-icon {
+      width: 30px; height: 30px; border-radius: 50%; flex: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+    .ai-text { font-size: 14px; line-height: 1.8; color: #166534; }
+    .summary-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 0; }
+    .summary-stat {
+      padding: 10px 16px; border-radius: 14px;
+      background: rgba(255,255,255,0.88); border: 1px solid rgba(187,247,208,0.9);
+    }
+    .stat-label { font-size: 12px; color: var(--text-sub); }
+    .stat-value { margin-top: 4px; font-size: 22px; font-weight: 800; line-height: 1; color: var(--primary); }
+
+    .section { margin-top: 0; margin-bottom: 16px; }
+    .section-head {
+      padding: 18px 20px 14px; display: flex; align-items: center;
+      justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .section-title { margin: 0; font-size: 17px; font-weight: 800; }
+    .section-subtitle { margin-top: 4px; font-size: 13px; color: var(--text-sub); }
+    .section-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .table-outer { overflow: auto; }
+    table.data { width: 100%; border-collapse: collapse; min-width: 1100px; }
+    table.data th {
+      padding: 11px 14px; text-align: left; background: #f8fafc;
+      color: #475569; font-size: 13px; font-weight: 800; white-space: nowrap; border-bottom: 1px solid var(--border);
+    }
+    table.data td {
+      padding: 13px 14px; text-align: left; border-bottom: 1px solid #f1f5f9;
+      font-size: 14px; vertical-align: top;
+    }
+    table.data tbody tr:hover { background: #fafcff; }
+    table.data tr.row-warn { background: var(--warn-bg); }
+
+    .req-name { font-weight: 800; }
+    .req-spec { margin-top: 4px; color: var(--text-sub); font-size: 12px; }
+    .match-ok {
+      display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px;
+      background: rgba(22,163,74,0.1); color: var(--primary); font-size: 12px; font-weight: 800; white-space: nowrap;
+    }
+    .match-none {
+      display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 999px;
+      background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-border);
+      font-size: 12px; font-weight: 800; white-space: nowrap;
+    }
+    .product-cell { display: flex; gap: 12px; align-items: flex-start; }
+    .product-thumb {
+      width: 56px; height: 56px; border-radius: 10px; border: 1px solid var(--border);
+      object-fit: cover; flex: none; background: #f8fafc; display: block;
+    }
+    .product-info { min-width: 0; }
+    .product-name { font-weight: 700; }
+    .product-name a { color: var(--text-main); }
+    .product-name a:hover { color: var(--primary); }
+    .product-supplier { margin-top: 3px; color: var(--text-sub); font-size: 12px; }
+    .max-price { font-size: 16px; font-weight: 800; color: var(--danger); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .unmatched-cell { color: #9ca3af; }
+    .qty-input {
+      width: 74px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
+      padding: 0 8px; font-size: 14px; font-weight: 700; text-align: center; outline: none;
+    }
+    .qty-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+    .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .action-link {
+      display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px;
+      border-radius: 10px; border: 1px solid var(--border); background: #fff;
+      color: var(--text-main); font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s ease; white-space: nowrap; text-decoration: none;
+    }
+    .action-link:hover { border-color: rgba(22,163,74,0.35); color: var(--primary); }
+
+    .section-inner { padding: 0; }
+
+    .supplier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .supplier-card {
+      position: relative;
+      background: #fff;
+      border: 1px solid #e8eef5;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 118px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .supplier-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+      transform: translateY(-1px);
+    }
+    .supplier-card.auto {
+      border-color: #bbf7d0;
+      background: linear-gradient(180deg, #f0fdf4 0%, #fff 55%);
+    }
+    .supplier-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .supplier-card-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+    .supplier-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      flex: none;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .supplier-card.auto .supplier-avatar {
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      color: var(--primary-dark);
+    }
+    .supplier-card-body { min-width: 0; flex: 1; }
+    .sup-name {
+      font-weight: 800;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.4;
+      word-break: break-all;
+    }
+    .sup-meta {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+    .supplier-card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 2px;
+    }
+    .sup-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      white-space: nowrap;
+    }
+    .sup-badge.manual {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+    .sup-remove {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.18s ease;
+    }
+    .sup-remove:hover {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #dc2626;
+    }
+    .supplier-empty {
+      margin: 0;
+      padding: 28px 16px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+      border: 1px dashed #e2e8f0;
+      border-radius: 14px;
+      background: #fafcff;
+      grid-column: 1 / -1;
+    }
+
+    .notice-section {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+    .notice-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .notice-row.hidden { display: none; }
+    .notice-label {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .notice-label i {
+      color: var(--primary);
+      font-size: 15px;
+    }
+    .notice-switch {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+    }
+    .notice-opt {
+      height: 32px;
+      min-width: 56px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .notice-opt.active {
+      background: #fff;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+    .notice-panel {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #e8eef5;
+      background: linear-gradient(180deg, #fafcff 0%, #fff 100%);
+    }
+    .notice-panel.hidden { display: none; }
+    .notice-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-notice {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.18s ease;
+    }
+    .btn-notice-generate,
+    .btn-notice-upload {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: #64748b;
+    }
+    .btn-notice-generate:hover:not(.active),
+    .btn-notice-upload:hover:not(.active) {
+      border-color: rgba(22, 163, 74, 0.35);
+      color: var(--primary-dark);
+    }
+    .btn-notice-generate.active,
+    .btn-notice-upload.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.24);
+    }
+    .notice-status {
+      margin-left: auto;
+      font-size: 12px;
+      color: #64748b;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .notice-status.ready { color: var(--primary-dark); font-weight: 800; }
+    .notice-preview {
+      margin-top: 14px;
+      border: 1px solid #dbe3ee;
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .notice-preview.hidden { display: none; }
+    .notice-preview-head {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eef2f7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #f8fafc;
+    }
+    .notice-preview-title {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .notice-preview-tag {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+    .notice-preview-tag.upload {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+    .notice-preview-body {
+      padding: 20px 22px 22px;
+      font-size: 14px;
+      line-height: 1.85;
+      color: #334155;
+    }
+    .notice-doc-title {
+      margin: 0 0 16px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: 1px;
+    }
+    .notice-doc-meta {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed #e2e8f0;
+      font-size: 13px;
+      color: #64748b;
+      display: grid;
+      gap: 6px;
+    }
+    .notice-doc-content { white-space: pre-wrap; }
+    .notice-upload-name {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #64748b;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .direct-limit-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      font-size: 13px;
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+    .direct-limit-alert i {
+      margin-top: 2px;
+      font-size: 16px;
+      color: #d97706;
+      flex-shrink: 0;
+    }
+    .direct-limit-alert strong { color: #b45309; }
+
+    .btn {
+      height: 34px; padding: 0 14px; border-radius: 10px; font-size: 13px; font-weight: 700;
+      border: 1px solid var(--border); background: #fff; color: #475569; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn:hover { filter: brightness(0.98); }
+    .btn-teal-outline { border-color: var(--primary-border); color: var(--primary-dark); background: var(--primary-light); }
+    .btn-danger-text { border: none; background: transparent; color: #dc2626; padding: 0 8px; height: 32px; }
+    .btn-danger-text:hover { background: #fef2f2; }
+
+    @media (max-width: 960px) {
+      .summary-body { grid-template-columns: 1fr; }
+      .rule-config-grid { grid-template-columns: 1fr; }
+      .supplier-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    }
+
+    .launch-submit {
+      height: 44px; padding: 0 22px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff; font-size: 15px; font-weight: 800; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 8px 18px rgba(22,163,74,0.24);
+    }
+    .launch-submit:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+    .field { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
+    .field-label { font-size: 12px; font-weight: 800; color: var(--text-sub); }
+    .field-input, .field-select {
+      height: 38px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0 12px; font-size: 14px; background: #fff;
+    }
+    .field-hint { font-size: 11px; color: #94a3b8; line-height: 1.4; max-width: 280px; }
+    .field-wide { flex: 1; min-width: min(100%, 280px); }
+    .field-hidden { display: none; }
+
+    .modal-mask {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.48); z-index: 200;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-mask.open { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 16px; width: 100%; max-width: 480px;
+      box-shadow: 0 24px 56px rgba(15,23,42,0.2); overflow: hidden;
+    }
+    .modal-head {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-head h3 { margin: 0; font-size: 17px; font-weight: 800; }
+    .modal-x {
+      width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border);
+      background: #fff; cursor: pointer; color: #64748b;
+    }
+    .modal-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+    .modal-foot {
+      padding: 14px 20px; border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+    .supplier-pick {
+      border: 1px solid #eef2f7; border-radius: 12px; max-height: 240px; overflow-y: auto;
+    }
+    .supplier-pick-item {
+      padding: 12px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+    .supplier-pick-item:last-child { border-bottom: none; }
+    .supplier-pick-item:hover { background: var(--primary-light); }
+    .supplier-pick-item.disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ─── 选择采购方式 ─── */
+    .method-head-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; padding: 18px 20px; flex-wrap: wrap;
+    }
+    .method-head-left {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap; flex: 1; min-width: 0;
+    }
+    .method-head-row .section-title { margin: 0; flex-shrink: 0; }
+    .method-tabs { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+    .method-tab {
+      height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: #f8fafc; color: #64748b; font-size: 13px; font-weight: 800; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 7px; transition: all 0.18s;
+    }
+    .method-tab:hover { border-color: rgba(22,163,74,0.35); color: var(--primary-dark); }
+    .method-tab.active {
+      background: var(--primary); border-color: var(--primary); color: #fff;
+      box-shadow: 0 6px 14px rgba(22,163,74,0.22);
+    }
+    .method-body { padding: 0 20px 20px; border-top: 1px solid var(--border); }
+    .method-body.hidden { display: none; }
+    .method-panel.hidden { display: none; }
+    .method-tab.hidden { display: none; }
+    .method-block {
+      border: 1px solid #e8eef5;
+      border-radius: 16px;
+      background: #fff;
+      padding: 18px 20px;
+      margin-top: 16px;
+      box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+    }
+    .method-block:first-child { margin-top: 16px; }
+    .method-block-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .method-block-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .method-block-title i {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+    .rule-config-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .rule-field-card {
+      background: linear-gradient(180deg, #fafcff 0%, #fff 100%);
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .rule-field-card:hover {
+      border-color: var(--primary-border);
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.08);
+    }
+    .rule-field-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rule-field-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      flex: none;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .rule-field-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+    .rule-field-input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .rule-field-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+    }
+    .rule-field-hint {
+      margin: 0;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .bid-only-field.field-hidden { display: none; }
+    .launch-submit-header {
+      height: 38px; padding: 0 20px; font-size: 14px; flex-shrink: 0;
+    }
+  </style>
+  <script src="../assets/mode_switcher.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-logo"><i class="fa-solid fa-gavel"></i></div>
+      <span>竞价采购分析</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="top-chip" id="sourceChip"><i class="fa-solid fa-file-excel"></i> —</span>
+      <a class="top-link" id="bidAssistReturnLink" href="./plan_result.html?fresh=1#bidAssistantAnchor"><i class="fa-solid fa-arrow-left"></i> <span id="bidAssistReturnLabel">返回最价方案</span></a>
+    </div>
+  </div>
+</header>
+
+<div class="sub-bar">
+  <div class="sub-bar-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:#16a34a;margin-right:8px;"></i>AI 解析结果 · 确认商品与邀请供应商后发起</div>
+  <button type="button" class="sub-bar-back" onclick="backToEntry()"><i class="fa-solid fa-arrow-left"></i> 返回入口</button>
+</div>
+
+<div class="page-wrap">
+  <div class="card summary-card" id="summaryCard"></div>
+
+  <div class="card section">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title">采购需求与平台匹配</h2>
+        <div class="section-subtitle">逐项匹配平台参考商品，确认采购数量后可发起竞价 / 询价；未匹配项仅展示提示，需换品或搜索补全。</div>
+      </div>
+    </div>
+    <div class="table-outer">
+      <table class="data" id="demandTable">
+        <thead>
+          <tr>
+            <th>采购需求</th>
+            <th>需求规格</th>
+            <th style="width:110px">匹配状态</th>
+            <th>平台参考商品</th>
+            <th style="width:110px">平台参考价</th>
+            <th style="width:88px">采购数量</th>
+            <th style="width:150px">操作</th>
+          </tr>
+        </thead>
+        <tbody id="demandBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card section" id="methodSection">
+    <div class="method-head-row">
+      <div class="method-head-left">
+        <h2 class="section-title">选择采购方式</h2>
+        <div class="method-tabs" role="group" aria-label="采购方式">
+          <button type="button" class="method-tab" id="methodDirect" onclick="setPurchaseMethod('direct')">
+            <i class="fa-solid fa-cart-shopping"></i> 直接采购
+          </button>
+          <button type="button" class="method-tab active" id="methodBidding" onclick="setPurchaseMethod('bidding')">
+            <i class="fa-solid fa-gavel"></i> 竞价采购
+          </button>
+          <button type="button" class="method-tab" id="methodInquiry" onclick="setPurchaseMethod('inquiry')">
+            <i class="fa-solid fa-file-invoice"></i> 询价采购
+          </button>
+        </div>
+      </div>
+      <button type="button" class="launch-submit launch-submit-header" id="headerSubmitBtn" onclick="launchProcurement()">
+        <i class="fa-solid fa-paper-plane" id="headerSubmitIcon"></i>
+        <span id="launchBtnText">发起竞价</span>
+      </button>
+    </div>
+    <div class="method-body" id="methodBody">
+      <div class="method-panel hidden" id="panelDirect">
+        <div class="method-block">
+          <div class="direct-limit-alert" id="directLimitAlert"></div>
+        </div>
+      </div>
+
+      <div class="method-panel" id="panelRfq">
+        <div class="method-block">
+          <div class="method-block-head">
+            <h3 class="method-block-title"><i class="fa-solid fa-sliders"></i> 规则配置</h3>
+          </div>
+          <div class="rule-config-grid">
+            <div class="rule-field-card">
+              <div class="rule-field-head">
+                <span class="rule-field-icon"><i class="fa-regular fa-clock"></i></span>
+                <span class="rule-field-label">报价截止时间</span>
+              </div>
+              <input type="datetime-local" class="rule-field-input" id="deadlineInput">
+            </div>
+            <div class="rule-field-card">
+              <div class="rule-field-head">
+                <span class="rule-field-icon"><i class="fa-solid fa-yen-sign"></i></span>
+                <span class="rule-field-label">预算上限（元）</span>
+              </div>
+              <input type="number" class="rule-field-input" id="budgetInput" min="0" step="1" placeholder="可选，不填则不限制">
+            </div>
+            <div class="rule-field-card bid-only-field" id="bidStepField">
+              <div class="rule-field-head">
+                <span class="rule-field-icon"><i class="fa-solid fa-arrow-trend-down"></i></span>
+                <span class="rule-field-label">最小降价幅度（元）</span>
+              </div>
+              <input type="number" class="rule-field-input" id="bidStepInput" min="1" step="1" value="500" placeholder="500">
+              <p class="rule-field-hint">竞价模式下，新报价须至少低于当前最低价该金额。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="method-block">
+          <div class="method-block-head">
+            <h3 class="method-block-title"><i class="fa-solid fa-building"></i> 邀请供应商</h3>
+            <button type="button" class="btn btn-teal-outline" onclick="openAddSupplierModal()"><i class="fa-solid fa-user-plus"></i> 新增供应商</button>
+          </div>
+          <div class="supplier-grid" id="supplierList"></div>
+        </div>
+      </div>
+
+      <div class="method-block" id="noticeBlock">
+        <div class="notice-section">
+          <div class="notice-row" id="noticeToggleRow">
+            <span class="notice-label"><i class="fa-solid fa-bullhorn"></i> 是否发布平台公告</span>
+            <div class="notice-switch" role="radiogroup" aria-label="是否发布平台公告">
+              <button type="button" class="notice-opt active" id="noticeNo" onclick="setPublishNotice(false)">否</button>
+              <button type="button" class="notice-opt" id="noticeYes" onclick="setPublishNotice(true)">是</button>
+            </div>
+          </div>
+          <div class="notice-panel hidden" id="noticePanel">
+            <div class="notice-actions">
+              <button type="button" class="btn-notice btn-notice-generate" id="noticeGenerateBtn" onclick="generateNotice()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> 生成公告
+              </button>
+              <button type="button" class="btn-notice btn-notice-upload" id="noticeUploadBtn" onclick="triggerUploadNotice()">
+                <i class="fa-solid fa-cloud-arrow-up"></i> 上传公告
+              </button>
+              <input type="file" id="noticeFileInput" hidden accept=".pdf,.doc,.docx,.txt">
+              <span class="notice-status" id="noticeStatus"><i class="fa-regular fa-circle"></i> 尚未生成或上传公告</span>
+            </div>
+            <div class="notice-preview hidden" id="noticePreviewInline">
+              <div class="notice-preview-head">
+                <h4 class="notice-preview-title"><i class="fa-regular fa-file-lines"></i> 公告预览</h4>
+                <span class="notice-preview-tag" id="noticePreviewTag">系统生成</span>
+              </div>
+              <div class="notice-preview-body" id="noticePreviewContent"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="addSupplierMask" onclick="if(event.target===this)closeAddSupplierModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3>新增邀请供应商</h3>
+      <button type="button" class="modal-x" onclick="closeAddSupplierModal()" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="margin:0;font-size:13px;color:#64748b;">从平台已认证供应商中选择（演示数据）。已在列表中的供应商不可重复添加。</p>
+      <div class="supplier-pick" id="supplierPickList"></div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" onclick="closeAddSupplierModal()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'bidAssistDemo';
+  var HISTORY_KEY = 'planBidNewRecords';
+
+  var PLATFORM_SUPPLIERS = [
+    { id: 's1', name: '京采云商贸有限公司', region: '北京', score: 92, cover: 2 },
+    { id: 's2', name: '政采优选数码科技', region: '北京', score: 89, cover: 2 },
+    { id: 's3', name: '北京华政科技', region: '北京', score: 86, cover: 1 },
+    { id: 's4', name: '蓝天系统集成', region: '天津', score: 84, cover: 1 },
+    { id: 's5', name: '国采办公服务中心', region: '河北', score: 81, cover: 2 },
+    { id: 's6', name: '中采智联供应链', region: '上海', score: 88, cover: 1 }
+  ];
+
+  var PRODUCT_SUGGESTIONS = {
+    '订书机': {
+      name: '得力标准订书机 24/6',
+      refId: 'P20003',
+      supplier: '国采办公服务中心',
+      maxPrice: 18,
+      img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=120&h=120&fit=crop'
+    }
+  };
+
+  var DEFAULT_LINES = [
+    {
+      id: 1, name: 'A4复印纸', spec: 'A4 / 70g / 500张×8包', reqQty: 100, qty: 100, unit: '箱', note: '年度框架协议耗材', matched: true,
+      product: {
+        name: '得力 A4 复印纸 70g 8包装', refId: 'P20001', supplier: '京采云商贸有限公司', maxPrice: 1280,
+        img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=120&h=120&fit=crop'
+      }
+    },
+    {
+      id: 2, name: '硒鼓', spec: 'HP 85A 兼容', reqQty: 20, qty: 20, unit: '个', note: '打印机耗材', matched: true,
+      product: {
+        name: 'HP 85A 兼容硒鼓 CE285A', refId: 'P20002', supplier: '政采优选数码科技', maxPrice: 420,
+        img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=120&h=120&fit=crop'
+      }
+    },
+    {
+      id: 3, name: '订书机', spec: '24/6 标准型', reqQty: 30, qty: 30, unit: '个', note: '办公用品补充', matched: false,
+      product: null
+    }
+  ];
+
+  var state = {
+    fileName: '年度耗材集中采购.xlsx',
+    uploadedAt: '',
+    budget: 90000,
+    lines: [],
+    suppliers: [],
+    procMode: 'bidding',
+    purchaseMethod: 'bidding',
+    publishNotice: false,
+    noticeReady: false,
+    noticeSource: '',
+    noticeFileName: '',
+    noticeHtml: '',
+    fromProduct: false,
+    policyFile: '',
+    storedProcurementBasis: null
+  };
+
+  var METHOD_LABELS = { direct: '直接采购', bidding: '竞价采购', inquiry: '询价采购' };
+  var METHOD_BTN = { direct: '提交采购单', bidding: '发起竞价', inquiry: '发起询价' };
+  var DIRECT_PURCHASE_LIMIT = 50000;
+
+  function calcMatchedAmount() {
+    return state.lines.reduce(function (sum, L) {
+      if (!L.matched || !L.product) return sum;
+      return sum + (Number(L.qty) || 0) * (Number(L.product.maxPrice) || 0);
+    }, 0);
+  }
+
+  function isDirectOverLimit() {
+    return calcMatchedAmount() > DIRECT_PURCHASE_LIMIT;
+  }
+
+  function updateMethodBodyUI() {
+    var method = state.purchaseMethod;
+    var over = isDirectOverLimit();
+    var amount = calcMatchedAmount();
+    var alertEl = document.getElementById('directLimitAlert');
+
+    if (alertEl) {
+      alertEl.innerHTML = ''
+        + '<i class="fa-solid fa-triangle-exclamation"></i>'
+        + '<div>当前已匹配商品采购金额为 <strong>' + fmtMoney(amount) + '</strong>，'
+        + '已超过直接采购限额 <strong>' + fmtMoney(DIRECT_PURCHASE_LIMIT) + '</strong>。'
+        + '请生成或上传公告文件后方可提交。</div>';
+    }
+
+    document.getElementById('methodBody').classList.toggle('hidden', method === 'direct' && !over);
+    document.getElementById('panelRfq').classList.toggle('hidden', method === 'direct');
+    document.getElementById('panelDirect').classList.toggle('hidden', method !== 'direct' || !over);
+    document.getElementById('noticeBlock').classList.toggle('hidden', method === 'direct' && !over);
+
+    var isDirectForcedNotice = method === 'direct' && over;
+    var toggleRow = document.getElementById('noticeToggleRow');
+    var noticePanel = document.getElementById('noticePanel');
+    if (toggleRow) toggleRow.classList.toggle('hidden', isDirectForcedNotice);
+    if (noticePanel) {
+      noticePanel.classList.toggle('hidden', isDirectForcedNotice ? false : !state.publishNotice);
+    }
+  }
+
+  function validateNoticeRequired() {
+    var mustPublish = state.purchaseMethod === 'direct' && isDirectOverLimit();
+    if (!mustPublish && !state.publishNotice) return true;
+    if (!state.noticeReady) {
+      alert(mustPublish
+        ? '采购金额已超过直接采购限额（' + fmtMoney(DIRECT_PURCHASE_LIMIT) + '），请先生成或上传公告。'
+        : '已选择发布平台公告，请先生成或上传公告。');
+      return false;
+    }
+    return true;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function fmtMoney(v) {
+    if (v == null || v === '') return '—';
+    return '¥' + Number(v).toLocaleString('zh-CN');
+  }
+
+  function getPageEntrySource() {
+    try {
+      return new URLSearchParams(window.location.search).get('source') || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  function loadProductLaunch() {
+    try {
+      var raw = sessionStorage.getItem('bidAssistProductLaunch');
+      if (!raw) return false;
+      var d = JSON.parse(raw);
+      state.fromProduct = true;
+      state.fileName = d.fileName || d.policyFile || '商城商品采购';
+      state.policyFile = d.policyFile || state.fileName;
+      state.uploadedAt = d.uploadedAt || new Date().toLocaleString('zh-CN', { hour12: false });
+      state.budget = d.budget || 90000;
+      state.storedProcurementBasis = d.procurementBasis || null;
+      state.lines = (d.lines || []).map(function (L) {
+        var copy = Object.assign({}, L);
+        if (L.product) copy.product = Object.assign({}, L.product);
+        return copy;
+      });
+      state.suppliers = [
+        { id: 's1', name: '京采云商贸有限公司', region: '北京', score: 92, cover: 1, source: 'auto', invited: true },
+        { id: 's2', name: '政采优选数码科技', region: '北京', score: 89, cover: 1, source: 'auto', invited: true },
+        { id: 's3', name: '北京华政科技', region: '北京', score: 86, cover: 1, source: 'auto', invited: true }
+      ];
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function loadDemo() {
+    var entrySource = getPageEntrySource();
+
+    if (entrySource === 'product') {
+      if (loadProductLaunch()) return;
+      state.fromProduct = false;
+    } else {
+      /* 最价方案 / 采购方案助手入口：忽略并清除商品转入缓存，走原有完整流程 */
+      try { sessionStorage.removeItem('bidAssistProductLaunch'); } catch (e) {}
+      state.fromProduct = false;
+    }
+
+    try {
+      var raw = sessionStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var d = JSON.parse(raw);
+        if (d.file) state.fileName = d.file;
+        if (d.uploadedAt) state.uploadedAt = d.uploadedAt;
+        if (d.budget) state.budget = d.budget;
+      }
+    } catch (e) {}
+    if (!state.uploadedAt) {
+      state.uploadedAt = new Date().toLocaleString('zh-CN', { hour12: false });
+    }
+    state.lines = DEFAULT_LINES.map(function (L) {
+      var copy = Object.assign({}, L);
+      if (L.product) copy.product = Object.assign({}, L.product);
+      return copy;
+    });
+    state.suppliers = [
+      { id: 's1', name: '京采云商贸有限公司', region: '北京', score: 92, cover: 2, source: 'auto', invited: true },
+      { id: 's2', name: '政采优选数码科技', region: '北京', score: 89, cover: 2, source: 'auto', invited: true },
+      { id: 's3', name: '北京华政科技', region: '北京', score: 86, cover: 1, source: 'auto', invited: true }
+    ];
+  }
+
+  function fileIconClass(name) {
+    if (/\.pdf$/i.test(name)) return 'fa-file-pdf';
+    if (/\.doc/i.test(name)) return 'fa-file-word';
+    return 'fa-file-excel';
+  }
+
+  function renderSummary() {
+    var matched = state.lines.filter(function (L) { return L.matched; }).length;
+    var unmatched = state.lines.length - matched;
+    var fIcon = fileIconClass(state.fileName);
+    document.getElementById('sourceChip').innerHTML = '<i class="fa-solid ' + fIcon + '"></i> ' + esc(state.fileName);
+    document.getElementById('budgetInput').value = state.budget || '';
+
+    if (state.fromProduct) {
+      var amt = calcMatchedAmount();
+      document.getElementById('summaryCard').innerHTML = ''
+        + '<div class="summary-top">'
+        + '<div class="summary-left">'
+        + '<div class="summary-icon"><i class="fa-solid fa-store"></i></div>'
+        + '<div>'
+        + '<h2 class="summary-title">商城商品转入 · 竞价/询价采购</h2>'
+        + '<div class="summary-meta">'
+        + '<span><i class="fa-solid fa-file-lines"></i> 依据文件：' + esc(state.policyFile || state.fileName) + '</span>'
+        + '<span><i class="fa-solid fa-clock"></i> ' + esc(state.uploadedAt) + '</span>'
+        + '<span><i class="fa-solid fa-yen-sign"></i> 参考采购金额 ' + fmtMoney(amt) + '</span>'
+        + '</div></div></div></div>'
+        + '<hr class="summary-divider">'
+        + '<div class="summary-body">'
+        + '<div class="ai-row">'
+        + '<div class="ai-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>'
+        + '<div class="ai-text">因依据文件要求，本次采购需以<strong>竞价/询价</strong>方式发起。当前已匹配 <strong style="color:var(--primary)">' + matched + '</strong> 项商城选购商品，'
+        + '请确认采购数量、邀请供应商并配置规则后发起。</div>'
+        + '</div>'
+        + '<div class="summary-stats">'
+        + '<div class="summary-stat"><div class="stat-label">采购需求</div><div class="stat-value">' + state.lines.length + '</div></div>'
+        + '<div class="summary-stat"><div class="stat-label">已匹配商品</div><div class="stat-value" style="color:var(--primary)">' + matched + '</div></div>'
+        + '<div class="summary-stat"><div class="stat-label">预算上限（元）</div><div class="stat-value">' + fmtMoney(state.budget) + '</div></div>'
+        + '</div></div>';
+      return;
+    }
+
+    document.getElementById('summaryCard').innerHTML = ''
+      + '<div class="summary-top">'
+      + '<div class="summary-left">'
+      + '<div class="summary-icon"><i class="fa-solid fa-file-waveform"></i></div>'
+      + '<div>'
+      + '<h2 class="summary-title">'
+      + 'AI 竞价采购分析结果'
+      + '<a class="view-file-link" href="#" onclick="return false" title="查看源文件"><i class="fa-solid ' + fIcon + '"></i> 查看源文件</a>'
+      + '</h2>'
+      + '<div class="summary-meta">'
+      + '<span><i class="fa-solid ' + fIcon + '"></i> ' + esc(state.fileName) + '</span>'
+      + '<span><i class="fa-solid fa-clock"></i> ' + esc(state.uploadedAt) + '</span>'
+      + '<span><i class="fa-solid fa-list-check"></i> 识别需求 ' + state.lines.length + ' 项</span>'
+      + '</div></div></div></div>'
+      + '<hr class="summary-divider">'
+      + '<div class="summary-body">'
+      + '<div class="ai-row">'
+      + '<div class="ai-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>'
+      + '<div class="ai-text">本次采购文件涵盖<strong>办公耗材</strong>等品类，共识别出 <strong>' + state.lines.length + '</strong> 项采购需求。'
+      + '重点包括 A4 复印纸、硒鼓等日常耗材。其中 <strong style="color:var(--primary)">' + matched + '</strong> 项已在平台匹配参考商品，'
+      + '<strong style="color:var(--warn)">' + unmatched + '</strong> 项暂无对应商品，发起前请补全或移除。</div>'
+      + '</div>'
+      + '<div class="summary-stats">'
+      + '<div class="summary-stat"><div class="stat-label">识别需求总数</div><div class="stat-value">' + state.lines.length + '</div></div>'
+      + '<div class="summary-stat"><div class="stat-label">已匹配商品</div><div class="stat-value" style="color:var(--primary)">' + matched + '</div></div>'
+      + '<div class="summary-stat"><div class="stat-label">暂无匹配</div><div class="stat-value" style="color:var(--warn)">' + unmatched + '</div></div>'
+      + '</div></div>';
+  }
+
+  function renderDemandTableHead() {
+    var theadRow = document.querySelector('#demandTable thead tr');
+    if (!theadRow) return;
+    if (state.fromProduct) {
+      theadRow.innerHTML = ''
+        + '<th>采购商品</th>'
+        + '<th style="width:110px">平台参考价</th>'
+        + '<th style="width:88px">采购数量</th>'
+        + '<th style="width:150px">操作</th>';
+      return;
+    }
+    theadRow.innerHTML = ''
+      + '<th>采购需求</th>'
+      + '<th>需求规格</th>'
+      + '<th style="width:110px">匹配状态</th>'
+      + '<th>平台参考商品</th>'
+      + '<th style="width:110px">平台参考价</th>'
+      + '<th style="width:88px">采购数量</th>'
+      + '<th style="width:150px">操作</th>';
+  }
+
+  function renderDemandTable() {
+    var tb = document.getElementById('demandBody');
+    if (state.fromProduct) {
+      tb.innerHTML = state.lines.map(function (L) {
+        if (L.matched && L.product) {
+          var P = L.product;
+          return ''
+            + '<tr data-id="' + L.id + '">'
+            + '<td><div class="product-cell">'
+            + '<img class="product-thumb" src="' + esc(P.img) + '" alt="' + esc(P.name) + '" onerror="this.style.display=\'none\'">'
+            + '<div class="product-info">'
+            + '<div class="product-name"><a href="../pages/product.html?id=' + encodeURIComponent(P.refId || '') + '" target="_blank" rel="noopener noreferrer">' + esc(P.name) + '</a></div>'
+            + '<div class="product-supplier">' + esc(P.supplier) + '</div>'
+            + (L.spec ? '<div class="req-spec">' + esc(L.spec) + '</div>' : '')
+            + '</div></div></td>'
+            + '<td><span class="max-price">' + fmtMoney(P.maxPrice) + '</span></td>'
+            + '<td><input class="qty-input" type="number" min="1" value="' + L.qty + '" onchange="updateQty(' + L.id + ', this.value)"></td>'
+            + '<td><div class="action-group">'
+            + '<button type="button" class="action-link" onclick="alert(\'演示：打开换品搜索\')"><i class="fa-solid fa-arrows-rotate"></i> 换品</button>'
+            + '</div></td>'
+            + '</tr>';
+        }
+        return ''
+          + '<tr class="row-warn" data-id="' + L.id + '">'
+          + '<td><div class="req-name">' + esc(L.name) + '</div>'
+          + (L.spec ? '<div class="req-spec">' + esc(L.spec) + '</div>' : '')
+          + '<div class="req-spec">需求：' + L.reqQty + ' ' + esc(L.unit) + '</div></td>'
+          + '<td class="unmatched-cell">—</td>'
+          + '<td class="unmatched-cell">' + L.qty + ' ' + esc(L.unit) + '</td>'
+          + '<td><button type="button" class="action-link" onclick="searchMatchProduct(' + L.id + ')"><i class="fa-solid fa-magnifying-glass"></i> 搜索</button></td>'
+          + '</tr>';
+      }).join('');
+      return;
+    }
+    tb.innerHTML = state.lines.map(function (L) {
+      if (L.matched && L.product) {
+        var P = L.product;
+        return ''
+          + '<tr data-id="' + L.id + '">'
+          + '<td><div class="req-name">' + esc(L.name) + '</div><div class="req-spec">文件需求：' + L.reqQty + ' ' + esc(L.unit) + '</div></td>'
+          + '<td><span style="font-size:13px;color:var(--text-sub)">' + esc(L.spec) + '</span></td>'
+          + '<td><span class="match-ok"><i class="fa-solid fa-circle-check"></i> 已匹配</span></td>'
+          + '<td><div class="product-cell">'
+          + '<img class="product-thumb" src="' + esc(P.img) + '" alt="' + esc(P.name) + '" onerror="this.style.display=\'none\'">'
+          + '<div class="product-info">'
+          + '<div class="product-name"><a href="../pages/product.html?id=' + encodeURIComponent(P.refId || '') + '" target="_blank" rel="noopener noreferrer">' + esc(P.name) + '</a></div>'
+          + '<div class="product-supplier">' + esc(P.supplier) + '</div>'
+          + '</div></div></td>'
+          + '<td><span class="max-price">' + fmtMoney(P.maxPrice) + '</span></td>'
+          + '<td><input class="qty-input" type="number" min="1" value="' + L.qty + '" onchange="updateQty(' + L.id + ', this.value)"></td>'
+          + '<td><div class="action-group">'
+          + '<button type="button" class="action-link" onclick="alert(\'演示：打开换品搜索\')"><i class="fa-solid fa-arrows-rotate"></i> 换品</button>'
+          + '<a class="action-link" href="../pages/product.html?id=' + encodeURIComponent(P.refId || '') + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-eye"></i> 详情</a>'
+          + '</div></td>'
+          + '</tr>';
+      }
+      return ''
+        + '<tr class="row-warn" data-id="' + L.id + '">'
+        + '<td><div class="req-name">' + esc(L.name) + '</div><div class="req-spec">文件需求：' + L.reqQty + ' ' + esc(L.unit) + '</div></td>'
+        + '<td><span style="font-size:13px;color:var(--text-sub)">' + esc(L.spec) + '</span></td>'
+        + '<td><span class="match-none"><i class="fa-solid fa-triangle-exclamation"></i> 暂无匹配</span></td>'
+        + '<td class="unmatched-cell">暂无平台商品</td>'
+        + '<td class="unmatched-cell">—</td>'
+        + '<td class="unmatched-cell">' + L.qty + ' ' + esc(L.unit) + '</td>'
+        + '<td><button type="button" class="action-link" onclick="searchMatchProduct(' + L.id + ')"><i class="fa-solid fa-magnifying-glass"></i> 搜索</button></td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  function findProductForLine(L) {
+    if (PRODUCT_SUGGESTIONS[L.name]) return Object.assign({}, PRODUCT_SUGGESTIONS[L.name]);
+    var key = Object.keys(PRODUCT_SUGGESTIONS).find(function (k) {
+      return L.name.indexOf(k) >= 0 || k.indexOf(L.name) >= 0;
+    });
+    return key ? Object.assign({}, PRODUCT_SUGGESTIONS[key]) : null;
+  }
+
+  function renderSuppliers() {
+    var box = document.getElementById('supplierList');
+    if (!state.suppliers.length) {
+      box.innerHTML = '<p class="supplier-empty"><i class="fa-regular fa-building" style="margin-right:6px;"></i>暂无邀请供应商，请点击「新增供应商」添加。</p>';
+      return;
+    }
+    box.innerHTML = state.suppliers.map(function (S) {
+      var badge = S.source === 'auto'
+        ? '<span class="sup-badge"><i class="fa-solid fa-wand-magic-sparkles" style="margin-right:4px;font-size:10px;"></i>自动推荐</span>'
+        : '<span class="sup-badge manual"><i class="fa-solid fa-user-plus" style="margin-right:4px;font-size:10px;"></i>手动添加</span>';
+      return ''
+        + '<div class="supplier-card ' + (S.source === 'auto' ? 'auto' : '') + '" data-id="' + esc(S.id) + '">'
+        + '<div class="supplier-card-top">'
+        + '<div class="supplier-card-main">'
+        + '<div class="supplier-avatar"><i class="fa-solid fa-store"></i></div>'
+        + '<div class="supplier-card-body">'
+        + '<div class="sup-name">' + esc(S.name) + '</div>'
+        + '<div class="sup-meta">' + esc(S.region) + ' · 可供应 ' + S.cover + ' 项需求</div>'
+        + '</div></div>'
+        + '<button type="button" class="sup-remove" onclick="removeSupplier(\'' + esc(S.id) + '\')" title="移出邀请列表" aria-label="移出 ' + esc(S.name) + '"><i class="fa-solid fa-xmark"></i></button>'
+        + '</div>'
+        + '<div class="supplier-card-foot">' + badge + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  window.searchMatchProduct = function (id) {
+    var line = state.lines.find(function (L) { return L.id === id; });
+    if (!line || line.matched) return;
+    var row = document.querySelector('tr[data-id="' + id + '"]');
+    var btn = row ? row.querySelector('.action-link') : null;
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 搜索中…';
+    }
+    setTimeout(function () {
+      var product = findProductForLine(line);
+      if (!product) {
+        alert('未找到匹配的平台商品，请稍后重试或联系管理员。');
+        renderDemandTable();
+        return;
+      }
+      line.matched = true;
+      line.product = product;
+      if (!line.qty) line.qty = line.reqQty;
+      renderDemandTable();
+      renderSummary();
+      updateMethodBodyUI();
+    }, 400);
+  };
+
+  window.updateQty = function (id, val) {
+    var n = parseInt(val, 10);
+    if (!n || n < 1) return;
+    state.lines.forEach(function (L) { if (L.id === id) L.qty = n; });
+    updateMethodBodyUI();
+  };
+
+  window.removeSupplier = function (id) {
+    if (!confirm('确定将该供应商移出邀请列表吗？')) return;
+    state.suppliers = state.suppliers.filter(function (S) { return S.id !== id; });
+    renderSuppliers();
+  };
+
+  function formatDeadlineDisplay(val) {
+    if (!val) return '—';
+    var d = new Date(val);
+    if (isNaN(d.getTime())) return val;
+    return d.toLocaleString('zh-CN', { hour12: false });
+  }
+
+  function buildNoticeDocument() {
+    var method = state.purchaseMethod;
+    var methodLabel = METHOD_LABELS[method] || '采购';
+    var deadline = document.getElementById('deadlineInput').value;
+    var budget = document.getElementById('budgetInput').value;
+    var matchedLines = state.lines.filter(function (L) { return L.matched; });
+    var itemLines = matchedLines.map(function (L, idx) {
+      return (idx + 1) + '. ' + L.name + '（' + L.qty + L.unit + '）';
+    }).join('\n');
+    var supplierNames = state.suppliers.map(function (S) { return S.name; }).join('、') || '平台认证供应商';
+    var now = new Date().toLocaleString('zh-CN', { hour12: false });
+    var amount = calcMatchedAmount();
+    var content;
+
+    if (method === 'direct') {
+      content = ''
+        + '各有关供应商：\n\n'
+        + '根据采购需求文件《' + state.fileName + '》，现通过国采e购平台发起' + methodLabel + '。'
+        + '本次采购金额 ' + Number(amount).toLocaleString('zh-CN') + ' 元，已超过直接采购限额 '
+        + Number(DIRECT_PURCHASE_LIMIT).toLocaleString('zh-CN') + ' 元，现发布平台公告。\n\n'
+        + '一、采购方式：' + methodLabel + '\n'
+        + '二、采购金额：' + Number(amount).toLocaleString('zh-CN') + ' 元\n'
+        + (budget ? ('三、预算上限：' + Number(budget).toLocaleString('zh-CN') + ' 元\n') : '')
+        + '\n采购清单：\n' + (itemLines || '详见平台采购需求明细') + '\n\n'
+        + '请登录国采e购平台查看详情。';
+    } else {
+      content = ''
+        + '各有关供应商：\n\n'
+        + '根据采购需求文件《' + state.fileName + '》，现通过国采e购平台发起' + methodLabel + '。'
+        + '欢迎符合条件的供应商在报价截止时间前参与报价。\n\n'
+        + '一、采购方式：' + methodLabel + '\n'
+        + '二、报价截止时间：' + formatDeadlineDisplay(deadline) + '\n'
+        + (budget ? ('三、预算上限：' + Number(budget).toLocaleString('zh-CN') + ' 元\n') : '')
+        + (method === 'bidding' ? ('四、最小降价幅度：' + (document.getElementById('bidStepInput').value || '500') + ' 元\n') : '')
+        + '\n采购清单：\n' + (itemLines || '详见平台采购需求明细') + '\n\n'
+        + '邀请供应商：' + supplierNames + '\n\n'
+        + '请登录国采e购供应商工作台查看详情并提交报价。';
+    }
+
+    return ''
+      + '<h3 class="notice-doc-title">国采e购平台' + esc(methodLabel) + '公告</h3>'
+      + '<div class="notice-doc-meta">'
+      + '<div>公告编号：GC-' + Date.now().toString().slice(-8) + '</div>'
+      + '<div>发布时间：' + esc(now) + '</div>'
+      + '<div>来源文件：' + esc(state.fileName) + '</div>'
+      + '</div>'
+      + '<div class="notice-doc-content">' + esc(content) + '</div>';
+  }
+
+  function setNoticeActionActive(source) {
+    var generateBtn = document.getElementById('noticeGenerateBtn');
+    var uploadBtn = document.getElementById('noticeUploadBtn');
+    if (generateBtn) generateBtn.classList.toggle('active', source === 'generated');
+    if (uploadBtn) uploadBtn.classList.toggle('active', source === 'upload');
+  }
+
+  function renderNoticePreview(html, source, fileName) {
+    state.noticeReady = true;
+    state.noticeSource = source;
+    state.noticeFileName = fileName || '';
+    state.noticeHtml = html;
+
+    setNoticeActionActive(source);
+
+    var tag = document.getElementById('noticePreviewTag');
+    var inline = document.getElementById('noticePreviewInline');
+    var content = document.getElementById('noticePreviewContent');
+    var status = document.getElementById('noticeStatus');
+
+    if (tag) {
+      tag.textContent = source === 'upload' ? '上传文件' : '系统生成';
+      tag.className = 'notice-preview-tag' + (source === 'upload' ? ' upload' : '');
+    }
+    if (content) content.innerHTML = html;
+    if (inline) inline.classList.remove('hidden');
+    if (status) {
+      status.className = 'notice-status ready';
+      status.innerHTML = source === 'upload'
+        ? '<i class="fa-solid fa-circle-check"></i> 已上传：' + esc(fileName)
+        : '<i class="fa-solid fa-circle-check"></i> 公告已生成';
+    }
+  }
+
+  window.setPublishNotice = function (yes) {
+    state.publishNotice = yes;
+    document.getElementById('noticeNo').classList.toggle('active', !yes);
+    document.getElementById('noticeYes').classList.toggle('active', yes);
+    if (state.purchaseMethod === 'direct' && isDirectOverLimit()) return;
+    document.getElementById('noticePanel').classList.toggle('hidden', !yes);
+    if (!yes) setNoticeActionActive('');
+  };
+
+  window.generateNotice = function () {
+    if (state.purchaseMethod !== 'direct' && !state.suppliers.length) {
+      alert('请先添加至少 1 家邀请供应商，再生成公告。');
+      return;
+    }
+    renderNoticePreview(buildNoticeDocument(), 'generated');
+  };
+
+  window.triggerUploadNotice = function () {
+    var input = document.getElementById('noticeFileInput');
+    if (input) input.click();
+  };
+
+  window.handleNoticeUpload = function (input) {
+    var file = input && input.files && input.files[0];
+    if (!file) return;
+    var html = ''
+      + '<h3 class="notice-doc-title">平台采购公告（上传稿）</h3>'
+      + '<div class="notice-doc-meta">'
+      + '<div>文件名称：' + esc(file.name) + '</div>'
+      + '<div>文件大小：' + (file.size / 1024).toFixed(1) + ' KB</div>'
+      + '<div>上传时间：' + esc(new Date().toLocaleString('zh-CN', { hour12: false })) + '</div>'
+      + '</div>'
+      + '<div class="notice-doc-content">'
+      + '您已上传公告文件。正式环境中此处将解析并展示公告正文；当前为原型演示，发起时将随采购单一并提交该附件。'
+      + '</div>'
+      + '<div class="notice-upload-name"><i class="fa-solid fa-paperclip"></i> ' + esc(file.name) + '</div>';
+    renderNoticePreview(html, 'upload', file.name);
+    input.value = '';
+  };
+
+  window.openAddSupplierModal = function () {
+    var list = document.getElementById('supplierPickList');
+    var existing = state.suppliers.map(function (S) { return S.id; });
+    list.innerHTML = PLATFORM_SUPPLIERS.map(function (P) {
+      var disabled = existing.indexOf(P.id) !== -1;
+      return ''
+        + '<div class="supplier-pick-item ' + (disabled ? 'disabled' : '') + '" '
+        + (disabled ? '' : 'onclick="addSupplier(\'' + P.id + '\')"') + '>'
+        + '<div><div class="sup-name">' + esc(P.name) + '</div>'
+        + '<div class="sup-meta">' + esc(P.region) + ' · 可供应 ' + P.cover + ' 项需求</div></div>'
+        + (disabled ? '<span style="font-size:12px;color:#94a3b8">已在列表</span>' : '<i class="fa-solid fa-plus" style="color:#16a34a"></i>')
+        + '</div>';
+    }).join('');
+    document.getElementById('addSupplierMask').classList.add('open');
+  };
+
+  window.closeAddSupplierModal = function () {
+    document.getElementById('addSupplierMask').classList.remove('open');
+  };
+
+  window.addSupplier = function (id) {
+    var P = PLATFORM_SUPPLIERS.find(function (x) { return x.id === id; });
+    if (!P || state.suppliers.some(function (S) { return S.id === id; })) return;
+    state.suppliers.push({
+      id: P.id, name: P.name, region: P.region, score: P.score, cover: P.cover,
+      source: 'manual', invited: true
+    });
+    closeAddSupplierModal();
+    renderSuppliers();
+  };
+
+  window.setPurchaseMethod = function (method) {
+    if (state.fromProduct && method === 'direct') return;
+    state.purchaseMethod = method;
+    state.procMode = method;
+
+    ['direct', 'bidding', 'inquiry'].forEach(function (m) {
+      var tab = document.getElementById('method' + m.charAt(0).toUpperCase() + m.slice(1));
+      if (tab) tab.classList.toggle('active', m === method);
+    });
+
+    document.getElementById('bidStepField').classList.toggle('field-hidden', method !== 'bidding');
+    document.getElementById('launchBtnText').textContent = METHOD_BTN[method];
+    updateMethodBodyUI();
+
+    var submitIcon = document.getElementById('headerSubmitIcon');
+    if (submitIcon) {
+      submitIcon.className = method === 'direct'
+        ? 'fa-solid fa-cart-shopping'
+        : 'fa-solid fa-paper-plane';
+    }
+  };
+
+  window.setProcMode = function (mode) {
+    setPurchaseMethod(mode);
+  };
+
+  function getBidAssistReturnUrl() {
+    try {
+      var u = sessionStorage.getItem('bidAssistReturnUrl');
+      if (u) return u;
+    } catch (e) {}
+    return './plan_result.html?fresh=1#bidAssistantAnchor';
+  }
+
+  function getBidAssistReturnLabel() {
+    try {
+      var u = sessionStorage.getItem('bidAssistReturnUrl') || '';
+      if (/product\.html/i.test(u)) return '返回商品详情';
+      if (u) return '返回竞价/询价';
+    } catch (e) {}
+    return '返回最价方案';
+  }
+
+  function applyProductLaunchChrome() {
+    if (!state.fromProduct) return;
+    var brand = document.querySelector('.brand span');
+    if (brand) brand.textContent = '竞价/询价采购发起';
+    var subTitle = document.querySelector('.sub-bar-title');
+    if (subTitle) {
+      subTitle.innerHTML = '<i class="fa-solid fa-store" style="color:#16a34a;margin-right:8px;"></i>商城商品转入 · 确认匹配商品与采购方式后发起';
+    }
+    var directTab = document.getElementById('methodDirect');
+    if (directTab) directTab.classList.add('hidden');
+    var sectionSub = document.querySelector('.section-head .section-subtitle');
+    if (sectionSub) {
+      sectionSub.textContent = '确认商城选购商品、采购数量与邀请供应商后发起竞价 / 询价。';
+    }
+    renderDemandTableHead();
+  }
+
+  function initBidAssistReturnLink() {
+    var link = document.getElementById('bidAssistReturnLink');
+    var label = document.getElementById('bidAssistReturnLabel');
+    if (link) link.setAttribute('href', getBidAssistReturnUrl());
+    if (label) label.textContent = getBidAssistReturnLabel();
+  }
+
+  window.backToEntry = function () {
+    window.location.href = getBidAssistReturnUrl();
+  };
+
+  function buildProcurementBasisPayload(basis) {
+    basis = basis || {};
+    var files = Array.isArray(basis.files) ? basis.files.slice() : [];
+    var method = state.purchaseMethod;
+    if (method === 'bidding' || method === 'inquiry') {
+      var base = String(state.fileName || '本次采购').replace(/\.[^.]+$/, '');
+      var label = method === 'inquiry' ? '询价方案' : '竞价方案';
+      var hasScheme = files.some(function (f) {
+        return f.isBidScheme || /竞价方案|询价方案/.test(f.name || '');
+      });
+      if (!hasScheme) {
+        files.unshift({
+          id: 'bid-scheme-default',
+          name: base + '-' + label + '.pdf',
+          type: 'pdf',
+          sizeText: '420KB',
+          uploadedAt: new Date().toLocaleString('zh-CN', { hour12: false }),
+          isBidScheme: true,
+          source: 'system'
+        });
+      }
+    }
+    return {
+      plan: basis.plan || null,
+      budget: basis.budget || null,
+      files: files,
+      contractLinkage: [],
+      hasPlan: !!basis.hasPlan,
+      hasBudget: !!basis.hasBudget,
+      hasFiles: files.length > 0,
+      hasContracts: false,
+      hasBasis: !!(basis.hasPlan || basis.hasBudget || files.length || basis.hasBasis)
+    };
+  }
+
+  function executeDirectPurchase(basis) {
+    var payload = {
+      orderNo: 'ORD' + Date.now().toString().slice(-8),
+      name: state.fileName || '竞价采购分析采购单',
+      model: '多品类采购清单',
+      unit: '项',
+      qty: state.lines.filter(function (L) { return L.matched; }).length,
+      price: calcMatchedAmount(),
+      subtotal: calcMatchedAmount(),
+      supplier: '平台匹配供应商（演示）',
+      storeName: '国采e购',
+      code: 'BID-ASSIST-' + Date.now().toString().slice(-6),
+      deliveryArea: '北京市',
+      deliveryTime: '按合同约定',
+      receiver: '张三',
+      receiverPhone: '138****8000',
+      stockStatus: '库存稳定',
+      image: '',
+      procurementBasis: buildProcurementBasisPayload(basis)
+    };
+    try {
+      sessionStorage.setItem('gcOrderConfirmPayload', JSON.stringify(payload));
+    } catch (e) {}
+    alert('采购单已提交（演示）');
+    window.location.href = '../pages/order_confirm.html';
+  }
+
+  function executeBiddingInquiry(basis) {
+    var method = state.purchaseMethod;
+    var deadline = document.getElementById('deadlineInput').value;
+    var codePrefix = method === 'inquiry' ? 'RFQ' : 'BID';
+    var d = new Date();
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var bidCode = codePrefix + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + String(Date.now()).slice(-3);
+    var record = {
+      id: 'h' + Date.now(),
+      code: bidCode,
+      file: state.fileName,
+      docType: state.fileName.indexOf('.pdf') !== -1 ? 'pdf' : (state.fileName.indexOf('.doc') !== -1 ? 'word' : 'excel'),
+      mode: method,
+      suppliers: state.suppliers.length + ' 家',
+      status: 'quoting',
+      lowest: null,
+      lowestSupplier: null,
+      quotes: [],
+      deadline: deadline,
+      budget: (function () {
+        var v = parseFloat(document.getElementById('budgetInput').value);
+        return !isNaN(v) && v > 0 ? v : (state.budget || null);
+      })(),
+      bidStep: method === 'bidding' ? parseFloat(document.getElementById('bidStepInput').value) : null,
+      procurementBasis: buildProcurementBasisPayload(basis)
+    };
+    try {
+      var hist = JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]');
+      hist.unshift(record);
+      sessionStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+    } catch (e) {}
+    alert(METHOD_LABELS[method] + '已发起（演示）\n已邀请 ' + state.suppliers.length + ' 家供应商');
+    window.location.href = getBidAssistReturnUrl();
+  }
+
+  function validateBeforeLaunch() {
+    var method = state.purchaseMethod;
+    var unmatched = state.lines.filter(function (L) { return !L.matched; });
+    if (unmatched.length) {
+      alert('存在未匹配商品（' + unmatched.map(function (L) { return L.name; }).join('、') + '），请先换品或搜索补全后再提交。');
+      return false;
+    }
+    if (method === 'direct') {
+      if (!validateNoticeRequired()) return false;
+      return true;
+    }
+    if (!state.suppliers.length) {
+      alert('请至少添加 1 家邀请供应商。');
+      return false;
+    }
+    if (!validateNoticeRequired()) return false;
+    var deadline = document.getElementById('deadlineInput').value;
+    if (!deadline) {
+      alert('请设置报价截止时间。');
+      return false;
+    }
+    if (method === 'bidding') {
+      var step = parseFloat(document.getElementById('bidStepInput').value);
+      if (!step || step <= 0) {
+        alert('竞价模式下请填写有效的最小降价幅度（元）。');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  window.launchProcurement = function () {
+    if (!validateBeforeLaunch()) return;
+    var method = state.purchaseMethod;
+    var confirmLabels = {
+      direct: '确认并下单',
+      bidding: '确认并发起竞价',
+      inquiry: '确认并发起询价'
+    };
+    if (state.fromProduct && state.storedProcurementBasis) {
+      if (method === 'direct') executeDirectPurchase(state.storedProcurementBasis);
+      else executeBiddingInquiry(state.storedProcurementBasis);
+      return;
+    }
+    if (!window.OrderBasisModal || typeof window.OrderBasisModal.open !== 'function') {
+      if (method === 'direct') executeDirectPurchase(null);
+      else executeBiddingInquiry(null);
+      return;
+    }
+    window.OrderBasisModal.open({
+      getOrderAmount: calcMatchedAmount,
+      confirmLabel: confirmLabels[method] || '确认并提交',
+      onComplete: function (basis) {
+        if (method === 'direct') executeDirectPurchase(basis);
+        else executeBiddingInquiry(basis);
+      }
+    });
+  };
+
+  function initDeadlineDefault() {
+    var d = new Date();
+    d.setDate(d.getDate() + 3);
+    d.setHours(18, 0, 0, 0);
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var val = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    document.getElementById('deadlineInput').value = val;
+    var inq = document.getElementById('inquiryDeadlineInput');
+    if (inq) inq.value = val;
+
+    var dd = new Date();
+    dd.setDate(dd.getDate() + 7);
+    var delivery = document.getElementById('deliveryDateInput');
+    if (delivery) {
+      delivery.value = dd.getFullYear() + '-' + pad(dd.getMonth() + 1) + '-' + pad(dd.getDate());
+    }
+  }
+
+  initBidAssistReturnLink();
+  loadDemo();
+  applyProductLaunchChrome();
+  renderDemandTableHead();
+  renderSummary();
+  renderDemandTable();
+  renderSuppliers();
+  initDeadlineDefault();
+  setPurchaseMethod('bidding');
+  setPublishNotice(false);
+  document.getElementById('noticeFileInput').addEventListener('change', function () {
+    handleNoticeUpload(this);
+  });
+})();
+</script>
+<script src="../assets/order_basis_modal.js"></script>
+<script src="../assets/unified_topbar.js"></script>
+</body>
+</html>

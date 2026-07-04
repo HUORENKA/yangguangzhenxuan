@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据驾驶舱一 · 运营监控 | 国采e购</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-0: #071423;
+      --bg-1: #0a2238;
+      --bg-2: #081a2e;
+      --c-main: #31d4ff;
+      --c-sub: #57e6ff;
+      --c-warn: #ffd24a;
+      --c-orange: #f2a92f;
+      --c-text: #d9f2ff;
+      --c-text-sub: #8fb4cb;
+      --c-line: rgba(77, 198, 255, 0.32);
+    }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--c-text);
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 8%, rgba(49, 212, 255, 0.18), transparent 35%),
+        radial-gradient(circle at 10% 85%, rgba(87, 230, 255, 0.10), transparent 40%),
+        radial-gradient(circle at 88% 80%, rgba(242, 169, 47, 0.08), transparent 35%),
+        linear-gradient(180deg, #060f1d 0%, #071423 44%, #060f1d 100%);
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(49, 212, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(49, 212, 255, 0.025) 1px, transparent 1px);
+      background-size: 46px 46px;
+    }
+
+    .header {
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: linear-gradient(180deg, rgba(7, 25, 44, 0.95), rgba(7, 25, 44, 0.7));
+      border-bottom: 1px solid var(--c-line);
+      position: relative;
+      z-index: 10;
+    }
+    .header::after {
+      content: "";
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      bottom: -1px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(49, 212, 255, 0.72), transparent);
+    }
+    .title {
+      font-size: 30px;
+      letter-spacing: 2px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      text-shadow: 0 0 16px rgba(49, 212, 255, 0.35);
+    }
+    .title::before {
+      content: "";
+      width: 5px;
+      height: 30px;
+      margin-right: 10px;
+      background: linear-gradient(180deg, #ffe98c, #f2a92f);
+      border-radius: 2px;
+      box-shadow: 0 0 14px rgba(255, 210, 74, 0.55);
+    }
+    .filters { display: flex; align-items: center; gap: 10px; }
+    .f-btn, .f-select, .f-date {
+      height: 34px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--c-text-sub);
+      border: 1px solid rgba(49, 212, 255, 0.28);
+      background: rgba(9, 34, 60, 0.85);
+      padding: 0 12px;
+    }
+    .f-btn { cursor: pointer; }
+    .f-btn.active, .f-btn:hover {
+      color: #e8faff;
+      border-color: rgba(87, 230, 255, 0.9);
+      box-shadow: inset 0 0 12px rgba(49, 212, 255, 0.24);
+    }
+
+    .main {
+      height: calc(100vh - 88px);
+      display: grid;
+      grid-template-columns: 26% 48% 26%;
+      gap: 12px;
+      padding: 16px 24px 16px;
+    }
+    .col { min-height: 0; display: grid; gap: 12px; }
+    .left { grid-template-rows: 300px 300px 1fr; }
+    .center { grid-template-rows: 122px 1fr 296px; }
+    .right { grid-template-rows: 1fr 1fr; }
+
+    .panel {
+      min-height: 0;
+      border-radius: 10px;
+      border: 1px solid var(--c-line);
+      background: linear-gradient(180deg, rgba(10, 34, 56, 0.88), rgba(8, 26, 46, 0.85));
+      box-shadow: inset 0 0 24px rgba(49, 212, 255, 0.06), 0 8px 20px rgba(0, 0, 0, 0.35);
+      padding: 12px 12px 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::before, .panel::after {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(87, 230, 255, 0.46);
+      opacity: 0.75;
+    }
+    .panel::before { left: 5px; top: 5px; border-right: 0; border-bottom: 0; }
+    .panel::after { right: 5px; bottom: 5px; border-left: 0; border-top: 0; }
+    .panel-title {
+      height: 26px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      text-shadow: 0 0 8px rgba(49, 212, 255, 0.25);
+    }
+    .panel-title::before {
+      content: "";
+      width: 5px;
+      height: 16px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, #ffe27f, #f2a92f);
+      box-shadow: 0 0 8px rgba(255, 210, 74, 0.45);
+    }
+    .sub {
+      font-size: 11px;
+      color: var(--c-text-sub);
+      margin-left: 8px;
+    }
+    .chart {
+      height: calc(100% - 30px);
+      margin-top: 6px;
+    }
+
+    /* 中上核心胶囊 */
+    .kpi-capsule {
+      height: 100%;
+      border-radius: 50px;
+      border: 1px solid rgba(87, 230, 255, 0.35);
+      background: linear-gradient(90deg, rgba(14, 52, 83, 0.82), rgba(10, 34, 56, 0.92));
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      padding: 0 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-capsule::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(87, 230, 255, 0.09), transparent);
+    }
+    .kpi {
+      text-align: center;
+      position: relative;
+    }
+    .kpi:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 14%;
+      right: 0;
+      width: 1px;
+      height: 72%;
+      background: linear-gradient(180deg, transparent, rgba(87, 230, 255, 0.35), transparent);
+    }
+    .kpi .icon {
+      width: 28px;
+      height: 28px;
+      margin: 0 auto 4px;
+      border-radius: 50%;
+      border: 1px solid rgba(87, 230, 255, 0.45);
+      display: grid;
+      place-items: center;
+      color: #9aefff;
+      font-size: 13px;
+    }
+    .kpi .label { font-size: 12px; color: var(--c-text-sub); }
+    .kpi .value {
+      margin-top: 4px;
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 700;
+      color: #b8f3ff;
+      text-shadow: 0 0 12px rgba(49, 212, 255, 0.35);
+    }
+    .kpi .value.warn {
+      color: #ffe391;
+      text-shadow: 0 0 10px rgba(255, 210, 74, 0.3);
+    }
+
+    /* 中心球区域 */
+    .hub {
+      position: relative;
+      border-radius: 10px;
+      border: 1px solid rgba(87, 230, 255, 0.28);
+      background: radial-gradient(ellipse at center, rgba(49, 212, 255, 0.08), rgba(7, 23, 40, 0.84) 70%);
+      overflow: hidden;
+    }
+    .hub .panel-title { position: absolute; left: 12px; top: 10px; z-index: 3; }
+    .orbit-1, .orbit-2 {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -38%);
+      border-radius: 50%;
+      border: 1px dashed rgba(87, 230, 255, 0.42);
+    }
+    .orbit-1 { width: 340px; height: 340px; }
+    .orbit-2 {
+      width: 240px; height: 240px;
+      border-style: solid;
+      border-color: rgba(87, 230, 255, 0.28);
+    }
+    .hub-core {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -44%);
+      width: 166px;
+      height: 166px;
+      border-radius: 50%;
+      border: 2px solid rgba(126, 230, 255, 0.58);
+      background: radial-gradient(circle, rgba(49, 212, 255, 0.35) 0%, rgba(49, 212, 255, 0.12) 64%, rgba(49, 212, 255, 0.03) 100%);
+      box-shadow: 0 0 34px rgba(49, 212, 255, 0.35);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: 38px;
+      line-height: 1.06;
+      letter-spacing: 2px;
+      font-weight: 700;
+      color: #def8ff;
+      text-shadow: 0 0 18px rgba(49, 212, 255, 0.6);
+    }
+    .hub-item {
+      position: absolute;
+      min-width: 144px;
+      text-align: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(87, 230, 255, 0.28);
+      background: rgba(8, 31, 53, 0.74);
+      box-shadow: 0 0 12px rgba(49, 212, 255, 0.12);
+      z-index: 3;
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+      transform: translate(-50%, -50%);
+      transform-origin: center;
+      animation: kpiFloat 4.8s ease-in-out infinite;
+    }
+    .hub-item .lb { font-size: 11px; color: var(--c-text-sub); }
+    .hub-item .vl {
+      margin-top: 2px;
+      font-size: 21px;
+      font-weight: 700;
+      color: #dff7ff;
+      text-shadow: 0 0 8px rgba(49, 212, 255, 0.25);
+    }
+    .hub-item:hover {
+      border-color: rgba(126, 230, 255, 0.82);
+      box-shadow: 0 0 22px rgba(49, 212, 255, 0.32);
+      transform: translate(-50%, -50%) translateY(-6px) scale(1.03);
+    }
+    .hub-item.p7 {
+      min-width: 152px;
+      border-color: rgba(255, 210, 74, 0.42);
+      box-shadow: 0 0 15px rgba(255, 210, 74, 0.2);
+    }
+    .hub-item.p7 .vl {
+      color: #fff0b5;
+      text-shadow: 0 0 8px rgba(255, 210, 74, 0.35);
+    }
+    .hub-item.p1 { animation-delay: 0s; }
+    .hub-item.p2 { animation-delay: .35s; }
+    .hub-item.p3 { animation-delay: .7s; }
+    .hub-item.p4 { animation-delay: 1.05s; }
+    .hub-item.p5 { animation-delay: 1.4s; }
+    .hub-item.p6 { animation-delay: 1.75s; }
+    .hub-item.p7 { animation-delay: 2.1s; }
+
+    @keyframes kpiFloat {
+      0%, 100% { margin-top: 0; }
+      50% { margin-top: -6px; }
+    }
+
+    .todo-list { list-style: none; margin-top: 8px; display: grid; gap: 9px; }
+    .todo {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(87, 230, 255, 0.22);
+      background: rgba(8, 31, 53, 0.62);
+    }
+    .todo .n { font-size: 13px; color: #dbf2ff; }
+    .todo .c { font-size: 18px; font-weight: 700; color: #ffe391; min-width: 30px; text-align: right; }
+    .todo .t {
+      font-size: 11px;
+      color: #ffc8c8;
+      border: 1px solid rgba(255, 107, 107, 0.45);
+      background: rgba(255, 107, 107, 0.12);
+      border-radius: 999px;
+      padding: 2px 8px;
+    }
+
+    .rank-list {
+      list-style: none;
+      max-height: calc(100% - 34px);
+      overflow: auto;
+      margin-top: 6px;
+      padding-right: 3px;
+    }
+    .rank-list::-webkit-scrollbar { width: 5px; }
+    .rank-list::-webkit-scrollbar-thumb { background: rgba(49, 212, 255, 0.35); border-radius: 5px; }
+    .rank-row {
+      display: grid;
+      grid-template-columns: 24px 1fr 44% 54px;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(49, 212, 255, 0.10);
+      font-size: 12px;
+    }
+    .rank-row:last-child { border-bottom: 0; }
+    .idx {
+      height: 22px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6e7a8a, #42586f);
+      border: 1px solid rgba(177, 210, 234, 0.28);
+    }
+    .rank-row:nth-child(1) .idx { background: linear-gradient(135deg, #ffdf74, #ffb64d); color: #1f2836; border-color: rgba(255, 224, 132, 0.9); }
+    .rank-row:nth-child(2) .idx { background: linear-gradient(135deg, #bfe9ff, #72c8ff); color: #14273c; border-color: rgba(168, 224, 255, 0.85); }
+    .rank-row:nth-child(3) .idx { background: linear-gradient(135deg, #ffd5aa, #ffad70); color: #2e2721; border-color: rgba(255, 196, 148, 0.85); }
+    .nm {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #d3ebf8;
+    }
+    .bar-bg {
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(49, 212, 255, 0.09);
+      overflow: hidden;
+    }
+    .bar {
+      height: 100%;
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(49, 212, 255, 0.42);
+    }
+    .bar.blue { background: linear-gradient(90deg, #2dc9ff, #81e2ff); }
+    .bar.orange { background: linear-gradient(90deg, #ffc86e, #f2a92f); }
+    .rt { text-align: right; color: #c3f2ff; font-weight: 600; }
+
+    @media (max-width: 1640px) {
+      .title { font-size: 25px; }
+      .main { padding: 12px; gap: 8px; }
+      .hub-item { min-width: 124px; }
+      .hub-item .vl { font-size: 18px; }
+      .kpi .value { font-size: 30px; }
+    }
+    @media (max-width: 1366px) {
+      .f-date { display: none; }
+      .hub-item { min-width: 108px; padding: 6px 6px; }
+      .hub-item .vl { font-size: 15px; }
+      .hub-core { width: 140px; height: 140px; font-size: 30px; }
+      .orbit-1 { width: 280px; height: 280px; }
+      .orbit-2 { width: 200px; height: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1 class="title">国采e购 · 运营监控驾驶舱</h1>
+    <div class="filters">
+      <a href="admin_cockpit_2.html" class="f-btn" style="text-decoration:none;display:inline-flex;align-items:center;color:inherit;" title="切换至客户价值驾驶舱">驾驶舱二</a>
+      <button class="f-btn active">累计</button>
+      <button class="f-btn">本月</button>
+      <button class="f-btn">本年</button>
+      <button class="f-btn">自定义</button>
+      <span class="f-date">2025-05-01 ~ 2025-05-31</span>
+      <select class="f-select">
+        <option>全平台</option>
+        <option>区域分站</option>
+        <option>企业分站</option>
+      </select>
+    </div>
+  </header>
+
+  <main class="main">
+    <aside class="col left">
+      <section class="panel">
+        <h3 class="panel-title">近一年采购成交趋势</h3>
+        <div id="chartDeal" class="chart"></div>
+      </section>
+      <section class="panel">
+        <h3 class="panel-title">近一年采购合规趋势</h3>
+        <div id="chartCompliant" class="chart"></div>
+      </section>
+      <section class="panel">
+        <h3 class="panel-title">运营待办与异常</h3>
+        <ul class="todo-list" id="todoList"></ul>
+      </section>
+    </aside>
+
+    <section class="col center">
+      <section class="kpi-capsule">
+        <div class="kpi">
+          <div class="icon"><i class="fas fa-file-alt"></i></div>
+          <div class="label">合规订单数量</div>
+          <div class="value" id="compliantCount"></div>
+        </div>
+        <div class="kpi">
+          <div class="icon"><i class="fas fa-yen-sign"></i></div>
+          <div class="label">合规订单总金额</div>
+          <div class="value" id="compliantAmount"></div>
+        </div>
+        <div class="kpi">
+          <div class="icon"><i class="fas fa-chart-pie"></i></div>
+          <div class="label">合规订单数量占比</div>
+          <div class="value warn" id="compliantRatio"></div>
+        </div>
+      </section>
+
+      <section class="hub">
+        <h3 class="panel-title">阳光采购中心</h3>
+        <div class="orbit-1"></div>
+        <div class="orbit-2"></div>
+        <div class="hub-core">阳光<br>采购</div>
+        <div class="hub-item p1" data-angle="-90"><div class="lb">累计成交订单</div><div class="vl" id="totalOrders"></div></div>
+        <div class="hub-item p2" data-angle="-38"><div class="lb">累计成交金额</div><div class="vl" id="totalAmount"></div></div>
+        <div class="hub-item p3" data-angle="13"><div class="lb">今日成交订单</div><div class="vl" id="todayOrders"></div></div>
+        <div class="hub-item p4" data-angle="64"><div class="lb">今日成交金额</div><div class="vl" id="todayAmount"></div></div>
+        <div class="hub-item p5" data-angle="116"><div class="lb">上架商品总数</div><div class="vl" id="productCount"></div></div>
+        <div class="hub-item p6" data-angle="167"><div class="lb">供应商总数</div><div class="vl" id="supplierCount"></div></div>
+        <div class="hub-item p7" data-angle="218"><div class="lb">商品类目总数</div><div class="vl" id="categoryCount"></div></div>
+      </section>
+
+      <section class="panel">
+        <h3 class="panel-title">采购商品类目TOP5 <span class="sub">销售金额</span></h3>
+        <div id="chartCategory" class="chart"></div>
+      </section>
+    </section>
+
+    <aside class="col right">
+      <section class="panel">
+        <h3 class="panel-title">采购单位合规情况</h3>
+        <ul class="rank-list" id="buyerCompliance"></ul>
+      </section>
+      <section class="panel">
+        <h3 class="panel-title">供应商合规情况</h3>
+        <ul class="rank-list" id="supplierCompliance"></ul>
+      </section>
+    </aside>
+  </main>
+
+  <script src="../../assets/mock.js"></script>
+  <script>
+    const D = cockpitData;
+    const todos = (typeof dashboardData !== "undefined" && dashboardData.todos) ? dashboardData.todos : {
+      enterpriseVerify: 3,
+      supplierVerify: 8,
+      poApproval: 12,
+      abnormalOrders: 5
+    };
+
+    const colors = {
+      text: "#d9f2ff",
+      sub: "#8fb4cb",
+      grid: "rgba(49, 212, 255, 0.09)",
+      cyan: "#31d4ff",
+      cyan2: "#57e6ff",
+      yellow: "#ffd24a",
+      orange: "#f2a92f"
+    };
+    const theme = {
+      backgroundColor: "transparent",
+      textStyle: { color: colors.text },
+      tooltip: {
+        trigger: "axis",
+        backgroundColor: "rgba(8, 23, 42, 0.94)",
+        borderColor: "rgba(87, 230, 255, 0.35)",
+        borderWidth: 1,
+        textStyle: { color: "#d6f2ff", fontSize: 12 }
+      },
+      grid: { left: 42, right: 42, top: 34, bottom: 26 },
+      xAxis: {
+        type: "category",
+        axisTick: { show: false },
+        axisLine: { lineStyle: { color: colors.grid } },
+        axisLabel: { color: colors.sub, fontSize: 10 }
+      },
+      yAxis: {
+        type: "value",
+        axisLine: { show: false },
+        axisLabel: { color: colors.sub, fontSize: 10 },
+        splitLine: { lineStyle: { color: colors.grid, type: "dashed" } }
+      }
+    };
+
+    function buildTrendChart(el, legendNames, barData, lineData, barStart, barEnd, lineColor, lineArea) {
+      const chart = echarts.init(document.getElementById(el));
+      chart.setOption({
+        ...theme,
+        legend: {
+          data: legendNames,
+          top: 2,
+          textStyle: { color: colors.sub, fontSize: 10 },
+          itemWidth: 12,
+          itemHeight: 8
+        },
+        xAxis: { ...theme.xAxis, data: D.dealTrend.map(d => d.month) },
+        yAxis: [
+          { ...theme.yAxis, name: "万个", nameTextStyle: { color: colors.sub } },
+          { ...theme.yAxis, name: "万元", nameTextStyle: { color: colors.sub } }
+        ],
+        series: [
+          {
+            name: legendNames[0],
+            type: "bar",
+            data: barData,
+            barWidth: "46%",
+            barBorderRadius: [4, 4, 0, 0],
+            itemStyle: {
+              color: {
+                type: "linear",
+                x: 0, y: 1, x2: 0, y2: 0,
+                colorStops: [{ offset: 0, color: barStart }, { offset: 1, color: barEnd }]
+              }
+            }
+          },
+          {
+            name: legendNames[1],
+            type: "line",
+            yAxisIndex: 1,
+            data: lineData,
+            smooth: true,
+            symbol: "circle",
+            symbolSize: 6,
+            lineStyle: { color: lineColor, width: 2.5 },
+            itemStyle: { color: lineColor, borderColor: "#ffffff", borderWidth: 1 },
+            areaStyle: {
+              color: {
+                type: "linear",
+                x: 0, y: 0, x2: 0, y2: 1,
+                colorStops: [{ offset: 0, color: lineArea }, { offset: 1, color: "rgba(0,0,0,0)" }]
+              }
+            }
+          }
+        ]
+      });
+      return chart;
+    }
+
+    const chartDeal = buildTrendChart(
+      "chartDeal",
+      ["成交订单数", "成交订单金额"],
+      D.dealTrend.map(d => d.orders),
+      D.dealTrend.map(d => d.amount),
+      "#31d4ff",
+      "#2d8cff",
+      colors.yellow,
+      "rgba(255, 210, 74, 0.22)"
+    );
+
+    const chartCompliant = buildTrendChart(
+      "chartCompliant",
+      ["合规订单数", "合规订单金额"],
+      D.compliantTrend.map(d => d.orders),
+      D.compliantTrend.map(d => d.amount),
+      "#ffd24a",
+      "#f2a92f",
+      colors.cyan2,
+      "rgba(87, 230, 255, 0.2)"
+    );
+
+    const chartCategory = echarts.init(document.getElementById("chartCategory"));
+    chartCategory.setOption({
+      ...theme,
+      xAxis: {
+        ...theme.xAxis,
+        data: D.categoryTop5.map(d => d.name),
+        axisLabel: { color: colors.sub, interval: 0 }
+      },
+      yAxis: { ...theme.yAxis, name: "亿元", nameTextStyle: { color: colors.sub } },
+      series: [
+        {
+          type: "bar",
+          data: D.categoryTop5.map(d => d.amount),
+          barWidth: "42%",
+          barBorderRadius: [6, 6, 0, 0],
+          itemStyle: {
+            color: {
+              type: "linear",
+              x: 0, y: 1, x2: 0, y2: 0,
+              colorStops: [{ offset: 0, color: "#31d4ff" }, { offset: 1, color: "#57e6ff" }]
+            }
+          },
+          label: {
+            show: true,
+            position: "top",
+            color: "#def7ff",
+            fontWeight: 600,
+            formatter: "{c} 亿元"
+          }
+        }
+      ]
+    });
+
+    function formatNum(n) { return n.toLocaleString("zh-CN"); }
+    document.getElementById("compliantCount").textContent = formatNum(D.coreOverview.compliantOrderCount);
+    document.getElementById("compliantAmount").textContent = D.coreOverview.compliantOrderAmount + " 亿元";
+    document.getElementById("compliantRatio").textContent = D.coreOverview.compliantOrderRatio + "%";
+
+    document.getElementById("totalOrders").textContent = formatNum(D.centerKpis.totalOrders) + " 个";
+    document.getElementById("totalAmount").textContent = D.centerKpis.totalAmount + " 亿元";
+    document.getElementById("todayOrders").textContent = formatNum(D.centerKpis.todayOrders) + " 个";
+    document.getElementById("todayAmount").textContent = D.centerKpis.todayAmount + " 万元";
+    document.getElementById("productCount").textContent = formatNum(D.centerKpis.productCount) + " 个";
+    document.getElementById("supplierCount").textContent = D.centerKpis.supplierCount + " 家";
+    document.getElementById("categoryCount").textContent = formatNum(D.centerKpis.categoryCount) + " 个";
+
+    const todoList = document.getElementById("todoList");
+    [
+      { name: "待审核企业认证", value: todos.enterpriseVerify, tag: "待处理" },
+      { name: "待审核供应商认证", value: todos.supplierVerify, tag: "待处理" },
+      { name: "待审核采购单", value: todos.poApproval, tag: "待处理" },
+      { name: "异常订单（超时/退货）", value: todos.abnormalOrders, tag: "预警" }
+    ].forEach(item => {
+      const li = document.createElement("li");
+      li.className = "todo";
+      li.innerHTML = `
+        <span class="n">${item.name}</span>
+        <span class="c">${item.value}</span>
+        <span class="t">${item.tag}</span>
+      `;
+      todoList.appendChild(li);
+    });
+
+    function renderRank(listId, rows, barClass) {
+      const ul = document.getElementById(listId);
+      rows.forEach((r, idx) => {
+        const li = document.createElement("li");
+        li.className = "rank-row";
+        li.innerHTML = `
+          <span class="idx">${idx + 1}</span>
+          <span class="nm">${r.name}</span>
+          <span class="bar-bg"><span class="bar ${barClass}" style="width:${r.rate}%"></span></span>
+          <span class="rt">${r.rate}%</span>
+        `;
+        ul.appendChild(li);
+      });
+    }
+    renderRank("buyerCompliance", D.buyerCompliance, "blue");
+    renderRank("supplierCompliance", D.supplierCompliance, "orange");
+
+    // 环绕KPI：按角度均匀计算位置（中心点 + 半径）
+    function placeHubKpis() {
+      const hub = document.querySelector(".hub");
+      const core = document.querySelector(".hub-core");
+      if (!hub || !core) return;
+
+      const hubRect = hub.getBoundingClientRect();
+      const coreRect = core.getBoundingClientRect();
+      const centerX = coreRect.left - hubRect.left + coreRect.width / 2;
+      const centerY = coreRect.top - hubRect.top + coreRect.height / 2;
+      const radius = Math.min(hubRect.width, hubRect.height) * 0.36;
+
+      document.querySelectorAll(".hub-item").forEach(item => {
+        const angle = Number(item.dataset.angle || 0) * Math.PI / 180;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        item.style.left = `${x}px`;
+        item.style.top = `${y}px`;
+      });
+    }
+    placeHubKpis();
+
+    window.addEventListener("resize", () => {
+      chartDeal.resize();
+      chartCompliant.resize();
+      chartCategory.resize();
+      placeHubKpis();
+    });
+  </script>
+</body>
+</html>

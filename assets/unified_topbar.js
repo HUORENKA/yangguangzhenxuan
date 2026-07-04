@@ -38,6 +38,31 @@
     return v;
   }
 
+  function getRouteBases() {
+    var path = (window.location.pathname || "").toLowerCase();
+    if (path.indexOf("/pages-new/") >= 0) {
+      var pnTail = path.split("/pages-new/")[1] || "";
+      var pnDepth = pnTail.split("/").filter(Boolean).length - 1;
+      var pnUp = pnDepth > 0 ? "../".repeat(pnDepth) : "./";
+      return {
+        pages: pnDepth > 0 ? "../".repeat(pnDepth + 1) + "pages/" : "../pages/",
+        pagesNew: pnUp,
+        login: pnDepth > 0 ? "../".repeat(pnDepth + 1) + "login.html" : "../login.html"
+      };
+    }
+    if (path.indexOf("/pages/") >= 0) {
+      var tail = path.split("/pages/")[1] || "";
+      var depth = Math.max(tail.split("/").filter(Boolean).length - 1, 0);
+      var up = depth > 0 ? "../".repeat(depth) : "./";
+      return {
+        pages: up,
+        pagesNew: depth > 0 ? "../".repeat(depth + 1) + "pages-new/" : "../pages-new/",
+        login: depth > 0 ? "../".repeat(depth + 1) + "login.html" : "../login.html"
+      };
+    }
+    return { pages: "./pages/", pagesNew: "./pages-new/", login: "./login.html" };
+  }
+
   function getPageKey() {
     var path = (window.location.pathname || "").toLowerCase();
     if (path.endsWith("/merged_home.html")) {
@@ -99,6 +124,7 @@
 
   function buildTopbarHtml(active) {
     var isLogin = getAuth() === "1";
+    var routes = getRouteBases();
     function tab(key, href, icon, label) {
       var cls = "main-tab" + (active === key ? " active" : "");
       return '<a class="' + cls + '" href="' + href + '"><i class="' + icon + '"></i> ' + label + "</a>";
@@ -107,15 +133,15 @@
     var centerBlock = isSloganPage()
       ? '<div class="topbar-slogan" aria-label="平台标语"><span class="topbar-slogan-text">' + (window.__gcTopbarSlogan || "看得清 · 比得准 · 采得值") + '</span><span class="topbar-slogan-sub">智慧采购决策平台</span></div>'
       : '<nav class="main-tabs" aria-label="采购主功能导航">'
-        + tab("home", "./merged_home.html?tab=home", "fa-solid fa-house", "首页")
-        + tab("mall", "./merged_home.html?tab=mall", "fa-solid fa-store", "国采搜品")
-        + tab("plan", "./plan_result.html", "fa-regular fa-file-lines", "最价方案")
-        + tab("compare", "./smart_compare.html", "fa-solid fa-magnifying-glass", "全网寻品")
+        + tab("home", routes.pages + "merged_home.html?tab=home", "fa-solid fa-house", "首页")
+        + tab("mall", routes.pages + "merged_home.html?tab=mall", "fa-solid fa-store", "国采搜品")
+        + tab("plan", routes.pagesNew + "plan_result.html", "fa-regular fa-file-lines", "最价方案")
+        + tab("compare", routes.pagesNew + "smart_compare.html", "fa-solid fa-magnifying-glass", "全网寻品")
         + "</nav>";
 
     return ''
       + '<div class="topbar-inner">'
-      + '  <a class="brand" href="./merged_home.html?tab=home" aria-label="国采E购首页">'
+      + '  <a class="brand" href="' + routes.pages + 'merged_home.html?tab=home" aria-label="国采E购首页">'
       + '    <span class="brand-logo">' + brandLogoHtml() + '</span>'
       + '    <span class="brand-text">国采<span class="brand-e">E</span>购</span>'
       + '  </a>'
@@ -131,13 +157,13 @@
 
   function loginUrlWithRedirect() {
     var redirect = encodeURIComponent(window.location.pathname + window.location.search);
-    return "../login.html?redirect=" + redirect;
+    return getRouteBases().login + "?redirect=" + redirect;
   }
 
   function authAction() {
     if (getAuth() === "1") {
       localStorage.setItem(AUTH_KEY, "0");
-      window.location.href = "./merged_home.html?tab=home";
+      window.location.href = getRouteBases().pages + "merged_home.html?tab=home";
       return;
     }
     window.location.href = loginUrlWithRedirect();

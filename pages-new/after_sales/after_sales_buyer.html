@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>售后管理 - 阳光甄选</title>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../assets/custom.css">
+    <style>
+        .text-primary { color: #E2231A; }
+        .bg-primary { background-color: #E2231A; }
+        .border-primary { border-color: #E2231A; }
+        .tab-active {
+            border-bottom: 2px solid #E1251B;
+            color: #E1251B;
+            font-weight: 600;
+        }
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status-pending { background: #FFF7ED; color: #C2410C; border: 1px solid #FFEDD5; }
+        .status-return { background: #EEF2FF; color: #4338CA; border: 1px solid #E0E7FF; }
+        .status-shipping { background: #ECFDF5; color: #047857; border: 1px solid #D1FAE5; }
+        .status-completed { background: #F3F4F6; color: #374151; border: 1px solid #E5E7EB; }
+        .status-terminated { background: #FEF2F2; color: #991B1B; border: 1px solid #FEE2E2; }
+        .flowchart-collapse {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .flowchart-collapse.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+        .flowchart-collapse.expanded {
+            max-height: 5000px;
+            opacity: 1;
+        }
+        .flow-stage {
+            margin-bottom: 30px;
+        }
+        .stage-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .stage-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .stage-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #E1251B 0%, #c01e16 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .stage-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .action-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        .action-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .action-btn {
+            padding: 4px 10px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #475569;
+        }
+        .action-btn-primary {
+            background: #E1251B;
+            color: white;
+            border-color: #E1251B;
+        }
+        /* 上传物流弹窗（对齐登记发货） */
+        .dlg-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,.5);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .dlg-overlay.show { display: flex; }
+        .dlg {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 720px;
+            width: 100%;
+            max-height: 92vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 48px rgba(15,23,42,.18);
+            border: 1px solid #e2e8f0;
+        }
+        .dlg-hd {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e8edf3;
+            font-weight: 800;
+            font-size: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dlg-bd { padding: 16px 20px; overflow-y: auto; flex: 1; }
+        .dlg-ft {
+            padding: 12px 20px;
+            border-top: 1px solid #e8edf3;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; }
+        .field .hint { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ipt-dlg { border: 1px solid #d8dee8; border-radius: 6px; padding: 8px 12px; font-size: 13px; width: 100%; }
+        .btn-dlg { height: 34px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 700; border: 1px solid #cbd5e1; background: #fff; color: #475569; cursor: pointer; }
+        .btn-dlg:hover { filter: brightness(0.98); }
+        .btn-dlg-primary { background: #E2231A; border-color: #E2231A; color: #fff; }
+        .btn-dlg-ghost-line { border: 1px solid #94a3b8; color: #334155; background: #fff; }
+        .btn-dlg-sm { height: 30px; padding: 0 10px; font-size: 12px; }
+        .waybill-row { display: flex; gap: 8px; align-items: flex-start; }
+        .waybill-row input { flex: 1; }
+        .ship-line-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .ship-line-table th, .ship-line-table td { border: 1px solid #e8edf3; padding: 8px 10px; }
+        .ship-line-table th { background: #f8fafc; font-weight: 700; color: #475569; }
+        .alert-mock {
+            padding: 8px 12px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #1e40af;
+            margin-bottom: 14px;
+        }
+        .upload-slip-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+        .upload-preview {
+            font-size: 12px; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0;
+            border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; display: none;
+        }
+        .upload-preview.show { display: block; }
+        .qty-readonly { font-weight: 800; color: #0f172a; text-align: center; }
+        .dlg-product-cell { display: flex; gap: 10px; align-items: flex-start; min-width: 0; }
+        .dlg-thumb {
+            width: 56px; height: 56px; border-radius: 6px; object-fit: cover;
+            border: 1px solid #e2e8f0; flex-shrink: 0; background: #f1f5f9;
+        }
+        .dlg-product-name { font-weight: 700; font-size: 13px; line-height: 1.4; color: #0f172a; }
+        .dlg-product-spec { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; }
+        .dlg-supplier { font-size: 12px; color: #334155; line-height: 1.5; }
+        .dlg-supplier-lbl { color: #94a3b8; font-size: 11px; display: block; margin-bottom: 2px; }
+        .ship-line-table .dlg-product-cell { min-width: 200px; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4">
+    <!-- 导航面包屑 -->
+    <nav class="flex mb-4 text-sm" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3 text-gray-500">
+            <li class="inline-flex items-center">
+                <i class="fas fa-home mr-2 text-gray-400"></i>
+                首页
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-1"></i>
+                    工作台
+                </div>
+            </li>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <i class="fas fa-chevron-right text-gray-400 mx-1 text-gray-600"></i>
+                    <span class="text-gray-900 font-medium">售后管理</span>
+                </div>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- 页面标题 -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white shadow-sm">
+                <i class="fas fa-tools text-xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-900">售后管理</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleFlowchart()" class="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500 transition-all flex items-center gap-2 font-semibold shadow-sm">
+                <i class="fas fa-sitemap"></i> 退货业务流程
+            </button>
+            <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2">
+                <i class="fas fa-question-circle"></i> 售后指南
+            </button>
+        </div>
+    </div>
+
+    <!-- 业务流程模块（可折叠） -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 overflow-hidden hidden" id="flowchartModule">
+        <div class="px-6 py-4 bg-gray-50 cursor-pointer flex items-center justify-between border-b border-gray-200" onclick="toggleFlowchartContent()">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-sitemap text-primary text-xl"></i>
+                <h2 class="text-lg font-semibold text-gray-900">退货业务流程详情</h2>
+            </div>
+            <i class="fas fa-chevron-down transition-transform duration-300 text-gray-500" id="flowchartIcon"></i>
+        </div>
+        <div class="flowchart-collapse collapsed" id="flowchartContent">
+            <div class="p-6 bg-gray-50">
+                <!-- 阶段1：待确认 -->
+                <div class="flow-stage">
+                    <div class="stage-box">
+                        <div class="stage-header">
+                            <div class="stage-number">1</div>
+                            <div class="text-base font-semibold text-gray-900">申请阶段 - 待确认</div>
+                            <span class="status-badge status-pending ml-auto">待确认</span>
+                        </div>
+                        <div class="stage-actions">
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-user-tie text-blue-600"></i>
+                                    采购专员操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn">查看信息</span>
+                                    <span class="action-btn action-btn-primary">取消退货</span>
+                                </div>
+                            </div>
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-store text-green-600"></i>
+                                    供应商操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn action-btn-primary">同意退货</span>
+                                    <span class="action-btn action-btn-primary">驳回退货</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-gray-600">
+                            <i class="fas fa-info-circle text-primary"></i>
+                            <strong>流转规则：</strong>供应商同意→待退货；驳回/取消→已终止
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center my-4 text-gray-400">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+
+                <!-- 阶段2：待退货 -->
+                <div class="flow-stage">
+                    <div class="stage-box">
+                        <div class="stage-header">
+                            <div class="stage-number">2</div>
+                            <div class="text-base font-semibold text-gray-900">寄回阶段 - 待退货</div>
+                            <span class="status-badge status-return ml-auto">待退货</span>
+                        </div>
+                        <div class="stage-actions">
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-user-tie text-blue-600"></i>
+                                    采购专员操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn">查看信息</span>
+                                    <span class="action-btn action-btn-primary">登记退货物流</span>
+                                </div>
+                            </div>
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-store text-green-600"></i>
+                                    供应商操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn">查看信息（等待寄回）</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-gray-600">
+                            <i class="fas fa-info-circle text-primary"></i>
+                            <strong>流转规则：</strong>采购方上传单号→退货中
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center my-4 text-gray-400">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+
+                <!-- 阶段3：退货中 -->
+                <div class="flow-stage">
+                    <div class="stage-box">
+                        <div class="stage-header">
+                            <div class="stage-number">3</div>
+                            <div class="text-base font-semibold text-gray-900">在途阶段 - 退货中</div>
+                            <span class="status-badge status-shipping ml-auto">退货中</span>
+                        </div>
+                        <div class="stage-actions">
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-user-tie text-blue-600"></i>
+                                    采购专员操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn">查看进度（物流跟踪）</span>
+                                </div>
+                            </div>
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-store text-green-600"></i>
+                                    供应商操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn">查看退货</span>
+                                    <span class="action-btn action-btn-primary">确认签收商品</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-gray-600">
+                            <i class="fas fa-info-circle text-primary"></i>
+                            <strong>流转规则：</strong>供应商确认签收→退货完成
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center my-4 text-gray-400">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+
+                <!-- 阶段4：退货完成 -->
+                <div class="flow-stage">
+                    <div class="stage-box">
+                        <div class="stage-header">
+                            <div class="stage-number">4</div>
+                            <div class="text-base font-semibold text-gray-900">结案阶段 - 退货完成</div>
+                            <span class="status-badge status-completed ml-auto">退货完成</span>
+                        </div>
+                        <div class="stage-actions">
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-user-tie text-blue-600"></i>
+                                    采购专员操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn">查看结果</span>
+                                    <span class="action-btn">重新提交</span>
+                                </div>
+                            </div>
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-store text-green-600"></i>
+                                    供应商操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn">查看结果</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-gray-600">
+                            <i class="fas fa-info-circle text-primary"></i>
+                            <strong>流转规则：</strong>流程闭环，不可操作
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 阶段5：已终止 -->
+                <div class="flow-stage mt-4">
+                    <div class="stage-box" style="background: #fef2f2; border-color: #fecaca;">
+                        <div class="stage-header">
+                            <div class="stage-number" style="background: #991B1B;">5</div>
+                            <div class="text-base font-semibold text-gray-900">关闭阶段 - 已终止</div>
+                            <span class="status-badge status-terminated ml-auto">已终止</span>
+                        </div>
+                        <div class="stage-actions">
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-user-tie text-blue-600"></i>
+                                    采购专员操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn" style="opacity: 0.6;">查看信息</span>
+                                </div>
+                            </div>
+                            <div class="action-box">
+                                <div class="action-title">
+                                    <i class="fas fa-store text-green-600"></i>
+                                    供应商操作
+                                </div>
+                                <div class="action-buttons">
+                                    <span class="action-btn" style="opacity: 0.6;">查看信息</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-gray-600">
+                            <i class="fas fa-info-circle text-red-600"></i>
+                            <strong>流转规则：</strong>流程结束，不可操作（可由待确认状态驳回/取消进入）
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 关键规则说明 -->
+                <div class="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                    <div class="font-semibold text-yellow-800 mb-2 flex items-center gap-2">
+                        <i class="fas fa-lightbulb"></i> 关键业务规则说明
+                    </div>
+                    <div class="text-xs text-yellow-700 space-y-1">
+                        <p><strong>1. 单向流转：</strong>流程严格遵循 待确认 → 待退货 → 退货中 → 退货完成 的顺序。</p>
+                        <p><strong>2. 供应商控制权：</strong>供应商拥有"同意/驳回"和"确认签收"的核心控制权。</p>
+                        <p><strong>3. 不可逆性：</strong>一旦进入"退货完成"状态，系统将锁定操作，不再提供"取消退货"按钮。</p>
+                        <p><strong>4. 异常处理：</strong>若被驳回或自行取消，单据进入"已终止"状态，需重新发起申请。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 状态切换页签 & 筛选区 -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
+        <div class="flex border-b border-gray-100">
+            <button onclick="switchTab('all')" class="px-6 py-4 text-sm tab-active" id="tab-all">全部 (15)</button>
+            <button onclick="switchTab('pending')" class="px-6 py-4 text-sm text-gray-500 hover:text-primary" id="tab-pending">待确认 (3)</button>
+            <button onclick="switchTab('return')" class="px-6 py-4 text-sm text-gray-500 hover:text-primary" id="tab-return">待退货 (3)</button>
+            <button onclick="switchTab('shipping')" class="px-6 py-4 text-sm text-gray-500 hover:text-primary" id="tab-shipping">退货中 (3)</button>
+            <button onclick="switchTab('completed')" class="px-6 py-4 text-sm text-gray-500 hover:text-primary" id="tab-completed">退货完成 (3)</button>
+            <button onclick="switchTab('terminated')" class="px-6 py-4 text-sm text-gray-500 hover:text-primary" id="tab-terminated">已终止 (3)</button>
+        </div>
+        
+        <!-- 筛选栏 -->
+        <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-4 bg-gray-50 bg-opacity-50">
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                <input type="text" placeholder="退货编号/商品名称/订单号" class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            </div>
+            <select class="border border-gray-200 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+                <option value="">所有供应商</option>
+                <option value="1">鼎盛办公用品</option>
+                <option value="2">晨光文具旗舰店</option>
+            </select>
+            <input type="date" class="border border-gray-200 rounded-lg px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+            <div class="flex gap-2">
+                <button class="flex-1 bg-white border border-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors">重置</button>
+                <button class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-opacity-90 transition-all shadow-sm">查询</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 列表展示 -->
+    <div class="space-y-4" id="order-list">
+        <!-- ========== 待确认状态（3条） ========== -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="pending">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260114001</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-14 10:25:30</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">供应商：鼎盛办公用品</span>
+                </div>
+                <div class="status-badge status-pending">待确认</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1544450173-8c486e1f98d6?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">佳能(Canon) LBP6230dn A4黑白激光打印机</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：网络自动双面打印</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">1</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥1,299.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                    <button class="text-sm bg-white border border-red-200 text-red-600 py-2 rounded hover:bg-red-50" onclick="alert('退货申请已取消')">取消退货</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="pending">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260114002</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-14 08:15:45</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">供应商：晨光文具旗舰店</span>
+                </div>
+                <div class="status-badge status-pending">待确认</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">晨光(M&G) A4复印纸 70g 500张/包</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：高白度 适合打印复印</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">10包</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥180.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                    <button class="text-sm bg-white border border-red-200 text-red-600 py-2 rounded hover:bg-red-50" onclick="alert('退货申请已取消')">取消退货</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="pending">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260113099</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-13 16:42:18</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">供应商：得力办公专营店</span>
+                </div>
+                <div class="status-badge status-pending">待确认</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">得力(deli) 5028 透明胶带 48mm×50m</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：高粘性 办公透明胶带</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">20卷</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥96.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                    <button class="text-sm bg-white border border-red-200 text-red-600 py-2 rounded hover:bg-red-50" onclick="alert('退货申请已取消')">取消退货</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 待退货状态（3条） ========== -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return" data-return-id="TH20260113052">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260113052</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-13 14:15:22</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">供应商：晨光文具旗舰店</span>
+                </div>
+                <div class="status-badge status-return">待退货</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1512412023212-f09999392ef5?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">得力(deli) 0130 强力型订书机 50页厚层</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：银黑色 适用23/6-23/10书钉</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">5</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥225.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal('TH20260113052')">登记退货物流</button>
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return" data-return-id="TH20260112088">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260112088</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-12 11:30:15</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">供应商：鼎盛办公用品</span>
+                </div>
+                <div class="status-badge status-return">待退货</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">惠普(HP) LaserJet Pro M404dn 黑白激光打印机</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：自动双面打印 网络打印</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">1</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥2,199.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal('TH20260112088')">登记退货物流</button>
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="return" data-return-id="TH20260111077">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260111077</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-11 09:20:33</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">供应商：得力办公专营店</span>
+                </div>
+                <div class="status-badge status-return">待退货</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">得力(deli) 5028 透明胶带 48mm×50m</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：高粘性 办公透明胶带</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">15卷</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥72.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-all shadow-sm" onclick="showUploadModal('TH20260111077')">登记退货物流</button>
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 退货中状态（3条） ========== -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="shipping">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260111008</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-11 09:30:10</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">物流单号：SF14322588960</span>
+                </div>
+                <div class="status-badge status-shipping">退货中</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1586075010623-265d1d6c76f2?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">A4 复印纸 80g 500张/包 5包/箱</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：白度103-106%</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">2箱</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥320.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50 flex items-center justify-center gap-1">
+                        <i class="fas fa-truck-fast"></i> 查看进度
+                    </button>
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="shipping">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260109045</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-09 15:22:08</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">物流单号：ZT9876543210</span>
+                </div>
+                <div class="status-badge status-shipping">退货中</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1550537687-c91072c4792d?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">联想(Lenovo) 23.8英寸 显示器</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：IPS技术广视角 微边框设计</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">1</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥899.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50 flex items-center justify-center gap-1">
+                        <i class="fas fa-truck-fast"></i> 查看进度
+                    </button>
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="shipping">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260108033</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-08 13:45:20</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">物流单号：JD1234567890</span>
+                </div>
+                <div class="status-badge status-shipping">退货中</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1512412023212-f09999392ef5?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-900 mb-1">得力(deli) 0130 强力型订书机 50页厚层</h4>
+                    <p class="text-sm text-gray-500 mb-2">规格：银黑色 适用23/6-23/10书钉</p>
+                    <div class="text-sm">
+                        <span class="text-gray-500">退货数量：<span class="text-gray-900 font-medium">3</span></span>
+                        <span class="mx-4 text-gray-500">退款总额：<span class="text-primary font-bold">¥135.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50 flex items-center justify-center gap-1">
+                        <i class="fas fa-truck-fast"></i> 查看进度
+                    </button>
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看详情</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 退货完成状态（3条） ========== -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="completed">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260105022</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-05 16:45:00</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">完成时间：2026-01-08 10:20:00</span>
+                </div>
+                <div class="status-badge status-completed">退货完成</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden grayscale">
+                    <img src="https://images.unsplash.com/photo-1550537687-c91072c4792d?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-400 mb-1">联想(Lenovo) 23.8英寸 显示器</h4>
+                    <p class="text-sm text-gray-400 mb-2">规格：IPS技术广视角 微边框设计</p>
+                    <div class="text-sm">
+                        <span class="text-gray-400">退货数量：<span class="text-gray-400 font-medium">1</span></span>
+                        <span class="mx-4 text-gray-400">已退款：<span class="font-bold">¥899.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看结果</button>
+                    <button class="text-sm bg-white border border-primary text-primary py-2 rounded hover:bg-red-50">重新提交</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="completed">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260103011</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-03 11:20:15</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">完成时间：2026-01-06 14:30:00</span>
+                </div>
+                <div class="status-badge status-completed">退货完成</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden grayscale">
+                    <img src="https://images.unsplash.com/photo-1512412023212-f09999392ef5?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-400 mb-1">得力(deli) 0130 强力型订书机 50页厚层</h4>
+                    <p class="text-sm text-gray-400 mb-2">规格：银黑色 适用23/6-23/10书钉</p>
+                    <div class="text-sm">
+                        <span class="text-gray-400">退货数量：<span class="text-gray-400 font-medium">2</span></span>
+                        <span class="mx-4 text-gray-400">已退款：<span class="font-bold">¥90.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看结果</button>
+                    <button class="text-sm bg-white border border-primary text-primary py-2 rounded hover:bg-red-50">重新提交</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="completed">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20251230088</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2025-12-30 09:10:25</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">完成时间：2026-01-02 16:15:00</span>
+                </div>
+                <div class="status-badge status-completed">退货完成</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden grayscale">
+                    <img src="https://images.unsplash.com/photo-1586075010623-265d1d6c76f2?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-400 mb-1">A4 复印纸 80g 500张/包 5包/箱</h4>
+                    <p class="text-sm text-gray-400 mb-2">规格：白度103-106%</p>
+                    <div class="text-sm">
+                        <span class="text-gray-400">退货数量：<span class="text-gray-400 font-medium">1箱</span></span>
+                        <span class="mx-4 text-gray-400">已退款：<span class="font-bold">¥160.00</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-700 py-2 rounded hover:bg-gray-50">查看结果</button>
+                    <button class="text-sm bg-white border border-primary text-primary py-2 rounded hover:bg-red-50">重新提交</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 已终止状态（3条） ========== -->
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="terminated">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260112066</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-12 10:30:00</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">终止时间：2026-01-12 14:20:00</span>
+                </div>
+                <div class="status-badge status-terminated">已终止</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden grayscale opacity-50">
+                    <img src="https://images.unsplash.com/photo-1544450173-8c486e1f98d6?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-400 mb-1">佳能(Canon) LBP6230dn A4黑白激光打印机</h4>
+                    <p class="text-sm text-gray-400 mb-2">规格：网络自动双面打印</p>
+                    <div class="text-sm">
+                        <span class="text-gray-400">退货数量：<span class="text-gray-400 font-medium">1</span></span>
+                        <span class="mx-4 text-gray-400">终止原因：<span class="text-red-500">供应商驳回</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-400 py-2 rounded cursor-not-allowed">查看详情</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="terminated">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260110044</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-10 08:15:30</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">终止时间：2026-01-10 09:00:00</span>
+                </div>
+                <div class="status-badge status-terminated">已终止</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden grayscale opacity-50">
+                    <img src="https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-400 mb-1">晨光(M&G) A4复印纸 70g 500张/包</h4>
+                    <p class="text-sm text-gray-400 mb-2">规格：高白度 适合打印复印</p>
+                    <div class="text-sm">
+                        <span class="text-gray-400">退货数量：<span class="text-gray-400 font-medium">8包</span></span>
+                        <span class="mx-4 text-gray-400">终止原因：<span class="text-red-500">用户取消</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-400 py-2 rounded cursor-not-allowed">查看详情</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all overflow-hidden list-item" data-status="terminated">
+            <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex items-center justify-between text-sm">
+                <div class="flex items-center gap-4">
+                    <span class="font-medium text-gray-900">退货单号：TH20260108022</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">申请时间：2026-01-08 16:45:12</span>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-500">终止时间：2026-01-08 17:30:00</span>
+                </div>
+                <div class="status-badge status-terminated">已终止</div>
+            </div>
+            <div class="p-4 flex items-center gap-6">
+                <div class="w-20 h-20 bg-gray-100 rounded border border-gray-100 flex items-center justify-center overflow-hidden grayscale opacity-50">
+                    <img src="https://images.unsplash.com/photo-1586953208448-b95a79798f07?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-gray-400 mb-1">得力(deli) 5028 透明胶带 48mm×50m</h4>
+                    <p class="text-sm text-gray-400 mb-2">规格：高粘性 办公透明胶带</p>
+                    <div class="text-sm">
+                        <span class="text-gray-400">退货数量：<span class="text-gray-400 font-medium">12卷</span></span>
+                        <span class="mx-4 text-gray-400">终止原因：<span class="text-red-500">供应商驳回</span></span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 min-w-[120px]">
+                    <button class="text-sm bg-white border border-gray-200 text-gray-400 py-2 rounded cursor-not-allowed">查看详情</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登记退货物流弹窗（对齐登记发货） -->
+    <div class="dlg-overlay" id="uploadModal">
+        <div class="dlg" onclick="event.stopPropagation()">
+            <div class="dlg-hd">
+                <span>登记退货物流</span>
+                <button type="button" class="btn-dlg btn-dlg-sm" onclick="hideUploadModal()">&times;</button>
+            </div>
+            <div class="dlg-bd">
+                <div class="upload-slip-row">
+                    <input type="file" id="inpReturnLogisticsSlip" accept="image/*,.pdf" hidden>
+                    <button type="button" class="btn-dlg btn-dlg-ghost-line" id="btnReturnUploadSlip"><i class="fas fa-cloud-arrow-up mr-1"></i>上传物流单</button>
+                    <span class="text-xs text-slate-500">支持图片 / PDF，原型模拟 OCR 识别</span>
+                </div>
+                <div class="upload-preview" id="returnUploadSlipPreview"></div>
+                <div class="row2">
+                    <div class="field">
+                        <label>发货人姓名 <span style="color:#dc2626">*</span></label>
+                        <input class="ipt-dlg" id="inpReturnShipperName" placeholder="如：王明">
+                    </div>
+                    <div class="field">
+                        <label>发货人手机号 <span style="color:#dc2626">*</span></label>
+                        <input class="ipt-dlg" id="inpReturnShipperPhone" placeholder="如：138xxxx0000">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>物流单号 <span style="color:#dc2626">*</span></label>
+                    <div class="waybill-row">
+                        <input type="text" class="ipt-dlg" id="inpReturnWaybill" placeholder="请输入运单号，或上传物流单自动识别">
+                        <button type="button" class="btn-dlg btn-dlg-ghost-line" id="btnReturnValidateWaybill">校验</button>
+                    </div>
+                    <div class="hint field" id="returnWaybillValidateMsg"></div>
+                </div>
+                <div class="field">
+                    <label>快递公司</label>
+                    <input class="ipt-dlg" id="inpReturnCarrier" readonly placeholder="请先校验物流单号">
+                </div>
+            </div>
+            <div class="dlg-ft">
+                <button class="btn-dlg" type="button" onclick="hideUploadModal()">取消</button>
+                <button class="btn-dlg btn-dlg-primary" type="button" onclick="submitUpload()">提交退货</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const returnOrders = [
+            {
+                id: 'TH20260113052',
+                supplierName: '晨光文具旗舰店',
+                lines: [{
+                    lineId: 'l1',
+                    name: '得力(deli) 0130 强力型订书机 50页厚层',
+                    spec: '规格：银黑色 适用23/6-23/10书钉',
+                    img: 'https://images.unsplash.com/photo-1512412023212-f09999392ef5?q=80&w=200&auto=format&fit=crop',
+                    qty: 5
+                }]
+            },
+            {
+                id: 'TH20260112088',
+                supplierName: '鼎盛办公用品',
+                lines: [{
+                    lineId: 'l1',
+                    name: '惠普(HP) LaserJet Pro M404dn 黑白激光打印机',
+                    spec: '规格：自动双面打印 网络打印',
+                    img: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?q=80&w=200&auto=format&fit=crop',
+                    qty: 1
+                }]
+            },
+            {
+                id: 'TH20260111077',
+                supplierName: '得力办公专营店',
+                lines: [{
+                    lineId: 'l1',
+                    name: '得力(deli) 5028 透明胶带 48mm×50m',
+                    spec: '规格：高粘性 办公透明胶带',
+                    img: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?q=80&w=200&auto=format&fit=crop',
+                    qty: 15
+                }]
+            }
+        ];
+
+        let returnTargetId = null;
+        let lastReturnWaybillValidation = null;
+
+        function escapeHtml(s) {
+            return String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function fmtNow() {
+            const d = new Date();
+            return d.toISOString().slice(0, 19).replace('T', ' ');
+        }
+
+        function mockWaybillLookup(waybill) {
+            const w = String(waybill || '').trim();
+            if (!w || w.length < 8) return { ok: false, msg: '请输入不少于 8 位的运单号' };
+            if (/^SF/i.test(w)) return { ok: true, carrier: '顺丰速运', shipTimeApi: fmtNow(), msg: '' };
+            if (/^JT/i.test(w)) return { ok: true, carrier: '极兔速递', shipTimeApi: fmtNow(), msg: '' };
+            if (/^JD/i.test(w) || /^JDVB/i.test(w)) return { ok: true, carrier: '京东物流', shipTimeApi: fmtNow(), msg: '' };
+            if (/^YT/i.test(w)) return { ok: true, carrier: '圆通速递', shipTimeApi: fmtNow(), msg: '' };
+            return { ok: true, carrier: '快递（承运商占位）', shipTimeApi: fmtNow(), msg: '' };
+        }
+
+        function mockOcrLogisticsSlip(fileName) {
+            const seed = (fileName || '').length % 3;
+            const samples = [
+                { waybill: 'SF' + Date.now().toString().slice(-12), shipperName: '王明', shipperPhone: '13800138001' },
+                { waybill: 'YT88776655443399', shipperName: '李芳', shipperPhone: '13900139002' },
+                { waybill: 'JDVB20260421008877', shipperName: '赵志强', shipperPhone: '13600008888' }
+            ];
+            return samples[seed];
+        }
+
+        function showUploadModal(returnId) {
+            const ro = returnOrders.find(x => x.id === returnId);
+            if (!ro) return;
+            returnTargetId = returnId;
+            lastReturnWaybillValidation = null;
+
+            document.getElementById('inpReturnShipperName').value = '';
+            document.getElementById('inpReturnShipperPhone').value = '';
+            document.getElementById('inpReturnWaybill').value = '';
+            document.getElementById('inpReturnCarrier').value = '';
+            document.getElementById('returnWaybillValidateMsg').textContent = '';
+            const preview = document.getElementById('returnUploadSlipPreview');
+            preview.classList.remove('show');
+            preview.innerHTML = '';
+            const fileInp = document.getElementById('inpReturnLogisticsSlip');
+            if (fileInp) fileInp.value = '';
+
+            document.getElementById('uploadModal').classList.add('show');
+        }
+
+        function hideUploadModal() {
+            returnTargetId = null;
+            document.getElementById('uploadModal').classList.remove('show');
+        }
+
+        function applyReturnOcrResult(ocr) {
+            document.getElementById('inpReturnWaybill').value = ocr.waybill || '';
+            document.getElementById('inpReturnShipperName').value = ocr.shipperName || '';
+            document.getElementById('inpReturnShipperPhone').value = ocr.shipperPhone || '';
+            runReturnWaybillValidate();
+        }
+
+        function runReturnWaybillValidate() {
+            const w = document.getElementById('inpReturnWaybill').value.trim();
+            const res = mockWaybillLookup(w);
+            const msgEl = document.getElementById('returnWaybillValidateMsg');
+            if (!res.ok) {
+                lastReturnWaybillValidation = null;
+                msgEl.innerHTML = `<span style="color:#b91c1c">${escapeHtml(res.msg)}</span>`;
+                document.getElementById('inpReturnCarrier').value = '';
+                return;
+            }
+            lastReturnWaybillValidation = { carrier: res.carrier, shipTimeApi: res.shipTimeApi };
+            document.getElementById('inpReturnCarrier').value = res.carrier;
+            msgEl.innerHTML = '<span style="color:#047857"><i class="fas fa-check"></i> 校验成功（模拟接口），快递公司已回填</span>';
+        }
+
+        function submitUpload() {
+            if (!returnTargetId) return;
+            const ro = returnOrders.find(x => x.id === returnTargetId);
+            if (!ro) return;
+
+            const name = document.getElementById('inpReturnShipperName').value.trim();
+            const phone = document.getElementById('inpReturnShipperPhone').value.trim();
+            const waybill = document.getElementById('inpReturnWaybill').value.trim();
+
+            if (!name || !/^1\d{10}$/.test(phone.replace(/\s+/g, ''))) {
+                alert('请填写发货人姓名与合规手机号');
+                return;
+            }
+            if (!waybill) {
+                alert('请填写物流单号并完成校验');
+                return;
+            }
+            if (!lastReturnWaybillValidation ||
+                document.getElementById('inpReturnWaybill').value.trim() !== waybill ||
+                document.getElementById('inpReturnCarrier').value !== lastReturnWaybillValidation.carrier) {
+                alert('请先点击「校验」通过后再提交退货');
+                return;
+            }
+
+            alert('物流信息提交成功！状态已更新为“退货中”（示意）');
+            hideUploadModal();
+            switchTab('shipping');
+        }
+
+        function switchTab(status) {
+            // 更新Tab样式
+            const tabs = ['all', 'pending', 'return', 'shipping', 'completed', 'terminated'];
+            tabs.forEach(t => {
+                const tab = document.getElementById('tab-' + t);
+                if (tab) {
+                    if (t === status) {
+                        tab.classList.add('tab-active');
+                        tab.classList.remove('text-gray-500');
+                    } else {
+                        tab.classList.remove('tab-active');
+                        tab.classList.add('text-gray-500');
+                    }
+                }
+            });
+
+            // 过滤列表
+            const items = document.querySelectorAll('.list-item');
+            items.forEach(item => {
+                if (status === 'all' || item.getAttribute('data-status') === status) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById('btnReturnValidateWaybill').addEventListener('click', runReturnWaybillValidate);
+        document.getElementById('btnReturnUploadSlip').addEventListener('click', () => {
+            document.getElementById('inpReturnLogisticsSlip').click();
+        });
+        document.getElementById('inpReturnLogisticsSlip').addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const preview = document.getElementById('returnUploadSlipPreview');
+            preview.classList.add('show');
+            preview.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在识别物流单…';
+            setTimeout(() => {
+                const ocr = mockOcrLogisticsSlip(file.name);
+                preview.innerHTML = `<i class="fas fa-check"></i> 已识别：<strong>${escapeHtml(file.name)}</strong> → 运单号、发货人信息已填入，并已触发校验`;
+                applyReturnOcrResult(ocr);
+            }, 600);
+        });
+
+        function toggleFlowchart() {
+            const module = document.getElementById('flowchartModule');
+            const content = document.getElementById('flowchartContent');
+            const icon = document.getElementById('flowchartIcon');
+            
+            // 如果模块是隐藏的，显示它并展开内容
+            if (module.classList.contains('hidden')) {
+                module.classList.remove('hidden');
+                content.classList.remove('collapsed');
+                content.classList.add('expanded');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                // 如果模块是显示的，收起内容并隐藏模块
+                content.classList.remove('expanded');
+                content.classList.add('collapsed');
+                icon.style.transform = 'rotate(0deg)';
+                // 等待动画完成后隐藏模块
+                setTimeout(() => {
+                    module.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function toggleFlowchartContent() {
+            const content = document.getElementById('flowchartContent');
+            const icon = document.getElementById('flowchartIcon');
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                content.classList.add('expanded');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.remove('expanded');
+                content.classList.add('collapsed');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // 页面加载时检查URL参数，自动打开对应tab
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab');
+            if (tab && ['pending', 'return', 'shipping', 'completed', 'terminated', 'all'].includes(tab)) {
+                switchTab(tab);
+            }
+        });
+    </script>
+</body>
+</html>

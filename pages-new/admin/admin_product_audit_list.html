@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商品审核列表 | 管理后台</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <style>
+    :root {
+      --c-blue: #1890FF;
+      --c-green: #52C41A;
+      --c-orange: #FAAD14;
+      --c-red: #F5222D;
+      --bg-page: #F4F7F9;
+    }
+    body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; background: var(--bg-page); color: #262626; min-height: 100vh; }
+    .audit-tab-btn {
+      display: block; width: 100%;
+      cursor: pointer; text-align: left;
+      font-family: inherit; color: inherit;
+    }
+    .audit-card-active { border: 2px solid var(--c-blue) !important; box-shadow: 0 4px 14px rgba(24, 144, 255, 0.18); }
+    .mini-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    }
+    .tag-ai-pass { background: #f6ffed; color: var(--c-green); border: 1px solid #b7eb8f; }
+    .tag-ai-warn { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; }
+    .tag-ai-fail { background: #fff1f0; color: var(--c-red); border: 1px solid #ffa39e; }
+    .btn-audit {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
+    }
+    .btn-audit-primary { background: #e6f7ff; color: var(--c-blue); border-color: #91d5ff; }
+    .btn-audit-primary:hover { background: #bae7ff; }
+    .btn-audit-pass { background: #f6ffed; color: var(--c-green); border-color: #b7eb8f; }
+    .btn-audit-pass:hover { background: #d9f7be; }
+    .btn-audit-reject { background: #fff1f0; color: var(--c-red); border-color: #ffa39e; }
+    .btn-audit-reject:hover { background: #ffccc7; }
+    .table-wrap { overflow-x: auto; border: 1px solid #e8e8e8; border-radius: 12px; background: #fff; }
+    th { background: #fafafa; color: #595959; font-size: 13px; font-weight: 700; padding: 14px 16px; text-align: left; white-space: nowrap; border-bottom: 1px solid #f0f0f0; }
+    td { padding: 16px; border-top: 1px solid #f0f0f0; font-size: 14px; vertical-align: top; }
+    .audit-modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .audit-modal-overlay[hidden] { display: none !important; }
+    .audit-modal {
+      background: #fff; border-radius: 14px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.12);
+      width: min(560px, 100%);
+      max-height: calc(100vh - 48px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .audit-modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #262626;
+    }
+    .audit-modal-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+    .audit-modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .audit-dl-grid { display: grid; grid-template-columns: 100px 1fr; gap: 8px 12px; }
+    .audit-dl-grid dt { color: #8c8c8c; }
+    .audit-dl-grid dd { color: #262626; margin: 0; }
+    textarea.audit-textarea-reason {
+      width: 100%; min-height: 120px;
+      padding: 10px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      font-size: 14px;
+      resize: vertical;
+      outline: none;
+    }
+    textarea.audit-textarea-reason:focus {
+      border-color: #1890FF;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.15);
+    }
+
+    /* 查看详情 · 镜像供应商「添加商品」弹窗结构与样式（仅 #auditDetailModal 内生效） */
+    #auditDetailModal.audit-detail-snapshot-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+    }
+    #auditDetailModal[hidden] {
+      display: none !important;
+    }
+    #auditDetailModal .add-product-modal {
+      width: min(760px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 30px 65px rgba(15, 23, 42, 0.26);
+      padding: 26px 26px 22px;
+      border: 1px solid rgba(226, 232, 240, 0.96);
+    }
+    #auditDetailModal .apm-head-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    #auditDetailModal .apm-section { margin-top: 16px; }
+    #auditDetailModal .apm-section-title {
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    #auditDetailModal .add-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 14px;
+    }
+    #auditDetailModal .add-form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    #auditDetailModal .add-form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+    #auditDetailModal .add-form-input {
+      border: 1px solid #dbe2ea;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+    #auditDetailModal .apm-ro-field {
+      background: #f8fafc !important;
+      color: #334155;
+      cursor: default;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+    }
+    #auditDetailModal input.add-form-input:disabled.apm-ro-field-num {
+      background: #f1f5f9;
+      opacity: 1;
+      color: #334155;
+      cursor: not-allowed;
+    }
+    #auditDetailModal .apm-wm-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #auditDetailModal .apm-wm-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fafbfc;
+    }
+    #auditDetailModal .apm-wm-row .apm-wm-stock-input {
+      flex: 1;
+      min-width: 160px;
+      max-width: 260px;
+    }
+    #auditDetailModal .apm-wm-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px 12px;
+    }
+    #auditDetailModal .apm-wm-item input[type="checkbox"] {
+      accent-color: #dc2626;
+      cursor: not-allowed;
+    }
+    #auditDetailModal .img-upload-row { margin-bottom: 20px; }
+    #auditDetailModal .img-upload-row:last-of-type { margin-bottom: 0; }
+    #auditDetailModal .img-upload-card { margin-top: 8px; position: relative; }
+    #auditDetailModal .img-upload-zone-ro {
+      width: 100%;
+      min-height: 128px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 700;
+      pointer-events: none;
+      opacity: 0.92;
+    }
+    #auditDetailModal .img-upload-zone-ro .img-upload-zone-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+      color: #e11d48;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    #auditDetailModal .img-upload-hint { font-size: 12px; font-weight: 500; color: #94a3b8; }
+    #auditDetailModal .img-preview-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    #auditDetailModal .img-thumb {
+      width: 76px;
+      height: 76px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      flex-shrink: 0;
+    }
+    #auditDetailModal .img-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    #auditDetailModal .assistant-close-ro {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    #auditDetailModal .assistant-close-ro:hover { background: #f8fafc; color: #0f172a; }
+    #auditDetailModal .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #auditDetailModal .action-btn:hover { transform: translateY(-1px); }
+    #auditDetailModal .action-btn-primary {
+      color: #ffffff;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 20px rgba(239, 68, 68, 0.22);
+    }
+    #auditDetailModal .action-btn-secondary {
+      color: #475569;
+      background: #ffffff;
+      border: 1px solid #dbe2ea;
+    }
+
+    /* AI 合规校验结果（只读 · 供应商侧快照） */
+    .admin-ai-overlay {
+      position: fixed; inset: 0; z-index: 1100;
+      background: rgba(15, 23, 42, 0.52);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .admin-ai-overlay[hidden] { display: none !important; }
+    .admin-ai-dialog {
+      width: min(720px, 96vw);
+      max-height: min(88vh, 820px);
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid #e8e8e8;
+      box-shadow: 0 28px 56px rgba(15, 23, 42, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .admin-ai-head {
+      padding: 18px 22px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, #fff7f7 0%, #fff 100%);
+    }
+    .admin-ai-title { font-size: 17px; font-weight: 800; color: #111827; }
+    .admin-ai-sub { font-size: 12px; color: #64748b; margin-top: 6px; line-height: 1.6; }
+    .admin-ai-body { padding: 18px 22px 22px; overflow-y: auto; flex: 1; }
+    .admin-ai-foot {
+      padding: 12px 22px;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .admin-ai-readonly-note {
+      font-size: 12px;
+      color: #64748b;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 14px;
+    }
+    .admin-ai-section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .admin-ai-layer-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .admin-ai-check-grid { display: grid; gap: 8px; }
+    .admin-ai-check-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 13px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+      font-size: 13px;
+    }
+    .admin-ai-check-item.pass { border-color: #bbf7d0; background: #f0fdf4; }
+    .admin-ai-check-item.fail { border-color: #fecaca; background: #fef2f2; }
+    .admin-ai-check-name { font-weight: 700; color: #1e293b; }
+    .admin-ai-check-evidence { font-size: 12px; color: #b45309; margin-top: 4px; line-height: 1.5; }
+    .admin-ai-check-val {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .admin-ai-check-val.pass { background: #dcfce7; color: #15803d; }
+    .admin-ai-check-val.fail { background: #fee2e2; color: #b91c1c; }
+    .admin-ai-summary {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fff7ed 0%, #fff 100%);
+      border: 1px solid #fed7aa;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #475569;
+    }
+    .admin-ai-summary-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #c2410c;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <main class="p-6 max-w-[1920px] mx-auto">
+    <!-- 页头 -->
+    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-cubes text-2xl"></i>
+        </div>
+        <div class="min-w-0 lg:max-w-[26rem]">
+          <h1 class="text-2xl font-bold text-gray-900 tracking-tight">商品审核列表</h1>
+          <p class="text-sm text-gray-500 mt-1 leading-relaxed">覆盖<strong>新建上架</strong>与<strong>信息变更</strong>两类审核：变更单在详情中以<strong>前后快照对比</strong>展示；字段与供应商「上架商品」对齐（类目路径、五仓分项库存等）。</p>
+        </div>
+      </div>
+      <div class="text-sm text-gray-400 lg:text-right lg:pt-2">
+        管理后台 / <span class="text-gray-700 font-medium">商品审核管理</span>
+      </div>
+    </div>
+
+    <!-- 上架状态卡片（切换列表维度，默认「全部」） -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <button type="button" class="audit-tab-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-blue-200 transition-colors audit-card-active" data-audit-tab="all" aria-pressed="true">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">全部</p>
+            <p class="text-3xl font-bold text-gray-900" id="auditStatAll">0</p>
+          </div>
+          <div class="stat-icon-wrap bg-slate-100 text-slate-600">
+            <i class="fas fa-layer-group"></i>
+          </div>
+        </div>
+      </button>
+      <button type="button" class="audit-tab-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-blue-200 transition-colors" data-audit-tab="pending">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">待审核</p>
+            <p class="text-3xl font-bold text-gray-900" id="auditStatPending">0</p>
+          </div>
+          <div class="stat-icon-wrap bg-blue-50 text-[#1890FF]">
+            <i class="fas fa-clock"></i>
+          </div>
+        </div>
+      </button>
+      <button type="button" class="audit-tab-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-red-100 transition-colors" data-audit-tab="rejected">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">已驳回</p>
+            <p class="text-3xl font-bold text-gray-900" id="auditStatRejected">0</p>
+          </div>
+          <div class="stat-icon-wrap bg-red-50 text-[#F5222D]">
+            <i class="fas fa-ban"></i>
+          </div>
+        </div>
+      </button>
+      <button type="button" class="audit-tab-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-slate-300 transition-colors" data-audit-tab="offline">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">已下架</p>
+            <p class="text-3xl font-bold text-gray-900" id="auditStatOffline">0</p>
+          </div>
+          <div class="stat-icon-wrap bg-slate-100 text-slate-600">
+            <i class="fas fa-arrow-down"></i>
+          </div>
+        </div>
+      </button>
+      <button type="button" class="audit-tab-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-green-100 transition-colors" data-audit-tab="online">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-500 mb-1">已上架</p>
+            <p class="text-3xl font-bold text-gray-900" id="auditStatOnline">0</p>
+          </div>
+          <div class="stat-icon-wrap bg-green-50 text-[#52C41A]">
+            <i class="fas fa-circle-check"></i>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <!-- 筛选与导出 -->
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-end">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-8 gap-3 flex-1 min-w-0">
+        <div class="flex flex-col gap-1 min-w-0">
+          <label for="auditFilterNameSku" class="text-xs font-semibold text-gray-500">商品名称或 SKU</label>
+          <input type="text" id="auditFilterNameSku"
+            class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
+            placeholder="输入关键词">
+        </div>
+        <div class="flex flex-col gap-1 min-w-0">
+          <label for="auditFilterSupplier" class="text-xs font-semibold text-gray-500">供应商</label>
+          <input type="text" id="auditFilterSupplier"
+            class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
+            placeholder="供应商名称关键字">
+        </div>
+        <div class="flex flex-col gap-1 min-w-0">
+          <label for="auditFilterCat1" class="text-xs font-semibold text-gray-500">一级类目</label>
+          <select id="auditFilterCat1"
+            class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 bg-white w-full outline-none focus:border-[#1890FF] min-w-0"></select>
+        </div>
+        <div class="flex flex-col gap-1 min-w-0">
+          <label for="auditFilterCat2" class="text-xs font-semibold text-gray-500">二级类目</label>
+          <select id="auditFilterCat2"
+            class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 bg-white w-full outline-none focus:border-[#1890FF] min-w-0"></select>
+        </div>
+        <div class="flex flex-col gap-1 min-w-0">
+          <label for="auditFilterCat3" class="text-xs font-semibold text-gray-500">三级类目</label>
+          <select id="auditFilterCat3"
+            class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 bg-white w-full outline-none focus:border-[#1890FF] min-w-0"></select>
+        </div>
+        <div class="flex flex-col gap-1 min-w-0">
+          <label for="auditFilterAuditKind" class="text-xs font-semibold text-gray-500">审核类型</label>
+          <select id="auditFilterAuditKind"
+            class="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white w-full outline-none focus:border-[#1890FF]">
+            <option value="">全部类型</option>
+            <option value="NEW_LISTING">新建上架</option>
+            <option value="CHANGE_INFO">信息变更</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1 sm:col-span-2 xl:col-span-2 min-w-0">
+          <span class="text-xs font-semibold text-gray-500">上架时间</span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <input type="date" id="auditShelvedStart"
+              class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 min-w-[9rem] flex-1 outline-none focus:border-[#1890FF]" />
+            <span class="text-gray-400 text-xs shrink-0">至</span>
+            <input type="date" id="auditShelvedEnd"
+              class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 min-w-[9rem] flex-1 outline-none focus:border-[#1890FF]" />
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 shrink-0">
+        <button type="button" id="auditSearchBtn" class="px-6 py-2 rounded-lg text-sm font-semibold text-white bg-[#1890FF] hover:bg-[#096dd9] shadow-sm">查询</button>
+        <button type="button" id="auditResetFiltersBtn" class="px-5 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200">重置</button>
+        <button type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm whitespace-nowrap">
+          <i class="fas fa-file-export"></i>
+          导出报表
+        </button>
+      </div>
+    </div>
+
+    <!-- 表格 -->
+    <div class="table-wrap">
+      <table class="w-full min-w-[1380px]">
+        <thead>
+          <tr>
+            <th>商品名称 / SKU</th>
+            <th class="tabular-nums">价格（元）</th>
+            <th>单位</th>
+            <th>类目路径</th>
+            <th>分仓库存（各仓数量）</th>
+            <th>提报供应商</th>
+            <th>上架时间</th>
+            <th>审核类型</th>
+            <th>AI 合规校验</th>
+            <th>当前状态</th>
+            <th class="text-right min-w-[320px]">操作</th>
+          </tr>
+        </thead>
+        <tbody id="auditTableBody">
+          <tr>
+            <td colspan="11" class="text-center py-14 text-gray-400 text-sm">正在加载演示数据…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- 查看详情：新建上架为供应商表单镜像；信息变更为前后快照对比 -->
+  <div id="auditDetailModal" class="audit-detail-snapshot-overlay" hidden>
+    <div id="auditDetailMount"></div>
+  </div>
+
+  <!-- AI 合规校验结果（只读） -->
+  <div id="adminAiResultModal" class="admin-ai-overlay" hidden onclick="if (event.target === this) closeAdminAiAuditResult()">
+    <div class="admin-ai-dialog" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <div class="admin-ai-head">
+        <div>
+          <div class="admin-ai-title"><i class="fas fa-shield-halved text-red-500"></i> AI 合规校验结果</div>
+          <div class="admin-ai-sub" id="adminAiResultSub">供应商侧校验快照 · 只读</div>
+        </div>
+        <button type="button" class="assistant-close-ro rounded-full bg-slate-100 text-slate-500 border-0 shrink-0" style="width:40px;height:40px" onclick="closeAdminAiAuditResult()" aria-label="关闭">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="admin-ai-body" id="adminAiResultBody"></div>
+      <div class="admin-ai-foot">
+        <button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200" onclick="closeAdminAiAuditResult()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 驳回 -->
+  <div id="rejectModal" class="audit-modal-overlay" hidden>
+    <div class="audit-modal" role="dialog" aria-labelledby="rejectModalTitle">
+      <div class="audit-modal-header" id="rejectModalTitle">驳回商品</div>
+      <div class="audit-modal-body">
+        <p class="text-sm text-gray-600 mb-3" id="rejectProductHint"></p>
+        <label class="block text-xs font-semibold text-gray-500 mb-2">驳回理由<span class="text-red-500">*</span></label>
+        <textarea id="rejectReasonInput" class="audit-textarea-reason" placeholder="请说明需供应商整改的具体要点（必填）"></textarea>
+      </div>
+      <div class="audit-modal-footer">
+        <button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200" id="rejectCancelBtn">取消</button>
+        <button type="button" class="btn-audit btn-audit-reject" id="rejectConfirmBtn"><i class="fas fa-ban"></i>确认驳回</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../assets/platform_categories_data.js"></script>
+  <script src="./admin_product_audit_list_app.js"></script>
+</body>
+</html>

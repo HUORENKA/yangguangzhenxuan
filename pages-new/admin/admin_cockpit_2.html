@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据驾驶舱二 · 客户价值 | 国采e购</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-deep: #040a14;
+      --bg-panel: rgba(8, 28, 52, 0.72);
+      --line: rgba(56, 189, 248, 0.28);
+      --cyan: #22d3ee;
+      --cyan-dim: #0891b2;
+      --green: #34d399;
+      --gold: #fbbf24;
+      --purple: #a78bfa;
+      --text: #e0f2fe;
+      --text-sub: #7dd3fc;
+      --text-muted: #64748b;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      color: var(--text);
+      background: var(--bg-deep);
+    }
+
+    /* 全屏滚动容器 */
+    .viewport-stack {
+      height: 100vh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+    .screen {
+      height: 100vh;
+      min-height: 720px;
+      scroll-snap-align: start;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(34, 211, 238, 0.12), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 90% 80%, rgba(167, 139, 250, 0.08), transparent 50%),
+        linear-gradient(180deg, #040a14 0%, #061220 50%, #040a14 100%);
+    }
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 20%, transparent 75%);
+    }
+    #particleCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.28;
+    }
+
+    /* 导航 */
+    .side-nav {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+    }
+    .nav-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid rgba(34, 211, 238, 0.5);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.35s ease;
+    }
+    .nav-dot.active {
+      background: var(--cyan);
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.8);
+      transform: scale(1.25);
+    }
+    .nav-link {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      writing-mode: vertical-rl;
+      letter-spacing: 2px;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--cyan); }
+
+    /* 顶栏 */
+    .topbar {
+      position: relative;
+      z-index: 5;
+      height: 76px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(4, 15, 30, 0.95), rgba(4, 15, 30, 0.6));
+    }
+    .topbar::after {
+      content: "";
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.25), rgba(167, 139, 250, 0.2));
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      display: grid;
+      place-items: center;
+      color: var(--cyan);
+      font-size: 20px;
+      box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+    }
+    .brand h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      background: linear-gradient(90deg, #e0f2fe, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand small {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 5px;
+      margin-top: 4px;
+      -webkit-text-fill-color: var(--text-muted);
+    }
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 15px;
+      color: var(--text-sub);
+    }
+    .live-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .live-dot::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+    .clock { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+    /* ========== 第一屏：FinSight 风格 — 顶栏 KPI 带 + 三列枢纽 ========== */
+    .screen-1-body {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-rows: 172px 1fr;
+      grid-template-columns: 1fr;
+      gap: 22px;
+      padding: 20px 28px 20px;
+    }
+
+    .value-band {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      min-height: 172px;
+    }
+    .value-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      align-items: center;
+      gap: 18px 24px;
+      padding: 0 28px;
+      height: 172px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(10, 32, 58, 0.92), rgba(6, 20, 38, 0.88));
+      border: 1px solid rgba(34, 211, 238, 0.18);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .value-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 16px;
+      bottom: 16px;
+      width: 4px;
+      border-radius: 0 3px 3px 0;
+    }
+    .value-card.theme-compliance::before { background: linear-gradient(180deg, #0891b2, #22d3ee); box-shadow: 0 0 12px rgba(34,211,238,0.5); }
+    .value-card.theme-saving::before { background: linear-gradient(180deg, #d97706, #fbbf24); box-shadow: 0 0 12px rgba(251,191,36,0.45); }
+    .value-card.theme-smart::before { background: linear-gradient(180deg, #7c3aed, #a78bfa); box-shadow: 0 0 12px rgba(167,139,250,0.45); }
+
+    .vc-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .theme-compliance .vc-icon { background: rgba(34,211,238,0.12); color: var(--cyan); border: 1px solid rgba(34,211,238,0.28); }
+    .theme-saving .vc-icon { background: rgba(251,191,36,0.1); color: var(--gold); border: 1px solid rgba(251,191,36,0.28); }
+    .theme-smart .vc-icon { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.28); }
+
+    .vc-body { min-width: 0; }
+    .vc-top-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .vc-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+    .vc-trend {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(52,211,153,0.12);
+    }
+    .vc-main {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      line-height: 1;
+    }
+    .vc-num {
+      font-size: 52px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -1px;
+    }
+    .theme-compliance .vc-num { color: #67e8f9; text-shadow: 0 0 20px rgba(34,211,238,0.3); }
+    .theme-saving .vc-num { color: #fcd34d; text-shadow: 0 0 20px rgba(251,191,36,0.25); }
+    .theme-smart .vc-num { color: #c4b5fd; text-shadow: 0 0 20px rgba(167,139,250,0.25); }
+    .vc-unit { font-size: 20px; color: var(--text-muted); font-weight: 600; }
+    .vc-label { font-size: 14px; color: var(--text-muted); margin-top: 8px; }
+
+    .vc-subs {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding-left: 22px;
+      border-left: 1px solid rgba(255,255,255,0.06);
+      min-width: 160px;
+    }
+    .vc-sub .lb { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; white-space: nowrap; }
+    .vc-sub .vl { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    .hub-shell {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 260px 1fr 260px;
+      gap: 22px;
+    }
+    .hub-wing {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 0;
+    }
+    .wing-card {
+      flex: 1;
+      min-height: 0;
+      padding: 22px 24px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(8, 28, 52, 0.75), rgba(4, 16, 32, 0.85));
+      border: 1px solid rgba(34, 211, 238, 0.14);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .wing-card .wl { font-size: 15px; color: var(--text-muted); margin-bottom: 10px; }
+    .wing-card .wv {
+      font-size: 38px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+    .wing-card .wu { font-size: 14px; color: var(--text-sub); margin-top: 4px; }
+    .wing-card.accent-cyan .wv { color: #67e8f9; }
+    .wing-card.accent-gold .wv { color: #fcd34d; }
+    .wing-card.accent-purple .wv { color: #c4b5fd; }
+
+    .eco-hub {
+      min-height: 0;
+      position: relative;
+      border-radius: 14px;
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      background: radial-gradient(ellipse 90% 80% at 50% 55%, rgba(14, 48, 82, 0.5), rgba(4, 12, 24, 0.95));
+      overflow: hidden;
+      box-shadow: inset 0 0 80px rgba(34, 211, 238, 0.05);
+    }
+    /* 大屏边框角标 */
+    .eco-hub .corner {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(34, 211, 238, 0.45);
+      z-index: 8;
+      pointer-events: none;
+    }
+    .eco-hub .corner.tl { top: 14px; left: 14px; border-right: 0; border-bottom: 0; }
+    .eco-hub .corner.tr { top: 14px; right: 14px; border-left: 0; border-bottom: 0; }
+    .eco-hub .corner.bl { bottom: 14px; left: 14px; border-right: 0; border-top: 0; }
+    .eco-hub .corner.br { bottom: 14px; right: 14px; border-left: 0; border-top: 0; }
+
+    .eco-hub-cap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      z-index: 7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: linear-gradient(180deg, rgba(4, 14, 28, 0.85), transparent);
+      pointer-events: none;
+    }
+    .eco-hub-cap .cap-line {
+      flex: 1;
+      max-width: 160px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(34,211,238,0.4), transparent);
+    }
+    .eco-hub-cap .cap-text {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      color: var(--text);
+      text-shadow: 0 0 12px rgba(34,211,238,0.35);
+    }
+
+    #ecoMap {
+      position: absolute;
+      inset: 0;
+      opacity: 0.28;
+      z-index: 1;
+    }
+    .eco-stage {
+      position: absolute;
+      inset: 56px 0 0;
+      z-index: 2;
+    }
+    .orbit-ring {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .orbit-ring.r1 {
+      width: min(580px, 68vh);
+      height: min(580px, 68vh);
+      border: 1px dashed rgba(34, 211, 238, 0.18);
+      animation: spin 60s linear infinite;
+    }
+    .orbit-ring.r2 {
+      width: min(430px, 52vh);
+      height: min(430px, 52vh);
+      border: 1px solid rgba(34, 211, 238, 0.1);
+      animation: spin 40s linear infinite reverse;
+    }
+    .orbit-ring.r3 {
+      width: min(280px, 36vh);
+      height: min(280px, 36vh);
+      border: 1px solid rgba(167, 139, 250, 0.15);
+      animation: spin 24s linear infinite;
+    }
+    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+    .eco-core {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 172px;
+      height: 172px;
+      border-radius: 50%;
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background: radial-gradient(circle at 40% 35%, rgba(34, 211, 238, 0.3), rgba(6, 24, 48, 0.95) 70%);
+      border: 2px solid rgba(34, 211, 238, 0.45);
+      box-shadow: 0 0 40px rgba(34, 211, 238, 0.2), inset 0 0 24px rgba(34, 211, 238, 0.08);
+      animation: coreGlow 4s ease-in-out infinite;
+    }
+    @keyframes coreGlow {
+      0%, 100% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.2), inset 0 0 24px rgba(34, 211, 238, 0.08); }
+      50% { box-shadow: 0 0 56px rgba(34, 211, 238, 0.35), inset 0 0 32px rgba(34, 211, 238, 0.14); }
+    }
+    .eco-core .t1 { font-size: 16px; color: var(--text-sub); letter-spacing: 3px; }
+    .eco-core .t2 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      margin-top: 6px;
+      line-height: 1.35;
+    }
+
+    .eco-node {
+      position: absolute;
+      z-index: 6;
+      width: 152px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      text-align: center;
+      background: rgba(6, 20, 38, 0.92);
+      border: 1px solid rgba(34, 211, 238, 0.22);
+      backdrop-filter: blur(6px);
+      transform: translate(-50%, -50%);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .eco-node:hover {
+      border-color: rgba(34, 211, 238, 0.5);
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.15);
+      z-index: 10;
+    }
+    .eco-node .nl {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .eco-node .nv {
+      font-size: 24px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: #67e8f9;
+    }
+    .eco-node .nu { font-size: 13px; color: var(--text-sub); }
+
+    @media (max-width: 1600px) {
+      .hub-shell { grid-template-columns: 220px 1fr 220px; }
+      .vc-num { font-size: 44px; }
+      .eco-node { width: 136px; }
+    }
+    @media (max-width: 1400px) {
+      .hub-shell { grid-template-columns: 200px 1fr 200px; }
+      .vc-num { font-size: 40px; }
+      .screen-1-body { grid-template-rows: 156px 1fr; }
+      .value-card, .value-band { height: 156px; min-height: 156px; }
+    }
+
+    /* ========== 第二屏：合作规模 + 合作模式 + 行动入口 ========== */
+    .screen-2-body {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      padding: 18px 28px 20px;
+    }
+    .panel-glass {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+      position: relative;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-glass::before, .panel-glass::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(34, 211, 238, 0.35);
+      z-index: 2;
+      pointer-events: none;
+    }
+    .panel-glass::before { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+    .panel-glass::after { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
+    .panel-head {
+      flex-shrink: 0;
+      padding: 18px 22px 12px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-head h3 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .panel-head h3 i { color: var(--cyan); font-size: 18px; }
+    .panel-head .panel-sub { font-size: 12px; color: var(--text-muted); letter-spacing: 2px; }
+    .panel-body { flex: 1; min-height: 0; padding: 18px 22px; }
+    .panel-body-split {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px 20px 18px;
+    }
+
+    /* 合作规模 */
+    .scale-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .scale-item {
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .scale-item::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      width: 0;
+      background: linear-gradient(90deg, var(--cyan), transparent);
+      animation: barGrow 2s ease forwards;
+    }
+    @keyframes barGrow { to { width: 100%; } }
+    .scale-item .sl { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+    .scale-item .sv {
+      font-size: 32px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+    .scale-item .su { font-size: 14px; color: var(--text-sub); margin-left: 4px; }
+
+    /* 优质供应商卡片墙（Vendor Dashboard 风格） */
+    .supplier-zone {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      border: 1px solid rgba(34, 211, 238, 0.12);
+      background: rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+    }
+    .supplier-zone-head {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.1);
+      background: linear-gradient(90deg, rgba(34, 211, 238, 0.06), transparent);
+    }
+    .supplier-zone-head h4 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .supplier-zone-head h4 i { color: var(--cyan); font-size: 16px; }
+    .supplier-count {
+      font-size: 15px;
+      color: var(--cyan);
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.22);
+    }
+    .supplier-wall-wrap {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+      mask-image: linear-gradient(180deg, transparent, black 6%, black 94%, transparent);
+    }
+    .supplier-wall {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 12px 14px;
+      animation: supplierScroll 36s linear infinite;
+    }
+    @keyframes supplierScroll {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+    .supplier-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .supplier-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      min-height: 96px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(8, 28, 52, 0.88), rgba(4, 16, 32, 0.92));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .supplier-card:hover {
+      border-color: rgba(34, 211, 238, 0.4);
+      box-shadow: 0 6px 24px rgba(34, 211, 238, 0.12);
+      transform: translateY(-2px);
+    }
+    .sp-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    }
+    .sp-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .supplier-card.accent-cyan { border-left: 3px solid rgba(34, 211, 238, 0.5); }
+    .supplier-card.accent-gold { border-left: 3px solid rgba(251, 191, 36, 0.5); }
+    .supplier-card.accent-purple { border-left: 3px solid rgba(167, 139, 250, 0.5); }
+    .sp-info { flex: 1; min-width: 0; }
+    .sp-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    .sp-cat {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      color: var(--text-sub);
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sp-cat i { font-size: 11px; color: var(--cyan); flex-shrink: 0; }
+    .sp-badge {
+      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      color: var(--green);
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.32);
+      letter-spacing: 1px;
+    }
+
+    /* 右侧上下分 */
+    .screen-2-right {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 22px;
+      min-height: 0;
+    }
+
+    /* 合作模式卡片 */
+    .mode-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+    }
+    .mode-card {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 22px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.35s ease;
+      cursor: default;
+    }
+    .mode-card:hover {
+      border-color: rgba(34, 211, 238, 0.35);
+      background: rgba(34, 211, 238, 0.06);
+      transform: translateX(4px);
+    }
+    .mode-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+    }
+    .mode-card:nth-child(1) .mode-icon { background: rgba(34,211,238,0.15); color: var(--cyan); border: 1px solid rgba(34,211,238,0.3); }
+    .mode-card:nth-child(2) .mode-icon { background: rgba(251,191,36,0.12); color: var(--gold); border: 1px solid rgba(251,191,36,0.3); }
+    .mode-card:nth-child(3) .mode-icon { background: rgba(167,139,250,0.12); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+    .mode-info { flex: 1; min-width: 0; }
+    .mode-info .mn { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .mode-info .md { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .mode-stat { text-align: right; flex-shrink: 0; }
+    .mode-stat .ms {
+      font-size: 34px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--cyan);
+    }
+    .mode-card:nth-child(2) .mode-stat .ms { color: var(--gold); }
+    .mode-card:nth-child(3) .mode-stat .ms { color: var(--purple); }
+    .mode-stat .ml { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* 合作成果趋势 */
+    .trend-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px 18px 16px !important;
+      height: 100%;
+    }
+    .trend-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .trend-kpi {
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .trend-kpi .tk-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .trend-kpi .tk-val {
+      font-size: 28px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+    .trend-kpi .tk-unit {
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-left: 4px;
+    }
+    .trend-kpi:nth-child(1) .tk-val { color: #67e8f9; }
+    .trend-kpi:nth-child(2) .tk-val { color: #fcd34d; }
+    .trend-kpi:nth-child(3) .tk-val { color: #c4b5fd; }
+    .trend-chart {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+    }
+
+    /* 底部案例条 + 联系方式 */
+    .screen-2-footer {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 0 28px 16px;
+      position: relative;
+      z-index: 3;
+    }
+    .footer-contact {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 18px;
+      height: 52px;
+      border-radius: 12px;
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      background: rgba(6, 22, 42, 0.85);
+      font-size: 14px;
+      color: var(--text-sub);
+    }
+    .footer-contact span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .footer-contact i { color: var(--cyan); font-size: 13px; }
+    .footer-contact .phone-num { font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+
+    /* 底部案例条 */
+    .case-ticker {
+      flex: 1;
+      flex-shrink: 1;
+      min-width: 0;
+      height: 52px;
+      margin: 0;
+      border-radius: 12px;
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      background: rgba(6, 22, 42, 0.8);
+      overflow: hidden;
+      position: relative;
+      z-index: 3;
+    }
+    .case-track {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker 28s linear infinite;
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .case-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 36px;
+      height: 52px;
+      font-size: 14px;
+      color: var(--text-sub);
+    }
+    .case-item strong { color: var(--gold); font-weight: 700; }
+    .case-item em { color: var(--green); font-style: normal; font-weight: 700; }
+    .case-divider { color: rgba(34, 211, 238, 0.3); }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .scroll-hint i { font-size: 14px; }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(5px); }
+    }
+
+    .vc-num, .wing-card .wv, .eco-node .nv-num, .scale-item .sv, .mode-stat .ms {
+      font-variant-numeric: tabular-nums;
+      transition: text-shadow 0.35s ease, color 0.35s ease;
+    }
+    .live-roll-flash {
+      text-shadow: 0 0 14px rgba(52, 211, 153, 0.55);
+    }
+    .vc-trend.live-roll-flash {
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.25);
+    }
+
+    @media (max-width: 1280px) {
+      .value-band { gap: 14px; }
+      .vc-num { font-size: 38px; }
+      .vc-subs { min-width: 140px; padding-left: 16px; }
+      .screen-2-body { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+      .scale-grid { grid-template-columns: repeat(2, 1fr); }
+      .scale-item .sv { font-size: 30px; }
+      .mode-stat .ms { font-size: 28px; }
+      .trend-kpi .tk-val { font-size: 24px; }
+      .screen-2-footer { flex-direction: column; align-items: stretch; }
+      .footer-contact { justify-content: center; height: 44px; }
+      .sp-name { font-size: 16px; }
+      .sp-logo { width: 60px; height: 60px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particleCanvas"></canvas>
+
+  <nav class="side-nav" aria-label="屏间导航">
+    <button class="nav-dot active" data-screen="0" title="第一屏：价值与生态"></button>
+    <button class="nav-dot" data-screen="1" title="第二屏：合作与行动"></button>
+    <a href="admin_cockpit.html" class="nav-link" title="切换至数据驾驶舱一">驾驶舱一</a>
+  </nav>
+
+  <div class="viewport-stack" id="viewportStack">
+    <!-- ========== 第一屏 ========== -->
+    <section class="screen screen-1" id="screen1">
+      <div class="grid-bg"></div>
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-icon"><i class="fas fa-gem"></i></div>
+          <div>
+            <h1>国采E购 · 客户价值驾驶舱</h1>
+            <small>DATA COCKPIT II · CUSTOMER VALUE</small>
+          </div>
+        </div>
+        <div class="topbar-meta">
+          <span class="live-dot">实时数据</span>
+          <span class="clock" id="clock"></span>
+        </div>
+      </header>
+
+      <div class="screen-1-body">
+        <div class="value-band" id="valueCards"></div>
+        <div class="hub-shell">
+          <aside class="hub-wing" id="hubWingLeft"></aside>
+          <div class="eco-hub">
+            <span class="corner tl"></span><span class="corner tr"></span>
+            <span class="corner bl"></span><span class="corner br"></span>
+            <div class="eco-hub-cap">
+              <span class="cap-line"></span>
+              <span class="cap-text">生态价值枢纽</span>
+              <span class="cap-line"></span>
+            </div>
+            <div id="ecoMap"></div>
+            <div class="eco-stage" id="ecoStage">
+              <div class="orbit-ring r1"></div>
+              <div class="orbit-ring r2"></div>
+              <div class="orbit-ring r3"></div>
+              <div class="eco-core">
+                <div class="t1">国采E购</div>
+                <div class="t2">AI优选<br>平台</div>
+              </div>
+            </div>
+          </div>
+          <aside class="hub-wing" id="hubWingRight"></aside>
+        </div>
+      </div>
+      <div class="scroll-hint"><i class="fas fa-chevron-down"></i> 下滑查看合作生态</div>
+    </section>
+
+    <!-- ========== 第二屏 ========== -->
+    <section class="screen screen-2" id="screen2">
+      <div class="grid-bg"></div>
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-icon"><i class="fas fa-handshake"></i></div>
+          <div>
+            <h1>合作共赢 · 生态接入</h1>
+            <small>PARTNERSHIP & ONBOARDING</small>
+          </div>
+        </div>
+        <div class="topbar-meta">
+          <span class="live-dot">动态更新</span>
+          <span class="clock" id="clock2"></span>
+        </div>
+      </header>
+
+      <div class="screen-2-body">
+        <div class="panel-glass">
+          <div class="panel-head">
+            <h3><i class="fas fa-building"></i> 合作规模</h3>
+            <span class="panel-sub">COOPERATION SCALE</span>
+          </div>
+          <div class="panel-body panel-body-split">
+            <div class="scale-grid" id="scaleGrid"></div>
+            <div class="supplier-zone">
+              <div class="supplier-zone-head">
+                <h4><i class="fas fa-store"></i> 优质供应商</h4>
+                <span class="supplier-count">15,200+ 家已入驻</span>
+              </div>
+              <div class="supplier-wall-wrap">
+                <div class="supplier-wall" id="supplierWall"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen-2-right">
+          <div class="panel-glass">
+            <div class="panel-head">
+              <h3><i class="fas fa-sitemap"></i> 合作模式</h3>
+              <span class="panel-sub">COOPERATION MODELS</span>
+            </div>
+            <div class="panel-body">
+              <div class="mode-cards" id="modeCards"></div>
+            </div>
+          </div>
+          <div class="panel-glass trend-panel">
+            <div class="panel-head">
+              <h3><i class="fas fa-chart-line"></i> 合作成果趋势</h3>
+              <span class="panel-sub">COOPERATION TREND</span>
+            </div>
+            <div class="panel-body trend-body">
+              <div class="trend-summary" id="trendSummary"></div>
+              <div class="trend-chart" id="trendChart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-2-footer">
+        <div class="case-ticker">
+          <div class="case-track" id="caseTrack"></div>
+        </div>
+        <div class="footer-contact">
+          <span><i class="fas fa-phone"></i><span class="phone-num">0591-83769999</span></span>
+          <span><i class="fas fa-globe"></i> www.guocai-egou.cn</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- SVG 渐变定义 -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="gradCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#0891b2"/>
+        <stop offset="100%" stop-color="#22d3ee"/>
+      </linearGradient>
+      <linearGradient id="gradGold" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#d97706"/>
+        <stop offset="100%" stop-color="#fbbf24"/>
+      </linearGradient>
+      <linearGradient id="gradPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#7c3aed"/>
+        <stop offset="100%" stop-color="#a78bfa"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <script>
+    /* ========== Mock 数据 ========== */
+    const DATA = {
+      values: [
+        {
+          theme: 'compliance', icon: 'fa-shield-halved', title: '合规',
+          main: 98.2, unit: '%', label: '合规采购占比',
+          ring: 98.2, trend: '+2.1%',
+          subs: [
+            { lb: '风险拦截', val: 1286, suffix: '次', sync: 'risk-block' },
+            { lb: '报告覆盖率', val: 96.5, suffix: '%', sync: 'report-cover' }
+          ]
+        },
+        {
+          theme: 'saving', icon: 'fa-coins', title: '降本',
+          main: 15.8, unit: '%', label: '平均节资率',
+          ring: 79, trend: '+3.2%',
+          subs: [
+            { lb: '累计节约', val: 14.6, suffix: '亿元', sync: 'total-save' },
+            { lb: '竞价贡献', val: 42, suffix: '%' }
+          ]
+        },
+        {
+          theme: 'smart', icon: 'fa-brain', title: '智能',
+          main: 62, unit: '%', label: '采购流程提效率',
+          ring: 62, trend: '+8.5%',
+          subs: [
+            { lb: 'AI 助手调用', val: 286000, suffix: '次', sync: 'ai-calls' },
+            { lb: '方案采纳率', val: 78.3, suffix: '%' }
+          ]
+        }
+      ],
+      ecoNodes: [
+        { label: '国央企客户', value: 128, unit: '家', angle: -90 },
+        { label: '注册供应商', value: 15200, unit: '家', angle: -45 },
+        { label: '合规商品', value: 124, unit: '万+', angle: 0 },
+        { label: '采购品类', value: 343, unit: '类', angle: 45 },
+        { label: '年度订单', value: 440, unit: '万+笔', angle: 90 },
+        { label: '累计成交额', value: 95.6, unit: '亿元', angle: 135 },
+        { label: '寻源系统联动', value: 100, unit: '%', angle: 180 },
+        { label: '信用认证联动', value: 100, unit: '%', angle: -135 }
+      ],
+      hubWings: {
+        left: [
+          { label: '合规风险拦截', value: 1286, unit: '次', accent: 'cyan', sync: 'risk-block' },
+          { label: '合规报告覆盖', value: 96.5, unit: '%', accent: 'cyan', dec: 1, sync: 'report-cover' }
+        ],
+        right: [
+          { label: '累计节约金额', value: 14.6, unit: '亿元', accent: 'gold', dec: 1, sync: 'total-save' },
+          { label: 'AI 助手调用', value: 286000, unit: '次', accent: 'purple', sync: 'ai-calls' }
+        ]
+      },
+      scale: [
+        { label: '国央企客户', value: 128, unit: '家', sync: 'clients' },
+        { label: '覆盖行业', value: 12, unit: '个' },
+        { label: '本年度新增', value: 23, unit: '家' },
+        { label: '活跃采购单位', value: 86, unit: '家' }
+      ],
+      suppliers: [
+        { name: '华电物资供应链有限公司', category: '电气设备', logo: '../../assets/suppliers/huadian.svg', theme: 'cyan' },
+        { name: '中建物资供应链集团', category: '建筑物资', logo: '../../assets/suppliers/cscec.svg', theme: 'gold' },
+        { name: '联想企业科技解决方案', category: 'IT 设备 / 数码', logo: '../../assets/suppliers/lenovo.svg', theme: 'cyan' },
+        { name: '三一重工配件中心', category: '工程机械', logo: '../../assets/suppliers/sany.svg', theme: 'purple' },
+        { name: '中石化物资供应公司', category: '化工原料', logo: '../../assets/suppliers/sinopec.svg', theme: 'gold' },
+        { name: '华为政企采购服务', category: '通信设备', logo: '../../assets/suppliers/huawei.png', theme: 'cyan' },
+        { name: '宝钢特种钢材贸易', category: '金属建材', logo: '../../assets/suppliers/baosteel.png', theme: 'purple' },
+        { name: '国网信产办公物资', category: '办公用品', logo: '../../assets/suppliers/stategrid.svg', theme: 'cyan' },
+        { name: '中航工业备件供应', category: '航空备件', logo: '../../assets/suppliers/avic.svg', theme: 'gold' },
+        { name: '海尔商用冷链设备', category: '冷链设备', logo: '../../assets/suppliers/haier.png', theme: 'cyan' },
+        { name: '京东企业购供应链', category: '综合 MRO', logo: '../../assets/suppliers/jd.png', theme: 'purple' },
+        { name: '徐工机械零部件中心', category: '机械零部件', logo: '../../assets/suppliers/xcmg.png', theme: 'gold' }
+      ],
+      trend: {
+        months: ['8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+        clients: [82, 88, 92, 98, 105, 108, 112, 118, 122, 128, 135, 143],
+        gmv: [52.3, 55.1, 58.6, 62.4, 68.2, 71.5, 74.8, 78.2, 82.6, 86.4, 91.2, 95.6],
+        orders: [280, 305, 328, 352, 368, 385, 398, 412, 425, 438, 448, 456]
+      },
+      modes: [
+        { icon: 'fa-door-open', name: '平台入驻', desc: '快速开通数字化采购，即开即用', stat: 128, statLabel: '已入驻客户', sync: 'clients' },
+        { icon: 'fa-server', name: '定制化部署', desc: '私有化/专属实例，深度适配企业需求', stat: 36, statLabel: '部署实例' },
+        { icon: 'fa-link', name: '生态合作', desc: '寻源询价、信用认证等生态伙伴对接', stat: 18, statLabel: '生态伙伴' }
+      ],
+      cases: [
+        { org: '某中央企业集团', save: '18%', eff: '65%', tag: '办公物资集采' },
+        { org: '某省国资委平台', save: '16%', eff: '58%', tag: '竞价询价采购' },
+        { org: '某大型制造央企', save: '21%', eff: '72%', tag: 'MRO 备品备件' },
+        { org: '某金融央企', save: '14%', eff: '55%', tag: 'IT 设备采购' }
+      ]
+    };
+
+    /* ========== 实时滚动数字引擎（展示用，较高刷新率） ========== */
+    const LIVE_CFG = {
+      waveInterval: 850,
+      animDuration: 580,
+      batchRatio: 0.65,
+      initialCountDuration: 1100
+    };
+
+    const liveMetrics = [];
+    const liveSyncGroups = new Map();
+
+    function inferLiveKind(value, decimals, suffix) {
+      if (value >= 99.5 && value <= 100 && suffix === '%') return 'fixed100';
+      if (suffix === '%' || (decimals > 0 && value <= 100)) return 'percent';
+      if (decimals > 0 || !Number.isInteger(value)) return 'float';
+      return 'grow';
+    }
+
+    function formatLiveNum(value, decimals) {
+      if (decimals > 0) return Number(value).toFixed(decimals);
+      return Math.floor(value).toLocaleString('zh-CN');
+    }
+
+    function paintLiveMetric(item) {
+      item.el.textContent = item.prefix + formatLiveNum(item.value, item.decimals) + item.suffix;
+    }
+
+    function flashLiveEl(el) {
+      el.classList.remove('live-roll-flash');
+      void el.offsetWidth;
+      el.classList.add('live-roll-flash');
+      setTimeout(() => el.classList.remove('live-roll-flash'), 450);
+    }
+
+    function registerLiveMetric(el, config) {
+      const base = config.base;
+      const decimals = config.decimals ?? 0;
+      const suffix = config.suffix ?? '';
+      const kind = config.kind ?? inferLiveKind(base, decimals, suffix);
+      const item = {
+        el,
+        base,
+        value: 0,
+        target: base,
+        decimals,
+        suffix,
+        prefix: config.prefix ?? '',
+        kind,
+        min: config.min,
+        max: config.max,
+        syncKey: config.syncKey || null,
+        animFrom: null,
+        animStart: 0
+      };
+      liveMetrics.push(item);
+      if (item.syncKey) {
+        if (!liveSyncGroups.has(item.syncKey)) liveSyncGroups.set(item.syncKey, []);
+        liveSyncGroups.get(item.syncKey).push(item);
+      }
+      return item;
+    }
+
+    function animateValue(el, end, opts = {}) {
+      const { duration = LIVE_CFG.initialCountDuration, decimals = 0, suffix = '', prefix = '' } = opts;
+      const start = performance.now();
+      const from = 0;
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const cur = from + (end - from) * eased;
+        el.textContent = prefix + formatLiveNum(cur, decimals) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function nextLiveValue(item) {
+      const { kind, value, base, decimals, min, max } = item;
+      if (kind === 'fixed100') {
+        return 99.85 + Math.random() * 0.15;
+      }
+      if (kind === 'percent') {
+        const span = decimals > 0 ? 0.35 : 0.8;
+        const delta = (Math.random() - 0.32) * span;
+        const lo = min ?? Math.max(0, base - span * 2);
+        const hi = max ?? Math.min(100, base + span * 2);
+        return Math.max(lo, Math.min(hi, value + delta));
+      }
+      if (kind === 'float') {
+        const delta = (Math.random() - 0.36) * base * 0.018;
+        const lo = min ?? base * 0.94;
+        const hi = max ?? base * 1.06;
+        return Math.max(lo, Math.min(hi, value + delta));
+      }
+      const inc = base >= 50000 ? Math.floor(Math.random() * 120 + 40)
+        : base >= 1000 ? Math.floor(Math.random() * 18 + 4)
+        : base >= 100 ? Math.floor(Math.random() * 4 + 1)
+        : 1;
+      const ceiling = max ?? base * 1.12;
+      return Math.min(ceiling, value + inc);
+    }
+
+    let liveRollRaf = null;
+    function liveRollFrame(now) {
+      let active = false;
+      liveMetrics.forEach(item => {
+        if (item.animFrom == null) return;
+        const p = Math.min((now - item.animStart) / LIVE_CFG.animDuration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        item.value = item.animFrom + (item.target - item.animFrom) * eased;
+        paintLiveMetric(item);
+        if (p >= 1) {
+          item.value = item.target;
+          item.animFrom = null;
+          flashLiveEl(item.el);
+        } else {
+          active = true;
+        }
+      });
+      liveRollRaf = active ? requestAnimationFrame(liveRollFrame) : null;
+    }
+
+    function rollLiveMetric(item) {
+      const group = item.syncKey ? liveSyncGroups.get(item.syncKey) : [item];
+      if (group.some(m => m.animFrom != null)) return;
+      const leader = group[0];
+      const target = nextLiveValue(leader);
+      const start = performance.now();
+      group.forEach(m => {
+        m.animFrom = m.value;
+        m.target = target;
+        m.animStart = start;
+      });
+      if (!liveRollRaf) liveRollRaf = requestAnimationFrame(liveRollFrame);
+    }
+
+    function bindLiveMetricEl(el, extra = {}) {
+      const base = +el.dataset.val;
+      const decimals = +(el.dataset.dec || 0);
+      const suffix = el.dataset.suffix || '';
+      const syncKey = el.dataset.sync || extra.syncKey || null;
+      const item = registerLiveMetric(el, { base, decimals, suffix, syncKey, kind: extra.kind });
+      item.value = base;
+    }
+
+    function startLiveEngine() {
+      setInterval(() => {
+        const pool = liveMetrics.filter(m => m.animFrom == null);
+        const picked = new Set();
+        const batch = [];
+        const limit = Math.max(4, Math.floor(pool.length * LIVE_CFG.batchRatio));
+        pool.sort(() => Math.random() - 0.5).forEach(m => {
+          const key = m.syncKey || m.el;
+          if (picked.has(key)) return;
+          picked.add(key);
+          batch.push(m);
+        });
+        batch.slice(0, limit).forEach(rollLiveMetric);
+      }, LIVE_CFG.waveInterval);
+
+      setInterval(() => {
+        document.querySelectorAll('.vc-trend').forEach(el => {
+          const match = el.textContent.match(/[\d.]+/);
+          if (!match) return;
+          const next = Math.max(0.1, parseFloat(match[0]) + Math.random() * 0.22);
+          el.innerHTML = `<i class="fas fa-arrow-up" style="font-size:8px;margin-right:2px;"></i>+${next.toFixed(1)}%`;
+          flashLiveEl(el);
+        });
+      }, LIVE_CFG.waveInterval * 1.4);
+
+      setInterval(refreshCaseTickerLive, LIVE_CFG.waveInterval * 2.2);
+    }
+
+    function refreshCaseTickerLive() {
+      const track = document.getElementById('caseTrack');
+      if (!track) return;
+      const items = DATA.cases.map(c => {
+        const save = Math.max(10, Math.min(28, parseFloat(c.save) + (Math.random() - 0.42) * 1.6)).toFixed(0);
+        const eff = Math.max(45, Math.min(85, parseFloat(c.eff) + (Math.random() - 0.42) * 2.2)).toFixed(0);
+        return `<span class="case-item">${c.org} · ${c.tag} · 降本 <strong>${save}%</strong> · 提效 <em>${eff}%</em></span><span class="case-divider">|</span>`;
+      }).join('');
+      track.innerHTML = items + items;
+    }
+
+    function fmtNum(n, dec) {
+      if (dec) return Number(n).toFixed(dec);
+      return Number(n).toLocaleString('zh-CN');
+    }
+
+    /* ========== 渲染三大价值卡片 ========== */
+    function renderValueCards() {
+      const wrap = document.getElementById('valueCards');
+      wrap.innerHTML = DATA.values.map(v => `
+        <article class="value-card theme-${v.theme}">
+          <div class="vc-icon"><i class="fas ${v.icon}"></i></div>
+          <div class="vc-body">
+            <div class="vc-top-row">
+              <span class="vc-title">${v.title}</span>
+              <span class="vc-trend"><i class="fas fa-arrow-up" style="font-size:8px;margin-right:2px;"></i>${v.trend}</span>
+            </div>
+            <div class="vc-main">
+              <span class="vc-num" data-val="${v.main}" data-dec="${Number.isInteger(v.main) ? 0 : 1}">0</span>
+              <span class="vc-unit">${v.unit}</span>
+            </div>
+            <div class="vc-label">${v.label}</div>
+          </div>
+          <div class="vc-subs">
+            ${v.subs.map(s => `
+              <div class="vc-sub">
+                <div class="lb">${s.lb}</div>
+                <div class="vl"><span data-val="${s.val}" data-dec="${Number.isInteger(s.val) ? 0 : 1}" data-suffix="${s.suffix}"${s.sync ? ` data-sync="${s.sync}"` : ''}>0</span></div>
+              </div>
+            `).join('')}
+          </div>
+        </article>
+      `).join('');
+
+      setTimeout(() => {
+        wrap.querySelectorAll('.vc-num').forEach(el => {
+          animateValue(el, +el.dataset.val, { decimals: +el.dataset.dec });
+          bindLiveMetricEl(el);
+        });
+        wrap.querySelectorAll('.vc-sub [data-val]').forEach(el => {
+          animateValue(el, +el.dataset.val, { decimals: +el.dataset.dec, suffix: el.dataset.suffix || '' });
+          bindLiveMetricEl(el);
+        });
+      }, 200);
+    }
+
+    function renderHubWings() {
+      ['Left', 'Right'].forEach(side => {
+        const key = side.toLowerCase();
+        const el = document.getElementById('hubWing' + side);
+        el.innerHTML = DATA.hubWings[key].map(w => `
+          <div class="wing-card accent-${w.accent}">
+            <div class="wl">${w.label}</div>
+            <div class="wv" data-val="${w.value}" data-dec="${w.dec || 0}"${w.sync ? ` data-sync="${w.sync}"` : ''}>0</div>
+            <div class="wu">${w.unit}</div>
+          </div>
+        `).join('');
+      });
+      setTimeout(() => {
+        document.querySelectorAll('.wing-card .wv').forEach(el => {
+          animateValue(el, +el.dataset.val, { decimals: +el.dataset.dec, duration: LIVE_CFG.initialCountDuration });
+          bindLiveMetricEl(el);
+        });
+      }, 400);
+    }
+
+    /* ========== 生态枢纽节点 ========== */
+    function renderEcoNodes() {
+      const stage = document.getElementById('ecoStage');
+      DATA.ecoNodes.forEach((n) => {
+        const node = document.createElement('div');
+        node.className = 'eco-node';
+        node.innerHTML = `<div class="nl">${n.label}</div><div class="nv"><span class="nv-num" data-val="${n.value}" data-dec="${Number.isInteger(n.value) ? 0 : 1}">0</span><span class="nu">${n.unit}</span></div>`;
+        node.dataset.angle = n.angle;
+        stage.appendChild(node);
+      });
+      placeEcoNodes();
+      setTimeout(() => {
+        stage.querySelectorAll('.eco-node').forEach((nodeEl, i) => {
+          const n = DATA.ecoNodes[i];
+          const numEl = nodeEl.querySelector('.nv-num');
+          const dec = Number.isInteger(n.value) ? 0 : 1;
+          animateValue(numEl, n.value, { decimals: dec, duration: LIVE_CFG.initialCountDuration });
+          const kind = n.unit === '%' && n.value >= 99 ? 'fixed100' : inferLiveKind(n.value, dec, n.unit === '%' ? '%' : '');
+          const syncKey = n.label === '国央企客户' ? 'clients' : null;
+          const item = registerLiveMetric(numEl, { base: n.value, decimals: dec, kind, syncKey });
+          item.value = n.value;
+        });
+      }, 500);
+    }
+
+    function placeEcoNodes() {
+      const stage = document.getElementById('ecoStage');
+      if (!stage) return;
+      const rect = stage.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const radius = Math.min(rect.width, rect.height) * 0.36;
+      stage.querySelectorAll('.eco-node').forEach(node => {
+        const angle = Number(node.dataset.angle) * Math.PI / 180;
+        node.style.left = `${cx + Math.cos(angle) * radius}px`;
+        node.style.top = `${cy + Math.sin(angle) * radius}px`;
+      });
+    }
+
+    /* ========== 中国地图背景 ========== */
+    function initEcoMap() {
+      const chart = echarts.init(document.getElementById('ecoMap'));
+      const scatterData = [
+        { name: '北京', value: [116.4, 39.9, 28] },
+        { name: '上海', value: [121.5, 31.2, 22] },
+        { name: '广州', value: [113.3, 23.1, 18] },
+        { name: '成都', value: [104.1, 30.6, 15] },
+        { name: '武汉', value: [114.3, 30.6, 14] },
+        { name: '西安', value: [108.9, 34.3, 12] },
+        { name: '沈阳', value: [123.4, 41.8, 10] },
+        { name: '深圳', value: [114.1, 22.5, 19] }
+      ];
+      fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+        .then(r => r.json())
+        .then(geoJson => {
+          echarts.registerMap('china', geoJson);
+          chart.setOption({
+            backgroundColor: 'transparent',
+            geo: {
+              map: 'china',
+              roam: false,
+              zoom: 1.15,
+              center: [105, 36],
+              itemStyle: {
+                areaColor: 'rgba(8, 30, 60, 0.6)',
+                borderColor: 'rgba(34, 211, 238, 0.25)',
+                borderWidth: 1
+              },
+              emphasis: { itemStyle: { areaColor: 'rgba(34, 211, 238, 0.15)' } }
+            },
+            series: [{
+              type: 'effectScatter',
+              coordinateSystem: 'geo',
+              data: scatterData,
+              symbolSize: val => Math.max(val[2] * 0.6, 8),
+              rippleEffect: { brushType: 'stroke', scale: 3, period: 4 },
+              itemStyle: { color: '#22d3ee', shadowBlur: 12, shadowColor: 'rgba(34,211,238,0.6)' }
+            }]
+          });
+        })
+        .catch(() => {
+          document.getElementById('ecoMap').style.display = 'none';
+        });
+      window._ecoMapChart = chart;
+    }
+
+    function supplierCardHtml(s) {
+      return `
+        <article class="supplier-card accent-${s.theme}">
+          <div class="sp-logo">
+            <img src="${s.logo}" alt="${s.name}" loading="lazy">
+          </div>
+          <div class="sp-info">
+            <div class="sp-name">${s.name}</div>
+            <div class="sp-cat"><i class="fas fa-tag"></i>${s.category}</div>
+          </div>
+          <span class="sp-badge">已认证</span>
+        </article>
+      `;
+    }
+
+    /* ========== 合作成果趋势图 ========== */
+    function renderTrendSummary() {
+      const t = DATA.trend;
+      const last = t.months.length - 1;
+      document.getElementById('trendSummary').innerHTML = `
+        <div class="trend-kpi">
+          <div class="tk-label">累计入驻客户</div>
+          <div><span class="tk-val" data-val="${t.clients[last]}" data-dec="0" id="tkClients">0</span><span class="tk-unit">家</span></div>
+        </div>
+        <div class="trend-kpi">
+          <div class="tk-label">累计成交额</div>
+          <div><span class="tk-val" data-val="${t.gmv[last]}" data-dec="1" id="tkGmv">0</span><span class="tk-unit">亿元</span></div>
+        </div>
+        <div class="trend-kpi">
+          <div class="tk-label">累计订单量</div>
+          <div><span class="tk-val" data-val="${t.orders[last]}" data-dec="0" id="tkOrders">0</span><span class="tk-unit">万笔</span></div>
+        </div>
+      `;
+      setTimeout(() => {
+        ['#tkClients', '#tkGmv', '#tkOrders'].forEach(sel => {
+          const el = document.querySelector(sel);
+          animateValue(el, +el.dataset.val, { decimals: +el.dataset.dec, duration: LIVE_CFG.initialCountDuration });
+          bindLiveMetricEl(el);
+        });
+      }, 600);
+    }
+
+    function initTrendChart() {
+      const chart = echarts.init(document.getElementById('trendChart'));
+      const t = DATA.trend;
+      const option = {
+        backgroundColor: 'transparent',
+        grid: { left: 48, right: 48, top: 36, bottom: 28 },
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: 'rgba(6,22,42,0.92)',
+          borderColor: 'rgba(34,211,238,0.3)',
+          textStyle: { color: '#e0f2fe', fontSize: 13 }
+        },
+        legend: {
+          top: 4,
+          right: 0,
+          itemWidth: 14,
+          itemHeight: 8,
+          textStyle: { color: '#7dd3fc', fontSize: 13 }
+        },
+        xAxis: {
+          type: 'category',
+          data: t.months,
+          boundaryGap: false,
+          axisLine: { lineStyle: { color: 'rgba(34,211,238,0.25)' } },
+          axisLabel: { color: '#64748b', fontSize: 12 },
+          axisTick: { show: false }
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: '客户/订单',
+            nameTextStyle: { color: '#64748b', fontSize: 11 },
+            splitLine: { lineStyle: { color: 'rgba(34,211,238,0.08)' } },
+            axisLabel: { color: '#64748b', fontSize: 11 }
+          },
+          {
+            type: 'value',
+            name: '亿元',
+            nameTextStyle: { color: '#64748b', fontSize: 11 },
+            splitLine: { show: false },
+            axisLabel: { color: '#64748b', fontSize: 11 }
+          }
+        ],
+        series: [
+          {
+            name: '入驻客户',
+            type: 'line',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            data: [...t.clients],
+            lineStyle: { width: 2.5, color: '#22d3ee' },
+            itemStyle: { color: '#22d3ee' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(34,211,238,0.35)' },
+                { offset: 1, color: 'rgba(34,211,238,0.02)' }
+              ])
+            }
+          },
+          {
+            name: '成交额',
+            type: 'line',
+            yAxisIndex: 1,
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            data: [...t.gmv],
+            lineStyle: { width: 2.5, color: '#fbbf24' },
+            itemStyle: { color: '#fbbf24' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(251,191,36,0.28)' },
+                { offset: 1, color: 'rgba(251,191,36,0.02)' }
+              ])
+            }
+          },
+          {
+            name: '订单量',
+            type: 'line',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            data: [...t.orders],
+            lineStyle: { width: 2.5, color: '#a78bfa' },
+            itemStyle: { color: '#a78bfa' },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(167,139,250,0.28)' },
+                { offset: 1, color: 'rgba(167,139,250,0.02)' }
+              ])
+            }
+          }
+        ]
+      };
+      chart.setOption(option);
+      window._trendChart = chart;
+
+      setInterval(() => {
+        const last = t.clients.length - 1;
+        t.clients[last] = Math.min(160, t.clients[last] + (Math.random() > 0.5 ? 1 : 0));
+        t.gmv[last] = Math.min(102, +(t.gmv[last] + Math.random() * 0.08).toFixed(1));
+        t.orders[last] = Math.min(480, t.orders[last] + (Math.random() > 0.6 ? 1 : 0));
+        chart.setOption({
+          series: [
+            { data: [...t.clients] },
+            { data: [...t.gmv] },
+            { data: [...t.orders] }
+          ]
+        });
+      }, LIVE_CFG.waveInterval * 1.5);
+    }
+
+    /* ========== 第二屏：合作规模 + 供应商 ========== */
+    function renderScale() {
+      document.getElementById('scaleGrid').innerHTML = DATA.scale.map(s => `
+        <div class="scale-item">
+          <div class="sl">${s.label}</div>
+          <div><span class="sv" data-val="${s.value}"${s.sync ? ` data-sync="${s.sync}"` : ''}>0</span><span class="su">${s.unit}</span></div>
+        </div>
+      `).join('');
+      setTimeout(() => {
+        document.querySelectorAll('#scaleGrid .sv').forEach(el => {
+          animateValue(el, +el.dataset.val, { duration: LIVE_CFG.initialCountDuration });
+          bindLiveMetricEl(el);
+        });
+      }, 400);
+
+      const grid = `<div class="supplier-grid">${DATA.suppliers.map(supplierCardHtml).join('')}</div>`;
+      document.getElementById('supplierWall').innerHTML = grid + grid;
+    }
+
+    /* ========== 合作模式 ========== */
+    function renderModes() {
+      document.getElementById('modeCards').innerHTML = DATA.modes.map(m => `
+        <div class="mode-card">
+          <div class="mode-icon"><i class="fas ${m.icon}"></i></div>
+          <div class="mode-info">
+            <div class="mn">${m.name}</div>
+            <div class="md">${m.desc}</div>
+          </div>
+          <div class="mode-stat">
+            <div class="ms" data-val="${m.stat}"${m.sync ? ` data-sync="${m.sync}"` : ''}>0</div>
+            <div class="ml">${m.statLabel}</div>
+          </div>
+        </div>
+      `).join('');
+      setTimeout(() => {
+        document.querySelectorAll('.mode-stat .ms').forEach(el => {
+          animateValue(el, +el.dataset.val, { duration: LIVE_CFG.initialCountDuration });
+          bindLiveMetricEl(el);
+        });
+      }, 500);
+    }
+
+    /* ========== 案例滚动条 ========== */
+    function renderCases() {
+      const items = DATA.cases.map(c =>
+        `<span class="case-item">${c.org} · ${c.tag} · 降本 <strong>${c.save}</strong> · 提效 <em>${c.eff}</em></span><span class="case-divider">|</span>`
+      ).join('');
+      document.getElementById('caseTrack').innerHTML = items + items;
+    }
+
+    /* ========== 粒子背景 ========== */
+    function initParticles() {
+      const canvas = document.getElementById('particleCanvas');
+      const ctx = canvas.getContext('2d');
+      let w, h, particles = [];
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      function mkParticle() {
+        return {
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          r: Math.random() * 1.5 + 0.5,
+          a: Math.random() * 0.4 + 0.1
+        };
+      }
+      function init() {
+        resize();
+        particles = Array.from({ length: 80 }, mkParticle);
+      }
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0) p.x = w;
+          if (p.x > w) p.x = 0;
+          if (p.y < 0) p.y = h;
+          if (p.y > h) p.y = 0;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(34, 211, 238, ${p.a})`;
+          ctx.fill();
+        });
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 100) {
+              ctx.strokeStyle = `rgba(34, 211, 238, ${0.06 * (1 - dist / 100)})`;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+      init();
+      draw();
+      window.addEventListener('resize', resize);
+    }
+
+    /* ========== 时钟 ========== */
+    function tickClock() {
+      const now = new Date();
+      const s = now.toLocaleString('zh-CN', { hour12: false });
+      document.getElementById('clock').textContent = s;
+      document.getElementById('clock2').textContent = s;
+    }
+
+    /* ========== 屏间导航 ========== */
+    function initNav() {
+      const stack = document.getElementById('viewportStack');
+      const dots = document.querySelectorAll('.nav-dot');
+      dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+          const idx = +dot.dataset.screen;
+          stack.children[idx].scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+      stack.addEventListener('scroll', () => {
+        const idx = Math.round(stack.scrollTop / window.innerHeight);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }, { passive: true });
+    }
+
+    /* ========== 初始化 ========== */
+    renderValueCards();
+    renderHubWings();
+    renderEcoNodes();
+    initEcoMap();
+    renderScale();
+    renderModes();
+    renderTrendSummary();
+    initTrendChart();
+    renderCases();
+    initParticles();
+    initNav();
+    tickClock();
+    setInterval(tickClock, 1000);
+    setTimeout(startLiveEngine, LIVE_CFG.initialCountDuration + 400);
+
+    window.addEventListener('resize', () => {
+      placeEcoNodes();
+      if (window._ecoMapChart) window._ecoMapChart.resize();
+      if (window._trendChart) window._trendChart.resize();
+    });
+
+    /* 进入第二屏时触发一次快速滚动刷新 */
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting && e.target.id === 'screen2') {
+          liveMetrics
+            .filter(m => m.el.closest('#screen2'))
+            .forEach(rollLiveMetric);
+          if (window._trendChart) window._trendChart.resize();
+        }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(document.getElementById('screen2'));
+  </script>
+</body>
+</html>

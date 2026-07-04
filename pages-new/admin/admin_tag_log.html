@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>标签维护日志 | 标签管理</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/custom.css">
+  <link rel="stylesheet" href="admin_tag_common.css">
+</head>
+<body class="tag-admin-page">
+  <div class="tag-page-inner">
+    <div class="tag-page-hero">
+      <div class="tag-page-hero-icon"><i class="fas fa-clock-rotate-left"></i></div>
+      <div>
+        <div class="text-sm text-slate-500 mb-0.5">标签管理 / <span class="text-slate-800 font-medium">标签维护日志</span></div>
+        <h1>标签维护日志</h1>
+        <p>记录自动达标、人工复核与人工修改历史，支持查看实体完整标签及变更详情</p>
+      </div>
+    </div>
+    <div class="tag-main-card">
+      <div class="tag-panel-body">
+        <div class="filter-row">
+          <input type="text" id="logKeyword" placeholder="关键词（实体 ID / 名称 / 操作人）" style="width:240px">
+          <select id="logTarget">
+            <option value="">打标目标（全部）</option>
+            <option>商品</option>
+            <option>供应商</option>
+          </select>
+          <select id="logChangeType">
+            <option value="">变更类型（全部）</option>
+            <option>自动达标</option>
+            <option>人工复核</option>
+            <option>人工修改</option>
+          </select>
+          <input type="date" id="logDateFrom" title="开始日期">
+          <span class="text-muted text-sm">至</span>
+          <input type="date" id="logDateTo" title="结束日期">
+          <button type="button" class="btn btn-primary btn-sm" id="btnLogQuery">查询</button>
+          <button type="button" class="btn btn-outline btn-sm" id="btnLogReset">重置</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="w-12">序</th>
+                <th>打标目标</th>
+                <th>实体 ID</th>
+                <th>名称</th>
+                <th>变更类型</th>
+                <th>操作人</th>
+                <th>时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="logDetailModal" hidden>
+    <div class="modal-box lg">
+      <div class="modal-header" id="logDetailTitle">标签详情</div>
+      <div class="modal-body" id="logDetailBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="btnCloseLogDetail">关闭</button>
+      </div>
+    </div>
+  </div>
+  <script src="admin_tag_shared.js"></script>
+  <script src="admin_tag_log_app.js"></script>
+</body>
+</html>
