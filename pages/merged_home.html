@@ -1195,8 +1195,8 @@
     .ai-comp-dialog.ai-mode-unified {
       width: 100%;
       max-width: 100vw;
-      max-height: min(96vh, 960px);
-      min-height: min(72vh, 640px);
+      max-height: min(98vh, 1040px);
+      min-height: min(80vh, 720px);
     }
     .ai-comp-overlay.open .ai-comp-dialog {
       transform: translateY(0);
@@ -1287,8 +1287,8 @@
     }
     .ai-comp-dialog.ai-mode-unified #aiPanel-unified .ai-chat-log {
       flex: 1 1 auto;
-      max-height: min(78vh, 780px);
-      min-height: min(52vh, 420px);
+      max-height: min(82vh, 880px);
+      min-height: min(58vh, 500px);
       padding: 8px 6px 12px;
     }
     .ai-msg {
@@ -1325,7 +1325,7 @@
       box-shadow: none;
       border-radius: 0;
     }
-    .ai-msg.bot.ai-msg-rich:not(.ai-msg-finder):not(.ai-msg-compare):not(.ai-msg-cart) {
+    .ai-msg.bot.ai-msg-rich:not(.ai-msg-finder):not(.ai-msg-compare):not(.ai-msg-cart):not(.ai-msg-contract) {
       max-width: min(76%, 520px);
       padding: 10px 14px;
       background: #fff;
@@ -1399,17 +1399,78 @@
     }
     .ai-finder-card-top {
       display: flex;
-      align-items: stretch;
-      gap: 14px;
-      padding: 16px;
-      background:
-        radial-gradient(ellipse 120% 80% at 100% 0%, rgba(99, 102, 241, 0.07) 0%, transparent 55%),
-        linear-gradient(165deg, #f8fbff 0%, #ffffff 48%, #fafafa 100%);
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 16px 12px;
+    }
+    .ai-finder-analysis {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #f8fbff 0%, #f8fafc 100%);
+      border: 1px solid #e8edf3;
+      align-self: flex-start;
+    }
+    .ai-finder-analysis-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #6366f1;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .ai-finder-analysis-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .ai-finder-analysis-item {
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid #eef2f7;
+      padding: 7px 8px;
+      min-height: 46px;
+    }
+    .ai-finder-analysis-item .k {
+      display: block;
+      font-size: 9px;
+      color: #94a3b8;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+    .ai-finder-analysis-item .v {
+      display: block;
+      font-size: 11px;
+      color: #0f172a;
+      font-weight: 800;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .ai-finder-analysis-item .v.price {
+      color: #ea580c;
+    }
+    .ai-finder-analysis-item .v.match {
+      color: #059669;
+    }
+    @media (max-width: 640px) {
+      .ai-finder-card-top {
+        flex-wrap: wrap;
+      }
+      .ai-finder-main {
+        flex: 1 1 calc(100% - 104px);
+        max-width: none;
+      }
+      .ai-finder-analysis {
+        flex: 1 1 100%;
+        margin-top: 4px;
+      }
+      .ai-finder-analysis-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     .ai-finder-visual {
       flex-shrink: 0;
-      width: 92px;
-      height: 92px;
+      width: 96px;
+      height: 96px;
       border-radius: 14px;
       overflow: hidden;
       background: #fff;
@@ -1435,12 +1496,14 @@
       font-size: 28px;
     }
     .ai-finder-main {
-      flex: 1;
+      flex: 0 0 auto;
+      width: 118px;
       min-width: 0;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 0;
+      padding-top: 2px;
     }
     .ai-finder-badge-row {
       display: flex;
@@ -1470,30 +1533,16 @@
     .ai-finder-badge.done i { font-size: 9px; }
     .ai-finder-hero-name {
       margin: 0;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 800;
       color: #0f172a;
       line-height: 1.35;
-      letter-spacing: -0.02em;
     }
     .ai-finder-hero-meta {
-      margin: 5px 0 0;
-      font-size: 12px;
-      color: #64748b;
-      line-height: 1.5;
-    }
-    .ai-finder-hero-price {
-      margin: 8px 0 0;
-      font-size: 15px;
-      font-weight: 800;
-      color: #ea580c;
-      letter-spacing: -0.01em;
-    }
-    .ai-finder-hero-price small {
+      margin: 4px 0 0;
       font-size: 11px;
-      font-weight: 600;
-      color: #94a3b8;
-      margin-right: 4px;
+      color: #64748b;
+      line-height: 1.45;
     }
     .ai-finder-divider {
       height: 1px;
@@ -1826,103 +1875,155 @@
       font-size: 12.5px;
       border-radius: 10px;
     }
-    .ai-compare-report-card {
+    .ai-report-result-card {
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+      padding: 14px 16px;
       border-radius: 18px;
-      overflow: hidden;
       background: #fff;
       border: 1px solid rgba(226, 232, 240, 0.85);
+      max-width: 100%;
+    }
+    .ai-report-result-card.ai-report-result-compare {
       box-shadow: 0 8px 28px rgba(14, 165, 233, 0.08);
     }
-    .ai-compare-report-head {
+    .ai-report-result-card.ai-report-result-contract {
+      box-shadow: 0 8px 28px rgba(99, 102, 241, 0.08);
+    }
+    .ai-report-result-visual {
+      flex: 0 0 112px;
+      width: 112px;
+      min-height: 100px;
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 14px 16px 0;
+      justify-content: center;
     }
-    .ai-compare-report-badge {
-      display: inline-flex;
-      align-items: center;
+    .ai-report-result-visual.is-compare {
+      background: linear-gradient(155deg, #f0f9ff 0%, #e0f2fe 55%, #bae6fd 100%);
+    }
+    .ai-report-result-visual.is-contract {
+      background: linear-gradient(155deg, #f5f3ff 0%, #ede9fe 55%, #ddd6fe 100%);
+    }
+    .ai-report-result-visual.is-cart {
+      background: linear-gradient(155deg, #fff7ed 0%, #ffedd5 55%, #fed7aa 100%);
+    }
+    .ai-report-mock-file {
+      position: relative;
+      width: 64px;
+      height: 80px;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1), 0 2px 6px rgba(15, 23, 42, 0.05);
+      overflow: hidden;
+    }
+    .ai-report-mock-file-corner {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 18px 18px 0;
+      border-color: transparent #dbeafe transparent transparent;
+    }
+    .is-contract .ai-report-mock-file-corner {
+      border-color: transparent #e9d5ff transparent transparent;
+    }
+    .is-cart .ai-report-mock-file-corner {
+      border-color: transparent #fdba74 transparent transparent;
+    }
+    .ai-report-mock-file-body {
+      padding: 18px 10px 22px;
+      display: flex;
+      flex-direction: column;
       gap: 5px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 10px;
+    }
+    .ai-report-mock-line {
+      height: 3px;
+      border-radius: 2px;
+      background: rgba(14, 165, 233, 0.32);
+    }
+    .is-contract .ai-report-mock-line {
+      background: rgba(99, 102, 241, 0.32);
+    }
+    .is-cart .ai-report-mock-line {
+      background: rgba(249, 115, 22, 0.32);
+    }
+    .ai-report-mock-line.short { width: 52%; }
+    .ai-report-mock-line.mid { width: 74%; }
+    .ai-report-mock-file-badge {
+      position: absolute;
+      bottom: 7px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
       font-weight: 800;
-      background: rgba(14, 165, 233, 0.1);
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .is-compare .ai-report-mock-file-badge {
+      background: rgba(14, 165, 233, 0.12);
       color: #0284c7;
     }
-    .ai-compare-report-text {
-      margin: 12px 16px 0;
-      font-size: 12.5px;
-      color: #475569;
-      line-height: 1.65;
+    .is-contract .ai-report-mock-file-badge {
+      background: rgba(99, 102, 241, 0.12);
+      color: #6366f1;
     }
-    .ai-compare-report-text strong { color: #0f172a; font-weight: 800; }
-    .ai-compare-report-card .ai-inline-action-btn {
-      margin: 14px 16px 16px;
-      width: calc(100% - 32px);
-      height: 40px;
+    .is-cart .ai-report-mock-file-badge {
+      background: rgba(249, 115, 22, 0.12);
+      color: #ea580c;
+    }
+    .ai-report-result-card.ai-report-result-cart {
+      box-shadow: 0 8px 28px rgba(249, 115, 22, 0.08);
+    }
+    .ai-report-result-body {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      padding: 6px 0;
+    }
+    .ai-report-result-badge-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .ai-report-result-card .ai-inline-action-btn {
+      margin: 0;
+      width: 100%;
+      height: 38px;
       border-radius: 10px;
-      font-size: 13px;
+      font-size: 12.5px;
     }
     .ai-inline-action-btn.ai-btn-compare-report {
       background: linear-gradient(135deg, #0ea5e9, #0284c7);
       box-shadow: 0 4px 14px rgba(14, 165, 233, 0.24);
     }
-    .ai-compare-report-card,
-    .ai-cart-added-card {
-      max-width: 100%;
-    }
-    .ai-msg.bot.ai-msg-rich.ai-msg-compare,
-    .ai-msg.bot.ai-msg-rich.ai-msg-cart {
-      max-width: min(82%, 480px);
-      padding: 0;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-    }
-    .ai-cart-added-card {
-      border-radius: 18px;
-      overflow: hidden;
-      background: #fff;
-      border: 1px solid rgba(226, 232, 240, 0.85);
-      box-shadow: 0 8px 28px rgba(249, 115, 22, 0.08);
-    }
-    .ai-cart-added-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 14px 16px 0;
-    }
-    .ai-cart-added-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 800;
-      background: rgba(34, 197, 94, 0.1);
-      color: #16a34a;
-    }
-    .ai-cart-added-text {
-      margin: 12px 16px 0;
-      font-size: 12.5px;
-      color: #475569;
-      line-height: 1.65;
-    }
-    .ai-cart-added-text strong { color: #0f172a; font-weight: 800; }
-    .ai-cart-added-card .ai-inline-action-btn {
-      margin: 14px 16px 16px;
-      width: calc(100% - 32px);
-      height: 40px;
-      border-radius: 10px;
-      font-size: 13px;
+    .ai-inline-action-btn.ai-btn-contract-report {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.24);
     }
     .ai-inline-action-btn.ai-btn-cart-go {
       background: linear-gradient(135deg, #f97316, #ea580c);
       box-shadow: 0 4px 14px rgba(234, 88, 12, 0.24);
+    }
+    .ai-msg.bot.ai-msg-rich.ai-msg-compare,
+    .ai-msg.bot.ai-msg-rich.ai-msg-cart,
+    .ai-msg.bot.ai-msg-rich.ai-msg-contract {
+      max-width: min(82%, 420px);
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
     }
     .ai-risk-answer {
       border: 1px solid #e2e8f0;
@@ -2571,10 +2672,10 @@
         transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, max-height 0.22s ease;
       }
       .ai-comp-dialog.ai-mode-unified {
-        width: min(96vw, 1080px);
-        max-width: min(96vw, 1080px);
-        max-height: min(96vh, 960px);
-        min-height: min(78vh, 720px);
+        width: min(98vw, 1280px);
+        max-width: min(98vw, 1280px);
+        max-height: min(98vh, 1040px);
+        min-height: min(86vh, 860px);
       }
       .ai-comp-overlay.open .ai-comp-dialog {
         transform: scale(1) translateY(0);
@@ -2623,8 +2724,8 @@
         <nav class="main-tabs" aria-label="采购主功能导航">
           <a class="main-tab active" id="tabHome" href="javascript:void(0)" onclick="switchMainTab('home')"><i class="fa-solid fa-house"></i> 首页</a>
           <a class="main-tab" id="tabMall" href="javascript:void(0)" onclick="switchMainTab('mall')"><i class="fa-solid fa-store"></i> 国采搜品</a>
-          <a class="main-tab" href="./plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 最价方案</a>
-          <a class="main-tab" href="./smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
+          <a class="main-tab" href="../pages-new/plan_result.html?fresh=1"><i class="fa-regular fa-file-lines"></i> 最价方案</a>
+          <a class="main-tab" href="../pages-new/smart_compare.html?fresh=1"><i class="fa-solid fa-magnifying-glass"></i> 全网寻品</a>
         </nav>
         <!-- 右：操作区 -->
         <div class="topbar-actions">
@@ -2634,7 +2735,7 @@
             <span class="tip">购物车</span>
           </a>
           <div class="topbar-divider"></div>
-          <a class="topbar-icon-btn" href="./ai_assistant.html" title="">
+          <a class="topbar-icon-btn" href="../pages-new/ai_assistant.html" title="">
             <i class="fa-regular fa-bell"></i>
             <span class="badge-dot"></span>
             <span class="tip">消息通知</span>
@@ -2700,37 +2801,37 @@
             </div>
             <!-- 采购法规 -->
             <div class="nr-pane" id="nrPane-law">
-              <a class="nr-law-item" href="./law_detail.html?id=zfcgfl">
+              <a class="nr-law-item" href="../pages-new/law_detail.html?id=zfcgfl">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">中华人民共和国政府采购法</span>
                 <span class="nr-law-meta">修订：2022-06-24</span>
                 <span class="nr-law-badge valid">现行有效</span>
               </a>
-              <a class="nr-law-item" href="./law_detail.html?id=zfcgfl_ss">
+              <a class="nr-law-item" href="../pages-new/law_detail.html?id=zfcgfl_ss">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">政府采购法实施条例</span>
                 <span class="nr-law-meta">修订：2022-04-06</span>
                 <span class="nr-law-badge valid">现行有效</span>
               </a>
-              <a class="nr-law-item" href="./law_detail.html?id=zfcg_zb">
+              <a class="nr-law-item" href="../pages-new/law_detail.html?id=zfcg_zb">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">政府采购货物和服务招标投标管理办法</span>
                 <span class="nr-law-meta">修订：2022-09-01</span>
                 <span class="nr-law-badge updated">近期修订</span>
               </a>
-              <a class="nr-law-item" href="./law_detail.html?id=zfcg_fbz">
+              <a class="nr-law-item" href="../pages-new/law_detail.html?id=zfcg_fbz">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">政府采购非招标采购方式管理办法</span>
                 <span class="nr-law-meta">修订：2021-08-30</span>
                 <span class="nr-law-badge valid">现行有效</span>
               </a>
-              <a class="nr-law-item" href="./law_detail.html?id=zfcg_zj">
+              <a class="nr-law-item" href="../pages-new/law_detail.html?id=zfcg_zj">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">政府采购评审专家管理办法</span>
                 <span class="nr-law-meta">修订：2021-08-09</span>
                 <span class="nr-law-badge valid">现行有效</span>
               </a>
-              <a class="nr-law-item" href="./law_detail.html?id=bid_law">
+              <a class="nr-law-item" href="../pages-new/law_detail.html?id=bid_law">
                 <span class="nr-law-dot"></span>
                 <span class="nr-law-name">中华人民共和国招标投标法</span>
                 <span class="nr-law-meta">修订：2017-12-27</span>
@@ -3324,7 +3425,7 @@
           <h3>合规保障</h3>
           <p>覆盖最价方案、流程节点和文本条款的智能审核，实时识别关键风险并输出整改建议。</p>
           <p>有效降低采购违规风险，提升审查效率与管理透明度。</p>
-          <a class="advantage-link" href="./ai_assistant.html">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
+          <a class="advantage-link" href="../pages-new/ai_assistant.html">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
         </article>
         <article class="advantage-card">
           <div class="advantage-icon" style="background:linear-gradient(135deg,#a855f7 0%,#d946ef 100%);">
@@ -3333,7 +3434,7 @@
           <h3>成本优化</h3>
           <p>结合平台询比、历史成交和智能分析，快速识别价格区间与更优采购策略。</p>
           <p>通过精细化比价和方案推荐，平均可降低 15% 综合采购成本。</p>
-          <a class="advantage-link" href="./compare_analysis.html">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
+          <a class="advantage-link" href="../pages-new/compare_analysis.html">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
         </article>
         <article class="advantage-card">
           <div class="advantage-icon" style="background:linear-gradient(135deg,#ff7a18 0%,#ff4d00 100%);">
@@ -3342,7 +3443,7 @@
           <h3>专业服务</h3>
           <p>提供 7×24 小时在线响应、专属采购顾问与全流程协同支持，适配多场景采购诉求。</p>
           <p>让复杂采购任务也能快速推进，持续提升使用体验与执行效率。</p>
-          <a class="advantage-link" href="./ai_assistant.html">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
+          <a class="advantage-link" href="../pages-new/ai_assistant.html">了解更多 <i class="fa-solid fa-arrow-right"></i></a>
         </article>
       </div>
       <div class="stats-row">
@@ -3359,9 +3460,9 @@
     <div class="container footer-inner">
       <div>国采e购 | 智能采购平台 &nbsp;|&nbsp; 主办单位：中资数据科技有限公司 &nbsp;|&nbsp; 网站备案：京ICP备2020043237号-4</div>
       <div class="footer-links">
-        <a href="./ai_assistant.html">联系我们</a>
+        <a href="../pages-new/ai_assistant.html">联系我们</a>
         <a href="./workbench/workbench_home.html">帮助中心</a>
-        <a href="./store/store_list.html">平台服务</a>
+        <a href="../pages-new/store/store_list.html">平台服务</a>
         <span id="copyrightYear"></span>
       </div>
     </div>
@@ -4094,7 +4195,7 @@
       if(!el||!homeData) return;
       var list = (homeData.settledSuppliers||[]).slice(0,6);
       el.innerHTML = list.map(function(s,idx){
-        var link = (s.id ? './store/store_detail.html?id='+encodeURIComponent(s.id) : (s.link||'./store/store_detail.html'));
+        var link = (s.id ? '../pages-new/store/store_detail.html?id='+encodeURIComponent(s.id) : (s.link||'../pages-new/store/store_detail.html'));
         var covClass = s.coverClass || supplierCoverClasses[idx%supplierCoverClasses.length];
         var covText = s.coverText || String(s.name||'SUPPLIER').replace(/有限公司|有限责任公司|集团|股份|科技/g,'').trim().slice(0,8).toUpperCase();
         var score = Number.isFinite(Number(s.score)) ? Number(s.score).toFixed(1) : (4.7+(idx%3)*0.1).toFixed(1);
@@ -4153,7 +4254,7 @@
       if(!finderSourceReady && !sessionStorage.getItem(FINDER_COMPARE_STORAGE_KEY)){
         sessionStorage.setItem(FINDER_COMPARE_STORAGE_KEY, JSON.stringify({ sourceType:'demo', sourceLabel:'演示样例', rawValue:'演示样例：办公用 A4 复印纸识别输入' }));
       }
-      window.location.href = './smart_compare.html';
+      window.location.href = '../pages-new/smart_compare.html';
     }
     function toggleSceneDropdown(forceState){
       var shouldOpen = typeof forceState === 'boolean' ? forceState : !sceneDropdown.classList.contains('open');
@@ -4197,7 +4298,7 @@
     function generatePlanDemo(){
       if(!selectedPlanFile && !selectedPlanScene){ window.alert('请先上传采购文件或选择采购场景。'); return; }
       sessionStorage.setItem('planDemo', JSON.stringify({ file:selectedPlanFile||null, scene:selectedPlanScene||null }));
-      window.location.href = './plan_result.html';
+      window.location.href = '../pages-new/plan_result.html';
     }
 
     /* 合规助手弹窗 */
@@ -5015,13 +5116,13 @@
     function gotoZhixuan() {
       closeAllModalsForNav();
       try { sessionStorage.setItem('planDemo', JSON.stringify({ file: null, scene: 'AI推荐采购场景' })); } catch(e) {}
-      window.location.href = './plan_result.html';
+      window.location.href = '../pages-new/plan_result.html';
     }
     /* 跳转到竞价询价分析界面 */
     function gotoBidding() {
       closeAllModalsForNav();
       try { sessionStorage.setItem('planDemo', JSON.stringify({ file: null, scene: '竞价询价演示' })); } catch(e) {}
-      window.location.href = './plan_result.html#bidAssistantAnchor';
+      window.location.href = '../pages-new/plan_result.html#bidAssistantAnchor';
     }
 
     /* ========== AI 智能助手（悬浮球 + 方案A） ========== */
@@ -5056,7 +5157,8 @@
         spec: '1080P / 商务会议 / 高清接口',
         priceRange: '2899 - 3599 元 / 台',
         keywords: ['投影仪', '会议设备', '高清显示', '商务办公', '多接口'],
-        conclusion: '优先查看参数一致的商务会议投影仪，并重点比较亮度、接口与售后服务。',
+        conclusion: '优先查看参数一致的商务会议投影仪，并重点比较亮度、接口与售后服务。平台已为您匹配 3 款同品同规商品，综合匹配度达 95%，其中最佳匹配为极米商务会议投影仪高清版。',
+        matchDegree: '95%',
         products: [
           { id: 'img-p1', name: '极米 商务会议投影仪 高清版', score: '95%', price: 2999, unit: '台', supplier: '极米政企旗舰店', floor: 2899, ceiling: 3599, img: 'https://images.unsplash.com/photo-1536240478700-b869ad10e2cc?w=400&h=400&fit=crop' },
           { id: 'img-p2', name: '爱普生 办公会议投影仪 标准版', score: '93%', price: 3199, unit: '台', supplier: '爱普生办公设备店', floor: 2999, ceiling: 3699, img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=400&h=400&fit=crop' },
@@ -5073,7 +5175,8 @@
         spec: '可升降 / 带头枕 / 腰托',
         priceRange: '699 - 1080 元 / 把',
         keywords: ['办公椅', '人体工学', '腰托', '升降调节', '办公家具'],
-        conclusion: '建议优先关注同类人体工学办公椅，重点比较腰托、头枕和承重能力。',
+        conclusion: '建议优先关注同类人体工学办公椅，重点比较腰托、头枕和承重能力。平台已匹配 3 款相近规格商品，综合匹配度 93%，其中最佳匹配为得力人体工学办公椅腰托款。',
+        matchDegree: '93%',
         products: [
           { id: 'lnk-p1', name: '得力 人体工学办公椅 腰托款', score: '93%', price: 768, unit: '把', supplier: '得力办公家具馆', floor: 699, ceiling: 899, img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=400&h=400&fit=crop' },
           { id: 'lnk-p2', name: '永艺 人体工学办公椅 商务版', score: '91%', price: 899, unit: '把', supplier: '永艺政企采购店', floor: 799, ceiling: 980, img: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400&h=400&fit=crop' },
@@ -5171,7 +5274,7 @@
 
     /** 在新窗口打开采购方案/分析页（不占用当前页） */
     function openAiCompanionAnalysisPage(demoKey) {
-      var url = './plan_result.html?ai_demo=' + encodeURIComponent(demoKey);
+      var url = '../pages-new/plan_result.html?ai_demo=' + encodeURIComponent(demoKey);
       setAiCompanionDemoSession(demoKey);
       window.open(url, '_blank', 'noopener,noreferrer');
     }
@@ -5179,7 +5282,7 @@
     function gotoAiCompanionScenarioSpring() {
       setAiCompanionDemoSession('scenario_spring_goods');
       var q = '?ai_demo=scenario_spring_goods&tab=scene&scene=' + encodeURIComponent('年货采购');
-      window.open('./plan_result.html' + q, '_blank', 'noopener,noreferrer');
+      window.open('../pages-new/plan_result.html' + q, '_blank', 'noopener,noreferrer');
     }
 
     function openAiCompanion() {
@@ -5207,6 +5310,7 @@
       if (event && event.target !== ov) return;
       ov.classList.remove('open');
       document.body.style.overflow = '';
+      stopAiCompanionSpeech();
       var fab = document.getElementById('aiCompanionFab');
       if (fab) fab.style.visibility = '';
     }
@@ -5396,18 +5500,14 @@
     }
 
     function renderAiCartAddedHtml(product) {
-      var priceText = '¥' + product.price.toFixed(product.price % 1 ? 2 : 0) + ' / ' + escapeAiHtml(product.unit || '件');
-      return (
-        '<div class="ai-cart-added-card">' +
-        '<div class="ai-cart-added-head">' +
-        '<span class="ai-cart-added-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 已加入购物车</span>' +
-        '<span class="ai-finder-source-chip">购物车</span>' +
-        '</div>' +
-        '<p class="ai-cart-added-text">已将 <strong>' + escapeAiHtml(product.name) + '</strong>（' + priceText + '）加入购物车，您可继续选购或直接前往购物车查看。</p>' +
-        '<button type="button" class="ai-inline-action-btn ai-btn-cart-go" onclick="openAiShoppingCart()">' +
-        '<i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> 进入购物车</button>' +
-        '</div>'
-      );
+      return renderAiReportResultCardHtml({
+        type: 'cart',
+        typeLabel: '购物车',
+        statusLabel: '已加入购物车',
+        btnLabel: '进入购物车',
+        btnIcon: 'fa-cart-shopping',
+        onClick: 'openAiShoppingCart()'
+      });
     }
 
     function openAiShoppingCart() {
@@ -5420,8 +5520,10 @@
       if (!product) {
         product = normalizeAiFinderProduct({ id: id, name: '所选商品', price: 0, unit: '件', supplier: '平台认证供应商' }, 0);
       }
+      appendAiChat('user', '将' + product.name + '加入购物车');
       saveAiCartItem(product);
-      appendAiBotRich(renderAiCartAddedHtml(product), 'cart');
+      var voiceText = buildAiCompanionVoiceText('cart', { productName: product.name });
+      publishAiCompanionReply(voiceText, renderAiCartAddedHtml(product), 'cart');
     }
 
     var _aiCompareCurrentPayload = null;
@@ -5700,22 +5802,55 @@
       return products.length ? products[0].name : '';
     }
 
-    function renderAiCompareReportNoticeHtml(payload) {
-      var count = (payload.products || []).length;
-      var sourceName = getAiCompareSourceName(payload);
+    function renderAiReportResultVisualHtml(type) {
+      var badge = type === 'contract' ? '合规报告' : (type === 'cart' ? '购物清单' : '分析报告');
       return (
-        '<div class="ai-compare-report-card">' +
-        '<div class="ai-compare-report-head">' +
-        '<span class="ai-compare-report-badge"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 报告已生成</span>' +
-        '<span class="ai-finder-source-chip">比质比价</span>' +
+        '<div class="ai-report-result-visual is-' + type + '" aria-hidden="true">' +
+        '<div class="ai-report-mock-file">' +
+        '<div class="ai-report-mock-file-corner"></div>' +
+        '<div class="ai-report-mock-file-body">' +
+        '<div class="ai-report-mock-line"></div>' +
+        '<div class="ai-report-mock-line short"></div>' +
+        '<div class="ai-report-mock-line mid"></div>' +
+        '<div class="ai-report-mock-line short"></div>' +
         '</div>' +
-        '<p class="ai-compare-report-text">已为您完成 <strong>' + escapeAiHtml(payload.specLabel || '同品同规') + '</strong> 商品的比质比价分析，共对比 <strong>' + count + '</strong> 款同品同规候选商品' +
-        (sourceName ? '（参照商品：' + escapeAiHtml(sourceName) + '）' : '') +
-        '。点击下方按钮即可查看完整报告。</p>' +
-        '<button type="button" class="ai-inline-action-btn ai-btn-compare-report" onclick="openAiCompareModalFromChat()">' +
-        '<i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> 查看比质比价报告</button>' +
-        '</div>'
+        '<span class="ai-report-mock-file-badge">' + badge + '</span>' +
+        '</div></div>'
       );
+    }
+
+    function renderAiReportResultCardHtml(opts) {
+      var type = (opts && opts.type) || 'compare';
+      var typeLabel = (opts && opts.typeLabel) || (type === 'contract' ? '合同合规' : (type === 'cart' ? '购物车' : '比质比价'));
+      var statusLabel = (opts && opts.statusLabel) || (type === 'cart' ? '已加入购物车' : '报告已生成');
+      var btnClass = type === 'contract' ? 'ai-btn-contract-report' : (type === 'cart' ? 'ai-btn-cart-go' : 'ai-btn-compare-report');
+      var btnIcon = (opts && opts.btnIcon) || 'fa-file-lines';
+      var btnLabel = (opts && opts.btnLabel) || '查看详细报告';
+      var onClick = (opts && opts.onClick) || '';
+      return (
+        '<div class="ai-report-result-card ai-report-result-' + type + '">' +
+        renderAiReportResultVisualHtml(type) +
+        '<div class="ai-report-result-body">' +
+        '<div class="ai-report-result-badge-row">' +
+        '<span class="ai-finder-badge type">' + escapeAiHtml(typeLabel) + '</span>' +
+        '<span class="ai-finder-badge done"><i class="fa-solid fa-check" aria-hidden="true"></i> ' + escapeAiHtml(statusLabel) + '</span>' +
+        '</div>' +
+        '<button type="button" class="ai-inline-action-btn ' + btnClass + '"' +
+        (onClick ? ' onclick="' + onClick + '"' : '') + '>' +
+        '<i class="fa-solid ' + btnIcon + '" aria-hidden="true"></i> ' + escapeAiHtml(btnLabel) +
+        '</button>' +
+        '</div></div>'
+      );
+    }
+
+    function renderAiCompareReportNoticeHtml(payload) {
+      return renderAiReportResultCardHtml({
+        type: 'compare',
+        typeLabel: '比质比价',
+        statusLabel: '报告已生成',
+        btnLabel: '查看详细报告',
+        onClick: 'openAiCompareModalFromChat()'
+      });
     }
 
     function openAiCompareModalFromChat() {
@@ -5731,6 +5866,9 @@
     }
 
     function aiFinderOpenCompare(id) {
+      var product = findAiProductById(id);
+      var productName = product ? product.name : '所选商品';
+      appendAiChat('user', '对' + productName + '进行比质比价');
       var loader = appendAiLoading('正在生成比质比价报告…');
       setTimeout(function() {
         removeAiLoading(loader);
@@ -5738,7 +5876,12 @@
         try {
           sessionStorage.setItem(AI_COMPARE_STORAGE_KEY, JSON.stringify(_aiCompareCurrentPayload));
         } catch (eSave) {}
-        appendAiBotRich(renderAiCompareReportNoticeHtml(_aiCompareCurrentPayload), 'compare');
+        var voiceText = buildAiCompanionVoiceText('compare', {
+          specLabel: _aiCompareCurrentPayload.specLabel,
+          count: (_aiCompareCurrentPayload.products || []).length,
+          sourceName: getAiCompareSourceName(_aiCompareCurrentPayload)
+        });
+        publishAiCompanionReply(voiceText, renderAiCompareReportNoticeHtml(_aiCompareCurrentPayload), 'compare');
       }, 780);
     }
 
@@ -5758,18 +5901,117 @@
           sessionStorage.setItem(AI_COMPARE_STORAGE_KEY, JSON.stringify(_aiCompareCurrentPayload));
         } catch (eSave) {}
       }
-      window.open('./compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
+      window.open('../pages-new/compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
+    }
+
+    function getAiFinderMatchDegree(state, products) {
+      if (state && state.matchDegree) return state.matchDegree;
+      if (!products || !products.length) return '—';
+      var best = 0;
+      products.forEach(function(p) {
+        var n = parseInt(String(p.score || '0'), 10);
+        if (n > best) best = n;
+      });
+      return best ? best + '%' : '—';
+    }
+
+    function buildAiCompanionVoiceText(scene, data) {
+      var cat = '采购猫';
+      data = data || {};
+      if (scene === 'procure') {
+        return cat + '已理解您的采购需求，目标品类为' + (data.category || '相关品类') +
+          '，采购规模' + (data.scale || '按实际需求') +
+          '，为您推荐了' + (data.count || 0) + '款合规商品，请查看下方推荐结果。';
+      }
+      if (scene === 'finder' || scene === 'image' || scene === 'link') {
+        return cat + '为您识别到' + (data.productName || '相关商品') +
+          '，已为您搜索匹配' + (data.count || 0) + '款同品同规商品，综合匹配度' + (data.matchDegree || '—') +
+          '，' + (data.advice || '建议结合比质比价结果择优采购。');
+      }
+      if (scene === 'compare') {
+        return cat + '已为您完成' + (data.specLabel || '同品同规') +
+          '的比质比价分析，共对比' + (data.count || 0) + '款候选商品' +
+          (data.sourceName ? '，参照商品为' + data.sourceName : '') +
+          '，请点击下方按钮查看完整报告。';
+      }
+      if (scene === 'cart') {
+        return cat + '已将' + (data.productName || '所选商品') +
+          '加入您的购物车，您可以继续选购或前往购物车结算。';
+      }
+      if (scene === 'contract') {
+        return cat + '已完成合同合规分析，共检出' + (data.total || 0) + '项风险，其中高风险' +
+          (data.high || 0) + '项、中风险' + (data.mid || 0) + '项，请查看下方分析详情。';
+      }
+      return '';
+    }
+
+    function extractFinderVoiceAdvice(state, products) {
+      var list = products && products.length ? products : (state && state.products) || [];
+      if (list.length && list[0].name) {
+        return '其中最佳匹配为' + list[0].name + '。';
+      }
+      if (!state || !state.conclusion) return '建议结合比质比价结果择优采购。';
+      var conclusion = String(state.conclusion);
+      var idx = conclusion.lastIndexOf('，');
+      if (idx >= 0 && idx < conclusion.length - 1) {
+        var tail = conclusion.slice(idx + 1).trim();
+        return tail.endsWith('。') ? tail : tail + '。';
+      }
+      return conclusion.endsWith('。') ? conclusion : conclusion + '。';
+    }
+
+    function buildAiFinderVoiceText(state, products) {
+      return buildAiCompanionVoiceText('finder', {
+        productName: state.productName || '相关商品',
+        count: (products && products.length) || 0,
+        matchDegree: getAiFinderMatchDegree(state, products),
+        advice: extractFinderVoiceAdvice(state, products)
+      });
+    }
+
+    function publishAiCompanionReply(voiceText, cardHtml, cardVariant) {
+      if (voiceText) {
+        appendAiChat('bot', voiceText);
+        speakAiCompanionVoice(voiceText);
+      }
+      if (cardHtml) appendAiBotRich(cardHtml, cardVariant || 'finder');
+    }
+
+    function speakAiCompanionVoice(text) {
+      if (!text || !window.speechSynthesis) return;
+      try {
+        window.speechSynthesis.cancel();
+        var utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'zh-CN';
+        utter.rate = 1;
+        window.speechSynthesis.speak(utter);
+      } catch (eSpeak) {}
+    }
+
+    function stopAiCompanionSpeech() {
+      if (window.speechSynthesis) {
+        try { window.speechSynthesis.cancel(); } catch (eStop) {}
+      }
     }
 
     function renderAiFinderCardHtml(state) {
       if (!state) return '';
       var products = (state.products && state.products.length) ? state.products : [];
       var matchCount = products.length;
+      var matchDegree = getAiFinderMatchDegree(state, products);
       var goodsHtml = products.map(function(p, i) { return renderAiFinderGoodsCard(p, i); }).join('');
       var linkUrlHtml = '';
       if (state.sourceType === 'link' && state.previewUrl) {
-        linkUrlHtml = '<div class="ai-finder-link-url">' + escapeAiHtml(state.previewUrl) + '</div>';
+        linkUrlHtml = '<div class="ai-finder-link-url" style="margin:8px 16px 0">' + escapeAiHtml(state.previewUrl) + '</div>';
       }
+      var analysisGrid = (
+        '<div class="ai-finder-analysis-item"><span class="k">名称</span><span class="v">' + escapeAiHtml(state.productName || '—') + '</span></div>' +
+        '<div class="ai-finder-analysis-item"><span class="k">品牌</span><span class="v">' + escapeAiHtml(state.brand || '—') + '</span></div>' +
+        '<div class="ai-finder-analysis-item"><span class="k">规格</span><span class="v">' + escapeAiHtml(state.spec || '—') + '</span></div>' +
+        '<div class="ai-finder-analysis-item"><span class="k">建议采购区间</span><span class="v price">' + escapeAiHtml(state.priceRange || '—') + '</span></div>' +
+        '<div class="ai-finder-analysis-item"><span class="k">匹配商品数量</span><span class="v">' + matchCount + ' 件</span></div>' +
+        '<div class="ai-finder-analysis-item"><span class="k">商品匹配度</span><span class="v match">' + escapeAiHtml(matchDegree) + '</span></div>'
+      );
       var goodsSection = matchCount ? (
         '<div class="ai-finder-divider"></div>' +
         '<div class="ai-finder-goods-section">' +
@@ -5789,11 +6031,15 @@
         '<span class="ai-finder-badge type">' + escapeAiHtml(state.sourceTypeLabel) + '</span>' +
         '<span class="ai-finder-badge done"><i class="fa-solid fa-check" aria-hidden="true"></i> 识别完成</span>' +
         '</div>' +
-        '<p class="ai-finder-hero-name">' + escapeAiHtml(state.productName) + '</p>' +
-        '<p class="ai-finder-hero-meta">' + escapeAiHtml(state.brand) + ' · ' + escapeAiHtml(state.spec) + '</p>' +
-        '<p class="ai-finder-hero-price"><small>建议区间</small>' + escapeAiHtml(state.priceRange) + '</p>' +
+        '<p class="ai-finder-hero-name">' + escapeAiHtml(state.previewTitle || '智能分析结果') + '</p>' +
+        '<p class="ai-finder-hero-meta">' + escapeAiHtml(state.previewSub || '') + '</p>' +
+        '</div>' +
+        '<div class="ai-finder-analysis">' +
+        '<div class="ai-finder-analysis-label">智能分析结果</div>' +
+        '<div class="ai-finder-analysis-grid">' + analysisGrid + '</div>' +
+        '</div>' +
+        '</div>' +
         linkUrlHtml +
-        '</div></div>' +
         goodsSection +
         '</div>'
       );
@@ -5814,7 +6060,7 @@
     }
 
     function openAiCompanionFinderDetail() {
-      window.open('./smart_compare.html', '_blank', 'noopener,noreferrer');
+      window.open('../pages-new/smart_compare.html', '_blank', 'noopener,noreferrer');
     }
 
     function appendAiLoading(label) {
@@ -5840,7 +6086,9 @@
       setTimeout(function() {
         removeAiLoading(loader);
         var state = buildAiFinderState(sourceType, meta || {});
-        appendAiBotRich(renderAiFinderCardHtml(state), 'finder');
+        var products = (state.products && state.products.length) ? state.products : [];
+        var voiceText = buildAiFinderVoiceText(state, products);
+        publishAiCompanionReply(voiceText, renderAiFinderCardHtml(state), 'finder');
       }, 720);
     }
 
@@ -6009,7 +6257,13 @@
       var loader = appendAiLoading('正在分析您的采购需求…');
       setTimeout(function() {
         removeAiLoading(loader);
-        appendAiBotRich(renderAiProcureCardHtml(scenario, query), 'finder');
+        var analysis = buildAiProcureAnalysis(scenario, query);
+        var voiceText = buildAiCompanionVoiceText('procure', {
+          category: analysis.category,
+          scale: analysis.scale,
+          count: (scenario.products || []).length
+        });
+        publishAiCompanionReply(voiceText, renderAiProcureCardHtml(scenario, query), 'finder');
       }, 780);
       return true;
     }
@@ -6037,26 +6291,13 @@
     }
 
     function renderAiContractCardHtml(meta) {
-      var counts = countAiContractRisks();
-      var fileName = (meta && meta.fileName) ? meta.fileName : '上传合同';
-      var overall = buildAiContractOverall(counts);
-      return (
-        '<div class="ai-contract-card">' +
-        '<div class="ai-contract-card-head">' +
-        '<span class="ai-finder-status"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 分析完成</span>' +
-        '<span class="ai-finder-source-chip">合同合规校验</span>' +
-        '</div>' +
-        '<div class="ai-contract-doc"><strong>' + escapeAiHtml(_AI_CONTRACT_ANALYSIS.contractTitle) + '</strong> · ' + escapeAiHtml(fileName) + '</div>' +
-        '<div class="ai-contract-overall"><span class="ai-contract-overall-label">总体评价</span>' + escapeAiHtml(overall) + '</div>' +
-        '<div class="ai-contract-risks">' +
-        '<div class="ai-contract-risk-stat is-high"><span class="num">' + counts.high + '</span><span class="lbl">高风险</span></div>' +
-        '<div class="ai-contract-risk-stat is-mid"><span class="num">' + counts.mid + '</span><span class="lbl">中风险</span></div>' +
-        '<div class="ai-contract-risk-stat is-low"><span class="num">' + counts.low + '</span><span class="lbl">低风险</span></div>' +
-        '</div>' +
-        '<div class="ai-contract-ask-hint"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i>可直接提问了解风险详情，例如：「第7条高风险项怎么改？」「付款条款有什么风险？」</div>' +
-        '<button type="button" class="ai-inline-action-btn ai-btn-contract" onclick="openAiCompanionContractDetail()">打开分析详情</button>' +
-        '</div>'
-      );
+      return renderAiReportResultCardHtml({
+        type: 'contract',
+        typeLabel: '合同合规',
+        statusLabel: '报告已生成',
+        btnLabel: '查看详细报告',
+        onClick: 'openAiCompanionContractDetail()'
+      });
     }
 
     function saveAiContractSession(meta) {
@@ -6084,7 +6325,9 @@
       var loader = appendAiLoading('正在解析合同并检测合规风险…');
       setTimeout(function() {
         removeAiLoading(loader);
-        appendAiBotRich(renderAiContractCardHtml(meta), 'finder');
+        var counts = countAiContractRisks();
+        var voiceText = buildAiCompanionVoiceText('contract', counts);
+        publishAiCompanionReply(voiceText, renderAiContractCardHtml(meta), 'contract');
       }, 900);
     }
 

@@ -109,6 +109,48 @@
     .rule-inq { background:linear-gradient(135deg,#eff6ff,#fff); border:1px solid #bfdbfe; color:#1e40af; }
 
     .demand-table th, .demand-table td { font-size:13px; padding:10px 12px; }
+
+    .quote-extra-field { margin-top: 16px; }
+    .quote-extra-label { display:block; font-size:13px; font-weight:700; color:#334155; margin-bottom:6px; }
+    .quote-extra-hint { font-size:11px; color:#94a3b8; font-weight:400; margin-left:6px; }
+    .quote-extra-textarea {
+      border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; font-size:14px;
+      width:100%; min-height:84px; resize:vertical; font-family:inherit; line-height:1.55;
+    }
+    .quote-extra-textarea:focus { outline:none; border-color:#0f766e; box-shadow:0 0 0 3px rgba(15,118,110,.12); }
+    .quote-file-row {
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      padding:12px 14px; border:1px dashed #cbd5e1; border-radius:10px; background:#f8fafc;
+    }
+    .quote-file-meta { flex:1; min-width:0; }
+    .quote-file-hint { font-size:13px; color:#94a3b8; line-height:1.5; }
+    .quote-file-chip {
+      display:none; align-items:center; gap:8px; max-width:100%;
+      padding:8px 10px; background:#fff; border:1px solid #e2e8f0; border-radius:8px;
+    }
+    .quote-file-chip.has-file { display:inline-flex; }
+    .quote-file-chip:hover { border-color:#cbd5e1; box-shadow:0 2px 8px rgba(15,23,42,.04); }
+    .quote-file-chip i.fa-file-lines { color:#64748b; flex-shrink:0; }
+    .quote-file-name { font-size:13px; color:#334155; font-weight:700; word-break:break-all; min-width:0; }
+    .quote-file-remove {
+      flex-shrink:0; width:24px; height:24px; padding:0; border:none; border-radius:6px;
+      background:transparent; color:#94a3b8; font-size:14px; line-height:1; cursor:pointer;
+      opacity:0; transition:opacity .15s ease, background .15s ease, color .15s ease;
+    }
+    .quote-file-chip:hover .quote-file-remove { opacity:1; }
+    .quote-file-remove:hover { background:#fef2f2; color:#dc2626; }
+    .quote-file-input-hidden {
+      position:absolute; width:0; height:0; opacity:0; overflow:hidden; pointer-events:none;
+    }
+    .quote-file-upload-btn {
+      flex-shrink:0; display:inline-flex; align-items:center; gap:6px;
+      height:36px; padding:0 14px; border-radius:8px; font-size:13px; font-weight:700;
+      color:#0f766e; background:#fff; border:1px solid #99f6e4; cursor:pointer; white-space:nowrap;
+    }
+    .quote-file-upload-btn:hover { background:#ecfdf5; border-color:#0f766e; }
+    .quote-submit-row {
+      margin-top:24px; display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; gap:12px;
+    }
   </style>
 </head>
 <body>
@@ -221,22 +263,43 @@
         <div id="quoteRuleBanner"></div>
 
         <div class="inner-card">
-          <h4 class="font-bold text-slate-900 text-base mb-4">按商品单价报价</h4>
+          <h4 class="font-bold text-slate-900 text-base mb-1">我方报价历史</h4>
+          <p class="text-xs text-slate-500 mb-3">按提交时间从新到旧排列。</p>
+          <div id="mHistBox"></div>
+        </div>
+
+        <div class="inner-card">
+          <h4 class="font-bold text-slate-900 text-base mb-4">填写报价信息</h4>
           <p class="text-xs text-slate-500 mb-3">填写各行报价，自动汇总总价；单行报价<strong class="text-slate-700">不得超过平台最高价</strong>，超出将无法提交。</p>
           <div class="overflow-x-auto">
             <table class="w-full border-collapse text-sm" id="mLinesTable"></table>
           </div>
           <div class="mt-3 text-right font-bold">汇总：<span class="money text-lg" id="mSumLines">¥0</span></div>
-          <div class="mt-6 flex flex-wrap gap-3 items-center">
-            <button type="button" class="btn btn-primary btn-lg" onclick="submitModalQuote()"><i class="fas fa-paper-plane mr-2"></i>提交报价</button>
-            <span class="text-xs text-slate-400">提交后立即写入演示数据（sessionStorage），关闭弹窗后列表刷新可见。</span>
-          </div>
-        </div>
 
-        <div class="inner-card">
-          <h4 class="font-bold text-slate-900 text-base mb-1">我方报价历史</h4>
-          <p class="text-xs text-slate-500 mb-3">按提交时间从新到旧排列。</p>
-          <div id="mHistBox"></div>
+          <div class="quote-extra-field">
+            <label class="quote-extra-label" for="mQuoteRemark">报价说明</label>
+            <textarea id="mQuoteRemark" class="quote-extra-textarea" placeholder="可填写交付周期、质保、安装调试等补充说明（选填）"></textarea>
+          </div>
+          <div class="quote-extra-field">
+            <label class="quote-extra-label" id="mQuoteDescFileLabel">竞价说明文件</label>
+            <div class="quote-file-row">
+              <div class="quote-file-meta">
+                <span class="quote-file-hint" id="mQuoteDescFileHint">支持 PDF、Word、Excel、图片，选填</span>
+                <div class="quote-file-chip" id="mQuoteDescFileChip">
+                  <i class="fas fa-file-lines"></i>
+                  <span class="quote-file-name" id="mQuoteDescFileName"></span>
+                  <button type="button" class="quote-file-remove" onclick="clearQuoteDescFile()" title="删除文件" aria-label="删除文件"><i class="fas fa-xmark"></i></button>
+                </div>
+              </div>
+              <label class="quote-file-upload-btn" for="mQuoteDescFile"><i class="fas fa-upload"></i> 上传文件</label>
+              <input type="file" id="mQuoteDescFile" class="quote-file-input-hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" onchange="onQuoteDescFileChange(this)">
+            </div>
+          </div>
+
+          <div class="quote-submit-row">
+            <span class="text-xs text-slate-400">提交后立即写入演示数据（sessionStorage），关闭弹窗后列表刷新可见。</span>
+            <button type="button" class="btn btn-primary btn-lg" onclick="submitModalQuote()"><i class="fas fa-paper-plane mr-2"></i>提交报价</button>
+          </div>
         </div>
       </div>
     </div>
@@ -667,10 +730,50 @@
       rows.push('<div class="hist-row-m"><span class="text-slate-500">（初始演示）</span><span>—</span><span>来自内置示例 · </span><span class="money">' + fmtMoney(r.mine) + '</span></div>');
     }
     list.forEach(function (h) {
-      rows.push('<div class="hist-row-m"><span class="text-slate-500">' + esc(h.time) + '</span><span>' + esc(h.way) + '</span><span>' + esc(h.note || '') + '</span><span class="money">' + fmtMoney(h.amount) + '</span></div>');
+      var noteText = h.quoteRemark || h.note || '';
+      if (h.descFileName) noteText = (noteText ? noteText + ' · ' : '') + h.descFileName;
+      rows.push('<div class="hist-row-m"><span class="text-slate-500">' + esc(h.time) + '</span><span>' + esc(h.way) + '</span><span>' + esc(noteText) + '</span><span class="money">' + fmtMoney(h.amount) + '</span></div>');
     });
     box.innerHTML = rows.length ? rows.join('') : '<p class="text-sm text-slate-400">暂无提交记录</p>';
   }
+
+  function resetQuoteFormExtras(mode) {
+    var remarkEl = document.getElementById('mQuoteRemark');
+    var fileEl = document.getElementById('mQuoteDescFile');
+    var fileNameEl = document.getElementById('mQuoteDescFileName');
+    var fileChipEl = document.getElementById('mQuoteDescFileChip');
+    var fileHintEl = document.getElementById('mQuoteDescFileHint');
+    var fileLabelEl = document.getElementById('mQuoteDescFileLabel');
+    if (remarkEl) remarkEl.value = '';
+    if (fileEl) fileEl.value = '';
+    if (fileNameEl) fileNameEl.textContent = '';
+    if (fileChipEl) fileChipEl.classList.remove('has-file');
+    if (fileHintEl) fileHintEl.style.display = '';
+    if (fileLabelEl) fileLabelEl.textContent = mode === 'inquiry' ? '询价说明文件' : '竞价说明文件';
+  }
+
+  window.clearQuoteDescFile = function () {
+    var fileEl = document.getElementById('mQuoteDescFile');
+    if (fileEl) fileEl.value = '';
+    onQuoteDescFileChange(fileEl);
+  };
+
+  window.onQuoteDescFileChange = function (input) {
+    var nameEl = document.getElementById('mQuoteDescFileName');
+    var chipEl = document.getElementById('mQuoteDescFileChip');
+    var hintEl = document.getElementById('mQuoteDescFileHint');
+    if (!nameEl) return;
+    var f = input && input.files && input.files[0];
+    if (f) {
+      nameEl.textContent = f.name;
+      if (chipEl) chipEl.classList.add('has-file');
+      if (hintEl) hintEl.style.display = 'none';
+    } else {
+      nameEl.textContent = '';
+      if (chipEl) chipEl.classList.remove('has-file');
+      if (hintEl) hintEl.style.display = '';
+    }
+  };
 
   window.openQuoteModal = function (id) {
     var r = getMergedRow(id);
@@ -690,6 +793,7 @@
 
     modalBidProducts = initBidProductsForProject(id, dem.lines);
     dem.lines.forEach(function (L) { delete L._savedPrice; });
+    resetQuoteFormExtras(r.mode);
     buildModalLinesTable(dem.lines, id);
     recalcModalLines();
     renderModalHist(r);
@@ -732,7 +836,12 @@
     }
 
     var wayLabel = '明细汇总';
-    var note = '按商品单价';
+    var quoteRemark = (document.getElementById('mQuoteRemark').value || '').trim();
+    var descFileInput = document.getElementById('mQuoteDescFile');
+    var descFileName = descFileInput && descFileInput.files && descFileInput.files[0]
+      ? descFileInput.files[0].name
+      : '';
+    var note = quoteRemark || '按商品单价';
 
     if (dem.budget && amount > dem.budget) {
       if (!confirm('金额超过演示预算 ' + fmtMoney(dem.budget) + '，仍要提交演示吗？')) return;
@@ -765,6 +874,8 @@
       way: wayLabel,
       amount: amount,
       note: note,
+      quoteRemark: quoteRemark,
+      descFileName: descFileName,
       bidProducts: dem.lines.map(function (_, i) {
         var p = modalBidProducts[i];
         return p ? { name: p.name, spec: p.spec || '' } : null;

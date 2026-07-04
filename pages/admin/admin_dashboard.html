@@ -814,9 +814,13 @@
         <span class="icon-menu-mgmt" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M3 4.25A1.25 1.25 0 0 1 4.25 3h5.5A1.25 1.25 0 0 1 11 4.25V6.5H3V4.25zm10.5 0A1.25 1.25 0 0 1 14.75 3h5.5A1.25 1.25 0 0 1 21.5 4.25V6.5H13.5V4.25zM3 10.25A1.25 1.25 0 0 1 4.25 9h4.25A1.25 1.25 0 0 1 9.5 10.25v2.25H3v-2.25zm8.5 0a1.25 1.25 0 0 1 1.25-1.25h4.25A1.25 1.25 0 0 1 17.25 10.25v2.25H11.5v-2.25zM3 16.25A1.25 1.25 0 0 1 4.25 15h5.75A1.25 1.25 0 0 1 11.25 16.25v2.25H3v-2.25zm9.5 0a1.25 1.25 0 0 1 1.25-1.25h5.75A1.25 1.25 0 0 1 19.5 16.25v2.25H12.5v-2.25z"/><path stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M7.375 6.5v3.75M7.375 12.5v3.75"/></svg></span>
         <span>菜单管理</span>
       </a>
-      <a href="admin_cockpit.html" class="admin-menu-item" target="_blank" title="新窗口打开大屏驾驶舱">
+      <a href="../../pages-new/admin/admin_cockpit.html" class="admin-menu-item" target="_blank" title="运营监控驾驶舱">
         <i class="fas fa-tachometer-alt"></i>
-        <span>数据驾驶舱</span>
+        <span>数据驾驶舱一</span>
+      </a>
+      <a href="../../pages-new/admin/admin_cockpit_2.html" class="admin-menu-item" target="_blank" title="客户价值驾驶舱">
+        <i class="fas fa-gem"></i>
+        <span>数据驾驶舱二</span>
       </a>
     </nav>
   </div>
@@ -1389,10 +1393,23 @@
       if (g) g.classList.toggle('open');
     }
 
+    /** 已迁移至 pages-new/admin/ 的子页面 */
+    const adminPagesNew = new Set([
+      'admin_product_audit_list.html',
+      'admin_tag_platform_lib.html',
+      'admin_tag_product_lib.html',
+      'admin_tag_supplier_lib.html',
+      'admin_tag_log.html',
+      'admin_menu_manage.html'
+    ]);
+
     function buildAdminSubpageSrc(page) {
       if (!page) return 'about:blank';
       const q = page.indexOf('?');
-      const path = q === -1 ? page : page.slice(0, q);
+      let path = q === -1 ? page : page.slice(0, q);
+      if (adminPagesNew.has(path)) {
+        path = '../../pages-new/admin/' + path;
+      }
       const params = new URLSearchParams(q === -1 ? '' : page.slice(q + 1));
       params.set('embed', '1');
       const qs = params.toString();

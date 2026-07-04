@@ -5520,7 +5520,7 @@
       const sameRows = currentProduct.compare.same || [];
       const payload = buildAiComparePayloadFromProduct(currentProduct, sameRows);
       sessionStorage.setItem('aiComparePayload', JSON.stringify(payload));
-      window.open('./compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
+      window.open('../pages-new/compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
     }
 
     function buildAiComparePayloadFromProduct(base, sameRows) {
@@ -5659,7 +5659,7 @@
 
       sessionStorage.setItem('compareAnalysisPayload', JSON.stringify(payload));
       closeComparePicker();
-      window.location.href = './compare_analysis.html';
+      window.location.href = '../pages-new/compare_analysis.html';
     }
 
     function renderParams() {
@@ -6790,7 +6790,7 @@
     function chooseLaunchBidInquiry() {
       closeBidRequiredModal();
       buildProductBidLaunchSession();
-      window.location.href = './bid_assist_result.html?source=product';
+      window.location.href = '../pages-new/bid_assist_result.html?source=product';
     }
 
     function showToast(message) {

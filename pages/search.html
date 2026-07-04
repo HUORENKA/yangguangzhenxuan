@@ -901,7 +901,7 @@
           <input id="searchInput" class="search-input" placeholder="请输入采购需求，如“A4打印纸，15元以内，华南供应商，高时效”">
           <button id="searchBtn" class="search-btn" type="button">搜索</button>
         </div>
-        <a class="cat-assistant-btn" href="./ai_assistant.html" title="猫助手 · AI 智能采购">
+        <a class="cat-assistant-btn" href="../pages-new/ai_assistant.html" title="猫助手 · AI 智能采购">
           <span class="cat-mini" aria-hidden="true">
             <span class="cat-mini-card">
               <span class="cat-mini-face">
@@ -1605,7 +1605,7 @@
       const sameRows = buildCompareRows(product, 'same');
       const payload = buildAiComparePayloadFromRows(product, sameRows);
       sessionStorage.setItem('aiComparePayload', JSON.stringify(payload));
-      window.open('./compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
+      window.open('../pages-new/compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
     }
 
     function closeComparePicker() {
@@ -1697,7 +1697,7 @@
 
       sessionStorage.setItem('compareAnalysisPayload', JSON.stringify(payload));
       closeComparePicker();
-      window.location.href = './compare_analysis.html';
+      window.location.href = '../pages-new/compare_analysis.html';
     }
 
     function bindCompareTabs() {

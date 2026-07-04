@@ -2043,7 +2043,7 @@
     }
 
     function getApprovalPageUrl(approver) {
-      const base = window.location.href.replace(/[^/]*$/, 'purchase_approval.html');
+      const base = window.location.href.replace(/[^/]*$/, '../pages-new/purchase_approval.html');
       const params = new URLSearchParams({
         po: orderData.orderNo
       });
@@ -2187,7 +2187,7 @@
 
     function finalizeSubmitPurchase() {
       sessionStorage.setItem(APPROVAL_STORAGE_KEY, JSON.stringify(buildApprovalPayload()));
-      window.location.href = './purchase_approval.html?po=' + encodeURIComponent(orderData.orderNo);
+      window.location.href = '../pages-new/purchase_approval.html?po=' + encodeURIComponent(orderData.orderNo);
     }
 
     function confirmSubmitPurchase() {
