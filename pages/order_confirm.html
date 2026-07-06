@@ -1691,7 +1691,7 @@
     }
 
     function loadOrderData() {
-      const raw = sessionStorage.getItem(ORDER_STORAGE_KEY);
+      const raw = sessionStorage.getItem(ORDER_STORAGE_KEY) || localStorage.getItem(ORDER_STORAGE_KEY);
       if (!raw) return getFallbackOrder();
       try {
         const parsed = JSON.parse(raw);

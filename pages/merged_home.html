@@ -2065,6 +2065,502 @@
       border: none;
       box-shadow: none;
     }
+    .ai-msg.bot.ai-msg-rich.ai-msg-cart.is-cart-expanded {
+      max-width: min(96%, 680px);
+      width: min(100%, 680px);
+    }
+    .ai-cart-wrap {
+      width: 100%;
+    }
+    .ai-cart-panel {
+      background: #fff;
+      border: 1px solid rgba(226, 232, 240, 0.92);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+    }
+    .ai-cart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #fff7ed 0%, #fff 58%, #f8fafc 100%);
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .ai-cart-head-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .ai-cart-head-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #ffedd5, #fed7aa);
+      color: #ea580c;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    }
+    .ai-cart-head-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+    .ai-cart-head-sub {
+      margin-top: 3px;
+      font-size: 11px;
+      color: #64748b;
+    }
+    .ai-cart-head-badge {
+      flex-shrink: 0;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #fed7aa;
+      color: #ea580c;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .ai-cart-table {
+      background: #f8fafc;
+    }
+    .ai-cart-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) 92px 84px;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      min-height: 92px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.15s ease;
+    }
+    .ai-cart-store-list {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ai-cart-store-group {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+    .ai-cart-store-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: linear-gradient(180deg, #fafafa 0%, #fff 100%);
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 12px;
+      color: #334155;
+    }
+    .ai-cart-store-head input[type="checkbox"],
+    .ai-cart-row .col-check input[type="checkbox"],
+    .ai-cart-foot-check input[type="checkbox"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      margin: 0;
+      vertical-align: middle;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+    .ai-cart-store-head input[type="checkbox"]:checked,
+    .ai-cart-row .col-check input[type="checkbox"]:checked,
+    .ai-cart-foot-check input[type="checkbox"]:checked {
+      background: #ff6a00;
+      border-color: #ff6a00;
+    }
+    .ai-cart-store-head input[type="checkbox"]:checked::after,
+    .ai-cart-row .col-check input[type="checkbox"]:checked::after,
+    .ai-cart-foot-check input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 4.5px;
+      top: 1.5px;
+      width: 4px;
+      height: 8px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .ai-cart-store-head input[type="checkbox"]:focus-visible,
+    .ai-cart-row .col-check input[type="checkbox"]:focus-visible,
+    .ai-cart-foot-check input[type="checkbox"]:focus-visible {
+      outline: 2px solid rgba(255, 106, 0, 0.35);
+      outline-offset: 1px;
+    }
+    .ai-cart-store-logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+    }
+    .ai-cart-store-logo.is-jd { background: linear-gradient(135deg, #ff6b6b, #e1251b); }
+    .ai-cart-store-logo.is-suning { background: linear-gradient(135deg, #ffb347, #ff6600); }
+    .ai-cart-store-logo.is-taobao { background: linear-gradient(135deg, #ff7a45, #ff5000); }
+    .ai-cart-store-logo.is-platform { background: linear-gradient(135deg, #64748b, #475569); }
+    .ai-cart-store-name {
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .ai-cart-store-count {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .ai-cart-store-all {
+      margin-left: auto;
+      border: none;
+      background: none;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--brand);
+      cursor: pointer;
+    }
+    .ai-cart-store-all:hover {
+      background: #eff6ff;
+    }
+    .ai-cart-store-body .ai-cart-row:last-child {
+      border-bottom: none;
+    }
+    .ai-cart-row:hover {
+      background: #fafbff;
+    }
+    .ai-cart-goods-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .ai-cart-goods-thumb {
+      width: 68px;
+      height: 68px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #f8fafc;
+    }
+    .ai-cart-goods-info {
+      min-width: 0;
+    }
+    .ai-cart-goods-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ai-cart-goods-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .ai-cart-spec-tag {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ai-cart-goods-unit {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .ai-cart-col-price-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      min-width: 0;
+    }
+    .ai-cart-price-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1px;
+      line-height: 1.2;
+    }
+    .ai-cart-price-item .k {
+      font-size: 10px;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    .ai-cart-price-item .v {
+      font-size: 13px;
+      font-weight: 800;
+      color: #ff6a00;
+      white-space: nowrap;
+    }
+    .ai-cart-price-item.sub .v {
+      font-size: 15px;
+    }
+    .ai-cart-col-qty {
+      display: flex;
+      justify-content: center;
+    }
+    .ai-cart-qty-stepper {
+      display: inline-flex;
+      align-items: center;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .ai-cart-qty-btn {
+      width: 28px;
+      height: 30px;
+      border: none;
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 10px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .ai-cart-qty-btn:hover {
+      background: #eff6ff;
+      color: var(--brand);
+    }
+    .ai-cart-qty-stepper input {
+      width: 40px;
+      height: 30px;
+      border: none;
+      border-left: 1.5px solid #e2e8f0;
+      border-right: 1.5px solid #e2e8f0;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      outline: none;
+      padding: 0;
+      background: #fff;
+      -moz-appearance: textfield;
+    }
+    .ai-cart-qty-stepper input::-webkit-outer-spin-button,
+    .ai-cart-qty-stepper input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .ai-cart-pager {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 10px 14px 12px;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+    }
+    .ai-cart-pager-btn {
+      width: 32px;
+      height: 32px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      background: #fff;
+      color: #64748b;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    }
+    .ai-cart-pager-btn:hover:not(:disabled) {
+      border-color: #fdba74;
+      color: #ea580c;
+      background: #fff7ed;
+    }
+    .ai-cart-pager-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .ai-cart-pager-info {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      min-width: 72px;
+      text-align: center;
+    }
+    .ai-cart-pager-info strong {
+      color: #ff6a00;
+      font-weight: 800;
+    }
+    .ai-cart-empty {
+      padding: 52px 20px;
+      text-align: center;
+    }
+    .ai-cart-empty-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 14px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #fff7ed, #ffedd5);
+      color: #fdba74;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+    .ai-cart-empty-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #334155;
+    }
+    .ai-cart-empty-sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .ai-cart-footbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border-top: 1px solid #e2e8f0;
+      background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+      flex-wrap: wrap;
+    }
+    .ai-cart-foot-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .ai-cart-foot-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+      color: #334155;
+    }
+    .ai-cart-foot-divider {
+      width: 1px;
+      height: 14px;
+      background: #e2e8f0;
+    }
+    .ai-cart-foot-link {
+      border: none;
+      background: none;
+      padding: 4px 6px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ai-cart-foot-link:hover {
+      color: var(--brand);
+      background: #eff6ff;
+    }
+    .ai-cart-foot-link.muted:hover {
+      color: #ef4444;
+      background: #fef2f2;
+    }
+    .ai-cart-foot-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-left: auto;
+    }
+    .ai-cart-foot-summary {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .ai-cart-foot-summary .count strong {
+      color: #ff6a00;
+      font-weight: 800;
+    }
+    .ai-cart-foot-summary .total-wrap {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .ai-cart-foot-summary .total-lbl {
+      color: #334155;
+      font-weight: 700;
+    }
+    .ai-cart-foot-summary .total-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ff6a00;
+      letter-spacing: -0.4px;
+    }
+    .ai-cart-checkout-btn {
+      height: 42px;
+      padding: 0 22px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 6px 18px rgba(234, 88, 12, 0.28);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+    .ai-cart-checkout-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .ai-cart-checkout-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(234, 88, 12, 0.32);
+    }
     .ai-msg.bot.ai-msg-rich.ai-msg-plan {
       max-width: min(94%, 520px);
       min-width: min(100%, 460px);
@@ -7930,10 +8426,29 @@
       return found;
     }
 
+    var AI_CART_DEMO_VERSION = '2';
+    var AI_CART_PAGE_SIZE = 5;
+
+    function getAiCartDemoSeedItems() {
+      return [
+        { id: 'cart-demo-01', name: '明基 商务投影仪 企业版', spec: '1080P / 商务会议', price: 3399, unit: '台', supplier: '明基企业采购专营店', img: 'https://images.unsplash.com/photo-1593784991095-a205069470b6?w=320&h=320&fit=crop', qty: 1, selected: false },
+        { id: 'cart-demo-02', name: '极米 商务会议投影仪 高清版', spec: '1080P / 多接口', price: 2999, unit: '台', supplier: '极米政企旗舰店', img: 'https://images.unsplash.com/photo-1536240478700-b869ad10e2cc?w=320&h=320&fit=crop', qty: 2, selected: false },
+        { id: 'cart-demo-03', name: '爱普生 办公会议投影仪 标准版', spec: '3500流明 / 无线', price: 3199, unit: '台', supplier: '爱普生办公设备店', img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=320&h=320&fit=crop', qty: 1, selected: false },
+        { id: 'cart-demo-04', name: '得力 人体工学办公椅 腰托款', spec: '可升降 / 腰托', price: 768, unit: '把', supplier: '得力办公家具馆', img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=320&h=320&fit=crop', qty: 4, selected: false },
+        { id: 'cart-demo-05', name: 'FUJIFILM A4 黑白激光打印机', spec: 'A4 / 双面打印', price: 1653.46, unit: '台', supplier: '震坤行工业超市(上海)有限公司', img: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=320&h=320&fit=crop', qty: 1, selected: false },
+        { id: 'cart-demo-06', name: '得力 A4 复印纸 70g 8包装', spec: 'A4 / 70g / 8包', price: 1280, unit: '箱', supplier: '京采云商贸有限公司', img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=320&h=320&fit=crop', qty: 3, selected: false },
+        { id: 'cart-demo-07', name: 'HP 85A 兼容硒鼓 CE285A', spec: 'HP 85A 兼容', price: 420, unit: '个', supplier: '政采优选数码科技', img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=320&h=320&fit=crop', qty: 20, selected: false },
+        { id: 'cart-demo-08', name: '晨光 A4 复印纸 70g 500张×8包', spec: 'A4 / 70g', price: 1190, unit: '箱', supplier: '晨光集采专营店', img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=320&h=320&fit=crop', qty: 2, selected: false },
+        { id: 'cart-demo-09', name: '格之格 CE285A 兼容硒鼓', spec: 'CE285A 兼容', price: 385, unit: '个', supplier: '格之格办公旗舰店', img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=320&h=320&fit=crop', qty: 10, selected: false },
+        { id: 'cart-demo-10', name: '天章复印纸 A5 80g 白色 10包/箱', spec: 'A5 / 80g', price: 123, unit: '件', supplier: '苏宁易购集团股份有限公司', img: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=320&h=320&fit=crop', qty: 5, selected: false },
+        { id: 'cart-demo-11', name: '唐丰 安全帽 TF/唐丰ABS-V 蓝', spec: 'ABS-V / 蓝色', price: 17.7, unit: '顶', supplier: '西域智慧供应链(上海)股份公司', img: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=320&h=320&fit=crop', qty: 50, selected: false },
+        { id: 'cart-demo-12', name: '永艺 人体工学办公椅 商务版', spec: '头枕 / 腰托 / 升降', price: 899, unit: '把', supplier: '永艺政企采购店', img: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=320&h=320&fit=crop', qty: 2, selected: false }
+      ];
+    }
+
     function saveAiCartItem(product) {
       try {
-        var raw = sessionStorage.getItem('aiCartItems');
-        var items = raw ? JSON.parse(raw) : [];
+        var items = loadAiCartItems();
         var sid = String(product.id);
         var existing = null;
         for (var i = 0; i < items.length; i++) {
@@ -7949,27 +8464,469 @@
             unit: product.unit,
             supplier: product.supplier,
             img: product.img,
-            qty: 1
+            qty: 1,
+            selected: false
           });
         }
-        sessionStorage.setItem('aiCartItems', JSON.stringify(items));
+        saveAiCartItems(items);
       } catch (eSave) {}
     }
 
-    function renderAiCartAddedHtml(product) {
-      return renderAiReportResultCardHtml({
-        type: 'cart',
-        typeLabel: '购物车',
-        statusLabel: '已加入购物车',
-        btnLabel: '进入购物车',
-        btnIcon: 'fa-cart-shopping',
-        onClick: 'openAiShoppingCart()'
+    function loadAiCartItems() {
+      try {
+        var demoVer = sessionStorage.getItem('aiCartDemoVersion');
+        var raw = sessionStorage.getItem('aiCartItems');
+        if (!raw || demoVer !== AI_CART_DEMO_VERSION) {
+          var seed = getAiCartDemoSeedItems();
+          saveAiCartItems(seed);
+          sessionStorage.setItem('aiCartDemoVersion', AI_CART_DEMO_VERSION);
+          return seed.map(function(it) { return Object.assign({}, it); });
+        }
+        var items = JSON.parse(raw);
+        return items.map(function(it) {
+          var row = Object.assign({}, it);
+          if (typeof row.selected === 'undefined') row.selected = false;
+          if (!row.qty || row.qty < 1) row.qty = 1;
+          return row;
+        });
+      } catch (eLoad) {
+        return getAiCartDemoSeedItems().map(function(it) { return Object.assign({}, it); });
+      }
+    }
+
+    function saveAiCartItems(items) {
+      try {
+        sessionStorage.setItem('aiCartItems', JSON.stringify(items || []));
+      } catch (eSave) {}
+    }
+
+    function aiCartCalcTotal(items, selectedOnly) {
+      return (items || []).reduce(function(sum, it) {
+        if (selectedOnly && it.selected !== true) return sum;
+        return sum + (Number(it.price) || 0) * (Number(it.qty) || 1);
+      }, 0);
+    }
+
+    function aiCartFormatPrice(val) {
+      return '¥' + Number(val || 0).toFixed(2);
+    }
+
+    function aiCartResolveStore(supplier) {
+      var s = String(supplier || '平台店铺');
+      if (/京东|JD/i.test(s)) return { key: 'jd', name: '京东', cls: 'is-jd', short: 'JD' };
+      if (/苏宁/i.test(s)) return { key: 'suning', name: '苏宁易购', cls: 'is-suning', short: '宁' };
+      if (/淘宝|天猫/i.test(s)) return { key: 'taobao', name: '淘宝', cls: 'is-taobao', short: '淘' };
+      var shortName = s.length > 10 ? s.slice(0, 10) + '…' : s;
+      return { key: 'store_' + s.slice(0, 16), name: shortName, cls: 'is-platform', short: shortName.slice(0, 1) };
+    }
+
+    function aiCartGroupByStore(items) {
+      var map = {};
+      var order = [];
+      (items || []).forEach(function(it) {
+        var store = aiCartResolveStore(it.supplier);
+        if (!map[store.key]) {
+          map[store.key] = { store: store, items: [] };
+          order.push(store.key);
+        }
+        map[store.key].items.push(it);
       });
+      return order.map(function(key) { return map[key]; });
+    }
+
+    function aiCartGetPageCount(items) {
+      var len = (items || []).length;
+      if (!len) return 1;
+      return Math.ceil(len / AI_CART_PAGE_SIZE);
+    }
+
+    function aiCartGetPageItems(items, pageIndex) {
+      var start = pageIndex * AI_CART_PAGE_SIZE;
+      return (items || []).slice(start, start + AI_CART_PAGE_SIZE);
+    }
+
+    function aiCartClampPageIndex(pageIndex, items) {
+      var pageCount = aiCartGetPageCount(items);
+      if (pageIndex < 0) return 0;
+      if (pageIndex >= pageCount) return Math.max(0, pageCount - 1);
+      return pageIndex;
+    }
+
+    function getAiCartCurrentPage(wrap) {
+      var panel = wrap && wrap.querySelector ? wrap.querySelector('.ai-cart-panel') : null;
+      return panel ? parseInt(panel.getAttribute('data-cart-page') || '0', 10) : 0;
+    }
+
+    function renderAiCartPagerHtml(items, pageIndex) {
+      var pageCount = aiCartGetPageCount(items);
+      if (items.length <= AI_CART_PAGE_SIZE) return '';
+      var pageNum = pageIndex + 1;
+      return (
+        '<div class="ai-cart-pager">' +
+        '<button type="button" class="ai-cart-pager-btn" aria-label="上一页"' +
+        (pageIndex <= 0 ? ' disabled' : '') +
+        ' onclick="aiCartGoPage(-1, this)"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>' +
+        '<span class="ai-cart-pager-info">第 <strong>' + pageNum + '</strong> / ' + pageCount + ' 页</span>' +
+        '<button type="button" class="ai-cart-pager-btn" aria-label="下一页"' +
+        (pageIndex >= pageCount - 1 ? ' disabled' : '') +
+        ' onclick="aiCartGoPage(1, this)"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>' +
+        '</div>'
+      );
+    }
+
+    function aiCartCountSelected(items) {
+      return (items || []).filter(function(it) { return it.selected === true; }).length;
+    }
+
+    function aiCartIsStoreAllSelected(group) {
+      return group.items.length > 0 && group.items.every(function(it) { return it.selected === true; });
+    }
+
+    function aiCartIsAllSelected(items) {
+      return items.length > 0 && items.every(function(it) { return it.selected === true; });
+    }
+
+    function renderAiCartRowHtml(item) {
+      var safeId = aiFinderSafeId(item.id);
+      var qty = Number(item.qty) || 1;
+      var unit = item.unit || '件';
+      var price = Number(item.price) || 0;
+      var subtotal = price * qty;
+      var img = item.img || 'https://placehold.co/128x128/f1f5f9/94a3b8?text=商品';
+      var spec = item.config || item.spec || '标准规格';
+      return (
+        '<div class="ai-cart-row" data-cart-id="' + escapeAiHtml(String(item.id)) + '">' +
+        '<div class="col-check"><input type="checkbox"' + (item.selected === true ? ' checked' : '') +
+        ' aria-label="选择商品" onchange="aiCartToggleSelect(\'' + safeId + '\', this.checked, this)"></div>' +
+        '<div class="ai-cart-goods-cell">' +
+        '<img class="ai-cart-goods-thumb" src="' + escapeAiHtml(img) + '" alt="" loading="lazy" onerror="this.src=\'https://placehold.co/128x128/f1f5f9/94a3b8?text=商品\'">' +
+        '<div class="ai-cart-goods-info">' +
+        '<div class="ai-cart-goods-name">' + escapeAiHtml(item.name) + '</div>' +
+        '<div class="ai-cart-goods-meta">' +
+        '<span class="ai-cart-spec-tag">' + escapeAiHtml(spec) + '</span>' +
+        '<span class="ai-cart-goods-unit">计价单位：' + escapeAiHtml(unit) + '</span>' +
+        '</div></div></div>' +
+        '<div class="ai-cart-col-qty">' +
+        '<div class="ai-cart-qty-stepper">' +
+        '<button type="button" class="ai-cart-qty-btn" aria-label="减少" onclick="aiCartStepQty(\'' + safeId + '\', -1, this)"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>' +
+        '<input type="number" min="1" value="' + qty + '" aria-label="数量" oninput="aiCartUpdateQty(\'' + safeId + '\', this.value, this)">' +
+        '<button type="button" class="ai-cart-qty-btn" aria-label="增加" onclick="aiCartStepQty(\'' + safeId + '\', 1, this)"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>' +
+        '</div></div>' +
+        '<div class="ai-cart-col-price-stack">' +
+        '<div class="ai-cart-price-item"><span class="k">单价</span><span class="v">' + aiCartFormatPrice(price) + '</span></div>' +
+        '<div class="ai-cart-price-item sub"><span class="k">小计</span><span class="v" data-cart-subtotal>' + aiCartFormatPrice(subtotal) + '</span></div>' +
+        '</div></div>'
+      );
+    }
+
+    function renderAiCartStoreGroupHtml(group) {
+      var store = group.store;
+      var storeAll = aiCartIsStoreAllSelected(group);
+      var safeStoreKey = aiFinderSafeId(store.key);
+      return (
+        '<div class="ai-cart-store-group" data-store-key="' + escapeAiHtml(store.key) + '">' +
+        '<div class="ai-cart-store-head">' +
+        '<input type="checkbox"' + (storeAll ? ' checked' : '') +
+        ' aria-label="本店全选" onchange="aiCartToggleStoreSelect(\'' + safeStoreKey + '\', this.checked, this)">' +
+        '<span class="ai-cart-store-logo ' + store.cls + '">' + escapeAiHtml(store.short) + '</span>' +
+        '<span class="ai-cart-store-name">' + escapeAiHtml(store.name) + '</span>' +
+        '<span class="ai-cart-store-count">' + group.items.length + ' 件</span>' +
+        '<button type="button" class="ai-cart-store-all" onclick="aiCartToggleStoreSelect(\'' + safeStoreKey + '\', ' + (!storeAll) + ', this)">本店全选</button>' +
+        '</div>' +
+        '<div class="ai-cart-store-body">' +
+        group.items.map(function(it) { return renderAiCartRowHtml(it); }).join('') +
+        '</div></div>'
+      );
+    }
+
+    function renderAiCartTableHtml(items, pageIndex) {
+      if (!items.length) {
+        return (
+          '<div class="ai-cart-empty">' +
+          '<div class="ai-cart-empty-icon"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i></div>' +
+          '<div class="ai-cart-empty-title">购物车还是空的</div>' +
+          '<div class="ai-cart-empty-sub">挑选商品加入购物车后，可在此统一勾选并发起采购</div></div>'
+        );
+      }
+      var pageItems = aiCartGetPageItems(items, pageIndex);
+      return (
+        '<div class="ai-cart-store-list">' +
+        aiCartGroupByStore(pageItems).map(function(group) { return renderAiCartStoreGroupHtml(group); }).join('') +
+        '</div>' +
+        renderAiCartPagerHtml(items, pageIndex)
+      );
+    }
+
+    function renderAiCartPanelHtml(pageIndex) {
+      var items = loadAiCartItems();
+      pageIndex = aiCartClampPageIndex(typeof pageIndex === 'number' ? pageIndex : 0, items);
+      var selectedCount = aiCartCountSelected(items);
+      var total = aiCartCalcTotal(items, true);
+      var allSelected = aiCartIsAllSelected(items);
+      return (
+        '<div class="ai-cart-panel" data-cart-page="' + pageIndex + '">' +
+        '<div class="ai-cart-head">' +
+        '<div class="ai-cart-head-main">' +
+        '<div class="ai-cart-head-icon" aria-hidden="true"><i class="fa-solid fa-cart-shopping"></i></div>' +
+        '<div><div class="ai-cart-head-title">我的购物车</div>' +
+        '<div class="ai-cart-head-sub">共 ' + items.length + ' 件商品 · 已选 ' + selectedCount + ' 件</div></div>' +
+        '</div>' +
+        '<span class="ai-cart-head-badge">全部商品</span>' +
+        '</div>' +
+        '<div class="ai-cart-table">' + renderAiCartTableHtml(items, pageIndex) + '</div>' +
+        '<div class="ai-cart-footbar">' +
+        '<div class="ai-cart-foot-left">' +
+        '<label class="ai-cart-foot-check"><input type="checkbox"' + (allSelected && items.length ? ' checked' : '') +
+        ' onchange="aiCartToggleSelectAll(this.checked, this)"><span>全选</span></label>' +
+        '<span class="ai-cart-foot-divider" aria-hidden="true"></span>' +
+        '<button type="button" class="ai-cart-foot-link" onclick="aiCartDeleteSelected(this)"><i class="fa-regular fa-trash-can" aria-hidden="true"></i>删除选中</button>' +
+        '<button type="button" class="ai-cart-foot-link" onclick="aiCartFavoriteSelected(this)"><i class="fa-regular fa-heart" aria-hidden="true"></i>批量收藏</button>' +
+        '<button type="button" class="ai-cart-foot-link muted" onclick="aiCartClearAll(this)"><i class="fa-solid fa-broom" aria-hidden="true"></i>清空</button>' +
+        '</div>' +
+        '<div class="ai-cart-foot-right">' +
+        '<div class="ai-cart-foot-summary">' +
+        '<span class="count">已选 <strong data-ai-cart-count>' + selectedCount + '</strong> 件</span>' +
+        '<span class="total-wrap"><span class="total-lbl">合计</span>' +
+        '<span class="total-val" data-ai-cart-total>' + aiCartFormatPrice(total) + '</span></span>' +
+        '</div>' +
+        '<button type="button" class="ai-cart-checkout-btn"' + (selectedCount > 0 ? '' : ' disabled') +
+        ' onclick="aiCartPlaceOrder()"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> 去下单</button>' +
+        '</div></div></div>'
+      );
+    }
+
+    function renderAiCartAddedHtml(product) {
+      return (
+        '<div class="ai-cart-wrap">' +
+        renderAiReportResultCardHtml({
+          type: 'cart',
+          typeLabel: '购物车',
+          statusLabel: '已加入购物车',
+          btnLabel: '打开购物车',
+          btnIcon: 'fa-cart-shopping',
+          onClick: 'openAiCartPanel(this)'
+        }) +
+        '</div>'
+      );
+    }
+
+    function openAiCartPanel(btn) {
+      var wrap = btn && btn.closest ? btn.closest('.ai-cart-wrap') : null;
+      var msg = btn && btn.closest ? btn.closest('.ai-msg-cart') : null;
+      if (!wrap) return;
+      if (msg) msg.classList.add('is-cart-expanded');
+      wrap.classList.add('is-expanded');
+      wrap.innerHTML = renderAiCartPanelHtml(0);
+      scrollAiChatToBottom();
+    }
+
+    function aiCartGoPage(delta, btn) {
+      var wrap = getAiCartPanelWrap(btn);
+      if (!wrap) return;
+      var cur = getAiCartCurrentPage(wrap);
+      wrap.innerHTML = renderAiCartPanelHtml(cur + delta);
+      scrollAiChatToBottom();
+    }
+
+    function getAiCartPanelWrap(el) {
+      if (!el) return null;
+      if (el.classList && el.classList.contains('ai-cart-wrap')) return el;
+      return el.closest ? el.closest('.ai-cart-wrap') : null;
+    }
+
+    function refreshAiCartPanel(wrap, pageIndex) {
+      if (!wrap) return;
+      if (typeof pageIndex !== 'number') pageIndex = getAiCartCurrentPage(wrap);
+      wrap.innerHTML = renderAiCartPanelHtml(pageIndex);
+    }
+
+    function aiCartSyncFooter(wrap, items) {
+      if (!wrap) return;
+      items = items || loadAiCartItems();
+      var selectedCount = aiCartCountSelected(items);
+      var countEl = wrap.querySelector('[data-ai-cart-count]');
+      var totalEl = wrap.querySelector('[data-ai-cart-total]');
+      var checkoutBtn = wrap.querySelector('.ai-cart-checkout-btn');
+      if (countEl) countEl.textContent = String(selectedCount);
+      if (totalEl) totalEl.textContent = aiCartFormatPrice(aiCartCalcTotal(items, true));
+      if (checkoutBtn) checkoutBtn.disabled = selectedCount <= 0;
+    }
+
+    function aiCartStepQty(id, delta, btnEl) {
+      var row = btnEl && btnEl.closest ? btnEl.closest('.ai-cart-row') : null;
+      var input = row ? row.querySelector('.ai-cart-qty-stepper input') : null;
+      var current = input ? (parseInt(input.value, 10) || 1) : 1;
+      aiCartUpdateQty(id, current + delta, input || btnEl);
+    }
+
+    function aiCartUpdateQty(id, val, inputEl) {
+      var qty = Math.max(1, parseInt(val, 10) || 1);
+      var items = loadAiCartItems();
+      var sid = String(id);
+      var price = 0;
+      items.forEach(function(it) {
+        if (String(it.id) === sid) {
+          it.qty = qty;
+          price = Number(it.price) || 0;
+        }
+      });
+      saveAiCartItems(items);
+      var wrap = getAiCartPanelWrap(inputEl);
+      if (wrap) {
+        var row = inputEl && inputEl.closest ? inputEl.closest('.ai-cart-row') : null;
+        if (row) {
+          var input = row.querySelector('.ai-cart-qty-stepper input');
+          if (input) input.value = qty;
+          var subEl = row.querySelector('[data-cart-subtotal]');
+          if (subEl) subEl.textContent = aiCartFormatPrice(price * qty);
+        }
+        aiCartSyncFooter(wrap, items);
+      }
+    }
+
+    function aiCartToggleSelect(id, checked, inputEl) {
+      var items = loadAiCartItems();
+      var sid = String(id);
+      items.forEach(function(it) {
+        if (String(it.id) === sid) it.selected = !!checked;
+      });
+      saveAiCartItems(items);
+      var wrap = getAiCartPanelWrap(inputEl);
+      if (wrap) refreshAiCartPanel(wrap);
+    }
+
+    function aiCartToggleSelectAll(checked, inputEl) {
+      var items = loadAiCartItems();
+      items.forEach(function(it) { it.selected = !!checked; });
+      saveAiCartItems(items);
+      refreshAiCartPanel(getAiCartPanelWrap(inputEl));
+    }
+
+    function aiCartToggleStoreSelect(storeKey, checked, el) {
+      var items = loadAiCartItems();
+      items.forEach(function(it) {
+        if (aiCartResolveStore(it.supplier).key === storeKey) it.selected = !!checked;
+      });
+      saveAiCartItems(items);
+      refreshAiCartPanel(getAiCartPanelWrap(el));
+    }
+
+    function aiCartDeleteItem(id, btnEl) {
+      var sid = String(id);
+      var items = loadAiCartItems().filter(function(it) { return String(it.id) !== sid; });
+      saveAiCartItems(items);
+      refreshAiCartPanel(getAiCartPanelWrap(btnEl));
+    }
+
+    function aiCartDeleteSelected(el) {
+      var items = loadAiCartItems().filter(function(it) { return it.selected !== true; });
+      saveAiCartItems(items);
+      refreshAiCartPanel(getAiCartPanelWrap(el));
+    }
+
+    function aiCartClearAll(el) {
+      saveAiCartItems([]);
+      refreshAiCartPanel(getAiCartPanelWrap(el));
+    }
+
+    function aiCartFavoriteItem(id, btnEl) {
+      var btn = btnEl;
+      if (btn) {
+        var orig = btn.textContent;
+        btn.textContent = '已收藏';
+        btn.disabled = true;
+        setTimeout(function() {
+          btn.textContent = orig;
+          btn.disabled = false;
+        }, 1200);
+      }
+    }
+
+    function aiCartFavoriteSelected(el) {
+      var count = aiCartCountSelected(loadAiCartItems());
+      if (!count) return;
+      var link = el;
+      if (link) {
+        var orig = link.textContent;
+        link.textContent = '已收藏 ' + count + ' 件';
+        setTimeout(function() { link.textContent = orig; }, 1400);
+      }
+    }
+
+    function aiCartBuildOrderPayload() {
+      var selected = loadAiCartItems().filter(function(it) { return it.selected === true; });
+      if (!selected.length) return null;
+      var first = selected[0];
+      var total = aiCartCalcTotal(selected, true);
+      var isSingle = selected.length === 1;
+      var qty = isSingle ? (Number(first.qty) || 1) : 1;
+      var price = isSingle ? (Number(first.price) || 0) : total;
+      return {
+        orderNo: 'ORD' + Date.now().toString().slice(-8),
+        productId: first.id,
+        name: isSingle ? first.name : ('购物车组合（' + selected.length + ' 项）'),
+        model: isSingle ? (first.name || '标准规格') : selected.map(function(it) {
+          return it.name + ' × ' + it.qty + (it.unit || '件');
+        }).join('；'),
+        unit: isSingle ? (first.unit || '件') : '项',
+        qty: qty,
+        price: price,
+        supplier: first.supplier || '平台认证供应商',
+        storeName: '平台店铺',
+        code: String(first.id || 'GC-CART-DEMO'),
+        deliveryArea: '北京市海淀区',
+        deliveryTime: '48小时内发货',
+        receiver: '张三',
+        receiverPhone: '138****8000',
+        stockStatus: '库存稳定，可持续供货',
+        image: first.img,
+        floor: Math.round(price * 0.92),
+        ceiling: Math.round(price * 1.08),
+        inspectionReport: { status: '有效', expiry: '2026-12-31' },
+        supplierScore: 4.8,
+        goodRate: '98.0%',
+        invoice: {
+          type: '增值税普通发票',
+          title: '天创信总公司',
+          taxNo: '93827472837237172Y',
+          bank: '--',
+          account: '--'
+        },
+        addresses: [{
+          id: 'addr-1',
+          label: '北京市海淀区',
+          detail: '创业大厦17楼',
+          receiver: '张三'
+        }],
+        procurementBasis: {
+          plan: null,
+          budget: null,
+          files: [],
+          contractLinkage: [],
+          hasPlan: false,
+          hasBudget: false,
+          hasFiles: false,
+          hasContracts: false,
+          hasBasis: false
+        }
+      };
+    }
+
+    function aiCartPlaceOrder() {
+      var selected = loadAiCartItems().filter(function(it) { return it.selected === true; });
+      if (!selected.length) return;
+      var payload = aiCartBuildOrderPayload();
+      if (!payload) return;
+      try {
+        var raw = JSON.stringify(payload);
+        sessionStorage.setItem('gcOrderConfirmPayload', raw);
+        localStorage.setItem('gcOrderConfirmPayload', raw);
+      } catch (eStore) {}
+      window.open('./order_confirm.html', '_blank', 'noopener,noreferrer');
     }
 
     function openAiShoppingCart() {
-      closeAiCompanion();
-      window.location.href = './search.html';
+      openAiCartPanel(document.querySelector('.ai-cart-wrap .ai-btn-cart-go'));
     }
 
     function aiFinderAddToCart(id) {
