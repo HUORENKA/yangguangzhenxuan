@@ -1163,20 +1163,21 @@
     .ai-comp-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15,23,42,0.52);
-      backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.58);
       z-index: 3200;
-      display: none;
+      display: flex;
       align-items: flex-end;
       justify-content: center;
       padding: 0;
+      visibility: hidden;
       opacity: 0;
-      transition: opacity 0.22s ease;
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
     }
     .ai-comp-overlay.open {
-      display: flex;
+      visibility: visible;
       opacity: 1;
-      pointer-events: all;
+      pointer-events: auto;
     }
     .ai-comp-dialog {
       width: min(440px, 100%);
@@ -1190,13 +1191,14 @@
       flex-direction: column;
       overflow: hidden;
       transform: translateY(100%);
-      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), max-height 0.22s ease;
+      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
     }
     .ai-comp-dialog.ai-mode-unified {
       width: 100%;
       max-width: 100vw;
-      max-height: min(98vh, 1040px);
-      min-height: min(80vh, 720px);
+      max-height: min(94vh, 960px);
+      height: min(94vh, 960px);
+      min-height: 0;
     }
     .ai-comp-overlay.open .ai-comp-dialog {
       transform: translateY(0);
@@ -1250,24 +1252,36 @@
     .ai-comp-stage {
       flex: 1 1 auto;
       min-height: 0;
-      overflow-y: auto;
+      overflow: hidden;
       position: relative;
       background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+    }
+    .ai-comp-dialog.ai-mode-unified .ai-comp-stage {
+      overflow: hidden;
     }
     .ai-comp-panel {
       display: none;
       flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
       padding: 12px 20px 14px;
-      overflow: visible;
+      overflow: hidden;
       width: 100%;
       box-sizing: border-box;
     }
-    .ai-comp-panel.active { display: flex; animation: aiCompFade 0.24s ease; }
+    .ai-comp-panel.active { display: flex; }
+    .ai-comp-dialog:not(.ai-mode-unified) .ai-comp-panel.active {
+      overflow-y: auto;
+    }
     .ai-comp-dialog.ai-mode-unified #aiPanel-unified {
       flex: 1 1 auto;
       min-height: 0;
+      height: 100%;
       display: flex;
       flex-direction: column;
+      padding-bottom: 0;
     }
     @keyframes aiCompFade {
       from { opacity: 0; transform: translateY(6px); }
@@ -1284,11 +1298,15 @@
       gap: 12px;
       padding: 6px 4px 10px;
       margin-bottom: 8px;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      contain: layout style paint;
     }
     .ai-comp-dialog.ai-mode-unified #aiPanel-unified .ai-chat-log {
       flex: 1 1 auto;
-      max-height: min(82vh, 880px);
-      min-height: min(58vh, 500px);
+      max-height: none;
+      min-height: 0;
+      margin-bottom: 0;
       padding: 8px 6px 12px;
     }
     .ai-msg {
@@ -1325,7 +1343,7 @@
       box-shadow: none;
       border-radius: 0;
     }
-    .ai-msg.bot.ai-msg-rich:not(.ai-msg-finder):not(.ai-msg-compare):not(.ai-msg-cart):not(.ai-msg-contract) {
+    .ai-msg.bot.ai-msg-rich:not(.ai-msg-finder):not(.ai-msg-compare):not(.ai-msg-cart):not(.ai-msg-contract):not(.ai-msg-fileparse):not(.ai-msg-budget):not(.ai-msg-plan):not(.ai-msg-plan-demo) {
       max-width: min(76%, 520px);
       padding: 10px 14px;
       background: #fff;
@@ -1979,8 +1997,28 @@
       background: rgba(249, 115, 22, 0.12);
       color: #ea580c;
     }
+    .ai-report-result-visual.is-fileparse {
+      background: linear-gradient(155deg, #f0fdf4 0%, #dcfce7 55%, #bbf7d0 100%);
+    }
+    .is-fileparse .ai-report-mock-file-corner {
+      border-color: transparent #bbf7d0 transparent transparent;
+    }
+    .is-fileparse .ai-report-mock-line {
+      background: rgba(16, 185, 129, 0.32);
+    }
+    .is-fileparse .ai-report-mock-file-badge {
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+    }
+    .ai-report-result-card.ai-report-result-fileparse {
+      box-shadow: 0 8px 28px rgba(16, 185, 129, 0.08);
+    }
     .ai-report-result-card.ai-report-result-cart {
       box-shadow: 0 8px 28px rgba(249, 115, 22, 0.08);
+    }
+    .ai-inline-action-btn.ai-btn-fileparse-report {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.24);
     }
     .ai-report-result-body {
       flex: 1;
@@ -2018,12 +2056,26 @@
     }
     .ai-msg.bot.ai-msg-rich.ai-msg-compare,
     .ai-msg.bot.ai-msg-rich.ai-msg-cart,
-    .ai-msg.bot.ai-msg-rich.ai-msg-contract {
+    .ai-msg.bot.ai-msg-rich.ai-msg-contract,
+    .ai-msg.bot.ai-msg-rich.ai-msg-fileparse,
+    .ai-msg.bot.ai-msg-rich.ai-msg-budget {
       max-width: min(82%, 420px);
       padding: 0;
       background: transparent;
       border: none;
       box-shadow: none;
+    }
+    .ai-msg.bot.ai-msg-rich.ai-msg-plan {
+      max-width: min(94%, 520px);
+      min-width: min(100%, 460px);
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    .ai-msg-plan .ai-budget-parse-card {
+      width: 100%;
+      min-width: 0;
     }
     .ai-risk-answer {
       border: 1px solid #e2e8f0;
@@ -2152,8 +2204,7 @@
       position: fixed;
       inset: 0;
       z-index: 3400;
-      background: rgba(15, 23, 42, 0.52);
-      backdrop-filter: blur(4px);
+      background: rgba(15, 23, 42, 0.58);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2180,6 +2231,1044 @@
     }
     .ai-compare-overlay.open .ai-compare-dialog {
       transform: translateY(0) scale(1);
+    }
+    /* 文件解析 · 类型选择弹窗 */
+    .ai-file-parse-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3450;
+      background: rgba(15, 23, 42, 0.58);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .ai-file-parse-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .ai-file-parse-dialog {
+      width: min(520px, 100%);
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+      overflow: hidden;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.22s ease;
+    }
+    .ai-file-parse-overlay.open .ai-file-parse-dialog {
+      transform: translateY(0) scale(1);
+    }
+    .ai-file-parse-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid #eef2f7;
+      background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+    }
+    .ai-file-parse-head-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+    .ai-file-parse-head-title i { color: #0284c7; margin-right: 6px; }
+    .ai-file-parse-head-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.55;
+    }
+    .ai-file-parse-close {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 10px;
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .ai-file-parse-close:hover { background: #e2e8f0; color: #334155; }
+    .ai-file-parse-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 14px 20px 0;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(99, 102, 241, 0.06) 100%);
+      border: 1px dashed rgba(14, 165, 233, 0.28);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #0369a1;
+    }
+    .ai-file-parse-hint i { font-size: 13px; color: #6366f1; }
+    .ai-file-parse-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 16px 20px 20px;
+    }
+    .ai-file-parse-type-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fff;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+      text-align: left;
+    }
+    .ai-file-parse-type-btn i {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(14, 165, 233, 0.1);
+      color: #0284c7;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .ai-file-parse-type-btn:hover {
+      border-color: #7dd3fc;
+      background: #f0f9ff;
+      box-shadow: 0 6px 18px rgba(14, 165, 233, 0.1);
+      transform: translateY(-1px);
+    }
+    .ai-file-parse-demo-wrap {
+      padding: 0 20px 20px;
+    }
+    .ai-file-parse-demo-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px dashed #c4b5fd;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+      color: #6d28d9;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+    .ai-file-parse-demo-btn i {
+      font-size: 15px;
+    }
+    .ai-file-parse-demo-btn:hover {
+      border-color: #a78bfa;
+      background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%);
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.12);
+    }
+    .ai-plan-demo-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 580px;
+      box-sizing: border-box;
+    }
+    .ai-plan-demo-wrap .ai-budget-parse-card,
+    .ai-plan-demo-wrap .ai-plan-match-section {
+      width: 100%;
+      max-width: 580px;
+      box-sizing: border-box;
+    }
+    .ai-plan-demo-summary .ai-plan-parse-actions {
+      padding-top: 4px;
+    }
+    .ai-plan-demo-summary .ai-plan-parse-actions .ai-inline-action-btn {
+      flex: none;
+      width: 100%;
+    }
+    .ai-plan-match-section {
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+    }
+    .ai-plan-match-head {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #eef2f7;
+      background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    }
+    .ai-plan-match-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+    .ai-plan-match-sub {
+      margin: 4px 0 0;
+      font-size: 11.5px;
+      color: #64748b;
+      line-height: 1.55;
+    }
+    .ai-plan-match-split {
+      display: flex;
+      min-height: 300px;
+    }
+    .ai-plan-match-req-list {
+      flex: 0 0 168px;
+      border-right: 1px solid #eef2f7;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #f8fafc;
+    }
+    .ai-plan-req-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 10px 9px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+    .ai-plan-req-btn:hover {
+      border-color: #cbd5e1;
+      background: #fff;
+    }
+    .ai-plan-req-btn.active {
+      border-color: #7c3aed;
+      background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+      box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+    }
+    .ai-plan-req-btn .req-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+    .ai-plan-req-btn .req-spec-line {
+      margin-top: 4px;
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .ai-plan-req-btn .req-file-qty {
+      margin-top: 3px;
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .ai-plan-req-btn .req-match-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 6px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .ai-plan-req-btn .req-match-tag.is-pending {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+    .ai-plan-req-btn .req-match-tag.is-selected {
+      background: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+    }
+    .ai-plan-req-btn .req-match-tag.is-warn {
+      background: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+    .ai-plan-match-product-panel {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 14px;
+      background: #fff;
+    }
+    .ai-plan-product-panel-inner {
+      display: flex;
+      gap: 14px;
+      align-items: stretch;
+      min-height: 260px;
+    }
+    .ai-plan-pick-card-wrap {
+      flex: 0 0 200px;
+      min-width: 0;
+      display: flex;
+    }
+    .ai-plan-pick-card-wrap .ai-goods-card {
+      flex: none;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .ai-plan-pick-card-wrap .ai-goods-card:hover {
+      transform: translateY(-2px);
+      border-color: #c4b5fd;
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.12);
+    }
+    .ai-plan-pick-card-wrap .ai-goods-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .ai-plan-pick-card-wrap .ai-goods-actions {
+      margin-top: auto;
+      padding-top: 8px;
+    }
+    .ai-plan-pick-empty {
+      height: 100%;
+      min-height: 240px;
+      border: 1px dashed #e2e8f0;
+      border-radius: 4px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+    .ai-plan-pick-empty i {
+      font-size: 28px;
+      color: #cbd5e1;
+    }
+    .ai-plan-product-side {
+      flex: 0 0 152px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: flex-start;
+      align-self: stretch;
+    }
+    .ai-plan-qty-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ai-plan-qty-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+    .ai-plan-qty-field input {
+      width: 100%;
+      height: 36px;
+      border-radius: 10px;
+      border: 1.5px solid #e2e8f0;
+      padding: 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      outline: none;
+      box-sizing: border-box;
+      background: #fff;
+    }
+    .ai-plan-qty-field input:focus {
+      border-color: rgba(124, 58, 237, 0.45);
+    }
+    .ai-plan-qty-field input[readonly] {
+      background: #f8fafc;
+      color: #475569;
+    }
+    .ai-plan-qty-unit {
+      margin-top: 4px;
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .ai-plan-subtotal-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+    .ai-plan-subtotal-val {
+      height: 36px;
+      line-height: 36px;
+      border-radius: 10px;
+      border: 1.5px solid #fecaca;
+      background: #fff7ed;
+      padding: 0 10px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #ea580c;
+      box-sizing: border-box;
+    }
+    .ai-plan-subtotal-val.is-empty {
+      border-color: #e2e8f0;
+      background: #f8fafc;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .ai-plan-action-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .ai-plan-pick-btn {
+      width: 100%;
+      height: 38px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      border: none;
+      white-space: nowrap;
+    }
+    .ai-plan-pick-btn.select {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(47, 107, 255, 0.22);
+    }
+    .ai-plan-pick-btn.select.is-selected {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1.5px solid #bbf7d0;
+      box-shadow: none;
+      cursor: pointer;
+    }
+    .ai-plan-pick-btn.select.is-selected:hover {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #047857;
+    }
+    .ai-plan-pick-btn.change {
+      background: #fff;
+      color: #475569;
+      border: 1.5px solid #e2e8f0;
+    }
+    .ai-plan-pick-btn.change:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+    .ai-plan-pick-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .ai-plan-match-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-top: 1px solid #eef2f7;
+      background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    }
+    .ai-plan-match-total {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .ai-plan-match-total .lbl {
+      font-size: 11px;
+      font-weight: 800;
+      color: #64748b;
+    }
+    .ai-plan-match-total .val {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ea580c;
+      line-height: 1.2;
+    }
+    .ai-plan-match-total .hint {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .ai-plan-order-btn {
+      flex-shrink: 0;
+      min-width: 120px;
+      height: 42px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 11px;
+      background: #e2e8f0;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: not-allowed;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .ai-plan-order-btn.is-ready {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.24);
+    }
+    .ai-plan-order-btn.is-ready:hover {
+      opacity: 0.96;
+    }
+    .ai-plan-change-dialog {
+      width: min(92vw, 640px);
+      max-height: min(86vh, 720px);
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+    }
+    .ai-plan-change-body {
+      padding: 12px 20px 16px;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+    .ai-plan-change-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      height: 40px;
+      margin-bottom: 12px;
+      border-radius: 12px;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    .ai-plan-change-search i {
+      color: #94a3b8;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .ai-plan-change-search input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      color: #0f172a;
+    }
+    .ai-plan-change-search input::placeholder {
+      color: #94a3b8;
+    }
+    .ai-plan-change-empty {
+      padding: 28px 16px;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .ai-plan-change-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ai-plan-change-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      background: #fff;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .ai-plan-change-item.is-current {
+      border-color: #c4b5fd;
+      background: linear-gradient(135deg, #faf5ff 0%, #fff 100%);
+    }
+    .ai-plan-change-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+    .ai-plan-change-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .ai-plan-change-main:hover .ai-plan-change-name {
+      color: var(--brand);
+    }
+    .ai-plan-change-side-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .ai-plan-change-mini-btn {
+      width: 88px;
+      height: 26px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border: none;
+      padding: 0 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .ai-plan-change-mini-btn.compare {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+    }
+    .ai-plan-change-mini-btn.cart {
+      border: 1px solid #fecaca;
+      background: #fff5f5;
+      color: #ff6a00;
+    }
+    .ai-plan-change-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #f8fafc;
+    }
+    .ai-plan-change-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .ai-plan-change-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.4;
+    }
+    .ai-plan-change-meta {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.45;
+    }
+    .ai-plan-change-price {
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #ea580c;
+    }
+    .ai-plan-change-pick-btn {
+      flex-shrink: 0;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .ai-plan-change-pick-btn.ghost {
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: default;
+    }
+    .ai-msg.bot.ai-msg-rich.ai-msg-plan-demo {
+      align-self: flex-start;
+      width: min(100%, 580px);
+      max-width: 580px;
+      min-width: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    /* 预算文件 · 登记确认弹窗 */
+    .ai-budget-confirm-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3500;
+      background: rgba(15, 23, 42, 0.58);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .ai-budget-confirm-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .ai-budget-confirm-dialog {
+      width: min(560px, 100%);
+      max-height: min(90vh, 720px);
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(10px) scale(0.98);
+      transition: transform 0.22s ease;
+    }
+    .ai-budget-confirm-overlay.open .ai-budget-confirm-dialog {
+      transform: translateY(0) scale(1);
+    }
+    .ai-budget-confirm-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid #eef2f7;
+      background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%);
+    }
+    .ai-budget-confirm-head-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+    .ai-budget-confirm-head-title i { color: #ea580c; margin-right: 6px; }
+    .ai-budget-confirm-head-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.55;
+    }
+    .ai-budget-confirm-close {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 10px;
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .ai-budget-confirm-close:hover { background: #e2e8f0; color: #334155; }
+    .ai-budget-confirm-body {
+      padding: 16px 20px 8px;
+      overflow-y: auto;
+    }
+    .ai-budget-confirm-tip {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      border-radius: 12px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      font-size: 12px;
+      color: #166534;
+      line-height: 1.55;
+    }
+    .ai-budget-confirm-tip i { margin-top: 2px; color: #16a34a; }
+    .ai-budget-confirm-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 14px;
+    }
+    .ai-budget-confirm-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .ai-budget-confirm-field.is-full {
+      grid-column: 1 / -1;
+    }
+    .ai-budget-confirm-field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+    .ai-budget-confirm-field label em {
+      color: #ef4444;
+      font-style: normal;
+    }
+    .ai-budget-confirm-field input {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      box-sizing: border-box;
+      background: #fff;
+    }
+    .ai-budget-confirm-field input:focus {
+      border-color: rgba(249, 115, 22, 0.45);
+    }
+    .ai-budget-confirm-field input[readonly] {
+      background: #f8fafc;
+      color: #334155;
+    }
+    .ai-budget-confirm-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 20px 18px;
+      border-top: 1px solid #eef2f7;
+      background: #fafafa;
+    }
+    .ai-budget-confirm-btn {
+      min-width: 96px;
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .ai-budget-confirm-btn.ghost {
+      background: #fff;
+      border-color: #e2e8f0;
+      color: #64748b;
+    }
+    .ai-budget-confirm-btn.primary {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.24);
+    }
+    .ai-budget-parse-card {
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      box-shadow: 0 8px 28px rgba(249, 115, 22, 0.08);
+    }
+    .ai-budget-parse-head {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 14px 16px 0;
+    }
+    .ai-budget-parse-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 14px;
+      padding: 12px 16px 4px;
+    }
+    .ai-budget-parse-item {
+      min-width: 0;
+    }
+    .ai-budget-parse-item.is-full {
+      grid-column: 1 / -1;
+    }
+    .ai-budget-parse-item .k {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.04em;
+      margin-bottom: 3px;
+    }
+    .ai-budget-parse-item .v {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+    .ai-budget-parse-card .ai-inline-action-btn {
+      margin: 12px 16px 16px;
+      width: calc(100% - 32px);
+      height: 40px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+    .ai-inline-action-btn.ai-btn-budget-register {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.24);
+    }
+    .ai-inline-action-btn.ai-btn-budget-register.is-done {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #bbf7d0;
+      box-shadow: none;
+      cursor: default;
+      opacity: 1;
+    }
+    .ai-plan-parse-compliance-row {
+      display: flex;
+      gap: 10px;
+      padding: 0 16px 4px;
+    }
+    .ai-plan-parse-stat {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      min-width: 0;
+    }
+    .ai-plan-parse-stat.is-ok {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+    .ai-plan-parse-stat.is-warn {
+      background: #fff7ed;
+      border-color: #fed7aa;
+    }
+    .ai-plan-parse-stat .ico {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .ai-plan-parse-stat.is-ok .ico {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .ai-plan-parse-stat.is-warn .ico {
+      background: #ffedd5;
+      color: #ea580c;
+    }
+    .ai-plan-parse-stat .lbl {
+      font-size: 10px;
+      font-weight: 800;
+      color: #94a3b8;
+      letter-spacing: 0.04em;
+    }
+    .ai-plan-parse-stat .num {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .ai-plan-parse-stat.is-ok .num { color: #15803d; }
+    .ai-plan-parse-stat.is-warn .num { color: #c2410c; }
+    .ai-plan-parse-actions {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      padding: 12px 16px 16px;
+    }
+    .ai-plan-parse-actions .ai-inline-action-btn {
+      flex: 1 1 0;
+      margin: 0;
+      width: auto;
+      min-width: 0;
+      height: 40px;
+      border-radius: 10px;
+      font-size: 12px;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+    .ai-inline-action-btn.ai-btn-plan-compliance-report {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.28);
+    }
+    .ai-inline-action-btn.ai-btn-plan-compliance-report:hover {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      opacity: 0.96;
+    }
+    .ai-inline-action-btn.ai-btn-plan-register {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.24);
+    }
+    .ai-inline-action-btn.ai-btn-plan-register.is-done {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #bbf7d0;
+      box-shadow: none;
+      cursor: default;
+      opacity: 1;
+    }
+    .ai-plan-compliance-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ai-plan-compliance-section-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #475569;
+      margin: 4px 0 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ai-plan-compliance-section-title.ok { color: #15803d; }
+    .ai-plan-compliance-section-title.warn { color: #c2410c; }
+    .ai-plan-compliance-item {
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.55;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+    }
+    .ai-plan-compliance-item.is-ok {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+    .ai-plan-compliance-item.is-warn .item-title {
+      font-weight: 700;
+      color: #9a3412;
+      margin-bottom: 4px;
+    }
+    .ai-plan-compliance-item.is-warn {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #7c2d12;
+    }
+    .ai-plan-compliance-item .item-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #ffedd5;
+      color: #c2410c;
+      margin-bottom: 4px;
     }
     .ai-compare-head {
       display: flex;
@@ -2397,59 +3486,103 @@
       font-size: 12px;
       color: #64748b;
     }
-    .ai-msg-loading i { color: var(--brand); }
-    .ai-compose-row {
-      display: flex; align-items: flex-end; gap: 8px;
+    .ai-msg-loading i {
+      color: var(--brand);
+      animation: aiLoadingSpin 0.85s linear infinite;
+    }
+    @keyframes aiLoadingSpin {
+      to { transform: rotate(360deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ai-msg-loading i { animation: none; }
+      .ai-comp-overlay,
+      .ai-comp-dialog,
+      .ai-file-parse-overlay,
+      .ai-file-parse-dialog,
+      .ai-compare-overlay,
+      .ai-compare-dialog {
+        transition: none !important;
+      }
+    }
+    body.ai-companion-open {
+      overflow: hidden;
+    }
+    .ai-compose-bar {
       flex-shrink: 0;
-      padding-top: 4px;
-      border-top: 1px solid rgba(226,232,240,0.85);
-      margin-top: auto;
-      padding-top: 10px;
+      padding: 10px 16px 8px;
+      background: linear-gradient(180deg, #f8fafc 0%, #f4f7fb 100%);
+      border-top: 1px solid rgba(226, 232, 240, 0.95);
+    }
+    .ai-comp-dialog:not(.ai-mode-unified) .ai-compose-bar {
+      display: none;
+    }
+    .ai-compose-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      margin: 0;
+      padding: 0;
+      border-top: none;
+      --ai-compose-btn-size: 52px;
     }
     .ai-compose-input {
       flex: 1;
-      min-height: 42px;
+      min-height: 52px;
       max-height: 112px;
       padding: 10px 12px;
       border: 1.5px solid #e2e8f0;
       border-radius: 12px;
       font-size: 13px;
+      line-height: 1.45;
       font-family: inherit;
       resize: none;
       outline: none;
       background: #fff;
       transition: border-color 0.15s;
+      box-sizing: border-box;
     }
     .ai-compose-input:focus { border-color: rgba(47,107,255,0.45); }
+    .ai-mic-btn,
     .ai-send-btn {
-      flex-shrink: 0;
-      width: 42px;
-      height: 42px;
+      flex: 0 0 var(--ai-compose-btn-size);
+      width: var(--ai-compose-btn-size);
+      height: var(--ai-compose-btn-size);
+      min-width: var(--ai-compose-btn-size);
+      min-height: var(--ai-compose-btn-size);
+      max-width: var(--ai-compose-btn-size);
+      max-height: var(--ai-compose-btn-size);
+      padding: 0;
+      margin: 0;
       border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
-      color: #fff;
-      font-size: 15px;
-      display: flex;
+      box-sizing: border-box;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      line-height: 1;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+    .ai-mic-btn i,
+    .ai-send-btn i {
+      display: block;
+      font-size: 17px;
+      line-height: 1;
+    }
+    .ai-send-btn {
+      border: 1.5px solid transparent;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
       transition: opacity 0.15s;
     }
     .ai-send-btn:hover { opacity: 0.92; }
     .ai-mic-btn {
-      flex-shrink: 0;
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
       border: 1.5px solid #e2e8f0;
-      cursor: pointer;
       background: #fff;
       color: var(--brand);
-      font-size: 17px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       transition: background 0.15s, border-color 0.15s, color 0.15s;
     }
     .ai-mic-btn:hover {
@@ -2596,22 +3729,14 @@
     .ai-primary-btn:hover:not(:disabled) { opacity: 0.92; }
     .ai-mode-dock {
       flex-shrink: 0;
-      margin-top: 10px;
-      padding: 14px 16px 18px;
+      margin-top: 0;
+      padding: 8px 16px 16px;
       background: linear-gradient(180deg, #ebeef5 0%, #f4f7fb 52%, #e8eef6 100%);
-      border-top: 2px solid rgba(148, 163, 184, 0.55);
+      border-top: none;
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.85),
         0 -12px 32px rgba(15, 23, 42, 0.09),
         inset 0 14px 20px -16px rgba(255, 255, 255, 0.5);
-    }
-    .ai-mode-dock-hint {
-      margin: 0 0 12px;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: #64748b;
     }
     .ai-mode-grid {
       display: flex;
@@ -2667,15 +3792,16 @@
         max-height: min(92vh, 760px);
         height: auto;
         box-shadow: 0 28px 64px rgba(15,23,42, 0.2);
-        transform: scale(0.94) translateY(12px);
+        transform: scale(0.96) translateY(10px);
         opacity: 0;
-        transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, max-height 0.22s ease;
+        transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
       }
       .ai-comp-dialog.ai-mode-unified {
         width: min(98vw, 1280px);
         max-width: min(98vw, 1280px);
-        max-height: min(98vh, 1040px);
-        min-height: min(86vh, 860px);
+        max-height: min(94vh, 960px);
+        height: min(94vh, 960px);
+        min-height: 0;
       }
       .ai-comp-overlay.open .ai-comp-dialog {
         transform: scale(1) translateY(0);
@@ -3517,7 +4643,7 @@
           <div class="ai-comp-head-icon" aria-hidden="true"><i class="fa-solid fa-robot"></i></div>
           <div>
             <p class="ai-comp-head-title" id="aiCompanionTitle">国采 AI 助手</p>
-            <p class="ai-comp-head-sub">文字 · 语音 · 合同文件 · 图片 · 粘贴链接</p>
+            <p class="ai-comp-head-sub">文字 · 语音 · 文件解析 · 图片 · 粘贴链接</p>
           </div>
         </div>
         <div class="ai-comp-head-actions">
@@ -3528,16 +4654,8 @@
       <div class="ai-comp-stage">
         <div class="ai-comp-panel active" id="aiPanel-unified" data-ai-mode="unified" role="tabpanel">
           <div class="ai-chat-log" id="aiChatLog">
-            <div class="ai-msg bot">您好，我是国采 AI 助手。可直接描述<strong>采购需求</strong>（如「需要采购 10 台打印机」），我将分析需求并推荐合规商品；也支持语音输入，或通过下方按钮上传合同、图片或粘贴链接。</div>
+            <div class="ai-msg bot">您好，我是国采 AI 助手。可直接描述<strong>采购需求</strong>（如「需要采购 10 台打印机」），我将分析需求并推荐合规商品；也支持语音输入，或通过下方按钮进行<strong>文件解析</strong>、上传图片或粘贴链接。</div>
           </div>
-          <div class="ai-compose-row">
-            <label for="aiComposeInput" class="sr-only">输入消息</label>
-            <textarea id="aiComposeInput" class="ai-compose-input" rows="2" placeholder="描述采购需求，例如：单位需要采购 20 台 A4 激光打印机，预算 3 万以内…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiCompanionChat();}"></textarea>
-            <button type="button" class="ai-mic-btn" id="aiVoiceBtn" aria-pressed="false" title="语音输入" aria-label="语音输入" onclick="toggleAiCompanionVoice()"><i class="fa-solid fa-microphone" id="aiVoiceIcon"></i></button>
-            <button type="button" class="ai-send-btn" title="发送" aria-label="发送" onclick="sendAiCompanionChat()"><i class="fa-solid fa-paper-plane"></i></button>
-          </div>
-          <input type="file" id="aiFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple style="position:absolute;width:0;height:0;opacity:0;pointer-events:none" tabindex="-1" aria-hidden="true" />
-          <input type="file" id="aiImageInput" accept="image/*" multiple style="position:absolute;width:0;height:0;opacity:0;pointer-events:none" tabindex="-1" aria-hidden="true" />
         </div>
         <div class="ai-comp-panel" id="aiPanel-file" data-ai-mode="file" role="tabpanel" hidden aria-hidden="true">
           <button type="button" class="ai-panel-back" onclick="setAiCompanionMode('unified')"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> 返回对话</button>
@@ -3564,14 +4682,178 @@
           </div>
         </div>
       </div>
+      <div class="ai-compose-bar" id="aiComposeBar">
+        <div class="ai-compose-row">
+          <label for="aiComposeInput" class="sr-only">输入消息</label>
+          <textarea id="aiComposeInput" class="ai-compose-input" rows="2" placeholder="描述采购需求，例如：单位需要采购 20 台 A4 激光打印机，预算 3 万以内…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiCompanionChat();}"></textarea>
+          <button type="button" class="ai-mic-btn" id="aiVoiceBtn" aria-pressed="false" title="语音输入" aria-label="语音输入" onclick="toggleAiCompanionVoice()"><i class="fa-solid fa-microphone" id="aiVoiceIcon"></i></button>
+          <button type="button" class="ai-send-btn" id="aiSendBtn" title="发送" aria-label="发送" onclick="sendAiCompanionChat()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+        <input type="file" id="aiFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx" multiple style="position:absolute;width:0;height:0;opacity:0;pointer-events:none" tabindex="-1" aria-hidden="true" />
+        <input type="file" id="aiImageInput" accept="image/*" multiple style="position:absolute;width:0;height:0;opacity:0;pointer-events:none" tabindex="-1" aria-hidden="true" />
+      </div>
       <nav class="ai-mode-dock" aria-label="交互方式">
-        <p class="ai-mode-dock-hint">选择交互方式</p>
         <div class="ai-mode-grid" role="group">
-          <button type="button" class="ai-mode-btn" data-mode="file" onclick="openAiCompanionFileUpload(this)"><i class="fa-solid fa-file-contract"></i><span>合同文件</span></button>
+          <button type="button" class="ai-mode-btn" data-mode="file" onclick="openAiFileParseTypeModal(this)"><i class="fa-solid fa-file-circle-check"></i><span>文件解析</span></button>
           <button type="button" class="ai-mode-btn" data-mode="image" onclick="openAiCompanionImageUpload(this)"><i class="fa-solid fa-image"></i><span>图片</span></button>
           <button type="button" class="ai-mode-btn" data-mode="link" onclick="pasteAiCompanionLink()"><i class="fa-solid fa-clipboard"></i><span>粘贴链接</span></button>
         </div>
       </nav>
+    </div>
+  </div>
+
+  <!-- 文件解析 · 类型选择弹窗（原型演示：模拟 AI 识别） -->
+  <div class="ai-file-parse-overlay" id="aiFileParseOverlay" role="dialog" aria-modal="true" aria-labelledby="aiFileParseTitle" onclick="closeAiFileParseTypeModal(event)">
+    <div class="ai-file-parse-dialog" onclick="event.stopPropagation()">
+      <header class="ai-file-parse-head">
+        <div>
+          <div class="ai-file-parse-head-title" id="aiFileParseTitle"><i class="fa-solid fa-file-circle-check" aria-hidden="true"></i> 文件解析</div>
+          <div class="ai-file-parse-head-sub">请确认 AI 识别出的文件类型</div>
+        </div>
+        <button type="button" class="ai-file-parse-close" aria-label="关闭" onclick="closeAiFileParseTypeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="ai-file-parse-hint"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> 该步骤由 AI 识别</div>
+      <div class="ai-file-parse-grid" role="group" aria-label="文件类型">
+        <button type="button" class="ai-file-parse-type-btn" onclick="selectAiFileParseType('budget')"><i class="fa-solid fa-coins" aria-hidden="true"></i><span>预算文件</span></button>
+        <button type="button" class="ai-file-parse-type-btn" onclick="selectAiFileParseType('plan')"><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i><span>采购计划</span></button>
+        <button type="button" class="ai-file-parse-type-btn" onclick="selectAiFileParseType('scheme')"><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>采购方案</span></button>
+        <button type="button" class="ai-file-parse-type-btn" onclick="selectAiFileParseType('contract')"><i class="fa-solid fa-file-contract" aria-hidden="true"></i><span>采购合同</span></button>
+        <button type="button" class="ai-file-parse-type-btn" onclick="selectAiFileParseType('inquiry')"><i class="fa-solid fa-comments-dollar" aria-hidden="true"></i><span>询价方案</span></button>
+        <button type="button" class="ai-file-parse-type-btn" onclick="selectAiFileParseType('bid')"><i class="fa-solid fa-gavel" aria-hidden="true"></i><span>竞价方案</span></button>
+      </div>
+      <div class="ai-file-parse-demo-wrap">
+        <button type="button" class="ai-file-parse-demo-btn" onclick="selectAiPlanDemo()"><i class="fa-solid fa-flask" aria-hidden="true"></i><span>采购计划-演示</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 预算文件 · 登记确认弹窗 -->
+  <div class="ai-budget-confirm-overlay" id="aiBudgetConfirmOverlay" role="dialog" aria-modal="true" aria-labelledby="aiBudgetConfirmTitle" onclick="closeAiBudgetConfirmModal(event)">
+    <div class="ai-budget-confirm-dialog" onclick="event.stopPropagation()">
+      <header class="ai-budget-confirm-head">
+        <div>
+          <div class="ai-budget-confirm-head-title" id="aiBudgetConfirmTitle"><i class="fa-solid fa-coins" aria-hidden="true"></i> 确认预算登记信息</div>
+          <div class="ai-budget-confirm-head-sub">请核对 AI 识别出的预算登记字段，确认后将写入系统</div>
+        </div>
+        <button type="button" class="ai-budget-confirm-close" aria-label="关闭" onclick="closeAiBudgetConfirmModal()"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="ai-budget-confirm-body">
+        <div class="ai-budget-confirm-tip"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>以下字段由 AI 从预算文件中自动识别，您可修改后再确认登记。</span></div>
+        <div class="ai-budget-confirm-form">
+          <div class="ai-budget-confirm-field is-full">
+            <label for="aiBudgetConfirmName">预算名称 <em>*</em></label>
+            <input type="text" id="aiBudgetConfirmName" placeholder="如：2026年度办公设备采购预算">
+          </div>
+          <div class="ai-budget-confirm-field">
+            <label for="aiBudgetConfirmDept">预算部门 <em>*</em></label>
+            <input type="text" id="aiBudgetConfirmDept" placeholder="如：信息中心">
+          </div>
+          <div class="ai-budget-confirm-field">
+            <label for="aiBudgetConfirmAmount">预算金额（元）<em>*</em></label>
+            <input type="number" id="aiBudgetConfirmAmount" min="0" step="1" placeholder="如：200000">
+          </div>
+          <div class="ai-budget-confirm-field">
+            <label for="aiBudgetConfirmDeadline">截止日期 <em>*</em></label>
+            <input type="date" id="aiBudgetConfirmDeadline">
+          </div>
+          <div class="ai-budget-confirm-field is-full">
+            <label for="aiBudgetConfirmCat">适用品类/范围</label>
+            <input type="text" id="aiBudgetConfirmCat" placeholder="如：笔记本电脑、显示器、打印机">
+          </div>
+          <div class="ai-budget-confirm-field is-full">
+            <label for="aiBudgetConfirmSource">来源文件</label>
+            <input type="text" id="aiBudgetConfirmSource" readonly>
+          </div>
+        </div>
+      </div>
+      <footer class="ai-budget-confirm-foot">
+        <button type="button" class="ai-budget-confirm-btn ghost" onclick="closeAiBudgetConfirmModal()">取消</button>
+        <button type="button" class="ai-budget-confirm-btn primary" onclick="confirmAiBudgetRegistration()"><i class="fa-solid fa-check" aria-hidden="true"></i> 确认登记</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 采购计划 · 登记确认弹窗 -->
+  <div class="ai-budget-confirm-overlay" id="aiPlanConfirmOverlay" role="dialog" aria-modal="true" aria-labelledby="aiPlanConfirmTitle" onclick="closeAiPlanConfirmModal(event)">
+    <div class="ai-budget-confirm-dialog" onclick="event.stopPropagation()">
+      <header class="ai-budget-confirm-head">
+        <div>
+          <div class="ai-budget-confirm-head-title" id="aiPlanConfirmTitle"><i class="fa-solid fa-clipboard-list" aria-hidden="true"></i> 确认采购计划登记信息</div>
+          <div class="ai-budget-confirm-head-sub">请核对 AI 识别出的采购计划登记字段，确认后将写入系统</div>
+        </div>
+        <button type="button" class="ai-budget-confirm-close" aria-label="关闭" onclick="closeAiPlanConfirmModal()"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="ai-budget-confirm-body">
+        <div class="ai-budget-confirm-tip"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span>以下字段由 AI 从采购计划文件中自动识别，您可修改后再确认登记。</span></div>
+        <div class="ai-budget-confirm-form">
+          <div class="ai-budget-confirm-field is-full">
+            <label for="aiPlanConfirmName">计划名称 <em>*</em></label>
+            <input type="text" id="aiPlanConfirmName" placeholder="如：2026年办公设备采购计划">
+          </div>
+          <div class="ai-budget-confirm-field">
+            <label for="aiPlanConfirmAmount">计划金额（元）<em>*</em></label>
+            <input type="number" id="aiPlanConfirmAmount" min="0" step="1" placeholder="如：200000">
+          </div>
+          <div class="ai-budget-confirm-field">
+            <label for="aiPlanConfirmDeadline">截止日期 <em>*</em></label>
+            <input type="date" id="aiPlanConfirmDeadline">
+          </div>
+          <div class="ai-budget-confirm-field is-full">
+            <label for="aiPlanConfirmCat">适用品类/范围</label>
+            <input type="text" id="aiPlanConfirmCat" placeholder="如：笔记本电脑、显示器、打印机">
+          </div>
+          <div class="ai-budget-confirm-field is-full">
+            <label for="aiPlanConfirmRelatedBudget">关联预算</label>
+            <input type="text" id="aiPlanConfirmRelatedBudget" placeholder="如：2026年度办公设备采购预算">
+          </div>
+          <div class="ai-budget-confirm-field is-full">
+            <label for="aiPlanConfirmNote">备注说明</label>
+            <input type="text" id="aiPlanConfirmNote" placeholder="补充说明（选填）">
+          </div>
+          <div class="ai-budget-confirm-field is-full">
+            <label for="aiPlanConfirmSource">来源文件</label>
+            <input type="text" id="aiPlanConfirmSource" readonly>
+          </div>
+        </div>
+      </div>
+      <footer class="ai-budget-confirm-foot">
+        <button type="button" class="ai-budget-confirm-btn ghost" onclick="closeAiPlanConfirmModal()">取消</button>
+        <button type="button" class="ai-budget-confirm-btn primary" onclick="confirmAiPlanRegistration()"><i class="fa-solid fa-check" aria-hidden="true"></i> 确认登记</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 采购计划 · 合规性报告弹窗 -->
+  <div class="ai-budget-confirm-overlay" id="aiPlanComplianceOverlay" role="dialog" aria-modal="true" aria-labelledby="aiPlanComplianceTitle" onclick="closeAiPlanComplianceModal(event)">
+    <div class="ai-budget-confirm-dialog" onclick="event.stopPropagation()">
+      <header class="ai-budget-confirm-head">
+        <div>
+          <div class="ai-budget-confirm-head-title" id="aiPlanComplianceTitle"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> 采购计划合规性报告</div>
+          <div class="ai-budget-confirm-head-sub" id="aiPlanComplianceSub">AI 已对采购计划文件进行合规校验</div>
+        </div>
+        <button type="button" class="ai-budget-confirm-close" aria-label="关闭" onclick="closeAiPlanComplianceModal()"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="ai-budget-confirm-body" id="aiPlanComplianceBody"></div>
+      <footer class="ai-budget-confirm-foot">
+        <button type="button" class="ai-budget-confirm-btn primary" onclick="closeAiPlanComplianceModal()"><i class="fa-solid fa-check" aria-hidden="true"></i> 我知道了</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 采购计划-演示 · 更换商品弹窗 -->
+  <div class="ai-budget-confirm-overlay" id="aiPlanChangeProductOverlay" role="dialog" aria-modal="true" aria-labelledby="aiPlanChangeProductTitle" onclick="closeAiPlanChangeProductModal(event)">
+    <div class="ai-plan-change-dialog" onclick="event.stopPropagation()">
+      <header class="ai-budget-confirm-head">
+        <div>
+          <div class="ai-budget-confirm-head-title" id="aiPlanChangeProductTitle"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> 更换商品</div>
+          <div class="ai-budget-confirm-head-sub" id="aiPlanChangeProductSub">同品同规候选商品</div>
+        </div>
+        <button type="button" class="ai-budget-confirm-close" aria-label="关闭" onclick="closeAiPlanChangeProductModal()"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="ai-plan-change-body" id="aiPlanChangeProductBody"></div>
+      <footer class="ai-budget-confirm-foot">
+        <button type="button" class="ai-budget-confirm-btn ghost" onclick="closeAiPlanChangeProductModal()">取消</button>
+      </footer>
     </div>
   </div>
 
@@ -3739,15 +5021,21 @@
               <input class="form-input" id="newBudgetName" placeholder="如：2026年度电子设备预算">
             </div>
             <div class="form-group">
-              <label class="form-label">预算金额（元）<span style="color:#ef4444;">*</span></label>
-              <input class="form-input" id="newBudgetAmt" type="number" placeholder="如：100000">
+              <label class="form-label">预算部门 <span style="color:#ef4444;">*</span></label>
+              <input class="form-input" id="newBudgetDept" placeholder="如：信息中心">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
+              <label class="form-label">预算金额（元）<span style="color:#ef4444;">*</span></label>
+              <input class="form-input" id="newBudgetAmt" type="number" placeholder="如：100000">
+            </div>
+            <div class="form-group">
               <label class="form-label">截止日期 <span style="color:#ef4444;">*</span></label>
               <input class="form-input" id="newBudgetDate" type="date">
             </div>
+          </div>
+          <div class="form-row">
             <div class="form-group">
               <label class="form-label">适用品类/范围</label>
               <input class="form-input" id="newBudgetCat" placeholder="如：笔记本电脑、显示器">
@@ -4543,7 +5831,7 @@
         var usedEff=budgetEffectiveUsed(c);
         var pct=Math.min(100,Math.round(usedEff/c.budget*100)); var cls=pct>=90?'danger':pct>=70?'warn':'safe';
         var warn=pct>=90?'<div class="warn-tip"><i class="fa-solid fa-triangle-exclamation"></i> '+c.name+'已使用'+pct+'%，接近上限</div>':'';
-        var metaLine='<div class="list-item-meta">截止 '+(c.deadline||'—')+(c.cat?' · '+c.cat:'')+'</div>';
+        var metaLine='<div class="list-item-meta">'+(c.dept?(c.dept+' · '):'')+'截止 '+(c.deadline||'—')+(c.cat?' · '+c.cat:'')+'</div>';
         var ordersWrapOpen=c.ordersOpen?'block':'none';
         var ordersTable='<div id="budgetOrders-'+c.id+'" style="display:'+ordersWrapOpen+';padding:0 12px 11px;"><div class="inline-expand"><div class="inline-expand-inner"><table class="gm-table"><thead><tr><th>采购单号</th><th>商品</th><th>金额</th><th>状态</th><th style="min-width:100px;">操作</th></tr></thead><tbody>'
           +c.orders.map(function(o,oi){ return '<tr><td>'+o.no+'</td><td>'+o.goods+'</td><td>¥'+o.amt.toLocaleString()+'</td><td>'+procurementOrderAuditLabel(o)+'</td><td><button type="button" class="gm-btn gm-btn-ghost gm-btn-sm" onclick="openBudgetOrderDetail(\''+String(c.id).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\','+oi+')"><i class="fa-solid fa-file-invoice"></i> 查看采购单详情</button></td></tr>'; }).join('')
@@ -4632,6 +5920,8 @@
     function toggleAddBudgetForm(forceState){ addBudgetFormOpen=forceState!==undefined?forceState:!addBudgetFormOpen; document.getElementById('addBudgetForm').style.display=addBudgetFormOpen?'block':'none'; if(!addBudgetFormOpen) clearNewBudgetFile(); }
     function addBudgetItem(){
       var name=document.getElementById('newBudgetName').value.trim();
+      var dept=(document.getElementById('newBudgetDept')&&document.getElementById('newBudgetDept').value)||'';
+      dept=String(dept).trim();
       var amt=parseFloat(document.getElementById('newBudgetAmt').value);
       var date=document.getElementById('newBudgetDate').value;
       var cat=(document.getElementById('newBudgetCat')&&document.getElementById('newBudgetCat').value)||'';
@@ -4639,12 +5929,13 @@
       var note=(document.getElementById('newBudgetNote')&&document.getElementById('newBudgetNote').value)||'';
       note=String(note).trim();
       if(!name){alert('请填写预算名称');return;}
+      if(!dept){alert('请填写预算部门');return;}
       if(!amt||isNaN(amt)){alert('请填写预算金额');return;}
       if(!date){alert('请选择截止日期');return;}
       var fileIn=document.getElementById('newBudgetFileInput');
       var file=fileIn&&fileIn.files&&fileIn.files[0];
       function commit(extra){
-        var row={id:'custom_'+(++budgetIdSeed),name:name,budget:amt,used:0,deadline:date,cat:cat,note:note,adjustOpen:false,ordersOpen:false,orders:[]};
+        var row={id:'custom_'+(++budgetIdSeed),name:name,dept:dept,budget:amt,used:0,deadline:date,cat:cat,note:note,adjustOpen:false,ordersOpen:false,orders:[]};
         if(extra&&extra.fileName&&(extra.fileData||extra.fileUrl)){
           row.fileName=extra.fileName;
           if(extra.fileData) row.fileData=extra.fileData;
@@ -4652,6 +5943,7 @@
         }
         budgetCats.push(row);
         document.getElementById('newBudgetName').value='';
+        if(document.getElementById('newBudgetDept')) document.getElementById('newBudgetDept').value='';
         document.getElementById('newBudgetAmt').value='';
         document.getElementById('newBudgetDate').value='';
         document.getElementById('newBudgetCat').value='';
@@ -5145,7 +6437,174 @@
       ]
     };
 
-    /** 与 smart_compare.html 全网寻品演示数据保持一致 */
+    /** 文件解析 · 类型定义（原型演示） */
+    var _AI_FILE_PARSE_TYPES = {
+      plan: {
+        id: 'plan',
+        label: '采购计划',
+        demoKey: 'procure_plan',
+        demoFile: '2026年办公设备采购计划.pdf',
+        summary: '登记字段已提取完毕，合规校验已完成，请核对下方信息并确认登记',
+        parseData: {
+          name: '2026年办公设备更新采购计划',
+          amount: 200000,
+          deadline: '2026-12-31',
+          relatedBudget: '2026年度办公设备采购预算',
+          cat: '笔记本电脑、显示器、打印机',
+          note: '按年度设备更新规划编制，关联信息中心预算'
+        },
+        complianceData: {
+          compliantCount: 8,
+          nonCompliantCount: 2,
+          compliantItems: [
+            '计划金额未超出关联预算额度',
+            '采购品类在政采目录范围内',
+            '计划名称格式规范完整',
+            '截止日期设置合理',
+            '需求描述包含数量与规格',
+            '编制依据文件已关联',
+            '执行周期与年度预算一致',
+            '审批流程节点完整'
+          ],
+          nonCompliantItems: [
+            { title: '缺少采购方式说明', level: '中风险', desc: '计划未明确公开招标、询价等采购方式及选择依据。', suggestion: '补充采购方式选择与法规依据说明。' },
+            { title: '供应商资质要求不完整', level: '中风险', desc: '未列明供应商基本资质条件与业绩要求。', suggestion: '参照政府采购法要求补充资质条款。' }
+          ]
+        }
+      },
+      scheme: {
+        id: 'scheme',
+        label: '采购方案',
+        demoKey: 'procure_scheme',
+        demoFile: '办公设备集中采购方案.docx',
+        summary: '已完成需求拆解、选品路径与合规留痕要点分析'
+      },
+      contract: {
+        id: 'contract',
+        label: '采购合同',
+        demoKey: 'procure_contract',
+        demoFile: '设备采购合同.pdf',
+        summary: '已识别合同主体条款并完成合规风险检测'
+      },
+      bid: {
+        id: 'bid',
+        label: '竞价方案',
+        demoKey: 'bid_scheme',
+        demoFile: '竞价采购方案.pdf',
+        summary: '已提取标段设置、报价规则与评审要点'
+      },
+      inquiry: {
+        id: 'inquiry',
+        label: '询价方案',
+        demoKey: 'inquiry_scheme',
+        demoFile: '询价采购方案.docx',
+        summary: '已提取询价范围、供应商邀请与报价比对规则'
+      },
+      budget: {
+        id: 'budget',
+        label: '预算文件',
+        demoKey: 'budget_file',
+        demoFile: '2026年度采购预算表.xlsx',
+        summary: '登记字段已提取完毕，请核对下方信息并确认登记',
+        parseData: {
+          name: '2026年度办公设备采购预算',
+          dept: '信息中心',
+          amount: 200000,
+          deadline: '2026-12-31',
+          cat: '笔记本电脑、显示器、打印机、机房设备'
+        }
+      }
+    };
+
+    var _aiSelectedFileParseType = null;
+    var _aiBudgetParseDraft = null;
+    var _aiPlanParseDraft = null;
+
+    /** 采购计划-演示 · 平台匹配清单 */
+    var _AI_PLAN_DEMO_LINES = [
+      {
+        id: 1, name: 'A4复印纸', spec: 'A4 / 70g / 500张×8包', reqQty: 100, qty: 100, unit: '箱', matched: true,
+        product: {
+          name: '得力 A4 复印纸 70g 8包装', refId: 'P20001', supplier: '京采云商贸有限公司',
+          price: 1280, floor: 1180, ceiling: 1380, score: '96%', unit: '箱',
+          img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=320&h=320&fit=crop'
+        }
+      },
+      {
+        id: 2, name: '硒鼓', spec: 'HP 85A 兼容', reqQty: 20, qty: 20, unit: '个', matched: true,
+        product: {
+          name: 'HP 85A 兼容硒鼓 CE285A', refId: 'P20002', supplier: '政采优选数码科技',
+          price: 420, floor: 380, ceiling: 460, score: '93%', unit: '个',
+          img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=320&h=320&fit=crop'
+        }
+      },
+      {
+        id: 3, name: '订书机', spec: '24/6 标准型', reqQty: 30, qty: 30, unit: '个', matched: false,
+        product: null
+      }
+    ];
+    var _AI_PLAN_DEMO_SUGGEST = {
+      '订书机': {
+        name: '得力标准订书机 24/6', refId: 'P20003', supplier: '国采办公服务中心',
+        price: 18, floor: 15, ceiling: 22, score: '88%', unit: '个',
+        img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=320&h=320&fit=crop'
+      }
+    };
+    /** 更换商品 · 同品同规候选（按需求行 id） */
+    var _AI_PLAN_DEMO_ALTERNATIVES = {
+      1: [
+        {
+          name: '得力 A4 复印纸 70g 8包装', refId: 'P20001', supplier: '京采云商贸有限公司',
+          price: 1280, floor: 1180, ceiling: 1380, score: '96%', unit: '箱',
+          img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=320&h=320&fit=crop'
+        },
+        {
+          name: '晨光 A4 复印纸 70g 500张×8包', refId: 'P20011', supplier: '晨光集采专营店',
+          price: 1190, floor: 1100, ceiling: 1280, score: '94%', unit: '箱',
+          img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=320&h=320&fit=crop'
+        },
+        {
+          name: '齐心 A4 复印纸 70g 8包装', refId: 'P20012', supplier: '齐心政企采购店',
+          price: 1250, floor: 1150, ceiling: 1350, score: '92%', unit: '箱',
+          img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=320&h=320&fit=crop'
+        }
+      ],
+      2: [
+        {
+          name: 'HP 85A 兼容硒鼓 CE285A', refId: 'P20002', supplier: '政采优选数码科技',
+          price: 420, floor: 380, ceiling: 460, score: '93%', unit: '个',
+          img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=320&h=320&fit=crop'
+        },
+        {
+          name: '格之格 CE285A 兼容硒鼓', refId: 'P20021', supplier: '格之格办公旗舰店',
+          price: 385, floor: 350, ceiling: 430, score: '91%', unit: '个',
+          img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=320&h=320&fit=crop'
+        },
+        {
+          name: '莱盛 LS-85A 兼容硒鼓', refId: 'P20022', supplier: '莱盛打印耗材馆',
+          price: 398, floor: 360, ceiling: 445, score: '89%', unit: '个',
+          img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=320&h=320&fit=crop'
+        }
+      ],
+      3: [
+        {
+          name: '得力标准订书机 24/6', refId: 'P20003', supplier: '国采办公服务中心',
+          price: 18, floor: 15, ceiling: 22, score: '88%', unit: '个',
+          img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=320&h=320&fit=crop'
+        },
+        {
+          name: '晨光 标准型订书机 24/6', refId: 'P20031', supplier: '晨光集采专营店',
+          price: 16, floor: 14, ceiling: 20, score: '86%', unit: '个',
+          img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=320&h=320&fit=crop'
+        },
+        {
+          name: '齐心 订书机 24/6 省力型', refId: 'P20032', supplier: '齐心政企采购店',
+          price: 22, floor: 18, ceiling: 26, score: '85%', unit: '个',
+          img: 'https://images.unsplash.com/photo-1553688738-a278b9f063e0?w=320&h=320&fit=crop'
+        }
+      ]
+    };
+    var _aiPlanChangeProductLineId = null;
     var _AI_FINDER_SCENARIOS = {
       image: {
         sourceType: 'image',
@@ -5289,19 +6748,20 @@
       var ov = document.getElementById('aiCompanionOverlay');
       var fab = document.getElementById('aiCompanionFab');
       if (!ov) return;
-      ov.classList.add('open');
-      document.body.style.overflow = 'hidden';
+      document.body.classList.add('ai-companion-open');
       if (fab) fab.style.visibility = 'hidden';
       var dlg = document.getElementById('aiCompanionDialog');
       var activePanel = document.querySelector('.ai-comp-panel.active');
       if (dlg && activePanel) {
         dlg.classList.toggle('ai-mode-unified', activePanel.getAttribute('data-ai-mode') === 'unified');
       }
-      setTimeout(function() {
-        var unified = document.getElementById('aiPanel-unified');
+      ov.classList.add('open');
+      requestAnimationFrame(function() {
+        syncAiComposeActionButtons();
         var inp = document.getElementById('aiComposeInput');
-        if (inp && unified && unified.classList.contains('active')) inp.focus();
-      }, 350);
+        var unified = document.getElementById('aiPanel-unified');
+        if (inp && unified && unified.classList.contains('active')) inp.focus({ preventScroll: true });
+      });
     }
 
     function closeAiCompanion(event) {
@@ -5309,7 +6769,7 @@
       if (!ov) return;
       if (event && event.target !== ov) return;
       ov.classList.remove('open');
-      document.body.style.overflow = '';
+      document.body.classList.remove('ai-companion-open');
       stopAiCompanionSpeech();
       var fab = document.getElementById('aiCompanionFab');
       if (fab) fab.style.visibility = '';
@@ -5336,10 +6796,1006 @@
       }
     }
 
-    function openAiCompanionFileUpload(btn) {
+    function openAiFileParseTypeModal(btn) {
       resetAiModeDockActive();
-      var fi = document.getElementById('aiFileInput');
-      if (fi) fi.click();
+      if (btn) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+      }
+      setAiCompanionMode('unified');
+      var ov = document.getElementById('aiFileParseOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
+    function closeAiFileParseTypeModal(evt) {
+      if (evt && evt.target && evt.target.id !== 'aiFileParseOverlay') return;
+      var ov = document.getElementById('aiFileParseOverlay');
+      if (ov) ov.classList.remove('open');
+      resetAiModeDockActive();
+    }
+
+    function getAiFileParseType(typeId) {
+      return _AI_FILE_PARSE_TYPES[typeId] || null;
+    }
+
+    function openAiFileParseDetail(typeId) {
+      var typeDef = getAiFileParseType(typeId || (_aiSelectedFileParseType && _aiSelectedFileParseType.id));
+      if (!typeDef) return;
+      if (typeDef.id === 'budget') {
+        openAiBudgetConfirmModal();
+        return;
+      }
+      if (typeDef.id === 'contract') {
+        openAiCompanionContractDetail();
+        return;
+      }
+      if (typeDef.id === 'bid') {
+        try {
+          sessionStorage.setItem('planDemo', JSON.stringify({ file: null, scene: '竞价询价演示' }));
+        } catch (eSave) {}
+        setAiCompanionDemoSession(typeDef.demoKey);
+        window.open('../pages-new/plan_result.html#bidAssistantAnchor', '_blank', 'noopener,noreferrer');
+        return;
+      }
+      openAiCompanionAnalysisPage(typeDef.demoKey);
+    }
+
+    function formatAiBudgetAmount(amount) {
+      var n = Number(amount) || 0;
+      return '¥' + n.toLocaleString('zh-CN');
+    }
+
+    function setAiBudgetParseDraft(typeDef) {
+      var base = (typeDef && typeDef.parseData) ? typeDef.parseData : {};
+      _aiBudgetParseDraft = {
+        name: base.name || '',
+        dept: base.dept || '',
+        amount: base.amount || 0,
+        deadline: base.deadline || '',
+        cat: base.cat || '',
+        sourceFile: (typeDef && typeDef.demoFile) ? typeDef.demoFile : '预算文件'
+      };
+    }
+
+    function fillAiBudgetConfirmForm(data) {
+      data = data || _aiBudgetParseDraft || {};
+      var nameEl = document.getElementById('aiBudgetConfirmName');
+      var deptEl = document.getElementById('aiBudgetConfirmDept');
+      var amtEl = document.getElementById('aiBudgetConfirmAmount');
+      var dateEl = document.getElementById('aiBudgetConfirmDeadline');
+      var catEl = document.getElementById('aiBudgetConfirmCat');
+      var srcEl = document.getElementById('aiBudgetConfirmSource');
+      if (nameEl) nameEl.value = data.name || '';
+      if (deptEl) deptEl.value = data.dept || '';
+      if (amtEl) amtEl.value = data.amount || '';
+      if (dateEl) dateEl.value = data.deadline || '';
+      if (catEl) catEl.value = data.cat || '';
+      if (srcEl) srcEl.value = data.sourceFile || '';
+    }
+
+    function openAiBudgetConfirmModal() {
+      fillAiBudgetConfirmForm(_aiBudgetParseDraft);
+      var ov = document.getElementById('aiBudgetConfirmOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
+    function closeAiBudgetConfirmModal(evt) {
+      if (evt && evt.target && evt.target.id !== 'aiBudgetConfirmOverlay') return;
+      var ov = document.getElementById('aiBudgetConfirmOverlay');
+      if (ov) ov.classList.remove('open');
+    }
+
+    function markAiBudgetRegisterButtonDone() {
+      var btn = document.querySelector('#aiChatLog .ai-btn-budget-register:not(.is-done)');
+      if (!btn) return;
+      btn.classList.add('is-done');
+      btn.disabled = true;
+      btn.removeAttribute('onclick');
+      btn.innerHTML = '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> 已完成登记';
+    }
+
+    function confirmAiBudgetRegistration() {
+      var name = (document.getElementById('aiBudgetConfirmName') || {}).value;
+      var dept = (document.getElementById('aiBudgetConfirmDept') || {}).value;
+      var amt = parseFloat((document.getElementById('aiBudgetConfirmAmount') || {}).value);
+      var date = (document.getElementById('aiBudgetConfirmDeadline') || {}).value;
+      var cat = (document.getElementById('aiBudgetConfirmCat') || {}).value;
+      var sourceFile = (document.getElementById('aiBudgetConfirmSource') || {}).value;
+      name = String(name || '').trim();
+      dept = String(dept || '').trim();
+      cat = String(cat || '').trim();
+      sourceFile = String(sourceFile || '').trim();
+      if (!name) { alert('请填写预算名称'); return; }
+      if (!dept) { alert('请填写预算部门'); return; }
+      if (!amt || isNaN(amt)) { alert('请填写预算金额'); return; }
+      if (!date) { alert('请选择截止日期'); return; }
+      closeAiBudgetConfirmModal();
+      appendAiChat('user', '确认登记预算：' + name);
+      markAiBudgetRegisterButtonDone();
+      var row = {
+        id: 'ai_' + (++budgetIdSeed),
+        name: name,
+        dept: dept,
+        budget: amt,
+        used: 0,
+        deadline: date,
+        cat: cat,
+        note: '由 AI 文件解析登记',
+        fileName: sourceFile || '预算文件',
+        adjustOpen: false,
+        ordersOpen: false,
+        orders: []
+      };
+      budgetCats.push(row);
+      var successText = '预算「' + name + '」已登记到系统，您可在「预算管理」中查看与跟进执行情况。';
+      appendAiChat('bot', successText);
+      scheduleAiCompanionSpeech('预算已成功登记到系统。');
+      scrollAiChatToBottom();
+    }
+
+    function setAiPlanParseDraft(typeDef) {
+      var base = (typeDef && typeDef.parseData) ? typeDef.parseData : {};
+      var comp = (typeDef && typeDef.complianceData) ? typeDef.complianceData : {};
+      _aiPlanParseDraft = {
+        name: base.name || '',
+        amount: base.amount || 0,
+        deadline: base.deadline || '',
+        relatedBudget: base.relatedBudget || '',
+        cat: base.cat || '',
+        note: base.note || '',
+        sourceFile: (typeDef && typeDef.demoFile) ? typeDef.demoFile : '采购计划文件',
+        complianceData: comp
+      };
+    }
+
+    function fillAiPlanConfirmForm(data) {
+      data = data || _aiPlanParseDraft || {};
+      var nameEl = document.getElementById('aiPlanConfirmName');
+      var amtEl = document.getElementById('aiPlanConfirmAmount');
+      var dateEl = document.getElementById('aiPlanConfirmDeadline');
+      var catEl = document.getElementById('aiPlanConfirmCat');
+      var budgetEl = document.getElementById('aiPlanConfirmRelatedBudget');
+      var noteEl = document.getElementById('aiPlanConfirmNote');
+      var srcEl = document.getElementById('aiPlanConfirmSource');
+      if (nameEl) nameEl.value = data.name || '';
+      if (amtEl) amtEl.value = data.amount || '';
+      if (dateEl) dateEl.value = data.deadline || '';
+      if (catEl) catEl.value = data.cat || '';
+      if (budgetEl) budgetEl.value = data.relatedBudget || '';
+      if (noteEl) noteEl.value = data.note || '';
+      if (srcEl) srcEl.value = data.sourceFile || '';
+    }
+
+    function openAiPlanConfirmModal() {
+      fillAiPlanConfirmForm(_aiPlanParseDraft);
+      var ov = document.getElementById('aiPlanConfirmOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
+    function closeAiPlanConfirmModal(evt) {
+      if (evt && evt.target && evt.target.id !== 'aiPlanConfirmOverlay') return;
+      var ov = document.getElementById('aiPlanConfirmOverlay');
+      if (ov) ov.classList.remove('open');
+    }
+
+    function markAiPlanRegisterButtonDone() {
+      var btn = document.querySelector('#aiChatLog .ai-btn-plan-register:not(.is-done)');
+      if (!btn) return;
+      btn.classList.add('is-done');
+      btn.disabled = true;
+      btn.removeAttribute('onclick');
+      btn.innerHTML = '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> 已完成登记';
+    }
+
+    function confirmAiPlanRegistration() {
+      var name = (document.getElementById('aiPlanConfirmName') || {}).value;
+      var amt = parseFloat((document.getElementById('aiPlanConfirmAmount') || {}).value);
+      var date = (document.getElementById('aiPlanConfirmDeadline') || {}).value;
+      var cat = (document.getElementById('aiPlanConfirmCat') || {}).value;
+      var relatedBudget = (document.getElementById('aiPlanConfirmRelatedBudget') || {}).value;
+      var note = (document.getElementById('aiPlanConfirmNote') || {}).value;
+      var sourceFile = (document.getElementById('aiPlanConfirmSource') || {}).value;
+      name = String(name || '').trim();
+      cat = String(cat || '').trim();
+      relatedBudget = String(relatedBudget || '').trim();
+      note = String(note || '').trim();
+      sourceFile = String(sourceFile || '').trim();
+      if (!name) { alert('请填写计划名称'); return; }
+      if (!amt || isNaN(amt)) { alert('请填写计划金额'); return; }
+      if (!date) { alert('请选择截止日期'); return; }
+      closeAiPlanConfirmModal();
+      appendAiChat('user', '确认登记采购计划：' + name);
+      markAiPlanRegisterButtonDone();
+      var row = {
+        id: ++planIdSeed,
+        name: name,
+        amount: amt,
+        used: 0,
+        deadline: date,
+        cat: cat,
+        relatedBudget: relatedBudget,
+        status: 'active',
+        fileName: sourceFile || '采购计划文件',
+        orders: []
+      };
+      plans.unshift(row);
+      var successText = '采购计划「' + name + '」已登记到系统，您可在「采购计划管理」中查看与跟进执行情况。';
+      appendAiChat('bot', successText);
+      scheduleAiCompanionSpeech('采购计划已成功登记到系统。');
+      scrollAiChatToBottom();
+    }
+
+    function renderAiPlanComplianceReportHtml(comp) {
+      comp = comp || (_aiPlanParseDraft && _aiPlanParseDraft.complianceData) || {};
+      var okList = comp.compliantItems || [];
+      var warnList = comp.nonCompliantItems || [];
+      var okHtml = okList.length
+        ? '<div class="ai-plan-compliance-section-title ok"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 合规项（' + okList.length + '）</div>'
+          + okList.map(function(t) {
+            return '<div class="ai-plan-compliance-item is-ok"><i class="fa-solid fa-check" aria-hidden="true" style="margin-right:6px;"></i>' + escapeAiHtml(t) + '</div>';
+          }).join('')
+        : '';
+      var warnHtml = warnList.length
+        ? '<div class="ai-plan-compliance-section-title warn"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> 不合规项（' + warnList.length + '）</div>'
+          + warnList.map(function(item) {
+            return (
+              '<div class="ai-plan-compliance-item is-warn">' +
+              '<span class="item-tag">' + escapeAiHtml(item.level || '待优化') + '</span>' +
+              '<div class="item-title">' + escapeAiHtml(item.title) + '</div>' +
+              '<div><strong>问题说明：</strong>' + escapeAiHtml(item.desc) + '</div>' +
+              '<div style="margin-top:4px;"><strong>修改建议：</strong>' + escapeAiHtml(item.suggestion) + '</div>' +
+              '</div>'
+            );
+          }).join('')
+        : '';
+      return '<div class="ai-plan-compliance-list">' + okHtml + warnHtml + '</div>';
+    }
+
+    function openAiPlanComplianceReportModal() {
+      var comp = (_aiPlanParseDraft && _aiPlanParseDraft.complianceData) || {};
+      var subEl = document.getElementById('aiPlanComplianceSub');
+      var bodyEl = document.getElementById('aiPlanComplianceBody');
+      if (subEl) {
+        subEl.textContent = '共检出 ' + (comp.compliantCount || 0) + ' 项合规、' + (comp.nonCompliantCount || 0) + ' 项不合规，建议优先处理不合规项后再登记。';
+      }
+      if (bodyEl) bodyEl.innerHTML = renderAiPlanComplianceReportHtml(comp);
+      var ov = document.getElementById('aiPlanComplianceOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
+    function closeAiPlanComplianceModal(evt) {
+      if (evt && evt.target && evt.target.id !== 'aiPlanComplianceOverlay') return;
+      var ov = document.getElementById('aiPlanComplianceOverlay');
+      if (ov) ov.classList.remove('open');
+    }
+
+    function aiPlanDemoGetSelectStatus(line) {
+      if (!line) return 'none';
+      if (line.selectStatus === 'selected') return 'selected';
+      if (line.matched && line.product) return 'pending';
+      return 'none';
+    }
+
+    function aiPlanDemoFormatSubtotal(line) {
+      if (!line || !line.matched || !line.product) return '—';
+      var qty = Number(line.qty) || 0;
+      var price = Number(line.product.price) || 0;
+      return '¥' + (qty * price).toLocaleString('zh-CN');
+    }
+
+    function aiPlanDemoReqTagHtml(line) {
+      var status = aiPlanDemoGetSelectStatus(line);
+      if (status === 'selected') {
+        return '<span class="req-match-tag is-selected"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> 已选择</span>';
+      }
+      if (status === 'pending') {
+        return '<span class="req-match-tag is-pending"><i class="fa-regular fa-circle" aria-hidden="true"></i> 待选择</span>';
+      }
+      return '<span class="req-match-tag is-warn"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> 暂无匹配</span>';
+    }
+
+    function aiPlanDemoUpdateReqTag(lineId) {
+      var line = aiPlanDemoFindLine(lineId);
+      var reqBtn = document.querySelector('.ai-plan-req-btn[data-line-id="' + lineId + '"]');
+      if (!line || !reqBtn) return;
+      var tag = reqBtn.querySelector('.req-match-tag');
+      if (!tag) return;
+      var tmp = document.createElement('div');
+      tmp.innerHTML = aiPlanDemoReqTagHtml(line);
+      var newTag = tmp.firstChild;
+      tag.replaceWith(newTag);
+    }
+
+    function aiPlanDemoUpdateQty(lineId, val, input) {
+      var line = aiPlanDemoFindLine(lineId);
+      if (!line) return;
+      line.qty = Math.max(1, parseInt(val, 10) || 1);
+      var root = input && input.closest ? input.closest('.ai-plan-match-product-panel') : null;
+      var subEl = root && root.querySelector('.ai-plan-subtotal-val');
+      if (subEl) {
+        var empty = !line.matched || !line.product;
+        subEl.textContent = aiPlanDemoFormatSubtotal(line);
+        subEl.classList.toggle('is-empty', empty);
+      }
+      if (line.selectStatus === 'selected') aiPlanDemoSyncOrderFooter();
+    }
+
+    function aiPlanDemoCalcTotalPrice() {
+      return (_AI_PLAN_DEMO_LINES || []).reduce(function(sum, line) {
+        if (line.selectStatus !== 'selected' || !line.product) return sum;
+        return sum + (Number(line.qty) || 0) * (Number(line.product.price) || 0);
+      }, 0);
+    }
+
+    function aiPlanDemoHasSelectedLines() {
+      return (_AI_PLAN_DEMO_LINES || []).some(function(L) {
+        return L.selectStatus === 'selected' && L.product;
+      });
+    }
+
+    function aiPlanDemoSyncOrderFooter() {
+      var total = aiPlanDemoCalcTotalPrice();
+      var hasSel = aiPlanDemoHasSelectedLines();
+      document.querySelectorAll('.ai-plan-match-foot').forEach(function(foot) {
+        var valEl = foot.querySelector('[data-plan-demo-total]');
+        var btn = foot.querySelector('.ai-plan-order-btn');
+        if (valEl) valEl.textContent = '¥' + total.toLocaleString('zh-CN');
+        if (btn) {
+          btn.disabled = !hasSel;
+          btn.classList.toggle('is-ready', hasSel);
+        }
+      });
+    }
+
+    function renderAiPlanDemoMatchFootHtml() {
+      var total = aiPlanDemoCalcTotalPrice();
+      var hasSel = aiPlanDemoHasSelectedLines();
+      return (
+        '<div class="ai-plan-match-foot">' +
+        '<div class="ai-plan-match-total">' +
+        '<span class="lbl">总价</span>' +
+        '<span class="val" data-plan-demo-total>¥' + total.toLocaleString('zh-CN') + '</span>' +
+        '<span class="hint">已选商品合计</span>' +
+        '</div>' +
+        '<button type="button" class="ai-plan-order-btn' + (hasSel ? ' is-ready' : '') + '"' +
+        (hasSel ? '' : ' disabled') +
+        ' onclick="aiPlanDemoPlaceOrder()"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> 立即下单</button>' +
+        '</div>'
+      );
+    }
+
+    function aiPlanDemoPlaceOrder() {
+      if (!aiPlanDemoHasSelectedLines()) return;
+      var payload = aiPlanDemoBuildOrderPayload();
+      if (!payload) return;
+      try {
+        sessionStorage.setItem('gcOrderConfirmPayload', JSON.stringify(payload));
+      } catch (eStore) {}
+      window.location.href = './order_confirm.html';
+    }
+
+    function aiPlanDemoBuildOrderPayload() {
+      var selected = (_AI_PLAN_DEMO_LINES || []).filter(function(L) {
+        return L.selectStatus === 'selected' && L.product;
+      });
+      if (!selected.length) return null;
+      var first = selected[0];
+      var P = first.product;
+      var total = aiPlanDemoCalcTotalPrice();
+      var isSingle = selected.length === 1;
+      var qty = isSingle ? (Number(first.qty) || 1) : 1;
+      var price = isSingle ? (Number(P.price) || 0) : total;
+      var model = isSingle
+        ? first.spec
+        : selected.map(function(L) {
+          return L.name + ' × ' + L.qty + L.unit;
+        }).join('；');
+      return {
+        orderNo: 'ORD' + Date.now().toString().slice(-8),
+        productId: P.refId,
+        name: isSingle ? P.name : ('采购计划组合（' + selected.length + ' 项）'),
+        model: model,
+        unit: isSingle ? (P.unit || first.unit || '件') : '项',
+        qty: qty,
+        price: price,
+        supplier: P.supplier,
+        storeName: '平台店铺',
+        code: P.refId || 'GC-PLAN-DEMO',
+        deliveryArea: '北京市海淀区',
+        deliveryTime: '48小时内发货',
+        receiver: '张三',
+        receiverPhone: '138****8000',
+        stockStatus: '库存稳定，可持续供货',
+        image: P.img,
+        floor: Number(P.floor) || Math.round(price * 0.92),
+        ceiling: Number(P.ceiling) || Math.round(price * 1.08),
+        inspectionReport: { status: '有效', expiry: '2026-12-31' },
+        supplierScore: 4.8,
+        goodRate: '98.0%',
+        invoice: {
+          type: '增值税普通发票',
+          title: '天创信总公司',
+          taxNo: '93827472837237172Y',
+          bank: '--',
+          account: '--'
+        },
+        addresses: [{
+          id: 'addr-1',
+          label: '北京市海淀区',
+          detail: '创业大厦17楼',
+          receiver: '张三'
+        }],
+        procurementBasis: {
+          plan: { name: '2026年度办公用品采购计划', source: 'plan-demo' },
+          budget: null,
+          files: [{ name: '采购计划-演示.docx', type: 'plan' }],
+          contractLinkage: [],
+          hasPlan: true,
+          hasBudget: false,
+          hasFiles: true,
+          hasContracts: false,
+          hasBasis: true
+        }
+      };
+    }
+
+    function aiPlanDemoFindProductByRefId(refId) {
+      var sid = String(refId || '');
+      if (!sid) return null;
+      var hit = null;
+      function pick(item) {
+        if (!item || String(item.refId) !== sid || hit) return;
+        hit = normalizeAiFinderProduct(Object.assign({}, item, { id: item.refId }), 0);
+      }
+      (_AI_PLAN_DEMO_LINES || []).forEach(function(line) {
+        if (line.product) pick(line.product);
+      });
+      Object.keys(_AI_PLAN_DEMO_ALTERNATIVES || {}).forEach(function(key) {
+        (_AI_PLAN_DEMO_ALTERNATIVES[key] || []).forEach(pick);
+      });
+      Object.keys(_AI_PLAN_DEMO_SUGGEST || {}).forEach(function(key) {
+        pick(_AI_PLAN_DEMO_SUGGEST[key]);
+      });
+      return hit;
+    }
+
+    function aiPlanDemoGetComparePool(refId) {
+      var sid = String(refId || '');
+      var line = null;
+      Object.keys(_AI_PLAN_DEMO_ALTERNATIVES || {}).forEach(function(lid) {
+        (_AI_PLAN_DEMO_ALTERNATIVES[lid] || []).forEach(function(item) {
+          if (String(item.refId) === sid) line = aiPlanDemoFindLine(Number(lid));
+        });
+      });
+      if (!line) {
+        (_AI_PLAN_DEMO_LINES || []).forEach(function(L) {
+          if (L.product && String(L.product.refId) === sid) line = L;
+        });
+      }
+      if (!line) return null;
+      var alts = _AI_PLAN_DEMO_ALTERNATIVES[line.id];
+      if (!alts || !alts.length) return null;
+      var sourceIdx = 0;
+      var products = alts.map(function(item, idx) {
+        if (String(item.refId) === sid) sourceIdx = idx;
+        return Object.assign({}, item, { id: item.refId, isSource: String(item.refId) === sid });
+      });
+      return {
+        specLabel: line.name + ' · ' + line.spec,
+        products: products,
+        sourceIdx: sourceIdx
+      };
+    }
+
+    function aiPlanDemoGoToProduct(refId, evt) {
+      if (evt) evt.stopPropagation();
+      if (!refId) return;
+      window.open('./product.html?id=' + encodeURIComponent(refId), '_blank', 'noopener,noreferrer');
+    }
+
+    function aiPlanDemoAddToCart(refId, evt) {
+      if (evt) evt.stopPropagation();
+      var product = aiPlanDemoFindProductByRefId(refId);
+      if (!product) {
+        product = normalizeAiFinderProduct({
+          id: refId,
+          name: '所选商品',
+          price: 0,
+          unit: '件',
+          supplier: '平台认证供应商'
+        }, 0);
+      }
+      saveAiCartItem(product);
+      var btn = evt && evt.currentTarget;
+      if (btn) {
+        var orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> 已加入';
+        setTimeout(function() {
+          btn.disabled = false;
+          btn.innerHTML = orig;
+        }, 1400);
+      }
+    }
+
+    function aiPlanDemoOpenCompare(refId, evt) {
+      if (evt) evt.stopPropagation();
+      _aiCompareCurrentPayload = buildAiComparePayload(refId);
+      try {
+        sessionStorage.setItem(AI_COMPARE_STORAGE_KEY, JSON.stringify(_aiCompareCurrentPayload));
+      } catch (eSave) {}
+      renderAiCompareModalContent(_aiCompareCurrentPayload);
+      var ov = document.getElementById('aiCompareOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
+    function aiPlanDemoFilterChangeProducts(keyword) {
+      var line = aiPlanDemoFindLine(_aiPlanChangeProductLineId);
+      if (!line) return;
+      var bodyEl = document.getElementById('aiPlanChangeProductBody');
+      if (bodyEl) bodyEl.innerHTML = renderAiPlanChangeProductBodyHtml(line, keyword);
+    }
+
+    function aiPlanDemoGetAlternatives(lineId) {
+      return (_AI_PLAN_DEMO_ALTERNATIVES[lineId] || []).slice();
+    }
+
+    function aiPlanDemoIsCurrentProduct(line, item) {
+      if (!line || !line.product || !item) return false;
+      return String(line.product.refId) === String(item.refId);
+    }
+
+    function renderAiPlanChangeProductBodyHtml(line, keyword) {
+      keyword = (keyword || '').trim().toLowerCase();
+      var allAlts = aiPlanDemoGetAlternatives(line.id);
+      var alts = allAlts.slice();
+      if (keyword) {
+        alts = alts.filter(function(item) {
+          var hay = (item.name + ' ' + item.supplier).toLowerCase();
+          return hay.indexOf(keyword) >= 0;
+        });
+      }
+      var searchVal = escapeAiHtml(keyword);
+      var searchHtml =
+        '<div class="ai-plan-change-search">' +
+        '<i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>' +
+        '<input type="search" placeholder="搜索商品名称、供应商…" value="' + searchVal + '" ' +
+        'oninput="aiPlanDemoFilterChangeProducts(this.value)" aria-label="搜索候选商品">' +
+        '</div>';
+      if (!allAlts.length) {
+        return searchHtml + '<div class="ai-plan-change-empty">暂无可选同品同规商品，请稍后在平台搜索补全。</div>';
+      }
+      if (!alts.length) {
+        return searchHtml + '<div class="ai-plan-change-empty">未找到匹配的候选商品，请调整搜索关键词。</div>';
+      }
+      return (
+        searchHtml +
+        '<div class="ai-plan-change-list">' +
+        alts.map(function(item) {
+          var idx = allAlts.findIndex(function(a) { return String(a.refId) === String(item.refId); });
+          if (idx < 0) idx = 0;
+          var isCurrent = aiPlanDemoIsCurrentProduct(line, item);
+          var unit = item.unit || line.unit || '件';
+          var safeRef = aiFinderSafeId(item.refId);
+          return (
+            '<div class="ai-plan-change-item' + (isCurrent ? ' is-current' : '') + '">' +
+            '<div class="ai-plan-change-row">' +
+            '<div class="ai-plan-change-main" role="link" tabindex="0" onclick="aiPlanDemoGoToProduct(\'' + safeRef + '\', event)" onkeydown="if(event.key===\'Enter\')aiPlanDemoGoToProduct(\'' + safeRef + '\', event)">' +
+            '<img class="ai-plan-change-thumb" src="' + escapeAiHtml(item.img) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' +
+            '<div class="ai-plan-change-info">' +
+            '<div class="ai-plan-change-name">' + escapeAiHtml(item.name) + '</div>' +
+            '<div class="ai-plan-change-meta">匹配 ' + escapeAiHtml(item.score || '—') + ' · ' + escapeAiHtml(item.supplier) + '</div>' +
+            '<div class="ai-plan-change-price">¥' + Number(item.price).toLocaleString('zh-CN') + '/' + escapeAiHtml(unit) + '</div>' +
+            '</div></div>' +
+            '<div class="ai-plan-change-side-actions">' +
+            '<button type="button" class="ai-plan-change-mini-btn compare" onclick="aiPlanDemoOpenCompare(\'' + safeRef + '\', event)"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>比质比价</button>' +
+            '<button type="button" class="ai-plan-change-mini-btn cart" onclick="aiPlanDemoAddToCart(\'' + safeRef + '\', event)"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i>加入购物车</button>' +
+            '</div>' +
+            (isCurrent
+              ? '<button type="button" class="ai-plan-change-pick-btn ghost" disabled>当前商品</button>'
+              : '<button type="button" class="ai-plan-change-pick-btn" onclick="confirmAiPlanChangeProduct(' + line.id + ',' + idx + ')">选择此商品</button>') +
+            '</div></div>'
+          );
+        }).join('') +
+        '</div>'
+      );
+    }
+
+    function renderAiPlanChangeProductListHtml(line) {
+      return renderAiPlanChangeProductBodyHtml(line, '');
+    }
+
+    function openAiPlanChangeProductModal(lineId) {
+      var line = aiPlanDemoFindLine(lineId);
+      if (!line) return;
+      _aiPlanChangeProductLineId = lineId;
+      var subEl = document.getElementById('aiPlanChangeProductSub');
+      var bodyEl = document.getElementById('aiPlanChangeProductBody');
+      if (subEl) {
+        subEl.textContent = '需求：' + line.name + ' · ' + line.spec + '（文件需求 ' + line.reqQty + ' ' + line.unit + '）';
+      }
+      if (bodyEl) bodyEl.innerHTML = renderAiPlanChangeProductListHtml(line);
+      var ov = document.getElementById('aiPlanChangeProductOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
+    function closeAiPlanChangeProductModal(evt) {
+      if (evt && evt.target && evt.target.id !== 'aiPlanChangeProductOverlay') return;
+      var ov = document.getElementById('aiPlanChangeProductOverlay');
+      if (ov) ov.classList.remove('open');
+      _aiPlanChangeProductLineId = null;
+    }
+
+    function confirmAiPlanChangeProduct(lineId, altIndex) {
+      var line = aiPlanDemoFindLine(lineId);
+      var alts = aiPlanDemoGetAlternatives(lineId);
+      var picked = alts[altIndex];
+      if (!line || !picked) return;
+      line.matched = true;
+      line.product = Object.assign({}, picked);
+      line.selectStatus = 'pending';
+      closeAiPlanChangeProductModal();
+      aiPlanDemoUpdateReqTag(lineId);
+      aiPlanDemoRefreshPanel(lineId);
+      aiPlanDemoSyncOrderFooter();
+    }
+
+    function renderAiPlanDemoProductCardHtml(line) {
+      if (!line.matched || !line.product) {
+        return (
+          '<div class="ai-plan-pick-empty">' +
+          '<i class="fa-solid fa-box-open" aria-hidden="true"></i>' +
+          '<div>暂无平台匹配商品</div>' +
+          '<div style="font-size:11px;">请点击「更换商品」搜索同品同规候选</div>' +
+          '</div>'
+        );
+      }
+      var P = line.product;
+      var price = Number(P.price) || 0;
+      var floor = Number(P.floor) || Math.round(price * 0.92);
+      var ceiling = Number(P.ceiling) || Math.round(price * 1.08);
+      var span = ceiling - floor || 1;
+      var marker = Math.max(6, Math.min(94, ((price - floor) / span) * 100));
+      var unit = P.unit || line.unit || '件';
+      var score = P.score || '90%';
+      var safeRef = aiFinderSafeId(P.refId);
+      return (
+        '<article class="ai-goods-card" onclick="aiPlanDemoGoToProduct(\'' + safeRef + '\', event)" role="link" tabindex="0">' +
+        '<div class="ai-goods-thumb">' +
+        '<img src="' + escapeAiHtml(P.img) + '" alt="" loading="lazy" decoding="async" onerror="this.src=\'https://placehold.co/320x320/f1f5f9/94a3b8?text=商品\'" />' +
+        '<span class="ai-goods-tag">匹配 ' + escapeAiHtml(score) + '</span>' +
+        '</div>' +
+        '<div class="ai-goods-body">' +
+        '<div class="ai-goods-name">' + escapeAiHtml(P.name) + '</div>' +
+        '<div class="ai-goods-price-row"><span class="ai-goods-price">¥' + price.toLocaleString('zh-CN') + '</span><span class="ai-goods-unit">/' + escapeAiHtml(unit) + '</span></div>' +
+        '<div class="ai-goods-supplier"><i class="fa-regular fa-building" aria-hidden="true"></i><span>' + escapeAiHtml(P.supplier) + '</span></div>' +
+        '<div class="ai-goods-range-wrap">' +
+        '<div class="ai-goods-range-track"><span class="ai-goods-range-marker" style="left:' + marker + '%"></span></div>' +
+        '<div class="ai-goods-range-labels"><span>¥' + floor.toLocaleString('zh-CN') + '</span><span>¥' + ceiling.toLocaleString('zh-CN') + '</span></div>' +
+        '</div>' +
+        '<div class="ai-goods-actions">' +
+        '<button type="button" class="ai-goods-btn compare" onclick="event.stopPropagation();aiPlanDemoOpenCompare(\'' + safeRef + '\', event)"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>比质比价</button>' +
+        '<button type="button" class="ai-goods-btn cart" onclick="event.stopPropagation();aiPlanDemoAddToCart(\'' + safeRef + '\', event)"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i>加入购物车</button>' +
+        '</div></div></article>'
+      );
+    }
+
+    function renderAiPlanDemoProductPanelInnerHtml(line) {
+      if (!line) return '';
+      var hasProduct = line.matched && line.product;
+      var status = aiPlanDemoGetSelectStatus(line);
+      var isSelected = status === 'selected';
+      var canSelect = status !== 'none';
+      var canChange = aiPlanDemoGetAlternatives(line.id).length > 0;
+      var subtotal = aiPlanDemoFormatSubtotal(line);
+      var subEmpty = !hasProduct;
+      return (
+        '<div class="ai-plan-product-panel-inner">' +
+        '<div class="ai-plan-pick-card-wrap">' + renderAiPlanDemoProductCardHtml(line) + '</div>' +
+        '<div class="ai-plan-product-side">' +
+        '<div class="ai-plan-qty-field">' +
+        '<label>本次采购数量</label>' +
+        '<input type="number" min="1" value="' + line.qty + '" aria-label="本次采购数量"' +
+        (canSelect ? '' : ' disabled') +
+        ' oninput="aiPlanDemoUpdateQty(' + line.id + ', this.value, this)">' +
+        '<div class="ai-plan-qty-unit">单位：' + escapeAiHtml(line.unit) + '</div>' +
+        '</div>' +
+        '<div class="ai-plan-qty-field">' +
+        '<label>计划采购数量</label>' +
+        '<input type="text" readonly value="' + line.reqQty + ' ' + escapeAiHtml(line.unit) + '">' +
+        '</div>' +
+        '<div class="ai-plan-subtotal-field">' +
+        '<label>价格小计</label>' +
+        '<div class="ai-plan-subtotal-val' + (subEmpty ? ' is-empty' : '') + '">' + escapeAiHtml(subtotal) + '</div>' +
+        '</div>' +
+        '<div class="ai-plan-action-btns">' +
+        '<button type="button" class="ai-plan-pick-btn change"' + (canChange ? '' : ' disabled') +
+        ' onclick="aiPlanDemoChangeProduct(' + line.id + ')"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i> 更换商品</button>' +
+        '<button type="button" class="ai-plan-pick-btn select' + (isSelected ? ' is-selected' : '') + '"' +
+        (canSelect ? '' : ' disabled') +
+        ' onclick="aiPlanDemoSelectProduct(' + line.id + ', this)">' +
+        (isSelected
+          ? '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> 已选（点击取消）'
+          : '<i class="fa-solid fa-check" aria-hidden="true"></i> 选择商品') +
+        '</button>' +
+        '</div></div></div>'
+      );
+    }
+
+    function renderAiPlanDemoReqBtnHtml(line, active) {
+      return (
+        '<button type="button" class="ai-plan-req-btn' + (active ? ' active' : '') + '" data-line-id="' + line.id + '" onclick="switchAiPlanDemoLine(' + line.id + ', this)">' +
+        '<div class="req-title">' + escapeAiHtml(line.name) + '</div>' +
+        '<div class="req-spec-line">' + escapeAiHtml(line.spec) + '</div>' +
+        '<div class="req-file-qty">文件需求：' + line.reqQty + ' ' + escapeAiHtml(line.unit) + '</div>' +
+        aiPlanDemoReqTagHtml(line) +
+        '</button>'
+      );
+    }
+
+    function renderAiPlanDemoMatchPanelHtml() {
+      var lines = _AI_PLAN_DEMO_LINES || [];
+      var first = lines[0];
+      var reqBtns = lines.map(function(L, i) { return renderAiPlanDemoReqBtnHtml(L, i === 0); }).join('');
+      return (
+        '<div class="ai-plan-match-section">' +
+        '<div class="ai-plan-match-head">' +
+        '<h3 class="ai-plan-match-title">采购需求与平台匹配</h3>' +
+        '<p class="ai-plan-match-sub">左侧选择采购需求项，右侧查看并确认平台参考商品；可调整本次采购数量后发起竞价 / 询价。</p>' +
+        '</div>' +
+        '<div class="ai-plan-match-split">' +
+        '<div class="ai-plan-match-req-list" role="tablist" aria-label="采购需求列表">' + reqBtns + '</div>' +
+        '<div class="ai-plan-match-product-panel">' +
+        renderAiPlanDemoProductPanelInnerHtml(first) +
+        '</div></div>' +
+        renderAiPlanDemoMatchFootHtml() +
+        '</div>'
+      );
+    }
+
+    function switchAiPlanDemoLine(lineId, btn) {
+      var root = btn && btn.closest ? btn.closest('.ai-plan-match-split') : null;
+      if (!root) return;
+      root.querySelectorAll('.ai-plan-req-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var line = (_AI_PLAN_DEMO_LINES || []).find(function(L) { return L.id === lineId; });
+      var panel = root.querySelector('.ai-plan-match-product-panel');
+      if (panel && line) panel.innerHTML = renderAiPlanDemoProductPanelInnerHtml(line);
+    }
+
+    function aiPlanDemoFindLine(id) {
+      return (_AI_PLAN_DEMO_LINES || []).find(function(L) { return L.id === id; });
+    }
+
+    function aiPlanDemoRefreshPanel(lineId) {
+      var btn = document.querySelector('.ai-plan-req-btn[data-line-id="' + lineId + '"].active');
+      if (btn) switchAiPlanDemoLine(lineId, btn);
+    }
+
+    function aiPlanDemoSelectProduct(lineId, btn) {
+      var line = aiPlanDemoFindLine(lineId);
+      if (!line) return;
+      var status = aiPlanDemoGetSelectStatus(line);
+      if (status === 'selected') {
+        line.selectStatus = 'pending';
+        aiPlanDemoUpdateReqTag(lineId);
+        aiPlanDemoRefreshPanel(lineId);
+        aiPlanDemoSyncOrderFooter();
+        return;
+      }
+      if (status === 'none') return;
+      line.selectStatus = 'selected';
+      aiPlanDemoUpdateReqTag(lineId);
+      aiPlanDemoRefreshPanel(lineId);
+      aiPlanDemoSyncOrderFooter();
+    }
+
+    function aiPlanDemoChangeProduct(lineId) {
+      openAiPlanChangeProductModal(lineId);
+    }
+
+    function renderAiPlanDemoMatchTableHtml() {
+      return renderAiPlanDemoMatchPanelHtml();
+    }
+
+    function renderAiPlanDemoSummaryHtml(typeDef) {
+      var comp = (typeDef && typeDef.complianceData) || {};
+      var okCount = comp.compliantCount != null ? comp.compliantCount : (comp.compliantItems ? comp.compliantItems.length : 0);
+      var warnCount = comp.nonCompliantCount != null ? comp.nonCompliantCount : (comp.nonCompliantItems ? comp.nonCompliantItems.length : 0);
+      return (
+        '<div class="ai-budget-parse-card ai-plan-demo-summary">' +
+        '<div class="ai-budget-parse-head">' +
+        '<span class="ai-finder-badge type">采购计划</span>' +
+        '<span class="ai-finder-badge done"><i class="fa-solid fa-check" aria-hidden="true"></i> 文件解析完成</span>' +
+        '</div>' +
+        '<div class="ai-plan-parse-compliance-row">' +
+        '<div class="ai-plan-parse-stat is-ok">' +
+        '<span class="ico"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></span>' +
+        '<div><div class="lbl">合规项</div><div class="num">' + okCount + '</div></div>' +
+        '</div>' +
+        '<div class="ai-plan-parse-stat is-warn">' +
+        '<span class="ico"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></span>' +
+        '<div><div class="lbl">不合规项</div><div class="num">' + warnCount + '</div></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="ai-plan-parse-actions">' +
+        '<button type="button" class="ai-inline-action-btn ai-btn-plan-compliance-report" onclick="openAiPlanComplianceReportModal()">' +
+        '<i class="fa-solid fa-shield-halved" aria-hidden="true"></i> 查看合规性报告</button>' +
+        '</div></div>'
+      );
+    }
+
+    function renderAiPlanDemoResultHtml(typeDef) {
+      return (
+        '<div class="ai-plan-demo-wrap">' +
+        renderAiPlanDemoSummaryHtml(typeDef) +
+        renderAiPlanDemoMatchTableHtml() +
+        '</div>'
+      );
+    }
+
+    function runAiPlanDemoFlow() {
+      var typeDef = getAiFileParseType('plan');
+      if (!typeDef) return;
+      _aiSelectedFileParseType = typeDef;
+      setAiPlanParseDraft(typeDef);
+      appendAiChat('user', '【文件解析】采购计划-演示（' + typeDef.demoFile + '）');
+      var loader = appendAiLoading('正在识别采购计划文件、校验合规性并匹配平台商品…');
+      setTimeout(function() {
+        removeAiLoading(loader);
+        var comp = typeDef.complianceData || {};
+        var lineCount = (_AI_PLAN_DEMO_LINES || []).length;
+        var matchedCount = (_AI_PLAN_DEMO_LINES || []).filter(function(L) { return L.matched; }).length;
+        var voiceText = buildAiCompanionVoiceText('planDemo', {
+          fileType: typeDef.label,
+          compliantCount: comp.compliantCount || 0,
+          nonCompliantCount: comp.nonCompliantCount || 0,
+          lineCount: lineCount,
+          matchedCount: matchedCount
+        });
+        publishAiCompanionReply(voiceText, renderAiPlanDemoResultHtml(typeDef), 'plan-demo');
+      }, 900);
+    }
+
+    function selectAiPlanDemo() {
+      closeAiFileParseTypeModal();
+      runAiPlanDemoFlow();
+    }
+
+    function renderAiPlanParseResultHtml(typeDef) {
+      var data = typeDef.parseData || {};
+      var comp = typeDef.complianceData || {};
+      var okCount = comp.compliantCount != null ? comp.compliantCount : (comp.compliantItems ? comp.compliantItems.length : 0);
+      var warnCount = comp.nonCompliantCount != null ? comp.nonCompliantCount : (comp.nonCompliantItems ? comp.nonCompliantItems.length : 0);
+      return (
+        '<div class="ai-budget-parse-card">' +
+        '<div class="ai-budget-parse-head">' +
+        '<span class="ai-finder-badge type">采购计划</span>' +
+        '<span class="ai-finder-badge done"><i class="fa-solid fa-check" aria-hidden="true"></i> 文件解析完成</span>' +
+        '</div>' +
+        '<div class="ai-budget-parse-grid">' +
+        renderAiBudgetParseItem('计划名称', data.name, true) +
+        renderAiBudgetParseItem('计划金额', formatAiBudgetAmount(data.amount)) +
+        renderAiBudgetParseItem('截止日期', data.deadline) +
+        renderAiBudgetParseItem('关联预算', data.relatedBudget, true) +
+        renderAiBudgetParseItem('适用品类/范围', data.cat, true) +
+        '</div>' +
+        '<div class="ai-plan-parse-compliance-row">' +
+        '<div class="ai-plan-parse-stat is-ok">' +
+        '<span class="ico"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></span>' +
+        '<div><div class="lbl">合规项</div><div class="num">' + okCount + '</div></div>' +
+        '</div>' +
+        '<div class="ai-plan-parse-stat is-warn">' +
+        '<span class="ico"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></span>' +
+        '<div><div class="lbl">不合规项</div><div class="num">' + warnCount + '</div></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="ai-plan-parse-actions">' +
+        '<button type="button" class="ai-inline-action-btn ai-btn-plan-compliance-report" onclick="openAiPlanComplianceReportModal()">' +
+        '<i class="fa-solid fa-shield-halved" aria-hidden="true"></i> 查看合规性报告</button>' +
+        '<button type="button" class="ai-inline-action-btn ai-btn-plan-register" onclick="openAiPlanConfirmModal()">' +
+        '<i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> 确认登记采购计划</button>' +
+        '</div>' +
+        '</div>'
+      );
+    }
+
+    function renderAiBudgetParseItem(label, value, full) {
+      return (
+        '<div class="ai-budget-parse-item' + (full ? ' is-full' : '') + '">' +
+        '<span class="k">' + escapeAiHtml(label) + '</span>' +
+        '<span class="v">' + escapeAiHtml(value || '—') + '</span>' +
+        '</div>'
+      );
+    }
+
+    function renderAiBudgetParseResultHtml(typeDef) {
+      var data = typeDef.parseData || {};
+      return (
+        '<div class="ai-budget-parse-card">' +
+        '<div class="ai-budget-parse-head">' +
+        '<span class="ai-finder-badge type">预算文件</span>' +
+        '<span class="ai-finder-badge done"><i class="fa-solid fa-check" aria-hidden="true"></i> 文件解析完成</span>' +
+        '</div>' +
+        '<div class="ai-budget-parse-grid">' +
+        renderAiBudgetParseItem('预算名称', data.name, true) +
+        renderAiBudgetParseItem('预算部门', data.dept) +
+        renderAiBudgetParseItem('预算金额', formatAiBudgetAmount(data.amount)) +
+        renderAiBudgetParseItem('截止日期', data.deadline) +
+        renderAiBudgetParseItem('适用品类/范围', data.cat, true) +
+        '</div>' +
+        '<button type="button" class="ai-inline-action-btn ai-btn-budget-register" onclick="openAiBudgetConfirmModal()">' +
+        '<i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> 确认登记预算</button>' +
+        '</div>'
+      );
+    }
+
+    function renderAiFileParseResultHtml(typeDef) {
+      return renderAiReportResultCardHtml({
+        type: 'fileparse',
+        typeLabel: typeDef.label,
+        statusLabel: '解析完成',
+        visualBadge: typeDef.label,
+        btnLabel: '查看详细报告',
+        btnIcon: 'fa-file-lines',
+        onClick: 'openAiFileParseDetail(\'' + typeDef.id + '\')'
+      });
+    }
+
+    function runAiFileParseDemo(typeId) {
+      var typeDef = getAiFileParseType(typeId);
+      if (!typeDef) return;
+      _aiSelectedFileParseType = typeDef;
+      appendAiChat('user', '【文件解析】' + typeDef.label + '（' + typeDef.demoFile + '）');
+      if (typeDef.id === 'contract') {
+        showAiCompanionContractResult({ fileName: typeDef.demoFile });
+        return;
+      }
+      if (typeDef.id === 'budget') {
+        setAiBudgetParseDraft(typeDef);
+        var budgetLoader = appendAiLoading('正在识别预算文件并提取登记字段…');
+        setTimeout(function() {
+          removeAiLoading(budgetLoader);
+          var voiceText = buildAiCompanionVoiceText('budgetParse', {
+            fileType: typeDef.label
+          });
+          publishAiCompanionReply(voiceText, renderAiBudgetParseResultHtml(typeDef), 'budget');
+        }, 900);
+        return;
+      }
+      if (typeDef.id === 'plan') {
+        setAiPlanParseDraft(typeDef);
+        var planLoader = appendAiLoading('正在识别采购计划文件并提取登记字段…');
+        setTimeout(function() {
+          removeAiLoading(planLoader);
+          var comp = typeDef.complianceData || {};
+          var voiceText = buildAiCompanionVoiceText('planParse', {
+            fileType: typeDef.label,
+            compliantCount: comp.compliantCount || 0,
+            nonCompliantCount: comp.nonCompliantCount || 0
+          });
+          publishAiCompanionReply(voiceText, renderAiPlanParseResultHtml(typeDef), 'plan');
+        }, 900);
+        return;
+      }
+      var loader = appendAiLoading('正在识别文件类型并解析内容…');
+      setTimeout(function() {
+        removeAiLoading(loader);
+        var voiceText = buildAiCompanionVoiceText('fileParse', {
+          fileType: typeDef.label,
+          summary: typeDef.summary
+        });
+        publishAiCompanionReply(voiceText, renderAiFileParseResultHtml(typeDef), 'fileparse');
+      }, 880);
+    }
+
+    function selectAiFileParseType(typeId) {
+      closeAiFileParseTypeModal();
+      runAiFileParseDemo(typeId);
+    }
+
+    function openAiCompanionFileUpload(btn) {
+      openAiFileParseTypeModal(btn);
     }
 
     function openAiCompanionImageUpload(btn) {
@@ -5398,7 +7854,7 @@
         return '<div class="ai-finder-visual is-link" aria-hidden="true"><i class="fa-solid fa-link"></i></div>';
       }
       if (state.previewUrl) {
-        return '<div class="ai-finder-visual"><img src="' + state.previewUrl + '" alt="识别图片" /></div>';
+        return '<div class="ai-finder-visual"><img src="' + state.previewUrl + '" alt="识别图片" loading="lazy" decoding="async" /></div>';
       }
       return '<div class="ai-finder-visual is-placeholder" aria-hidden="true"><i class="fa-solid fa-wand-magic-sparkles"></i></div>';
     }
@@ -5434,7 +7890,7 @@
       return (
         '<article class="ai-goods-card" onclick="window.open(\'./product.html?id=' + encodeURIComponent(item.id) + '\', \'_blank\')">' +
         '<div class="ai-goods-thumb">' +
-        '<img src="' + escapeAiHtml(item.img) + '" alt="" loading="lazy" onerror="this.src=\'https://placehold.co/320x320/f1f5f9/94a3b8?text=商品\'" />' +
+        '<img src="' + escapeAiHtml(item.img) + '" alt="" loading="lazy" decoding="async" onerror="this.src=\'https://placehold.co/320x320/f1f5f9/94a3b8?text=商品\'" />' +
         tagHtml +
         '</div>' +
         '<div class="ai-goods-body">' +
@@ -5470,6 +7926,7 @@
           });
         });
       }
+      if (!found) found = aiPlanDemoFindProductByRefId(sid);
       return found;
     }
 
@@ -5609,6 +8066,15 @@
             }
           });
         });
+      }
+
+      if (!pool.length) {
+        var planCtx = aiPlanDemoGetComparePool(sid);
+        if (planCtx) {
+          specLabel = planCtx.specLabel;
+          pool = planCtx.products;
+          sourceIdx = planCtx.sourceIdx;
+        }
       }
 
       if (!pool.length) {
@@ -5802,10 +8268,11 @@
       return products.length ? products[0].name : '';
     }
 
-    function renderAiReportResultVisualHtml(type) {
-      var badge = type === 'contract' ? '合规报告' : (type === 'cart' ? '购物清单' : '分析报告');
+    function renderAiReportResultVisualHtml(type, badgeOverride) {
+      var badge = badgeOverride || (type === 'contract' ? '合规报告' : (type === 'cart' ? '购物清单' : (type === 'fileparse' ? '文件解析' : '分析报告')));
+      var visualType = type === 'fileparse' ? 'fileparse' : type;
       return (
-        '<div class="ai-report-result-visual is-' + type + '" aria-hidden="true">' +
+        '<div class="ai-report-result-visual is-' + visualType + '" aria-hidden="true">' +
         '<div class="ai-report-mock-file">' +
         '<div class="ai-report-mock-file-corner"></div>' +
         '<div class="ai-report-mock-file-body">' +
@@ -5821,15 +8288,16 @@
 
     function renderAiReportResultCardHtml(opts) {
       var type = (opts && opts.type) || 'compare';
-      var typeLabel = (opts && opts.typeLabel) || (type === 'contract' ? '合同合规' : (type === 'cart' ? '购物车' : '比质比价'));
-      var statusLabel = (opts && opts.statusLabel) || (type === 'cart' ? '已加入购物车' : '报告已生成');
-      var btnClass = type === 'contract' ? 'ai-btn-contract-report' : (type === 'cart' ? 'ai-btn-cart-go' : 'ai-btn-compare-report');
+      var typeLabel = (opts && opts.typeLabel) || (type === 'contract' ? '合同合规' : (type === 'cart' ? '购物车' : (type === 'fileparse' ? '文件解析' : '比质比价')));
+      var statusLabel = (opts && opts.statusLabel) || (type === 'cart' ? '已加入购物车' : (type === 'fileparse' ? '解析完成' : '报告已生成'));
+      var btnClass = type === 'contract' ? 'ai-btn-contract-report' : (type === 'cart' ? 'ai-btn-cart-go' : (type === 'fileparse' ? 'ai-btn-fileparse-report' : 'ai-btn-compare-report'));
       var btnIcon = (opts && opts.btnIcon) || 'fa-file-lines';
       var btnLabel = (opts && opts.btnLabel) || '查看详细报告';
       var onClick = (opts && opts.onClick) || '';
+      var visualBadge = (opts && opts.visualBadge) || '';
       return (
         '<div class="ai-report-result-card ai-report-result-' + type + '">' +
-        renderAiReportResultVisualHtml(type) +
+        renderAiReportResultVisualHtml(type, visualBadge || undefined) +
         '<div class="ai-report-result-body">' +
         '<div class="ai-report-result-badge-row">' +
         '<span class="ai-finder-badge type">' + escapeAiHtml(typeLabel) + '</span>' +
@@ -5942,6 +8410,26 @@
         return cat + '已完成合同合规分析，共检出' + (data.total || 0) + '项风险，其中高风险' +
           (data.high || 0) + '项、中风险' + (data.mid || 0) + '项，请查看下方分析详情。';
       }
+      if (scene === 'fileParse') {
+        return cat + '已识别您的文件为' + (data.fileType || '相关文件') +
+          '，' + (data.summary || '已完成内容解析') + '，请查看下方解析结果。';
+      }
+      if (scene === 'budgetParse') {
+        return cat + '已完成' + (data.fileType || '预算文件') +
+          '解析，预算名称、部门、金额、截止日期和适用品类均已识别，请核对下方信息并确认登记。';
+      }
+      if (scene === 'planParse') {
+        return cat + '已完成' + (data.fileType || '采购计划') +
+          '文件解析，计划名称、金额、截止日期、关联预算和适用品类均已识别，共检出' +
+          (data.compliantCount || 0) + '项合规项、' + (data.nonCompliantCount || 0) +
+          '项不合规项，请核对下方信息并确认登记。';
+      }
+      if (scene === 'planDemo') {
+        return cat + '已完成采购计划文件解析与合规校验，共检出' +
+          (data.compliantCount || 0) + '项合规项、' + (data.nonCompliantCount || 0) +
+          '项不合规项；并从文件中识别出' + (data.lineCount || 0) + '项采购需求，其中' +
+          (data.matchedCount || 0) + '项已匹配平台参考商品，请查看下方清单核对。';
+      }
       return '';
     }
 
@@ -5969,12 +8457,38 @@
       });
     }
 
+    var _aiChatScrollRaf = 0;
+    var _aiSpeechTimer = 0;
+
+    function scrollAiChatToBottom() {
+      if (_aiChatScrollRaf) cancelAnimationFrame(_aiChatScrollRaf);
+      _aiChatScrollRaf = requestAnimationFrame(function() {
+        _aiChatScrollRaf = 0;
+        var log = document.getElementById('aiChatLog');
+        if (!log) return;
+        log.scrollTop = log.scrollHeight;
+      });
+    }
+
+    function scheduleAiCompanionSpeech(text) {
+      if (!text) return;
+      clearTimeout(_aiSpeechTimer);
+      _aiSpeechTimer = setTimeout(function() {
+        speakAiCompanionVoice(text);
+      }, 160);
+    }
+
     function publishAiCompanionReply(voiceText, cardHtml, cardVariant) {
-      if (voiceText) {
-        appendAiChat('bot', voiceText);
-        speakAiCompanionVoice(voiceText);
+      if (voiceText) appendAiChat('bot', voiceText, true);
+      if (cardHtml) {
+        requestAnimationFrame(function() {
+          appendAiBotRich(cardHtml, cardVariant || 'finder', true);
+          scrollAiChatToBottom();
+        });
+      } else {
+        scrollAiChatToBottom();
       }
-      if (cardHtml) appendAiBotRich(cardHtml, cardVariant || 'finder');
+      scheduleAiCompanionSpeech(voiceText);
     }
 
     function speakAiCompanionVoice(text) {
@@ -6069,9 +8583,9 @@
       var div = document.createElement('div');
       div.className = 'ai-msg-loading';
       div.setAttribute('data-ai-loading', '1');
-      div.innerHTML = '<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i><span>' + escapeAiHtml(label || '正在分析…') + '</span>';
+      div.innerHTML = '<i class="fa-solid fa-circle-notch" aria-hidden="true"></i><span>' + escapeAiHtml(label || '正在分析…') + '</span>';
       log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
+      scrollAiChatToBottom();
       return div;
     }
 
@@ -6107,7 +8621,7 @@
       inner += '</div>';
       div.innerHTML = inner;
       log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
+      scrollAiChatToBottom();
     }
 
     function escapeAiHtml(s) {
@@ -6122,25 +8636,25 @@
       return (n / 1048576).toFixed(1) + ' MB';
     }
 
-    function appendAiChat(role, text) {
+    function appendAiChat(role, text, skipScroll) {
       var log = document.getElementById('aiChatLog');
       if (!log) return;
       var div = document.createElement('div');
       div.className = 'ai-msg ' + (role === 'user' ? 'user' : 'bot');
       div.textContent = text;
       log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
+      if (!skipScroll) scrollAiChatToBottom();
     }
 
     /** 结构化 AI 气泡（固定文案拼接，可按需扩展） */
-    function appendAiBotRich(htmlInner, variant) {
+    function appendAiBotRich(htmlInner, variant, skipScroll) {
       var log = document.getElementById('aiChatLog');
       if (!log) return;
       var div = document.createElement('div');
       div.className = 'ai-msg bot ai-msg-rich' + (variant ? ' ai-msg-' + variant : '');
       div.innerHTML = htmlInner;
       log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
+      if (!skipScroll) scrollAiChatToBottom();
     }
 
     function sendAiCompanionChat() {
@@ -6501,13 +9015,7 @@
     }
 
     function submitAiCompanionFiles() {
-      if (!_aiCompanionFiles.length) return;
-      var count = _aiCompanionFiles.length;
-      var names = _aiCompanionFiles.map(function(f) { return f.name; }).join('、');
-      appendAiChat('user', '已上传合同文件（' + count + ' 个）：' + names);
-      _aiCompanionFiles = [];
-      renderAiFileList();
-      showAiCompanionContractResult({ fileName: names });
+      openAiFileParseTypeModal();
     }
 
     function submitAiCompanionImages() {
@@ -6588,15 +9096,46 @@
       });
     }
 
+    function syncAiComposeActionButtons() {
+      var input = document.getElementById('aiComposeInput');
+      var row = document.querySelector('.ai-compose-row');
+      var mic = document.getElementById('aiVoiceBtn');
+      var send = document.getElementById('aiSendBtn');
+      if (!input || !row) return;
+      var h = Math.round(input.getBoundingClientRect().height);
+      if (h <= 0) return;
+      row.style.setProperty('--ai-compose-btn-size', h + 'px');
+      [mic, send].forEach(function(btn) {
+        if (!btn) return;
+        btn.style.width = h + 'px';
+        btn.style.height = h + 'px';
+        btn.style.flexBasis = h + 'px';
+      });
+    }
+
+    function bindAiComposeButtonSync() {
+      var input = document.getElementById('aiComposeInput');
+      if (!input) return;
+      syncAiComposeActionButtons();
+      if (typeof ResizeObserver !== 'undefined') {
+        var ro = new ResizeObserver(function() {
+          syncAiComposeActionButtons();
+        });
+        ro.observe(input);
+      } else {
+        input.addEventListener('input', syncAiComposeActionButtons);
+        window.addEventListener('resize', syncAiComposeActionButtons);
+      }
+    }
+
     function initAiCompanionWidget() {
       var fi = document.getElementById('aiFileInput');
       var ii = document.getElementById('aiImageInput');
       if (fi) {
         fi.addEventListener('change', function() {
           if (!fi.files || !fi.files.length) return;
-          addAiCompanionFilesFromList(fi.files);
           fi.value = '';
-          submitAiCompanionFiles();
+          openAiFileParseTypeModal();
         });
       }
       if (ii) {
@@ -6634,6 +9173,31 @@
       }
       document.addEventListener('keydown', function(e) {
         if (e.key !== 'Escape') return;
+        var fileParseOv = document.getElementById('aiFileParseOverlay');
+        if (fileParseOv && fileParseOv.classList.contains('open')) {
+          closeAiFileParseTypeModal();
+          return;
+        }
+        var budgetConfirmOv = document.getElementById('aiBudgetConfirmOverlay');
+        if (budgetConfirmOv && budgetConfirmOv.classList.contains('open')) {
+          closeAiBudgetConfirmModal();
+          return;
+        }
+        var planConfirmOv = document.getElementById('aiPlanConfirmOverlay');
+        if (planConfirmOv && planConfirmOv.classList.contains('open')) {
+          closeAiPlanConfirmModal();
+          return;
+        }
+        var planComplianceOv = document.getElementById('aiPlanComplianceOverlay');
+        if (planComplianceOv && planComplianceOv.classList.contains('open')) {
+          closeAiPlanComplianceModal();
+          return;
+        }
+        var planChangeOv = document.getElementById('aiPlanChangeProductOverlay');
+        if (planChangeOv && planChangeOv.classList.contains('open')) {
+          closeAiPlanChangeProductModal();
+          return;
+        }
         var cmpOv = document.getElementById('aiCompareOverlay');
         if (cmpOv && cmpOv.classList.contains('open')) {
           closeAiCompareModal();
@@ -6642,6 +9206,7 @@
         var ovel = document.getElementById('aiCompanionOverlay');
         if (ovel && ovel.classList.contains('open')) closeAiCompanion();
       });
+      bindAiComposeButtonSync();
     }
 
     /* 初始化首页功能 */
