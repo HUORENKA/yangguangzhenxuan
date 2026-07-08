@@ -273,7 +273,7 @@ const storeDetailData = {
 // 初始化店铺列表数据（10个店铺，每个5个推荐商品）
 function initStoreListData(keyword = '') {
   const storeNames = [
-    '迎瑞手机专营店',
+    '得力办公用品专卖店',
     '京浩手机专营店',
     '华为礼象专卖店',
     '艾派客手机配件旗舰店',
@@ -286,7 +286,7 @@ function initStoreListData(keyword = '') {
   ];
   
   const descriptions = [
-    '专业销售华为、荣耀等品牌手机，正品保证，全国联保，顺丰发货',
+    '得力品质办公用品专营，涵盖打印机、A4复印纸、订书机等全品类，正品保障，政企集采优选',
     '京东自营品质，正品保障，7天无理由退货，24小时发货',
     '华为官方授权店铺，原装正品，全国联保，售后无忧',
     '专业手机配件供应商，保护壳、贴膜、充电器等配件齐全',
@@ -336,7 +336,9 @@ function initStoreListData(keyword = '') {
     return {
       id: `store_${String(index + 1).padStart(3, '0')}`,
       name: name,
-      logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop',
+      logo: index === 0
+        ? '../../assets/store_deli_logo.png'
+        : 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop',
       description: descriptions[index],
       productCount: productCount,
       followerCount: followerCount,
@@ -366,9 +368,9 @@ function initStoreDetailData(storeId) {
   if (!store) {
     store = {
       id: storeId || 'store_001',
-      name: '迎瑞手机专营店',
-      logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop',
-      description: '专业销售华为、荣耀等品牌手机，正品保证，全国联保，顺丰发货',
+      name: '得力办公用品专卖店',
+      logo: '../../assets/store_deli_logo.png',
+      description: '得力品质办公用品专营，涵盖打印机、A4复印纸、订书机等全品类，正品保障，政企集采优选',
       productCount: 324,
       followerCount: 1250,
       openTime: '2024-01-15',
@@ -376,65 +378,83 @@ function initStoreDetailData(storeId) {
     };
   }
   
-  // 分类数据（两级）
+  // 分类数据（三级，与商城首页 cat_01 等截取部分对应）
   const categories = [
+    { id: 'cat_all', name: '全部', level: 1, children: [] },
     {
-      id: 'cat_all',
-      name: '全部',
-      level: 1,
-      children: []
-    },
-    {
-      id: 'cat_001',
-      name: '智能手机',
-      level: 1,
+      id: 'cat_01', name: '办公用品、电脑数码', level: 1,
       children: [
-        { id: 'cat_001_001', name: '华为手机', level: 2 },
-        { id: 'cat_001_002', name: '荣耀手机', level: 2 },
-        { id: 'cat_001_003', name: '苹果手机', level: 2 }
+        {
+          id: 'c01_01', name: '办公用纸', level: 2,
+          children: [
+            { id: 'c01_01_01', name: '复印纸', level: 3 },
+            { id: 'c01_01_02', name: '打印纸', level: 3 },
+            { id: 'c01_01_03', name: '传真纸', level: 3 }
+          ]
+        },
+        {
+          id: 'c01_02', name: '书写用品', level: 2,
+          children: [
+            { id: 'c01_02_01', name: '中性笔', level: 3 },
+            { id: 'c01_02_02', name: '圆珠笔', level: 3 },
+            { id: 'c01_02_03', name: '记号笔', level: 3 }
+          ]
+        },
+        {
+          id: 'c01_03', name: '办公设备', level: 2,
+          children: [
+            { id: 'c01_03_01', name: '打印机', level: 3 },
+            { id: 'c01_03_02', name: '复印机', level: 3 },
+            { id: 'c01_03_03', name: '装订机', level: 3 }
+          ]
+        }
       ]
     },
     {
-      id: 'cat_002',
-      name: '手机配件',
-      level: 1,
+      id: 'cat_02', name: '个人防护、安全防护', level: 1,
       children: [
-        { id: 'cat_002_001', name: '保护壳', level: 2 },
-        { id: 'cat_002_002', name: '贴膜', level: 2 },
-        { id: 'cat_002_003', name: '充电器', level: 2 }
-      ]
-    },
-    {
-      id: 'cat_003',
-      name: '智能设备',
-      level: 1,
-      children: [
-        { id: 'cat_003_001', name: '智能手表', level: 2 },
-        { id: 'cat_003_002', name: '无线耳机', level: 2 }
+        {
+          id: 'c02_01', name: '头部防护', level: 2,
+          children: [
+            { id: 'c02_01_01', name: '安全帽', level: 3 },
+            { id: 'c02_01_02', name: '防护眼镜', level: 3 }
+          ]
+        },
+        {
+          id: 'c02_02', name: '手部防护', level: 2,
+          children: [
+            { id: 'c02_02_01', name: '手套', level: 3 },
+            { id: 'c02_02_02', name: '防割手套', level: 3 }
+          ]
+        }
       ]
     }
   ];
   
-  // 生成50个商品
-  const productImages = [
-    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop',
-    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop'
-  ];
+  const leafCategories = [];
+  categories.forEach(cat => {
+    if (cat.id === 'cat_all') return;
+    (cat.children || []).forEach(sub => {
+      (sub.children || []).forEach(leaf => leafCategories.push(leaf));
+    });
+  });
   
   const productNames = [
-    '华为Mate80 Pro Max 5G手机 12GB+256GB',
-    '荣耀WIN RT 游戏手机 16GB+512GB',
-    'iPhone 17 Pro Max 256GB',
-    '小米15 Ultra 旗舰手机 12GB+256GB',
-    'OPPO Find X8 Pro 16GB+512GB',
-    'vivo X200 Pro 12GB+256GB',
-    '一加13 Pro 16GB+512GB',
-    '华为Pura 80 Pro 12GB+256GB',
-    '荣耀Magic 8 Pro 16GB+512GB',
-    '小米14 Pro 12GB+256GB'
+    '惠普 LaserJet Pro M404dn 黑白激光打印机',
+    '得力 A4 复印纸 70g 500张/包',
+    '得力 0368 标准型订书机 可订20页',
+    '佳能 PIXMA G5080 彩色喷墨打印机',
+    '齐心 A4 打印纸 80g 500张/包',
+    '晨光 ABS92735 重型订书机 可订50页',
+    '兄弟 HL-L2320D 黑白激光打印机',
+    '双胶纸 A4 70g 500张/包 高白度',
+    '广博 GD-100 省力型订书机',
+    '爱普生 L3256 墨仓式彩色打印机',
+    '得力 74850 自动订书机 可订25页',
+    '惠普 Color LaserJet 彩色激光打印机',
+    '晨光 A4 复印纸 70g 500张',
+    '三木 8508 订书机 可订30页',
+    '富士施乐 DocuPrint 激光打印机'
   ];
   
   const shippingOptions = [
@@ -444,25 +464,40 @@ function initStoreDetailData(storeId) {
     '顺丰当日发 快至次日达'
   ];
   
+  function getStoreProductImage(productName) {
+    if (productName.includes('打印机')) {
+      return 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=400&h=300&fit=crop';
+    }
+    if (productName.includes('纸')) {
+      return 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=300&fit=crop';
+    }
+    if (productName.includes('订书机')) {
+      return 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=300&fit=crop';
+    }
+    return 'https://images.unsplash.com/photo-1568667256549-094345857637?w=400&h=300&fit=crop';
+  }
+  
   const products = Array.from({ length: 50 }).map((_, i) => {
-    const categoryIndex = Math.floor(i / 12);
-    const category = categories[categoryIndex + 1] || categories[1];
-    const subCategory = category.children[Math.floor(Math.random() * category.children.length)];
-    
+    const leaf = leafCategories[i % leafCategories.length];
+    const name = productNames[i % productNames.length];
+    const basePrice = name.includes('打印机') ? 899
+      : name.includes('纸') ? 28
+      : name.includes('订书机') ? 35
+      : 120;
     return {
       id: `prod_${store.id}_${i}`,
-      name: productNames[i % productNames.length],
-      image: productImages[i % productImages.length],
-      price: Math.floor(Math.random() * 5000) + 3000,
+      name: name,
+      image: getStoreProductImage(name),
+      price: basePrice + Math.floor(Math.random() * (basePrice > 100 ? 800 : 15)),
       shipping: shippingOptions[i % shippingOptions.length],
-      categoryId: subCategory ? subCategory.id : 'cat_all'
+      categoryId: leaf.id
     };
   });
   
   storeDetailData.id = store.id;
   storeDetailData.name = store.name;
   storeDetailData.logo = store.logo;
-  storeDetailData.description = store.description + '。我们致力于为消费者提供最优质的产品和服务，正品保证，全国联保。';
+  storeDetailData.description = '得力品质办公用品专营，涵盖打印机、A4复印纸、订书机等全品类，正品保障，政企集采优选。';
   storeDetailData.productCount = store.productCount;
   storeDetailData.followerCount = store.followerCount;
   storeDetailData.openTime = store.openTime;
@@ -471,15 +506,40 @@ function initStoreDetailData(storeId) {
   storeDetailData.products = products;
   
   storeDetailData.storeInfo = {
-    companyName: store.name + '（供应商主体）',
-    contactPhone: '400-820-8056'
+    companyName: '得力集团有限公司',
+    contactPhone: '400-820-8056',
+    legalRepresentative: '陈德强'
   };
-  storeDetailData.serviceScope = '许可项目：食品销售；道路货物运输(不含危险货物)；出版物零售；包装装潢印刷品印刷；第一类增值电信业务；第二类增值电信业务；第三类医疗器械经营；危险化学品经营；医疗器械互联网信息服务。(依法须经批准的项目，经相关部门批准后方可开展经营活动，具体经营项目以相关部门批准文件或许可证件为准)\n\n一般项目：计算机软硬件及辅助设备批发；通讯设备销售；五金产品批发；家用电器销售；电子产品销售；办公设备销售；家具销售；纸制品销售；日用百货销售；文具用品批发；办公设备耗材销售；技术服务、技术开发、技术咨询；货物进出口；技术进出口。';
+  storeDetailData.serviceScope = '计算机软件开发；信息技术服务；办公自动化硬件开发；技术服务；日用百货及玩具销售；办公设备、纸制品、文具用品批发等。';
   storeDetailData.businessLicense = {
-    creditCode: '91310000717852665A',
-    registeredCapital: '125154.83万元',
-    companyName: store.name + '（供应商主体）',
-    companyAddress: '上海市长宁区通协路269号5号楼3楼'
+    creditCode: '9133020025438442XD',
+    registeredCapital: '36225万元',
+    companyName: '得力集团有限公司',
+    companyAddress: '中国（江苏）自由贸易试验区苏州片区苏州工业园区汇智街8号',
+    licenseImage: '../../assets/business_license.png',
+    certImage: '../../assets/credit_certification.png',
+    certTitle: '供应商基本信用认证',
+    certIssuer: '中国检验认证（集团）有限公司',
+    certValidUntil: '2027-06-29'
+  };
+  storeDetailData.capabilityAnalysis = {
+    overallScore: 92,
+    grade: 'A+',
+    aiSummary: '该企业综合合同履约能力优秀，资质合规与信用评价均处于平台前列。办公用品质量稳定、价格竞争力较强，售后响应及时，适合纳入政企集采优选供应商名录。',
+    dimensions: [
+      { key: 'qualification', name: '资质合规', score: 96, icon: 'fa-shield-halved', color: '#2563eb', summary: '营业执照、行业许可、信用认证资料齐全，无重大违规记录。' },
+      { key: 'fulfillment', name: '合同履约能力', score: 94, icon: 'fa-file-contract', color: '#059669', summary: '合同准时履约率 98.6%，大单履约经验丰富，物流覆盖全国重点区域。' },
+      { key: 'quality', name: '商品质量', score: 91, icon: 'fa-medal', color: '#d97706', summary: '正品保障体系完善，退换货率低于行业均值，用户好评率 97.2%。' },
+      { key: 'price', name: '价格竞争力', score: 88, icon: 'fa-tags', color: '#7c3aed', summary: '同类商品比价处于较优区间，批量采购议价空间合理。' },
+      { key: 'service', name: '售后服务', score: 90, icon: 'fa-headset', color: '#0891b2', summary: '7×12 小时客服响应，售后工单平均处理时长 4.2 小时。' },
+      { key: 'credit', name: '信用评价', score: 95, icon: 'fa-star', color: '#e11d48', summary: '平台信用分 950/1000，连续 3 年获「优质供应商」认证。' }
+    ],
+    highlights: [
+      '连续 12 个月零重大投诉',
+      '政采类目 TOP 5% 供应商',
+      '支持电子合同与区块链存证'
+    ],
+    updatedAt: '2026-07-07'
   };
   
   return storeDetailData;

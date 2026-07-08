@@ -75,6 +75,7 @@
     if (path.endsWith("/search.html")) return "mall";
     if (path.endsWith("/product.html")) return "product";
     if (path.endsWith("/order_confirm.html")) return "order_confirm";
+    if (path.endsWith("/store_detail.html")) return "mall";
     return "";
   }
 
