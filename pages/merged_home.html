@@ -1164,14 +1164,14 @@
       height: 62px;
       padding: 0;
       border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.92);
       cursor: pointer;
-      background: #0a0a0a;
+      background: linear-gradient(145deg, #dbeafe 0%, #bfdbfe 100%);
       color: transparent;
       overflow: hidden;
       box-shadow:
-        0 10px 28px rgba(0, 0, 0, 0.35),
-        0 4px 12px rgba(0, 0, 0, 0.2);
+        0 10px 28px rgba(37, 99, 235, 0.28),
+        0 4px 12px rgba(15, 23, 42, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1181,16 +1181,16 @@
     .ai-float-fab:hover {
       transform: translateY(-50%) scale(1.06);
       box-shadow:
-        0 14px 36px rgba(0, 0, 0, 0.4),
-        0 6px 16px rgba(0, 0, 0, 0.22);
-      border-color: rgba(255, 255, 255, 0.55);
+        0 14px 36px rgba(37, 99, 235, 0.34),
+        0 6px 16px rgba(15, 23, 42, 0.14);
+      border-color: #fff;
     }
     .ai-float-fab:focus-visible { outline: 3px solid rgba(47,107,255,0.45); outline-offset: 3px; }
     .ai-float-fab-img {
-      width: 106%;
-      height: 106%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      object-position: 50% 48%;
+      object-position: center 18%;
       display: block;
       pointer-events: none;
     }
@@ -1262,11 +1262,21 @@
     .ai-comp-head-info { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
     .ai-comp-head-icon {
       width: 40px; height: 40px; border-radius: 14px;
-      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
       color: #4338ca;
       display: flex; align-items: center; justify-content: center;
       font-size: 18px;
       flex-shrink: 0;
+      overflow: hidden;
+      border: 1px solid rgba(191, 219, 254, 0.9);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+    .ai-comp-head-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      display: block;
     }
     .ai-comp-head-title {
       font-size: 16px; font-weight: 800; color: #0f172a;
@@ -5166,8 +5176,8 @@
       padding: 14px 18px 12px;
     }
     body.ai-window-mode .ai-comp-head-icon {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(99, 102, 241, 0.45));
-      color: #e0f2fe;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.28));
+      border-color: rgba(56, 189, 248, 0.35);
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
     }
     body.ai-window-mode .ai-comp-head-title {
@@ -6126,16 +6136,16 @@
   </div>
 
   <!-- ========== AI 智能助手（底部模式功能区） ========== -->
-  <button type="button" class="ai-float-fab" id="aiCompanionFab" aria-label="打开 AI 智能助手" title="AI 智能助手" onclick="openAiCompanion()">
-    <img class="ai-float-fab-img" src="../assets/ai_companion_cat.png" alt="" width="64" height="64" decoding="async" draggable="false" />
+  <button type="button" class="ai-float-fab" id="aiCompanionFab" aria-label="打开采购猫 AI 助手" title="采购猫" onclick="openAiCompanion()">
+    <img class="ai-float-fab-img" src="../assets/ai_companion_cat.png" alt="采购猫" width="64" height="64" decoding="async" draggable="false" />
   </button>
   <div class="ai-comp-overlay" id="aiCompanionOverlay" role="dialog" aria-modal="true" aria-labelledby="aiCompanionTitle" onclick="closeAiCompanion(event)">
     <div class="ai-comp-dialog ai-mode-unified" id="aiCompanionDialog" onclick="event.stopPropagation()">
       <header class="ai-comp-head">
         <div class="ai-comp-head-info">
-          <div class="ai-comp-head-icon" aria-hidden="true"><i class="fa-solid fa-robot"></i></div>
+          <div class="ai-comp-head-icon" aria-hidden="true"><img src="../assets/ai_companion_cat.png" alt="" width="40" height="40" decoding="async" draggable="false" /></div>
           <div>
-            <p class="ai-comp-head-title" id="aiCompanionTitle">国采 AI 助手</p>
+            <p class="ai-comp-head-title" id="aiCompanionTitle">采购猫 · AI 助手</p>
             <p class="ai-comp-head-sub">文字 · 语音 · 文件解析 · 图片 · 粘贴链接</p>
           </div>
         </div>
