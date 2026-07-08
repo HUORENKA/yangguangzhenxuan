@@ -9434,6 +9434,25 @@
       };
     }
 
+    function aiPlanDemoFindLineByRefId(refId) {
+      var sid = String(refId || '');
+      if (!sid) return null;
+      var found = null;
+      (_AI_PLAN_DEMO_LINES || []).forEach(function(line) {
+        if (found) return;
+        if (line.product && String(line.product.refId) === sid) found = line;
+      });
+      if (!found) {
+        Object.keys(_AI_PLAN_DEMO_ALTERNATIVES || {}).forEach(function(lid) {
+          if (found) return;
+          (_AI_PLAN_DEMO_ALTERNATIVES[lid] || []).forEach(function(item) {
+            if (String(item.refId) === sid) found = aiPlanDemoFindLine(Number(lid));
+          });
+        });
+      }
+      return found;
+    }
+
     function aiPlanDemoGoToProduct(refId, evt) {
       if (evt) evt.stopPropagation();
       if (!refId) return;
@@ -9452,39 +9471,31 @@
           supplier: '平台认证供应商'
         }, 0);
       }
-      saveAiCartItem(product);
-      var btn = evt && evt.currentTarget;
-      if (btn) {
-        var orig = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> 已加入';
-        setTimeout(function() {
-          btn.disabled = false;
-          btn.innerHTML = orig;
-        }, 1400);
+      var line = aiPlanDemoFindLineByRefId(refId);
+      var qty = line ? Math.max(1, Number(line.qty) || 1) : 1;
+      var unit = product.unit || (line && line.unit) || '件';
+      appendAiChat('user', '将' + product.name + '加入购物车（' + qty + unit + '）');
+      saveAiCartItem(product, { qty: qty, replaceQty: true });
+      if (line && line.matched && line.product && aiPlanDemoGetSelectStatus(line) !== 'none') {
+        line.selectStatus = 'selected';
+        aiPlanDemoUpdateReqTag(line.id);
+        aiPlanDemoRefreshPanel(line.id);
+        aiPlanDemoSyncOrderFooter();
       }
+      var voiceText = buildAiCompanionVoiceText('cart', {
+        productName: product.name + ' × ' + qty + unit
+      });
+      publishAiCompanionReply(voiceText, renderAiCartAddedHtml(product), 'cart');
     }
 
     function aiPlanDemoOpenCompare(refId, evt) {
       if (evt) evt.stopPropagation();
-      _aiCompareCurrentPayload = buildAiComparePayload(refId);
-      try {
-        sessionStorage.setItem(AI_COMPARE_STORAGE_KEY, JSON.stringify(_aiCompareCurrentPayload));
-      } catch (eSave) {}
-      renderAiCompareModalContent(_aiCompareCurrentPayload);
-      var ov = document.getElementById('aiCompareOverlay');
-      if (ov) ov.classList.add('open');
+      aiFinderOpenCompare(refId);
     }
 
     function aiPlanDemoOpenNetworkCompare(refId, evt) {
       if (evt) evt.stopPropagation();
-      _aiNetworkCurrentPayload = buildAiNetworkComparePayload(refId);
-      try {
-        sessionStorage.setItem(AI_NETWORK_STORAGE_KEY, JSON.stringify(_aiNetworkCurrentPayload));
-      } catch (eSave) {}
-      renderAiNetworkModalContent(_aiNetworkCurrentPayload);
-      var ov = document.getElementById('aiNetworkOverlay');
-      if (ov) ov.classList.add('open');
+      aiFinderOpenNetworkCompare(refId);
     }
 
     function aiPlanDemoFilterChangeProducts(keyword) {
@@ -10125,7 +10136,10 @@
       ];
     }
 
-    function saveAiCartItem(product) {
+    function saveAiCartItem(product, opts) {
+      opts = opts || {};
+      var addQty = Math.max(1, Number(opts.qty) || 1);
+      var replaceQty = !!opts.replaceQty;
       try {
         var items = loadAiCartItems();
         var sid = String(product.id);
@@ -10134,7 +10148,7 @@
           if (String(items[i].id) === sid) { existing = items[i]; break; }
         }
         if (existing) {
-          existing.qty = (existing.qty || 1) + 1;
+          existing.qty = replaceQty ? addQty : (existing.qty || 1) + addQty;
         } else {
           items.push({
             id: product.id,
@@ -10143,7 +10157,7 @@
             unit: product.unit,
             supplier: product.supplier,
             img: product.img,
-            qty: 1,
+            qty: addQty,
             selected: false
           });
         }
