@@ -282,6 +282,59 @@
       margin-top: 8px;
     }
 
+    .compliance-report-block {
+      margin-top: 4px;
+      padding-top: 10px;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    .compliance-report-file {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      border: 1px solid #fecaca;
+      background: #fff5f5;
+      color: #374151;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .compliance-report-file:active {
+      background: #fee2e2;
+      border-color: #fca5a5;
+    }
+
+    .compliance-report-file .file-icon {
+      color: var(--primary);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .compliance-report-file .file-name {
+      flex: 1;
+      min-width: 0;
+      font-weight: 700;
+      word-break: break-all;
+    }
+
+    .compliance-report-file .file-action {
+      color: #94a3b8;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .compliance-report-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #047857;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     .product-card {
       display: flex;
       gap: 12px;
@@ -1140,6 +1193,17 @@
               <div class="m-info-row"><span class="m-info-label">采购预算</span><span class="m-info-value" id="baseBudget">--</span></div>
               <div class="m-info-row"><span class="m-info-label">依据文件</span><span class="m-info-value" id="baseFilesBrief">--</span></div>
               <div id="baseFiles"></div>
+              <div class="compliance-report-block">
+                <div class="m-info-row" style="border-bottom:none;padding-bottom:0;">
+                  <span class="m-info-label">采购合规报告</span>
+                  <span class="m-info-value"><span class="compliance-report-tag">已自动生成</span></span>
+                </div>
+                <div class="m-file-item compliance-report-file" id="complianceReportFile" role="button" tabindex="0" onclick="openComplianceReport()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openComplianceReport();}">
+                  <i class="fa-regular fa-file-pdf file-icon"></i>
+                  <span class="file-name" id="complianceReportName">采购合规报告.pdf</span>
+                  <i class="fa-solid fa-eye file-action"></i>
+                </div>
+              </div>
               <div style="margin-top:10px;">
                 <div class="m-info-label" style="margin-bottom:6px;">审批人员</div>
                 <div id="approverTags"></div>
@@ -1693,6 +1757,10 @@
         ? files.map(item => `<div class="m-file-item"><i class="fa-regular fa-file-lines mr-1"></i>${escapeHtml(item.name)}</div>`).join('')
         : '';
 
+      const compliancePreview = resolveComplianceData(data);
+      const reportNo = compliancePreview.reportNo || `RPT-${data.purchaseNo || 'PO20260520001'}`;
+      document.getElementById('complianceReportName').textContent = `采购合规报告_${reportNo}.pdf`;
+
       document.getElementById('approverTags').innerHTML = (data.approvers || []).map(item =>
         `<span class="approver-tag">${escapeHtml(item.name)} · ${escapeHtml(item.department)}</span>`
       ).join('') || '<span class="approver-tag" style="background:#f1f5f9;color:#64748b;">暂无审批人员</span>';
@@ -1768,6 +1836,11 @@
           document.getElementById('approvalFooter').style.boxShadow = '';
         }, 1600);
       }
+    }
+
+    function openComplianceReport() {
+      const reportName = document.getElementById('complianceReportName').textContent;
+      showToast(`正在打开 ${reportName}（原型演示）`);
     }
 
     function handleReject() {
