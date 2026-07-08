@@ -4,12 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>国采E购 | 首页</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    (function () {
+      window.__GC_AI_WINDOW__ = new URLSearchParams(location.search).get('aiWindow') === '1';
+      if (window.__GC_AI_WINDOW__) {
+        document.documentElement.classList.add('ai-window-boot');
+        document.title = '国采 AI 助手 · 采购猫';
+      }
+    })();
+  </script>
+  <script>
+    if (!window.__GC_AI_WINDOW__) {
+      var tw = document.createElement('script');
+      tw.src = 'https://cdn.tailwindcss.com/3.4.17';
+      document.head.appendChild(tw);
+    }
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&display=swap">
-  <script src="../assets/mock.js" defer></script>
-  <script src="../assets/mode_switcher.js"></script>
+  <script>
+    if (!window.__GC_AI_WINDOW__) {
+      var font = document.createElement('link');
+      font.rel = 'stylesheet';
+      font.href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&display=swap';
+      document.head.appendChild(font);
+    }
+  </script>
+  <script>
+    if (!window.__GC_AI_WINDOW__) {
+      var mock = document.createElement('script');
+      mock.src = '../assets/mock.js';
+      mock.defer = true;
+      document.head.appendChild(mock);
+      var mode = document.createElement('script');
+      mode.src = '../assets/mode_switcher.js';
+      document.head.appendChild(mode);
+    }
+  </script>
   <style>
+    html.ai-window-boot body { background: linear-gradient(180deg, #0a1020 0%, #0d1528 55%, #111827 100%); overflow: hidden; }
+    html.ai-window-boot .topbar,
+    html.ai-window-boot #homeZone,
+    html.ai-window-boot #mallZone,
+    html.ai-window-boot .feature-zone,
+    html.ai-window-boot .mode-switch-fab,
+    html.ai-window-boot #aiCompanionFab { display: none !important; }
     :root {
       --brand: #2f6bff;
       --brand-dark: #1d4ed8;
@@ -447,6 +485,14 @@
     .cat-wrap {
       position: relative; width: 160px; height: 136px;
       display: flex; align-items: center; justify-content: center; margin: 0 auto;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .cat-wrap:hover { transform: translateY(-3px); }
+    .cat-wrap:focus-visible {
+      outline: 2px solid rgba(47, 107, 255, 0.45);
+      outline-offset: 4px;
+      border-radius: 28px;
     }
     .cat-glow {
       position: absolute; width: 120px; height: 120px; border-radius: 50%;
@@ -1343,7 +1389,7 @@
       box-shadow: none;
       border-radius: 0;
     }
-    .ai-msg.bot.ai-msg-rich:not(.ai-msg-finder):not(.ai-msg-compare):not(.ai-msg-cart):not(.ai-msg-contract):not(.ai-msg-fileparse):not(.ai-msg-budget):not(.ai-msg-plan):not(.ai-msg-plan-demo) {
+    .ai-msg.bot.ai-msg-rich:not(.ai-msg-finder):not(.ai-msg-compare):not(.ai-msg-cart):not(.ai-msg-contract):not(.ai-msg-fileparse):not(.ai-msg-budget):not(.ai-msg-plan):not(.ai-msg-plan-demo):not(.ai-msg-order):not(.ai-msg-order-report):not(.ai-msg-order-approver):not(.ai-msg-order-result) {
       max-width: min(76%, 520px);
       padding: 10px 14px;
       background: #fff;
@@ -1593,11 +1639,12 @@
       display: flex;
       gap: 10px;
       overflow-x: auto;
-      overflow-y: hidden;
+      overflow-y: visible;
       max-width: 100%;
       padding-bottom: 8px;
       scroll-snap-type: x proximity;
       -webkit-overflow-scrolling: touch;
+      align-items: stretch;
     }
     .ai-finder-goods-scroll::-webkit-scrollbar { height: 4px; }
     .ai-finder-goods-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
@@ -1719,11 +1766,27 @@
     }
     .ai-goods-actions {
       display: flex;
+      flex-direction: column;
       gap: 6px;
+      flex-shrink: 0;
+    }
+    .ai-goods-actions-row {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .ai-goods-actions-row .ai-goods-btn {
+      flex: 1 1 0;
+      width: 0;
+      min-width: 0;
+      min-height: 28px;
+      height: 28px;
     }
     .ai-goods-btn {
-      flex: 1;
+      flex: 0 0 auto;
+      width: auto;
       min-width: 0;
+      min-height: 28px;
       height: 28px;
       border-radius: 5px;
       font-size: 10px;
@@ -1736,10 +1799,20 @@
       border: none;
       padding: 0 6px;
       white-space: nowrap;
+      box-sizing: border-box;
+      line-height: 1;
+    }
+    .ai-goods-actions > .ai-goods-btn.cart {
+      width: 100%;
     }
     .ai-goods-btn.compare {
       background: linear-gradient(135deg, var(--brand), var(--brand-dark));
       color: #fff;
+    }
+    .ai-goods-btn.network {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: var(--brand);
     }
     .ai-goods-btn.cart {
       border: 1px solid #fecaca;
@@ -1906,6 +1979,9 @@
     .ai-report-result-card.ai-report-result-compare {
       box-shadow: 0 8px 28px rgba(14, 165, 233, 0.08);
     }
+    .ai-report-result-card.ai-report-result-network {
+      box-shadow: 0 8px 28px rgba(37, 99, 235, 0.08);
+    }
     .ai-report-result-card.ai-report-result-contract {
       box-shadow: 0 8px 28px rgba(99, 102, 241, 0.08);
     }
@@ -1922,6 +1998,9 @@
     }
     .ai-report-result-visual.is-compare {
       background: linear-gradient(155deg, #f0f9ff 0%, #e0f2fe 55%, #bae6fd 100%);
+    }
+    .ai-report-result-visual.is-network {
+      background: linear-gradient(155deg, #eff6ff 0%, #dbeafe 55%, #bfdbfe 100%);
     }
     .ai-report-result-visual.is-contract {
       background: linear-gradient(155deg, #f5f3ff 0%, #ede9fe 55%, #ddd6fe 100%);
@@ -2046,6 +2125,10 @@
       background: linear-gradient(135deg, #0ea5e9, #0284c7);
       box-shadow: 0 4px 14px rgba(14, 165, 233, 0.24);
     }
+    .ai-inline-action-btn.ai-btn-network-report {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.24);
+    }
     .ai-inline-action-btn.ai-btn-contract-report {
       background: linear-gradient(135deg, #6366f1, #4f46e5);
       box-shadow: 0 4px 14px rgba(79, 70, 229, 0.24);
@@ -2055,6 +2138,7 @@
       box-shadow: 0 4px 14px rgba(234, 88, 12, 0.24);
     }
     .ai-msg.bot.ai-msg-rich.ai-msg-compare,
+    .ai-msg.bot.ai-msg-rich.ai-msg-network,
     .ai-msg.bot.ai-msg-rich.ai-msg-cart,
     .ai-msg.bot.ai-msg-rich.ai-msg-contract,
     .ai-msg.bot.ai-msg-rich.ai-msg-fileparse,
@@ -2728,6 +2812,228 @@
     .ai-compare-overlay.open .ai-compare-dialog {
       transform: translateY(0) scale(1);
     }
+    /* 全网比价弹窗 */
+    .ai-network-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3400;
+      background: rgba(15, 23, 42, 0.58);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .ai-network-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .ai-network-dialog {
+      width: min(960px, 100%);
+      max-height: min(90vh, 900px);
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.22s ease;
+    }
+    .ai-network-overlay.open .ai-network-dialog {
+      transform: translateY(0) scale(1);
+    }
+    .ai-network-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid #dbeafe;
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    }
+    .ai-network-head-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+    .ai-network-head-title i { color: #2563eb; margin-right: 4px; }
+    .ai-network-head-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.55;
+    }
+    .ai-network-close {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 10px;
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .ai-network-close:hover { background: #e2e8f0; color: #334155; }
+    .ai-network-body {
+      flex: 1;
+      overflow: auto;
+      padding: 16px 20px 12px;
+      background: #f8fafc;
+    }
+    .ai-network-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .ai-network-panel {
+      border: 1px solid #dbeafe;
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+    }
+    .ai-network-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
+      border-bottom: 1px solid #dbeafe;
+    }
+    .ai-network-panel-head-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .ai-network-panel-head-main i { color: #2563eb; }
+    .ai-network-panel-head-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 4px;
+    }
+    .ai-network-table-wrap { overflow-x: auto; }
+    .ai-network-table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .ai-network-table th,
+    .ai-network-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #eef2f7;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .ai-network-table th {
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .ai-network-table tbody tr:last-child td { border-bottom: none; }
+    .ai-network-table tbody tr.is-self { background: #eff6ff; }
+    .ai-network-table tbody tr.is-self td { border-bottom-color: #bfdbfe; }
+    .ai-network-rank-wrap { display: flex; align-items: center; gap: 12px; }
+    .ai-network-platform-mark {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .ai-network-platform-mark.is-placeholder { visibility: hidden; box-shadow: none; }
+    .ai-network-rank-cell { display: inline-flex; align-items: center; gap: 8px; min-width: 72px; flex-shrink: 0; }
+    .ai-network-rank-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .ai-network-rank-icon.is-gold { background: #fef3c7; color: #b45309; box-shadow: inset 0 0 0 1px #fde68a; }
+    .ai-network-rank-icon.is-silver { background: #f1f5f9; color: #64748b; box-shadow: inset 0 0 0 1px #e2e8f0; }
+    .ai-network-rank-icon.is-bronze { background: #ffedd5; color: #c2410c; box-shadow: inset 0 0 0 1px #fdba74; }
+    .ai-network-rank-icon.is-normal { background: #f8fafc; color: #475569; box-shadow: inset 0 0 0 1px #e2e8f0; font-size: 12px; }
+    .ai-network-rank-label { font-size: 13px; font-weight: 800; color: #334155; }
+    .ai-network-product-name { font-weight: 700; color: #0f172a; line-height: 1.6; }
+    .ai-network-platform-tag {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .ai-network-platform-tag.is-self { border: 1px solid #bfdbfe; }
+    .ai-network-supplier { color: #475569; line-height: 1.6; }
+    .ai-network-price { font-size: 16px; font-weight: 800; color: #e2231a; white-space: nowrap; }
+    .ai-network-price-unit { font-size: 12px; font-weight: 600; color: #94a3b8; margin-left: 2px; }
+    .ai-network-spec-table th.is-self-col,
+    .ai-network-spec-table td.is-self-col { background: #eff6ff; color: #1e3a8a; font-weight: 700; }
+    .ai-network-spec-table td.is-diff { color: #b45309; font-weight: 600; }
+    .ai-network-spec-table td.is-same { color: #15803d; }
+    .ai-network-season-wrap { padding: 0 18px 18px; }
+    .ai-network-season-title { padding: 14px 0 12px; font-size: 15px; font-weight: 800; color: #0f172a; }
+    .ai-network-season-table { min-width: 0; }
+    .ai-network-season-table th,
+    .ai-network-season-table td { font-size: 14px; line-height: 1.7; }
+    .ai-network-season-table th { text-align: center; }
+    .ai-network-season-table th:first-child,
+    .ai-network-season-table td:first-child { width: 150px; font-weight: 800; color: #0f172a; }
+    .ai-network-season-table td:nth-child(2) {
+      width: 190px;
+      text-align: center;
+      font-weight: 800;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+    .ai-network-season-table td:nth-child(3) { color: #475569; }
+    .ai-network-season-table tbody tr.is-current-row { background: #fffbeb; }
+    .ai-network-season-table tbody tr.is-current-row td:first-child { color: #b45309; }
+    .ai-network-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 20px 18px;
+      border-top: 1px solid #eef2f7;
+      background: #fff;
+    }
+    .ai-network-foot-btn {
+      min-width: 96px;
+      height: 40px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #475569;
+    }
     /* 文件解析 · 类型选择弹窗 */
     .ai-file-parse-overlay {
       position: fixed;
@@ -3345,6 +3651,11 @@
       background: linear-gradient(135deg, var(--brand), var(--brand-dark));
       color: #fff;
     }
+    .ai-plan-change-mini-btn.network {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: var(--brand);
+    }
     .ai-plan-change-mini-btn.cart {
       border: 1px solid #fecaca;
       background: #fff5f5;
@@ -3399,6 +3710,531 @@
       color: #64748b;
       cursor: default;
     }
+
+    /* ========== 采购猫 · 下单页面 / 审批分享 / 合规报告 ========== */
+    .ai-msg.bot.ai-msg-rich.ai-msg-order,
+    .ai-msg.bot.ai-msg-rich.ai-msg-order-report,
+    .ai-msg.bot.ai-msg-rich.ai-msg-order-approver {
+      align-self: flex-start;
+      width: min(100%, 580px);
+      max-width: 580px;
+      min-width: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    body.ai-window-mode .ai-msg.bot.ai-msg-rich.ai-msg-order,
+    body.ai-window-mode .ai-msg.bot.ai-msg-rich.ai-msg-order-report,
+    body.ai-window-mode .ai-msg.bot.ai-msg-rich.ai-msg-order-approver {
+      width: min(100%, 640px);
+      max-width: 640px;
+    }
+    .ai-msg.bot.ai-msg-rich.ai-msg-order-result {
+      align-self: flex-start;
+      width: auto;
+      max-width: none;
+      min-width: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+    .ai-order-page-card {
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+    }
+    .ai-order-page-head {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid #eef2f6;
+      background: linear-gradient(180deg, #fafbfd 0%, #fff 100%);
+    }
+    .ai-order-page-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-order-page-title i { color: #ff6a00; }
+    .ai-order-page-sub {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .ai-order-page-body { padding: 12px 16px 14px; }
+    .ai-order-section { margin-bottom: 14px; }
+    .ai-order-section:last-child { margin-bottom: 0; }
+    .ai-order-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .ai-order-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .ai-order-section-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ai-order-mini-btn {
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid #dbe3ee;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ai-order-mini-btn:hover { border-color: #93c5fd; color: #1d4ed8; background: #eff6ff; }
+    .ai-order-mini-btn.danger:hover { border-color: #fecaca; color: #dc2626; background: #fef2f2; }
+    .ai-order-goods-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .ai-order-goods-table th,
+    .ai-order-goods-table td {
+      padding: 8px 6px;
+      border-bottom: 1px solid #eef2f6;
+      text-align: left;
+      vertical-align: top;
+    }
+    .ai-order-goods-table th {
+      color: #64748b;
+      font-weight: 600;
+      background: #f8fafc;
+    }
+    .ai-order-goods-table td.name { color: #0f172a; font-weight: 600; }
+    .ai-order-goods-table td.price { color: #ff6a00; font-weight: 700; white-space: nowrap; }
+    .ai-order-goods-table td.subtotal { color: #ff6a00; font-weight: 800; white-space: nowrap; }
+    .ai-order-goods-total {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 0 2px;
+      font-size: 13px;
+      color: #475569;
+      border-top: 1px dashed #e2e8f0;
+      margin-top: 4px;
+    }
+    .ai-order-goods-total strong {
+      font-size: 18px;
+      color: #ff6a00;
+      font-weight: 800;
+    }
+    .ai-order-pick-list {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 10px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 6px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .ai-order-pick-card {
+      position: relative;
+      flex: 0 0 220px;
+      min-width: 200px;
+      max-width: 240px;
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ai-order-pick-card:hover { border-color: #93c5fd; }
+    .ai-order-pick-card.active {
+      border-color: #e2231a;
+      box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.1);
+      background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
+    }
+    .ai-order-pick-card .pick-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+      padding-right: 56px;
+    }
+    .ai-order-pick-card .pick-meta {
+      font-size: 12px;
+      line-height: 1.7;
+      color: #64748b;
+    }
+    .ai-order-pick-card .pick-actions {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 4px;
+    }
+    .ai-order-pick-card .pick-del {
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .ai-order-pick-card .pick-del:hover { background: #fee2e2; color: #dc2626; }
+    .ai-order-approver-list { display: flex; flex-wrap: wrap; gap: 10px; }
+    .ai-order-approver-card {
+      position: relative;
+      width: calc(50% - 5px);
+      min-width: 220px;
+      flex: 1 1 220px;
+      border: 1px solid #dbeafe;
+      border-radius: 12px;
+      padding: 12px;
+      background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ai-order-approver-card:hover { border-color: #93c5fd; }
+    .ai-order-approver-card.selected {
+      border-color: #e2231a;
+      box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.1);
+      background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
+    }
+    .ai-order-approver-check {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e2231a;
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+    .ai-order-approver-card.selected .ai-order-approver-check { display: flex; }
+    .ai-order-approver-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 6px;
+      padding-right: 28px;
+    }
+    .ai-order-approver-meta {
+      font-size: 12px;
+      line-height: 1.7;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .ai-order-approver-meta strong { color: #475569; font-weight: 600; }
+    .ai-order-approver-ops { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ai-order-approver-ops button {
+      height: 28px;
+      padding: 0 8px;
+      border-radius: 8px;
+      border: 1px solid #dbe3ee;
+      background: #fff;
+      color: #475569;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .ai-order-approval-mode {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 14px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .ai-order-approval-mode .lbl {
+      font-weight: 700;
+      color: #334155;
+      margin-right: 2px;
+    }
+    .ai-order-approval-mode label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .ai-order-approval-mode label.is-active {
+      color: #2f6bff;
+      font-weight: 600;
+    }
+    .ai-order-approval-mode input[type="radio"] {
+      accent-color: #2f6bff;
+      margin: 0;
+    }
+    .ai-order-submit-bar {
+      padding: 12px 16px 14px;
+      border-top: 1px solid #eef2f6;
+      background: #fafbfd;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .ai-order-submit-btn {
+      height: 40px;
+      padding: 0 22px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff6a00, #ff8533);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(255, 106, 0, 0.28);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-order-submit-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+    .ai-order-validate-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3600;
+      background: rgba(15, 23, 42, 0.62);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .ai-order-validate-overlay.open { opacity: 1; pointer-events: auto; }
+    .ai-order-validate-dialog {
+      width: min(420px, 100%);
+      padding: 36px 28px;
+      border-radius: 18px;
+      background: #fff;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+    }
+    .ai-order-validate-dialog p {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: 0.02em;
+    }
+    .ai-order-validate-dialog .hint {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 400;
+    }
+    .ai-companion-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      z-index: 3700;
+      transform: translateX(-50%) translateY(12px);
+      max-width: min(90vw, 360px);
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.92);
+      color: #f8fafc;
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: center;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .ai-companion-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    body.ai-window-mode .ai-companion-toast {
+      background: rgba(30, 41, 59, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+    .ai-compliance-report-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 3600;
+      background: rgba(15, 23, 42, 0.58);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .ai-compliance-report-overlay.open { opacity: 1; pointer-events: auto; }
+    .ai-compliance-report-dialog {
+      width: min(640px, 100%);
+      max-height: min(88vh, 760px);
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2);
+    }
+    .ai-compliance-report-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #eef2f6;
+      background: #fafbfd;
+    }
+    .ai-compliance-report-head h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .ai-compliance-report-body {
+      padding: 16px;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #334155;
+    }
+    .ai-compliance-report-body h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+    .ai-compliance-report-body .report-block {
+      margin-bottom: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e8edf3;
+    }
+    .ai-report-result-card.ai-report-result-order .ai-report-result-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .ai-report-result-card.ai-report-result-order .ai-inline-action-btn.secondary {
+      background: #fff;
+      border: 1px solid #dbe3ee;
+      color: #475569;
+      box-shadow: none;
+    }
+    .ai-approver-share-card {
+      background: #fff;
+      border: 1px solid #e8edf3;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    }
+    .ai-approver-share-title {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .ai-approver-share-box {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      flex-wrap: nowrap;
+    }
+    .ai-approver-share-qr {
+      width: 120px;
+      height: 120px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .ai-approver-share-qr img { width: 108px; height: 108px; object-fit: contain; }
+    .ai-approver-share-main { flex: 1; min-width: 0; }
+    .ai-approver-share-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .ai-approver-share-phone {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 12px;
+    }
+    .ai-approver-share-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .ai-approver-share-actions button {
+      width: 100%;
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 1px solid #dbe3ee;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 11px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .ai-approver-share-actions button:hover {
+      border-color: #93c5fd;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .ai-order-result-row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      gap: 12px;
+      overflow: visible;
+      width: max-content;
+      max-width: none;
+    }
+    .ai-order-result-row > .ai-report-result-card {
+      flex: 0 0 300px;
+      width: 300px;
+      max-width: none;
+    }
+    .ai-order-result-row > .ai-approver-share-card {
+      flex: 0 0 320px;
+      width: 320px;
+      max-width: none;
+    }
+    .ai-chat-log:has(.ai-msg-order-result) {
+      overflow-x: auto;
+      contain: layout style;
+    }
+    .ai-comp-stage:has(.ai-msg-order-result) {
+      overflow-x: visible;
+    }
+
     .ai-msg.bot.ai-msg-rich.ai-msg-plan-demo {
       align-self: flex-start;
       width: min(100%, 580px);
@@ -3996,7 +4832,9 @@
       .ai-file-parse-overlay,
       .ai-file-parse-dialog,
       .ai-compare-overlay,
-      .ai-compare-dialog {
+      .ai-compare-dialog,
+      .ai-network-overlay,
+      .ai-network-dialog {
         transition: none !important;
       }
     }
@@ -4281,7 +5119,166 @@
       outline: none;
       box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.32);
     }
+
+    /* ========== 采购猫 · 独立窗口模式（深色玻璃对话窗） ========== */
+    body.ai-window-mode {
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a1020 0%, #0d1528 55%, #111827 100%);
+    }
+    body.ai-window-mode .topbar,
+    body.ai-window-mode #homeZone,
+    body.ai-window-mode #mallZone,
+    body.ai-window-mode .feature-zone,
+    body.ai-window-mode .mode-switch-fab,
+    body.ai-window-mode #aiCompanionFab {
+      display: none !important;
+    }
+    body.ai-window-mode .ai-comp-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      padding: 0;
+      background: linear-gradient(180deg, #0a1020 0%, #0d1528 55%, #111827 100%);
+    }
+    body.ai-window-mode .ai-comp-dialog {
+      flex: 1;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      min-height: 0;
+      border-radius: 0;
+      transform: none !important;
+      opacity: 1 !important;
+      background: #0f172a;
+      border: none;
+      box-shadow: none;
+    }
+    body.ai-window-mode .ai-comp-head {
+      background: rgba(15, 23, 42, 0.35);
+      border-bottom-color: rgba(148, 163, 184, 0.15);
+      padding: 14px 18px 12px;
+    }
+    body.ai-window-mode .ai-comp-head-icon {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(99, 102, 241, 0.45));
+      color: #e0f2fe;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+    }
+    body.ai-window-mode .ai-comp-head-title {
+      color: #f8fafc;
+      font-size: 17px;
+    }
+    body.ai-window-mode .ai-comp-head-sub {
+      color: rgba(203, 213, 225, 0.78);
+    }
+    body.ai-window-mode .ai-comp-icon-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+    body.ai-window-mode .ai-comp-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+    }
+    body.ai-window-mode .ai-comp-stage {
+      background: transparent;
+      flex: 1;
+    }
+    body.ai-window-mode .ai-comp-dialog.ai-mode-unified #aiPanel-unified {
+      background: transparent;
+    }
+    body.ai-window-mode .ai-chat-log {
+      background: transparent;
+      padding: 12px 16px 8px;
+      contain: layout style paint;
+    }
+    body.ai-window-mode .ai-msg.bot {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #e2e8f0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+    body.ai-window-mode .ai-msg.bot:first-child {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.18);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    body.ai-window-mode .ai-msg.user {
+      background: linear-gradient(135deg, rgba(47, 107, 255, 0.85), rgba(29, 78, 216, 0.9));
+      color: #fff;
+    }
+    body.ai-window-mode .ai-mode-dock {
+      order: 9;
+      padding: 10px 16px 6px;
+      background: rgba(15, 23, 42, 0.28);
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+      box-shadow: none;
+    }
+    body.ai-window-mode .ai-mode-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(148, 163, 184, 0.22);
+      color: #cbd5e1;
+    }
+    body.ai-window-mode .ai-mode-btn:hover,
+    body.ai-window-mode .ai-mode-btn.active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.35);
+      color: #7dd3fc;
+      box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
+    }
+    body.ai-window-mode .ai-compose-bar {
+      order: 10;
+      padding: 8px 16px 14px;
+      background: rgba(15, 23, 42, 0.35);
+      border-top: 1px solid rgba(148, 163, 184, 0.1);
+    }
+    body.ai-window-mode .ai-compose-input {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(148, 163, 184, 0.25);
+      color: #f1f5f9;
+    }
+    body.ai-window-mode .ai-compose-input::placeholder {
+      color: rgba(148, 163, 184, 0.75);
+    }
+    body.ai-window-mode .ai-compose-input:focus {
+      border-color: rgba(56, 189, 248, 0.5);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    body.ai-window-mode .ai-mic-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(148, 163, 184, 0.25);
+      color: #93c5fd;
+    }
+    body.ai-window-mode .ai-send-btn {
+      box-shadow: 0 4px 16px rgba(47, 107, 255, 0.35);
+    }
+    body.ai-window-mode .cat-wrap {
+      cursor: pointer;
+    }
+    body.ai-window-mode .ai-file-parse-overlay,
+    body.ai-window-mode .ai-budget-confirm-overlay,
+    body.ai-window-mode .ai-plan-confirm-overlay,
+    body.ai-window-mode .ai-plan-compliance-overlay,
+    body.ai-window-mode .ai-plan-change-product-overlay,
+    body.ai-window-mode .ai-compare-overlay,
+    body.ai-window-mode .ai-network-overlay,
+    body.ai-window-mode .ai-budget-confirm-overlay {
+      background: rgba(2, 6, 23, 0.85);
+    }
+
     @media (min-width: 520px) {
+      body.ai-window-mode .ai-comp-overlay { align-items: stretch; padding: 0; }
+      body.ai-window-mode .ai-comp-dialog,
+      body.ai-window-mode .ai-comp-overlay.open .ai-comp-dialog {
+        transform: none !important;
+        opacity: 1 !important;
+      }
       .ai-comp-overlay { align-items: center; padding: 28px 20px; }
       .ai-comp-dialog {
         border-radius: 22px;
@@ -4875,7 +5872,7 @@
       <div class="hero-panel">
         <div class="hero-intro">
           <!-- 采购猫 -->
-          <div class="cat-wrap" aria-hidden="true">
+          <div class="cat-wrap" role="button" tabindex="0" aria-label="打开采购猫 AI 助手" title="打开采购猫" onclick="openAiCompanion()" onkeydown="if(event.key==='Enter'||event.key===' ')openAiCompanion()">
             <div class="cat-glow"></div>
             <div class="cat-card">
               <div class="cat-badge">采购猫</div>
@@ -5368,6 +6365,44 @@
         <button type="button" class="ai-compare-foot-btn" onclick="closeAiCompareModal()">关闭</button>
         <button type="button" class="ai-compare-foot-btn primary" onclick="openAiCompareFullPage()"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i> 查看完整分析</button>
       </footer>
+    </div>
+  </div>
+
+  <!-- 全网比价弹窗 -->
+  <div class="ai-network-overlay" id="aiNetworkOverlay" role="dialog" aria-modal="true" aria-labelledby="aiNetworkTitle" onclick="closeAiNetworkModal(event)">
+    <div class="ai-network-dialog" onclick="event.stopPropagation()">
+      <header class="ai-network-head">
+        <div>
+          <div class="ai-network-head-title" id="aiNetworkTitle"><i class="fa-solid fa-globe" aria-hidden="true"></i> 全网比价</div>
+          <div class="ai-network-head-sub" id="aiNetworkSub">全网同款报价排名与规格对比</div>
+        </div>
+        <button type="button" class="ai-network-close" aria-label="关闭" onclick="closeAiNetworkModal()"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="ai-network-body" id="aiNetworkBody"></div>
+      <footer class="ai-network-foot">
+        <button type="button" class="ai-network-foot-btn" onclick="closeAiNetworkModal()">关闭</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- 采购单合规性校验示意弹窗 -->
+  <div class="ai-order-validate-overlay" id="aiOrderValidateOverlay" role="dialog" aria-modal="true" aria-label="采购单合规性校验">
+    <div class="ai-order-validate-dialog">
+      <p>采购单合规性校验画面</p>
+      <div class="hint">正在校验，请稍候…</div>
+    </div>
+  </div>
+
+  <div class="ai-companion-toast" id="aiCompanionToast" role="status" aria-live="polite"></div>
+
+  <!-- 采购合规分析报告查看弹窗 -->
+  <div class="ai-compliance-report-overlay" id="aiComplianceReportOverlay" role="dialog" aria-modal="true" aria-labelledby="aiComplianceReportTitle" onclick="aiOrderCloseComplianceReport(event)">
+    <div class="ai-compliance-report-dialog" onclick="event.stopPropagation()">
+      <header class="ai-compliance-report-head">
+        <h3 id="aiComplianceReportTitle"><i class="fa-solid fa-shield-halved" style="color:#ff6a00;margin-right:6px;"></i>采购合规分析报告</h3>
+        <button type="button" class="ai-order-mini-btn" aria-label="关闭" onclick="aiOrderCloseComplianceReport()"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <div class="ai-compliance-report-body" id="aiComplianceReportBody"></div>
     </div>
   </div>
 
@@ -6703,10 +7738,23 @@
       }).join('');
     }
 
+    var _mallDataReady = false;
+    function isAiWindowPage() {
+      return !!window.__GC_AI_WINDOW__ || document.body.classList.contains('ai-window-mode');
+    }
+    function ensureMallData() {
+      if (_mallDataReady) return;
+      _mallDataReady = true;
+      initMallData();
+    }
+
     /* =====================================================================
        初始化 —— script 在 </body> 前，DOM 已完整，直接执行
     ===================================================================== */
-    initMallData();
+    if (!isAiWindowPage()) {
+      var _bootTab = new URLSearchParams(window.location.search).get('tab');
+      if (_bootTab === 'mall') ensureMallData();
+    }
 
     /* =====================================================================
        首页 Tab 切换
@@ -6722,6 +7770,7 @@
         tabHome.classList.add('active');
         tabMall.classList.remove('active');
       } else {
+        ensureMallData();
         homeZone.style.display = 'none';
         mallZone.style.display = '';
         tabMall.classList.add('active');
@@ -7240,12 +8289,52 @@
       window.open('../pages-new/plan_result.html' + q, '_blank', 'noopener,noreferrer');
     }
 
-    function openAiCompanion() {
+    function isAiWindowMode() {
+      return document.body.classList.contains('ai-window-mode');
+    }
+
+    function openAiWindowContractEntry(btn) {
+      resetAiModeDockActive();
+      if (btn) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+      }
+      setAiCompanionMode('unified');
+      runAiFileParseDemo('contract');
+    }
+
+    function setupAiWindowDock() {
+      var grid = document.querySelector('.ai-mode-grid');
+      if (!grid) return;
+      grid.innerHTML =
+        '<button type="button" class="ai-mode-btn" data-mode="plan" onclick="openAiFileParseTypeModal(this)"><i class="fa-solid fa-clipboard-list"></i><span>采购计划</span></button>' +
+        '<button type="button" class="ai-mode-btn" data-mode="file" onclick="openAiWindowContractEntry(this)"><i class="fa-solid fa-file-contract"></i><span>合同文件</span></button>' +
+        '<button type="button" class="ai-mode-btn" data-mode="image" onclick="openAiCompanionImageUpload(this)"><i class="fa-solid fa-image"></i><span>图片</span></button>';
+    }
+
+    function initAiWindowMode() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('aiWindow') !== '1') return;
+      document.body.classList.add('ai-window-mode');
+      document.title = '国采 AI 助手 · 采购猫';
+      setupAiWindowDock();
+      var sub = document.querySelector('.ai-comp-head-sub');
+      if (sub) sub.textContent = '文字 · 语音 · 合同文件 · 图片 · 采购计划';
+      var welcome = document.querySelector('#aiChatLog .ai-msg.bot');
+      if (welcome) {
+        welcome.innerHTML = '您好，我是国采 AI 助手。您可以直接输入采购需求，或通过下方按钮上传<strong>采购计划</strong>、<strong>合同文件</strong>与<strong>图片</strong>，我将为您分析并推荐合规商品。';
+      }
+      openAiCompanionInline();
+    }
+
+    function openAiCompanionInline() {
       var ov = document.getElementById('aiCompanionOverlay');
       var fab = document.getElementById('aiCompanionFab');
       if (!ov) return;
-      document.body.classList.add('ai-companion-open');
-      if (fab) fab.style.visibility = 'hidden';
+      if (!isAiWindowMode()) {
+        document.body.classList.add('ai-companion-open');
+        if (fab) fab.style.visibility = 'hidden';
+      }
       var dlg = document.getElementById('aiCompanionDialog');
       var activePanel = document.querySelector('.ai-comp-panel.active');
       if (dlg && activePanel) {
@@ -7260,10 +8349,22 @@
       });
     }
 
+    function openAiCompanion() {
+      if (isAiWindowMode()) {
+        openAiCompanionInline();
+        return;
+      }
+      window.open('./merged_home.html?aiWindow=1', '_blank', 'noopener,noreferrer');
+    }
+
     function closeAiCompanion(event) {
       var ov = document.getElementById('aiCompanionOverlay');
       if (!ov) return;
-      if (event && event.target !== ov) return;
+      if (event && event.target !== ov && !isAiWindowMode()) return;
+      if (isAiWindowMode()) {
+        window.close();
+        return;
+      }
       ov.classList.remove('open');
       document.body.classList.remove('ai-companion-open');
       stopAiCompanionSpeech();
@@ -7662,12 +8763,552 @@
 
     function aiPlanDemoPlaceOrder() {
       if (!aiPlanDemoHasSelectedLines()) return;
-      var payload = aiPlanDemoBuildOrderPayload();
-      if (!payload) return;
-      try {
-        sessionStorage.setItem('gcOrderConfirmPayload', JSON.stringify(payload));
-      } catch (eStore) {}
-      window.location.href = './order_confirm.html';
+      var items = aiOrderBuildItemsFromPlan();
+      if (!items.length) return;
+      aiOrderOpenPage('plan', items);
+    }
+
+    /* ========== 采购猫 · 下单页面流程 ========== */
+    var _aiOrderDraft = null;
+
+    function aiOrderNewId(prefix) {
+      return prefix + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    function aiOrderBuildItemsFromCart() {
+      return loadAiCartItems().filter(function(it) { return it.selected === true; }).map(function(it) {
+        return {
+          id: String(it.id || aiOrderNewId('item')),
+          name: it.name || '商品',
+          supplier: it.supplier || '平台认证供应商',
+          price: Number(it.price) || 0,
+          qty: Number(it.qty) || 1,
+          unit: it.unit || '件'
+        };
+      });
+    }
+
+    function aiOrderBuildItemsFromPlan() {
+      return (_AI_PLAN_DEMO_LINES || []).filter(function(L) {
+        return L.selectStatus === 'selected' && L.product;
+      }).map(function(L) {
+        var P = L.product;
+        return {
+          id: String(P.refId || L.id || aiOrderNewId('item')),
+          name: P.name || L.name || '商品',
+          supplier: P.supplier || '平台认证供应商',
+          price: Number(P.price) || 0,
+          qty: Number(L.qty) || 1,
+          unit: L.unit || P.unit || '件'
+        };
+      });
+    }
+
+    function aiOrderCreateDraft(source, items) {
+      return {
+        cardUid: aiOrderNewId('order-card'),
+        orderNo: 'PO' + Date.now().toString().slice(-8),
+        source: source,
+        items: items.slice(),
+        invoices: [
+          { id: 'inv-1', type: '增值税普通发票', title: '天创信总公司', taxNo: '93827472837237172Y', bank: '—', account: '—', active: true },
+          { id: 'inv-2', type: '增值税专用发票', title: '天创信总公司（采购中心）', taxNo: '93827472837237172Y', bank: '中国银行海淀支行', account: '6222****1234', active: false }
+        ],
+        addresses: [
+          { id: 'addr-1', label: '北京市海淀区', detail: '创业大厦17楼', receiver: '张三', phone: '138****8000', active: true },
+          { id: 'addr-2', label: '天津市和平区', detail: '创新中心B座12层', receiver: '小庄', phone: '139****9001', active: false }
+        ],
+        approvers: [
+          { id: 'appr-1', name: '王主任', phone: '13800138001', department: '采购管理部', selected: true, order: 1 },
+          { id: 'appr-2', name: '李科长', phone: '13900139002', department: '财务审核部', selected: true, order: 2 }
+        ],
+        approvalMode: 'parallel',
+        submittedAt: null
+      };
+    }
+
+    function aiOrderCalcTotal(draft) {
+      if (!draft || !draft.items) return 0;
+      return draft.items.reduce(function(sum, it) {
+        return sum + (Number(it.price) || 0) * (Number(it.qty) || 1);
+      }, 0);
+    }
+
+    function aiOrderGetActiveInvoice(draft) {
+      return (draft.invoices || []).find(function(x) { return x.active; }) || draft.invoices[0] || null;
+    }
+
+    function aiOrderGetActiveAddress(draft) {
+      return (draft.addresses || []).find(function(x) { return x.active; }) || draft.addresses[0] || null;
+    }
+
+    function aiOrderGetSelectedApprovers(draft) {
+      var list = (draft.approvers || []).filter(function(x) { return x.selected; });
+      if (draft.approvalMode === 'sequential') {
+        list.sort(function(a, b) { return (a.order || 0) - (b.order || 0); });
+      }
+      return list;
+    }
+
+    function aiOrderSyncApproverOrders() {
+      if (!_aiOrderDraft) return;
+      _aiOrderDraft.approvers.forEach(function(x, idx) {
+        x.order = idx + 1;
+      });
+    }
+
+    function aiOrderSetApprovalMode(mode) {
+      if (!_aiOrderDraft) return;
+      _aiOrderDraft.approvalMode = mode === 'sequential' ? 'sequential' : 'parallel';
+      aiOrderSyncApproverOrders();
+      aiOrderRefreshCardInChat();
+    }
+
+    function renderAiOrderApprovalModeHtml(draft) {
+      var mode = draft.approvalMode || 'parallel';
+      return (
+        '<div class="ai-order-approval-mode" role="radiogroup" aria-label="审批方式">' +
+        '<span class="lbl">审批方式：</span>' +
+        '<label class="' + (mode === 'parallel' ? 'is-active' : '') + '">' +
+        '<input type="radio" name="aiOrderApprovalMode-' + escapeAiHtml(draft.cardUid) + '" value="parallel"' +
+        (mode === 'parallel' ? ' checked' : '') + ' onclick="aiOrderSetApprovalMode(\'parallel\')"> 并行审批（可同时审批）</label>' +
+        '<label class="' + (mode === 'sequential' ? 'is-active' : '') + '">' +
+        '<input type="radio" name="aiOrderApprovalMode-' + escapeAiHtml(draft.cardUid) + '" value="sequential"' +
+        (mode === 'sequential' ? ' checked' : '') + ' onclick="aiOrderSetApprovalMode(\'sequential\')"> 顺序审批（按序号依次审批）</label>' +
+        '</div>'
+      );
+    }
+
+    function aiOrderRefreshCardInChat() {
+      if (!_aiOrderDraft) return;
+      var card = document.querySelector('[data-ai-order-card="' + _aiOrderDraft.cardUid + '"]');
+      if (!card) return;
+      var parent = card.closest('.ai-msg-rich');
+      if (parent) parent.innerHTML = renderAiOrderPageCardHtml(_aiOrderDraft);
+    }
+
+    function aiOrderToast(msg) {
+      appendAiChat('bot', msg, true);
+      scrollAiChatToBottom();
+    }
+
+    function showAiCompanionToast(msg) {
+      var el = document.getElementById('aiCompanionToast');
+      if (!el) return;
+      el.textContent = msg || '';
+      el.classList.add('show');
+      clearTimeout(showAiCompanionToast._timer);
+      showAiCompanionToast._timer = setTimeout(function() {
+        el.classList.remove('show');
+      }, 2200);
+    }
+
+    function renderAiOrderGoodsSectionHtml(draft) {
+      var rows = (draft.items || []).map(function(it) {
+        var price = Number(it.price) || 0;
+        var qty = Number(it.qty) || 1;
+        var subtotal = price * qty;
+        return (
+          '<tr>' +
+          '<td class="name">' + escapeAiHtml(it.name) + '</td>' +
+          '<td>' + escapeAiHtml(it.supplier) + '</td>' +
+          '<td class="price">¥' + price.toLocaleString('zh-CN') + '</td>' +
+          '<td>' + qty + escapeAiHtml(it.unit || '件') + '</td>' +
+          '<td class="subtotal">¥' + subtotal.toLocaleString('zh-CN') + '</td>' +
+          '</tr>'
+        );
+      }).join('');
+      var total = aiOrderCalcTotal(draft);
+      return (
+        '<div class="ai-order-section">' +
+        '<div class="ai-order-section-head"><span class="ai-order-section-title">采购商品列表</span></div>' +
+        '<table class="ai-order-goods-table"><thead><tr><th>商品名</th><th>供应商</th><th>价格</th><th>数量</th><th>价格小计</th></tr></thead><tbody>' +
+        rows +
+        '</tbody></table>' +
+        '<div class="ai-order-goods-total"><span>合计</span><strong>¥' + total.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</strong></div>' +
+        '</div>'
+      );
+    }
+
+    function renderAiOrderPickCardsHtml(list, type) {
+      if (!list.length) {
+        return '<div style="font-size:12px;color:#94a3b8;padding:8px 0;">暂无数据，请点击新增。</div>';
+      }
+      return list.map(function(item) {
+        var delFn = type === 'invoice' ? 'aiOrderDeleteInvoice' : 'aiOrderDeleteAddress';
+        var swFn = type === 'invoice' ? 'aiOrderSwitchInvoice' : 'aiOrderSwitchAddress';
+        var meta = type === 'invoice'
+          ? ('<div><strong>类型：</strong>' + escapeAiHtml(item.type) + '</div><div><strong>税号：</strong>' + escapeAiHtml(item.taxNo) + '</div>')
+          : ('<div><strong>地址：</strong>' + escapeAiHtml(item.label) + ' ' + escapeAiHtml(item.detail) + '</div><div><strong>收货人：</strong>' + escapeAiHtml(item.receiver) + ' ' + escapeAiHtml(item.phone) + '</div>');
+        return (
+          '<div class="ai-order-pick-card' + (item.active ? ' active' : '') + '" onclick="' + swFn + '(\'' + item.id + '\')">' +
+          '<div class="pick-actions"><button type="button" class="pick-del" title="删除" onclick="event.stopPropagation();' + delFn + '(\'' + item.id + '\')"><i class="fa-solid fa-trash"></i></button></div>' +
+          '<div class="pick-title">' + escapeAiHtml(item.title || item.label || item.receiver) + '</div>' +
+          '<div class="pick-meta">' + meta + '</div></div>'
+        );
+      }).join('');
+    }
+
+    function renderAiOrderApproversHtml(draft) {
+      var list = draft.approvers || [];
+      var showSeq = draft.approvalMode === 'sequential';
+      if (!list.length) {
+        return '<div style="font-size:12px;color:#94a3b8;padding:8px 0;">暂未添加审批人员，请点击新增。</div>';
+      }
+      return list.map(function(item, idx) {
+        var seqHtml = showSeq
+          ? '<div><strong>序号：</strong>' + (item.order || (idx + 1)) + '</div>'
+          : '';
+        return (
+          '<div class="ai-order-approver-card' + (item.selected ? ' selected' : '') + '" onclick="aiOrderToggleApprover(\'' + item.id + '\', event)">' +
+          '<div class="ai-order-approver-check"><i class="fa-solid fa-check"></i></div>' +
+          '<div class="ai-order-approver-name">' + escapeAiHtml(item.name) + '</div>' +
+          '<div class="ai-order-approver-meta"><div><strong>电话：</strong>' + escapeAiHtml(item.phone) + '</div><div><strong>部门：</strong>' + escapeAiHtml(item.department) + '</div>' + seqHtml + '</div>' +
+          '<div class="ai-order-approver-ops">' +
+          '<button type="button" onclick="event.stopPropagation();aiOrderEditApprover(\'' + item.id + '\')"><i class="fa-solid fa-pen"></i> 编辑</button>' +
+          '<button type="button" onclick="event.stopPropagation();aiOrderDeleteApprover(\'' + item.id + '\')"><i class="fa-solid fa-trash"></i> 删除</button>' +
+          '</div></div>'
+        );
+      }).join('');
+    }
+
+    function renderAiOrderPageCardHtml(draft) {
+      var sourceLabel = draft.source === 'plan' ? '采购计划' : '购物车';
+      return (
+        '<div class="ai-order-page-card" data-ai-order-card="' + escapeAiHtml(draft.cardUid) + '">' +
+        '<div class="ai-order-page-head">' +
+        '<h4 class="ai-order-page-title"><i class="fa-solid fa-file-invoice" aria-hidden="true"></i> 下单页面</h4>' +
+        '<p class="ai-order-page-sub">采购单号 ' + escapeAiHtml(draft.orderNo) + ' · 来源：' + sourceLabel + '</p>' +
+        '</div>' +
+        '<div class="ai-order-page-body">' +
+        renderAiOrderGoodsSectionHtml(draft) +
+        '<div class="ai-order-section">' +
+        '<div class="ai-order-section-head"><span class="ai-order-section-title">发票信息</span>' +
+        '<div class="ai-order-section-actions"><button type="button" class="ai-order-mini-btn" onclick="aiOrderAddInvoice()"><i class="fa-solid fa-plus"></i> 新增</button></div></div>' +
+        '<div class="ai-order-pick-list">' + renderAiOrderPickCardsHtml(draft.invoices, 'invoice') + '</div></div>' +
+        '<div class="ai-order-section">' +
+        '<div class="ai-order-section-head"><span class="ai-order-section-title">收货人信息</span>' +
+        '<div class="ai-order-section-actions"><button type="button" class="ai-order-mini-btn" onclick="aiOrderAddAddress()"><i class="fa-solid fa-plus"></i> 新增</button></div></div>' +
+        '<div class="ai-order-pick-list">' + renderAiOrderPickCardsHtml(draft.addresses, 'address') + '</div></div>' +
+        '<div class="ai-order-section">' +
+        '<div class="ai-order-section-head"><span class="ai-order-section-title">审批人员</span>' +
+        '<div class="ai-order-section-actions"><button type="button" class="ai-order-mini-btn" onclick="aiOrderAddApprover()"><i class="fa-solid fa-plus"></i> 新增</button></div></div>' +
+        renderAiOrderApprovalModeHtml(draft) +
+        '<div class="ai-order-approver-list">' + renderAiOrderApproversHtml(draft) + '</div></div>' +
+        '</div>' +
+        '<div class="ai-order-submit-bar">' +
+        '<button type="button" class="ai-order-submit-btn" onclick="aiOrderSubmit()"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i> 提交采购单</button>' +
+        '</div></div>'
+      );
+    }
+
+    function aiOrderOpenPage(source, items) {
+      _aiOrderDraft = aiOrderCreateDraft(source, items);
+      var userText = source === 'plan'
+        ? '立即下单（采购计划已选 ' + items.length + ' 项商品）'
+        : '去下单（已选 ' + items.length + ' 件商品）';
+      appendAiChat('user', userText);
+      publishAiCompanionReply(
+        '已为您生成采购下单页面，请确认商品、发票、收货人与审批人员后提交采购单。',
+        renderAiOrderPageCardHtml(_aiOrderDraft),
+        'order'
+      );
+    }
+
+    function aiOrderSwitchInvoice(id) {
+      if (!_aiOrderDraft) return;
+      _aiOrderDraft.invoices.forEach(function(x) { x.active = x.id === id; });
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderSwitchAddress(id) {
+      if (!_aiOrderDraft) return;
+      _aiOrderDraft.addresses.forEach(function(x) { x.active = x.id === id; });
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderAddInvoice() {
+      if (!_aiOrderDraft) return;
+      var title = window.prompt('请输入发票抬头', '天创信总公司');
+      if (!title) return;
+      var id = aiOrderNewId('inv');
+      _aiOrderDraft.invoices.forEach(function(x) { x.active = false; });
+      _aiOrderDraft.invoices.push({
+        id: id, type: '增值税普通发票', title: title.trim(), taxNo: '93827472837237172Y', bank: '—', account: '—', active: true
+      });
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderDeleteInvoice(id) {
+      if (!_aiOrderDraft || _aiOrderDraft.invoices.length <= 1) {
+        aiOrderToast('至少保留一条发票信息。');
+        return;
+      }
+      var wasActive = _aiOrderDraft.invoices.some(function(x) { return x.id === id && x.active; });
+      _aiOrderDraft.invoices = _aiOrderDraft.invoices.filter(function(x) { return x.id !== id; });
+      if (wasActive && _aiOrderDraft.invoices[0]) _aiOrderDraft.invoices[0].active = true;
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderAddAddress() {
+      if (!_aiOrderDraft) return;
+      var receiver = window.prompt('请输入收货人姓名', '李四');
+      if (!receiver) return;
+      var id = aiOrderNewId('addr');
+      _aiOrderDraft.addresses.forEach(function(x) { x.active = false; });
+      _aiOrderDraft.addresses.push({
+        id: id, label: '北京市朝阳区', detail: '政务中心A座8层', receiver: receiver.trim(), phone: '137****7000', active: true
+      });
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderDeleteAddress(id) {
+      if (!_aiOrderDraft || _aiOrderDraft.addresses.length <= 1) {
+        aiOrderToast('至少保留一条收货信息。');
+        return;
+      }
+      var wasActive = _aiOrderDraft.addresses.some(function(x) { return x.id === id && x.active; });
+      _aiOrderDraft.addresses = _aiOrderDraft.addresses.filter(function(x) { return x.id !== id; });
+      if (wasActive && _aiOrderDraft.addresses[0]) _aiOrderDraft.addresses[0].active = true;
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderToggleApprover(id, event) {
+      if (event && event.target && event.target.closest('button')) return;
+      if (!_aiOrderDraft) return;
+      _aiOrderDraft.approvers.forEach(function(x) {
+        if (x.id === id) x.selected = !x.selected;
+      });
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderAddApprover() {
+      if (!_aiOrderDraft) return;
+      var name = window.prompt('审批人姓名', '');
+      if (!name) return;
+      var phone = window.prompt('审批人电话（11位）', '');
+      if (!phone) return;
+      var dept = window.prompt('所属部门', '采购管理部') || '采购管理部';
+      _aiOrderDraft.approvers.push({
+        id: aiOrderNewId('appr'), name: name.trim(), phone: phone.trim(), department: dept.trim(), selected: true, order: _aiOrderDraft.approvers.length + 1
+      });
+      aiOrderSyncApproverOrders();
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderEditApprover(id) {
+      if (!_aiOrderDraft) return;
+      var target = _aiOrderDraft.approvers.find(function(x) { return x.id === id; });
+      if (!target) return;
+      var name = window.prompt('审批人姓名', target.name);
+      if (!name) return;
+      var phone = window.prompt('审批人电话', target.phone);
+      if (!phone) return;
+      var dept = window.prompt('所属部门', target.department) || target.department;
+      target.name = name.trim();
+      target.phone = phone.trim();
+      target.department = dept.trim();
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderDeleteApprover(id) {
+      if (!_aiOrderDraft) return;
+      _aiOrderDraft.approvers = _aiOrderDraft.approvers.filter(function(x) { return x.id !== id; });
+      aiOrderSyncApproverOrders();
+      aiOrderRefreshCardInChat();
+    }
+
+    function aiOrderShowValidateOverlay() {
+      var ov = document.getElementById('aiOrderValidateOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
+    function aiOrderCloseValidateOverlay() {
+      var ov = document.getElementById('aiOrderValidateOverlay');
+      if (ov) ov.classList.remove('open');
+    }
+
+    function aiOrderSubmit() {
+      if (!_aiOrderDraft || !_aiOrderDraft.items.length) return;
+      if (!aiOrderGetSelectedApprovers(_aiOrderDraft).length) {
+        aiOrderToast('请至少勾选一位审批人员后再提交。');
+        return;
+      }
+      appendAiChat('user', '提交采购单');
+      aiOrderShowValidateOverlay();
+      setTimeout(function() {
+        aiOrderCloseValidateOverlay();
+        aiOrderFinishSubmit();
+      }, 2600);
+    }
+
+    function aiOrderGetApprovalUrl(approver) {
+      var base = new URL('../pages-new/purchase_approval.html', window.location.href).href;
+      var params = new URLSearchParams({ po: _aiOrderDraft.orderNo });
+      if (_aiOrderDraft.approvalMode) params.set('mode', _aiOrderDraft.approvalMode);
+      if (approver) {
+        params.set('approver', approver.id);
+        params.set('name', approver.name);
+        if (_aiOrderDraft.approvalMode === 'sequential' && approver.order) {
+          params.set('seq', String(approver.order));
+        }
+      }
+      return base.split('?')[0] + '?' + params.toString();
+    }
+
+    function aiOrderGetQrImgUrl(url) {
+      return 'https://api.qrserver.com/v1/create-qr-code/?size=108x108&data=' + encodeURIComponent(url);
+    }
+
+    function renderAiComplianceReportPreviewHtml(draft) {
+      var inv = aiOrderGetActiveInvoice(draft);
+      var addr = aiOrderGetActiveAddress(draft);
+      var total = aiOrderCalcTotal(draft);
+      var goodsLines = (draft.items || []).map(function(it) {
+        return escapeAiHtml(it.name) + ' / ' + escapeAiHtml(it.supplier) + ' / ¥' + (Number(it.price) || 0) + ' × ' + (Number(it.qty) || 1);
+      }).join('<br>');
+      return (
+        '<div class="report-block"><h4>报告编号</h4>RPT-' + escapeAiHtml(draft.orderNo) + '</div>' +
+        '<div class="report-block"><h4>采购商品</h4>' + goodsLines + '<div style="margin-top:8px;font-weight:700;color:#ff6a00;">合计：¥' + total.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</div></div>' +
+        '<div class="report-block"><h4>发票信息</h4>' + escapeAiHtml((inv && inv.type) || '—') + ' / ' + escapeAiHtml((inv && inv.title) || '—') + '</div>' +
+        '<div class="report-block"><h4>收货信息</h4>' + escapeAiHtml((addr && addr.label) || '') + ' ' + escapeAiHtml((addr && addr.detail) || '') + '（' + escapeAiHtml((addr && addr.receiver) || '') + '）</div>' +
+        '<div class="report-block"><h4>合规结论</h4>本次采购单已完成合规性校验，商品信息、价格区间、供应商资质、发票主体和收货信息均满足当前采购要求，建议按当前采购单信息提交审批。</div>'
+      );
+    }
+
+    function renderAiComplianceReportCardHtml() {
+      return (
+        '<div class="ai-report-result-card ai-report-result-order">' +
+        renderAiReportResultVisualHtml('fileparse', '合规报告') +
+        '<div class="ai-report-result-body">' +
+        '<div class="ai-report-result-badge-row">' +
+        '<span class="ai-finder-badge type">采购合规</span>' +
+        '<span class="ai-finder-badge done"><i class="fa-solid fa-check" aria-hidden="true"></i> 报告已生成</span>' +
+        '</div>' +
+        '<div class="ai-report-result-actions">' +
+        '<button type="button" class="ai-inline-action-btn ai-btn-fileparse-report" onclick="aiOrderViewComplianceReport()"><i class="fa-solid fa-file-lines" aria-hidden="true"></i> 查看报告</button>' +
+        '<button type="button" class="ai-inline-action-btn secondary" onclick="aiOrderDownloadComplianceReport()"><i class="fa-solid fa-download" aria-hidden="true"></i> 下载报告</button>' +
+        '</div></div></div>'
+      );
+    }
+
+    function aiOrderViewComplianceReport() {
+      if (!_aiOrderDraft) return;
+      var body = document.getElementById('aiComplianceReportBody');
+      var ov = document.getElementById('aiComplianceReportOverlay');
+      if (body) body.innerHTML = renderAiComplianceReportPreviewHtml(_aiOrderDraft);
+      if (ov) ov.classList.add('open');
+    }
+
+    function aiOrderCloseComplianceReport(evt) {
+      if (evt && evt.target && evt.target.id !== 'aiComplianceReportOverlay') return;
+      var ov = document.getElementById('aiComplianceReportOverlay');
+      if (ov) ov.classList.remove('open');
+    }
+
+    function aiOrderDownloadComplianceReport() {
+      if (!_aiOrderDraft) return;
+      var inv = aiOrderGetActiveInvoice(_aiOrderDraft);
+      var addr = aiOrderGetActiveAddress(_aiOrderDraft);
+      var lines = [
+        '采购合规分析报告',
+        '报告编号：RPT-' + _aiOrderDraft.orderNo,
+        '生成时间：' + new Date().toLocaleString('zh-CN', { hour12: false }),
+        '',
+        '【采购商品】'
+      ];
+      (_aiOrderDraft.items || []).forEach(function(it) {
+        lines.push('- ' + it.name + ' | ' + it.supplier + ' | ¥' + it.price + ' × ' + it.qty + (it.unit || '件'));
+      });
+      lines.push('合计：¥' + aiOrderCalcTotal(_aiOrderDraft).toFixed(2));
+      lines.push('', '【发票信息】', (inv ? inv.type + ' / ' + inv.title : '—'));
+      lines.push('', '【收货信息】', addr ? (addr.label + ' ' + addr.detail + '（' + addr.receiver + '）') : '—');
+      lines.push('', '【合规结论】', '本次采购单已完成合规性校验，建议提交审批。');
+      var blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '采购合规分析报告-' + _aiOrderDraft.orderNo + '.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    }
+
+    function renderAiApproverShareCardHtml(approver) {
+      var url = aiOrderGetApprovalUrl(approver);
+      var qrUrl = aiOrderGetQrImgUrl(url);
+      var modeHint = (_aiOrderDraft && _aiOrderDraft.approvalMode === 'sequential' && approver.order)
+        ? ' · 第 ' + approver.order + ' 顺位'
+        : '';
+      return (
+        '<div class="ai-approver-share-card">' +
+        '<div class="ai-approver-share-title"><i class="fa-solid fa-user-check" aria-hidden="true"></i> 审批人员 · 请转发给 ' + escapeAiHtml(approver.name) + escapeAiHtml(modeHint) + '</div>' +
+        '<div class="ai-approver-share-box">' +
+        '<div class="ai-approver-share-qr"><img src="' + escapeAiHtml(qrUrl) + '" alt="审批二维码" width="108" height="108"></div>' +
+        '<div class="ai-approver-share-main">' +
+        '<div class="ai-approver-share-name">' + escapeAiHtml(approver.name) + '</div>' +
+        '<div class="ai-approver-share-phone">' + escapeAiHtml(approver.phone) + ' · ' + escapeAiHtml(approver.department) + '</div>' +
+        '<div class="ai-approver-share-actions">' +
+        '<button type="button" onclick="aiOrderCopyQr(\'' + approver.id + '\')"><i class="fa-solid fa-qrcode"></i> 复制二维码</button>' +
+        '<button type="button" onclick="aiOrderCopyLink(\'' + approver.id + '\')"><i class="fa-solid fa-link"></i> 复制链接</button>' +
+        '</div></div></div></div>'
+      );
+    }
+
+    function aiOrderCopyLink(approverId) {
+      if (!_aiOrderDraft) return;
+      var appr = _aiOrderDraft.approvers.find(function(x) { return x.id === approverId; });
+      if (!appr) return;
+      var url = aiOrderGetApprovalUrl(appr);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+          showAiCompanionToast('审批链接已复制');
+        }).catch(function() {
+          showAiCompanionToast('复制失败，请手动复制链接');
+        });
+      } else {
+        showAiCompanionToast('当前环境不支持自动复制');
+      }
+    }
+
+    function aiOrderCopyQr(approverId) {
+      if (!_aiOrderDraft) return;
+      var appr = _aiOrderDraft.approvers.find(function(x) { return x.id === approverId; });
+      if (!appr) return;
+      var url = aiOrderGetQrImgUrl(aiOrderGetApprovalUrl(appr));
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+          showAiCompanionToast('二维码链接已复制');
+        }).catch(function() {
+          showAiCompanionToast('复制失败，请手动复制二维码链接');
+        });
+      } else {
+        showAiCompanionToast('当前环境不支持自动复制');
+      }
+    }
+
+    function renderAiOrderSubmitResultHtml(selected) {
+      return (
+        '<div class="ai-order-result-row">' +
+        renderAiComplianceReportCardHtml() +
+        selected.map(function(appr) { return renderAiApproverShareCardHtml(appr); }).join('') +
+        '</div>'
+      );
+    }
+
+    function aiOrderFinishSubmit() {
+      if (!_aiOrderDraft) return;
+      _aiOrderDraft.submittedAt = new Date().toISOString();
+      var selected = aiOrderGetSelectedApprovers(_aiOrderDraft);
+      appendAiChat('bot', '采购单已提交。合规分析报告已生成，请将下方审批卡片转发给已选审批人员。', true);
+      appendAiBotRich(renderAiOrderSubmitResultHtml(selected), 'order-result', true);
+      scrollAiChatToBottom();
+    }
+
+    function aiCartPlaceOrder() {
+      var items = aiOrderBuildItemsFromCart();
+      if (!items.length) return;
+      aiOrderOpenPage('cart', items);
     }
 
     function aiPlanDemoBuildOrderPayload() {
@@ -7825,6 +9466,17 @@
       if (ov) ov.classList.add('open');
     }
 
+    function aiPlanDemoOpenNetworkCompare(refId, evt) {
+      if (evt) evt.stopPropagation();
+      _aiNetworkCurrentPayload = buildAiNetworkComparePayload(refId);
+      try {
+        sessionStorage.setItem(AI_NETWORK_STORAGE_KEY, JSON.stringify(_aiNetworkCurrentPayload));
+      } catch (eSave) {}
+      renderAiNetworkModalContent(_aiNetworkCurrentPayload);
+      var ov = document.getElementById('aiNetworkOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
     function aiPlanDemoFilterChangeProducts(keyword) {
       var line = aiPlanDemoFindLine(_aiPlanChangeProductLineId);
       if (!line) return;
@@ -7885,6 +9537,7 @@
             '</div></div>' +
             '<div class="ai-plan-change-side-actions">' +
             '<button type="button" class="ai-plan-change-mini-btn compare" onclick="aiPlanDemoOpenCompare(\'' + safeRef + '\', event)"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>比质比价</button>' +
+            '<button type="button" class="ai-plan-change-mini-btn network" onclick="aiPlanDemoOpenNetworkCompare(\'' + safeRef + '\', event)"><i class="fa-solid fa-globe" aria-hidden="true"></i>全网比价</button>' +
             '<button type="button" class="ai-plan-change-mini-btn cart" onclick="aiPlanDemoAddToCart(\'' + safeRef + '\', event)"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i>加入购物车</button>' +
             '</div>' +
             (isCurrent
@@ -7969,10 +9622,12 @@
         '<div class="ai-goods-range-track"><span class="ai-goods-range-marker" style="left:' + marker + '%"></span></div>' +
         '<div class="ai-goods-range-labels"><span>¥' + floor.toLocaleString('zh-CN') + '</span><span>¥' + ceiling.toLocaleString('zh-CN') + '</span></div>' +
         '</div>' +
-        '<div class="ai-goods-actions">' +
-        '<button type="button" class="ai-goods-btn compare" onclick="event.stopPropagation();aiPlanDemoOpenCompare(\'' + safeRef + '\', event)"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>比质比价</button>' +
-        '<button type="button" class="ai-goods-btn cart" onclick="event.stopPropagation();aiPlanDemoAddToCart(\'' + safeRef + '\', event)"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i>加入购物车</button>' +
-        '</div></div></article>'
+        renderAiGoodsActionsHtml(safeRef, {
+          compareOnclick: 'aiPlanDemoOpenCompare(\'' + safeRef + '\', event)',
+          networkOnclick: 'aiPlanDemoOpenNetworkCompare(\'' + safeRef + '\', event)',
+          cartOnclick: 'aiPlanDemoAddToCart(\'' + safeRef + '\', event)'
+        }) +
+        '</div></article>'
       );
     }
 
@@ -8376,6 +10031,22 @@
       return String(id || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
+    function renderAiGoodsActionsHtml(safeId, opts) {
+      opts = opts || {};
+      var compareOnclick = opts.compareOnclick || ('aiFinderOpenCompare(\'' + safeId + '\')');
+      var networkOnclick = opts.networkOnclick || ('aiFinderOpenNetworkCompare(\'' + safeId + '\')');
+      var cartOnclick = opts.cartOnclick || ('aiFinderAddToCart(\'' + safeId + '\')');
+      return (
+        '<div class="ai-goods-actions">' +
+        '<div class="ai-goods-actions-row">' +
+        '<button type="button" class="ai-goods-btn compare" onclick="event.stopPropagation();' + compareOnclick + '"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>比质比价</button>' +
+        '<button type="button" class="ai-goods-btn network" onclick="event.stopPropagation();' + networkOnclick + '"><i class="fa-solid fa-globe" aria-hidden="true"></i>全网比价</button>' +
+        '</div>' +
+        '<button type="button" class="ai-goods-btn cart" onclick="event.stopPropagation();' + cartOnclick + '"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i>加入购物车</button>' +
+        '</div>'
+      );
+    }
+
     function renderAiFinderGoodsCard(p, idx) {
       var item = normalizeAiFinderProduct(p, idx);
       var safeId = aiFinderSafeId(item.id);
@@ -8397,10 +10068,8 @@
         '<div class="ai-goods-range-track"><span class="ai-goods-range-marker" style="left:' + marker + '%"></span></div>' +
         '<div class="ai-goods-range-labels"><span>¥' + item.floor.toFixed(0) + '</span><span>¥' + item.ceiling.toFixed(0) + '</span></div>' +
         '</div>' +
-        '<div class="ai-goods-actions">' +
-        '<button type="button" class="ai-goods-btn compare" onclick="event.stopPropagation();aiFinderOpenCompare(\'' + safeId + '\')"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>比质比价</button>' +
-        '<button type="button" class="ai-goods-btn cart" onclick="event.stopPropagation();aiFinderAddToCart(\'' + safeId + '\')"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i>加入购物车</button>' +
-        '</div></div></article>'
+        renderAiGoodsActionsHtml(safeId) +
+        '</div></article>'
       );
     }
 
@@ -8912,19 +10581,6 @@
       };
     }
 
-    function aiCartPlaceOrder() {
-      var selected = loadAiCartItems().filter(function(it) { return it.selected === true; });
-      if (!selected.length) return;
-      var payload = aiCartBuildOrderPayload();
-      if (!payload) return;
-      try {
-        var raw = JSON.stringify(payload);
-        sessionStorage.setItem('gcOrderConfirmPayload', raw);
-        localStorage.setItem('gcOrderConfirmPayload', raw);
-      } catch (eStore) {}
-      window.open('./order_confirm.html', '_blank', 'noopener,noreferrer');
-    }
-
     function openAiShoppingCart() {
       openAiCartPanel(document.querySelector('.ai-cart-wrap .ai-btn-cart-go'));
     }
@@ -8942,6 +10598,8 @@
 
     var _aiCompareCurrentPayload = null;
     var AI_COMPARE_STORAGE_KEY = 'aiComparePayload';
+    var _aiNetworkCurrentPayload = null;
+    var AI_NETWORK_STORAGE_KEY = 'aiNetworkPayload';
     var AI_COMPARE_RADAR_LABELS = ['售后服务', '信用认证', '交付能力', '履约评价', '图文一致', '价格合理'];
 
     function extractAiProductBrand(name) {
@@ -9226,7 +10884,7 @@
     }
 
     function renderAiReportResultVisualHtml(type, badgeOverride) {
-      var badge = badgeOverride || (type === 'contract' ? '合规报告' : (type === 'cart' ? '购物清单' : (type === 'fileparse' ? '文件解析' : '分析报告')));
+      var badge = badgeOverride || (type === 'contract' ? '合规报告' : (type === 'cart' ? '购物清单' : (type === 'fileparse' ? '文件解析' : (type === 'network' ? '全网报告' : '分析报告'))));
       var visualType = type === 'fileparse' ? 'fileparse' : type;
       return (
         '<div class="ai-report-result-visual is-' + visualType + '" aria-hidden="true">' +
@@ -9245,10 +10903,10 @@
 
     function renderAiReportResultCardHtml(opts) {
       var type = (opts && opts.type) || 'compare';
-      var typeLabel = (opts && opts.typeLabel) || (type === 'contract' ? '合同合规' : (type === 'cart' ? '购物车' : (type === 'fileparse' ? '文件解析' : '比质比价')));
+      var typeLabel = (opts && opts.typeLabel) || (type === 'contract' ? '合同合规' : (type === 'cart' ? '购物车' : (type === 'fileparse' ? '文件解析' : (type === 'network' ? '全网比价' : '比质比价'))));
       var statusLabel = (opts && opts.statusLabel) || (type === 'cart' ? '已加入购物车' : (type === 'fileparse' ? '解析完成' : '报告已生成'));
-      var btnClass = type === 'contract' ? 'ai-btn-contract-report' : (type === 'cart' ? 'ai-btn-cart-go' : (type === 'fileparse' ? 'ai-btn-fileparse-report' : 'ai-btn-compare-report'));
-      var btnIcon = (opts && opts.btnIcon) || 'fa-file-lines';
+      var btnClass = type === 'contract' ? 'ai-btn-contract-report' : (type === 'cart' ? 'ai-btn-cart-go' : (type === 'fileparse' ? 'ai-btn-fileparse-report' : (type === 'network' ? 'ai-btn-network-report' : 'ai-btn-compare-report')));
+      var btnIcon = (opts && opts.btnIcon) || (type === 'network' ? 'fa-globe' : 'fa-file-lines');
       var btnLabel = (opts && opts.btnLabel) || '查看详细报告';
       var onClick = (opts && opts.onClick) || '';
       var visualBadge = (opts && opts.visualBadge) || '';
@@ -9276,6 +10934,265 @@
         btnLabel: '查看详细报告',
         onClick: 'openAiCompareModalFromChat()'
       });
+    }
+
+    function buildAiNetworkComparePayload(id) {
+      var product = findAiProductById(id);
+      if (!product) {
+        product = { id: id, name: '所选商品', price: 3000, unit: '件', supplier: '平台认证供应商' };
+      }
+      var brand = product.brand || '';
+      if (!brand) {
+        var brandMatch = String(product.name || '').match(/^([\u4e00-\u9fa5A-Za-z&·]+)/);
+        brand = brandMatch ? brandMatch[1] : '—';
+      }
+      return {
+        sourceId: product.id,
+        productName: product.name,
+        product: {
+          id: product.id,
+          name: product.name,
+          price: Number(product.price) || 3000,
+          unit: product.unit || '件',
+          supplier: product.supplier || '平台认证供应商',
+          params: [
+            ['品牌', brand],
+            ['型号', '标准版'],
+            ['规格', product.spec || '—'],
+            ['包装方式', '单品装']
+          ]
+        },
+        generatedAt: new Date().toISOString()
+      };
+    }
+
+    function buildAiNetworkCompareRows(base) {
+      var unit = base.unit || '件';
+      var sources = [
+        { platform: '拼多多', supplier: '多多优选办公专营', priceOffset: -0.095 },
+        { platform: '淘宝', supplier: '淘工厂优选店', priceOffset: 0.035 },
+        { platform: '国采e购', supplier: base.supplier, priceOffset: 0, isSelf: true },
+        { platform: '京东', supplier: '京东慧采企业专区', priceOffset: 0.085 },
+        { platform: '天猫', supplier: '天猫超市企业购', priceOffset: 0.118 }
+      ];
+      return sources.map(function(item) {
+        return {
+          platform: item.platform,
+          supplier: item.supplier,
+          isSelf: !!item.isSelf,
+          name: base.name,
+          unit: unit,
+          price: +(base.price * (1 + item.priceOffset)).toFixed(2)
+        };
+      }).sort(function(a, b) { return a.price - b.price; }).map(function(item, index) {
+        item.rank = index + 1;
+        return item;
+      });
+    }
+
+    function renderAiNetworkRankCell(rank) {
+      if (rank === 1) {
+        return '<div class="ai-network-rank-cell"><span class="ai-network-rank-icon is-gold" title="第1名"><i class="fa-solid fa-trophy"></i></span><span class="ai-network-rank-label">第1名</span></div>';
+      }
+      if (rank === 2) {
+        return '<div class="ai-network-rank-cell"><span class="ai-network-rank-icon is-silver" title="第2名"><i class="fa-solid fa-medal"></i></span><span class="ai-network-rank-label">第2名</span></div>';
+      }
+      if (rank === 3) {
+        return '<div class="ai-network-rank-cell"><span class="ai-network-rank-icon is-bronze" title="第3名"><i class="fa-solid fa-medal"></i></span><span class="ai-network-rank-label">第3名</span></div>';
+      }
+      return '<div class="ai-network-rank-cell"><span class="ai-network-rank-icon is-normal" title="第' + rank + '名"><i class="fa-solid fa-hashtag"></i>' + rank + '</span><span class="ai-network-rank-label">第' + rank + '名</span></div>';
+    }
+
+    function renderAiNetworkPlatformMark(isSelf) {
+      if (isSelf) return '<span class="ai-network-platform-mark" title="国采e购 · 当前平台">采</span>';
+      return '<span class="ai-network-platform-mark is-placeholder" aria-hidden="true">采</span>';
+    }
+
+    function renderAiNetworkCompareTableHtml(rows) {
+      return rows.map(function(row) {
+        return (
+          '<tr class="' + (row.isSelf ? 'is-self' : '') + '">' +
+          '<td><div class="ai-network-rank-wrap">' + renderAiNetworkPlatformMark(row.isSelf) + renderAiNetworkRankCell(row.rank) + '</div></td>' +
+          '<td><div class="ai-network-product-name">' + escapeAiHtml(row.name) + '</div>' +
+          '<span class="ai-network-platform-tag ' + (row.isSelf ? 'is-self' : '') + '">' + escapeAiHtml(row.platform) + (row.isSelf ? ' · 当前平台' : '') + '</span></td>' +
+          '<td><div class="ai-network-supplier">' + escapeAiHtml(row.supplier) + '</div></td>' +
+          '<td><span class="ai-network-price">¥' + row.price.toFixed(2) + '</span><span class="ai-network-price-unit">/' + escapeAiHtml(row.unit) + '</span></td>' +
+          '</tr>'
+        );
+      }).join('');
+    }
+
+    function buildAiNetworkSpecMatrix(base, rows) {
+      var selfRow = null;
+      rows.forEach(function(item) { if (item.isSelf) selfRow = item; });
+      var platformOrder = selfRow ? [selfRow].concat(rows.filter(function(item) { return !item.isSelf; })) : rows.slice();
+      var baseParams = (base.params || []).slice(0, 6);
+      if (!baseParams.length) {
+        baseParams = [['品牌', '—'], ['型号', '—'], ['规格', '—'], ['包装方式', '—']];
+      }
+      var externalVariants = {
+        '型号': ['（标准版）', '（企业版）', '（同款）', '（集采版）'],
+        '规格': ['·标配', '·升级版', '', '·同款'],
+        '包装方式': ['', '（整箱）', '', '（单件装）'],
+        '颜色': ['', '·常规色', '', ''],
+        '适用场景': ['', '·通用', '', '·政企专供']
+      };
+      return {
+        platforms: platformOrder.map(function(item) {
+          return { name: item.platform, isSelf: !!item.isSelf };
+        }),
+        rows: baseParams.map(function(pair) {
+          var label = pair[0];
+          var baseValue = String(pair[1] || '—');
+          var variants = externalVariants[label] || ['', '（同款）', '', '（标准）'];
+          var values = platformOrder.map(function(platform, index) {
+            if (platform.isSelf) return baseValue;
+            var suffix = variants[(index - 1) % variants.length] || '';
+            if (label === '品牌') return baseValue;
+            return baseValue + suffix;
+          });
+          return { label: label, values: values, selfValue: baseValue };
+        })
+      };
+    }
+
+    function renderAiNetworkSpecCompareHtml(base, rows) {
+      var matrix = buildAiNetworkSpecMatrix(base, rows);
+      var headHtml = '<tr><th style="width:120px;">参数项</th>' + matrix.platforms.map(function(platform) {
+        return '<th class="' + (platform.isSelf ? 'is-self-col' : '') + '">' + escapeAiHtml(platform.name) + '</th>';
+      }).join('') + '</tr>';
+      var bodyHtml = matrix.rows.map(function(row) {
+        return '<tr><td><strong>' + escapeAiHtml(row.label) + '</strong></td>' + row.values.map(function(value, index) {
+          var isSelf = matrix.platforms[index].isSelf;
+          var isSame = value === row.selfValue;
+          return '<td class="' + (isSelf ? 'is-self-col' : '') + ' ' + (!isSelf && !isSame ? 'is-diff' : '') + ' ' + (!isSelf && isSame ? 'is-same' : '') + '">' + escapeAiHtml(value) + '</td>';
+        }).join('') + '</tr>';
+      }).join('');
+      var diffCount = matrix.rows.filter(function(row) {
+        return row.values.some(function(value, index) {
+          return !matrix.platforms[index].isSelf && value !== row.selfValue;
+        });
+      }).length;
+      var subText = diffCount
+        ? '共对比 ' + matrix.rows.length + ' 项核心参数，发现 ' + diffCount + ' 项存在平台差异（示意数据）。'
+        : '共对比 ' + matrix.rows.length + ' 项核心参数，各平台规格基本一致。';
+      return { headHtml: headHtml, bodyHtml: bodyHtml, subText: subText };
+    }
+
+    function formatAiNetworkSeasonPrice(value) {
+      var amount = Math.round(Number(value) || 0);
+      return '¥' + amount.toLocaleString('zh-CN');
+    }
+
+    function formatAiNetworkSeasonPriceRange(min, max) {
+      return '约' + formatAiNetworkSeasonPrice(min) + '~' + formatAiNetworkSeasonPrice(max);
+    }
+
+    function getAiNetworkSeasonTrendKey() {
+      var month = new Date().getMonth() + 1;
+      if (month >= 3 && month <= 4) return 'spring';
+      if (month === 6) return '618';
+      if (month >= 7 && month <= 8) return 'summer';
+      if (month === 11) return 'double11';
+      if (month === 12) return 'yearend';
+      return '';
+    }
+
+    function buildAiNetworkSeasonTrendRows(basePrice) {
+      var base = Number(basePrice) || 3000;
+      var lowest = Math.round(base * 0.83);
+      return [
+        { key: 'spring', node: '春季 (3-4月)', priceRange: formatAiNetworkSeasonPriceRange(base * 1.03, base * 1.14), desc: '开学季、企业采购旺季，价格相对坚挺' },
+        { key: '618', node: '618 (6月)', priceRange: formatAiNetworkSeasonPriceRange(base * 0.86, base * 0.97), desc: '年中大促，京东等平台优惠力度大，建议蹲守' },
+        { key: 'summer', node: '暑期 (7-8月)', priceRange: formatAiNetworkSeasonPriceRange(base * 0.97, base * 1.06), desc: '淡季，价格回落但促销较少' },
+        { key: 'double11', node: '双11 (11月)', priceRange: formatAiNetworkSeasonPriceRange(base * 0.83, base * 0.94), desc: '全年最低价区间，历史采购价最低可到' + formatAiNetworkSeasonPrice(lowest) + '左右' },
+        { key: 'yearend', node: '年末 (12月)', priceRange: formatAiNetworkSeasonPriceRange(base * 0.97, base * 1.14), desc: '年底采购需求回升，价格小幅上涨' }
+      ];
+    }
+
+    function renderAiNetworkSeasonHtml(basePrice) {
+      var currentKey = getAiNetworkSeasonTrendKey();
+      var rows = buildAiNetworkSeasonTrendRows(basePrice);
+      var bodyHtml = rows.map(function(row) {
+        return '<tr class="' + (row.key === currentKey ? 'is-current-row' : '') + '"><td>' + escapeAiHtml(row.node) + '</td><td>' + escapeAiHtml(row.priceRange) + '</td><td>' + escapeAiHtml(row.desc) + '</td></tr>';
+      }).join('');
+      var currentRow = rows.filter(function(row) { return row.key === currentKey; })[0];
+      var subText = currentRow
+        ? '当前处于「' + currentRow.node + '」，参考价格 ' + currentRow.priceRange + '。'
+        : '汇总全年关键促销节点价格区间，辅助判断采购时机（示意数据）。';
+      return { bodyHtml: bodyHtml, subText: subText };
+    }
+
+    function renderAiNetworkModalContent(payload) {
+      if (!payload || !payload.product) return;
+      var base = payload.product;
+      var rows = buildAiNetworkCompareRows(base);
+      var selfRank = '—';
+      rows.forEach(function(item) { if (item.isSelf) selfRank = item.rank; });
+      var spec = renderAiNetworkSpecCompareHtml(base, rows);
+      var season = renderAiNetworkSeasonHtml(base.price);
+      var subEl = document.getElementById('aiNetworkSub');
+      var bodyEl = document.getElementById('aiNetworkBody');
+      if (subEl) {
+        subEl.textContent = '共检索 5 个平台同款商品，按价格从低到高排序；其中国采e购 ' + selfRank + ' 名。';
+      }
+      if (!bodyEl) return;
+      bodyEl.innerHTML = (
+        '<div class="ai-network-stack">' +
+        '<div class="ai-network-panel">' +
+        '<div class="ai-network-panel-head"><div><div class="ai-network-panel-head-main"><i class="fa-solid fa-globe"></i><span>全网比价排名</span></div>' +
+        '<div class="ai-network-panel-head-sub">正在检索京东、拼多多、淘宝、天猫及国采e购同款商品，按价格从低到高排序。</div></div></div>' +
+        '<div class="ai-network-table-wrap"><table class="ai-network-table"><thead><tr>' +
+        '<th style="width:170px;">排名</th><th>商品名称</th><th style="width:26%;">供应商</th><th style="width:140px;">价格</th>' +
+        '</tr></thead><tbody>' + renderAiNetworkCompareTableHtml(rows) + '</tbody></table></div></div>' +
+        '<div class="ai-network-panel">' +
+        '<div class="ai-network-panel-head"><div><div class="ai-network-panel-head-main"><i class="fa-solid fa-table-list"></i><span>规格参数对比</span></div>' +
+        '<div class="ai-network-panel-head-sub">' + escapeAiHtml(spec.subText) + '</div></div></div>' +
+        '<div class="ai-network-table-wrap"><table class="ai-network-table ai-network-spec-table"><thead>' + spec.headHtml + '</thead><tbody>' + spec.bodyHtml + '</tbody></table></div></div>' +
+        '<div class="ai-network-panel">' +
+        '<div class="ai-network-panel-head"><div><div class="ai-network-panel-head-main"><i class="fa-solid fa-chart-line"></i><span>季节促销数据分析</span></div>' +
+        '<div class="ai-network-panel-head-sub">' + escapeAiHtml(season.subText) + '</div></div></div>' +
+        '<div class="ai-network-season-wrap"><div class="ai-network-season-title">季节价格趋势参考</div>' +
+        '<table class="ai-network-table ai-network-season-table"><thead><tr><th>时间节点</th><th>价格参考</th><th>说明</th></tr></thead><tbody>' + season.bodyHtml + '</tbody></table></div></div>' +
+        '</div>'
+      );
+    }
+
+    function renderAiNetworkReportNoticeHtml() {
+      return renderAiReportResultCardHtml({
+        type: 'network',
+        typeLabel: '全网比价',
+        statusLabel: '报告已生成',
+        btnLabel: '查看详细报告',
+        onClick: 'openAiNetworkModalFromChat()'
+      });
+    }
+
+    function openAiNetworkModalFromChat() {
+      if (!_aiNetworkCurrentPayload) {
+        try {
+          var raw = sessionStorage.getItem(AI_NETWORK_STORAGE_KEY);
+          if (raw) _aiNetworkCurrentPayload = JSON.parse(raw);
+        } catch (eLoad) {}
+      }
+      if (!_aiNetworkCurrentPayload) return;
+      renderAiNetworkModalContent(_aiNetworkCurrentPayload);
+      var ov = document.getElementById('aiNetworkOverlay');
+      if (ov) ov.classList.add('open');
+    }
+
+    function closeAiNetworkModal(evt) {
+      if (evt && evt.target && evt.target.id !== 'aiNetworkOverlay') return;
+      var ov = document.getElementById('aiNetworkOverlay');
+      if (ov) ov.classList.remove('open');
+    }
+
+    function getAiNetworkSelfRank(payload) {
+      if (!payload || !payload.product) return '—';
+      var rows = buildAiNetworkCompareRows(payload.product);
+      var rank = '—';
+      rows.forEach(function(item) { if (item.isSelf) rank = item.rank; });
+      return rank;
     }
 
     function openAiCompareModalFromChat() {
@@ -9308,6 +11225,25 @@
         });
         publishAiCompanionReply(voiceText, renderAiCompareReportNoticeHtml(_aiCompareCurrentPayload), 'compare');
       }, 780);
+    }
+
+    function aiFinderOpenNetworkCompare(id) {
+      var product = findAiProductById(id);
+      var productName = product ? product.name : '所选商品';
+      appendAiChat('user', '对' + productName + '进行全网比价');
+      var loader = appendAiLoading('正在检索京东、拼多多、淘宝、天猫及国采e购同款报价…');
+      setTimeout(function() {
+        removeAiLoading(loader);
+        _aiNetworkCurrentPayload = buildAiNetworkComparePayload(id);
+        try {
+          sessionStorage.setItem(AI_NETWORK_STORAGE_KEY, JSON.stringify(_aiNetworkCurrentPayload));
+        } catch (eSave) {}
+        var voiceText = buildAiCompanionVoiceText('network', {
+          productName: productName,
+          rank: getAiNetworkSelfRank(_aiNetworkCurrentPayload)
+        });
+        publishAiCompanionReply(voiceText, renderAiNetworkReportNoticeHtml(_aiNetworkCurrentPayload), 'network');
+      }, 850);
     }
 
     function closeAiCompareModal(evt) {
@@ -9358,6 +11294,11 @@
           '的比质比价分析，共对比' + (data.count || 0) + '款候选商品' +
           (data.sourceName ? '，参照商品为' + data.sourceName : '') +
           '，请点击下方按钮查看完整报告。';
+      }
+      if (scene === 'network') {
+        return cat + '已为您完成「' + (data.productName || '所选商品') + '」的全网比价分析，' +
+          '共检索京东、拼多多、淘宝、天猫及国采e购 5 个平台同款报价，其中国采e购排名第' + (data.rank || '—') +
+          '，请点击下方按钮查看详细报告。';
       }
       if (scene === 'cart') {
         return cat + '已将' + (data.productName || '所选商品') +
@@ -9428,7 +11369,7 @@
     }
 
     function scheduleAiCompanionSpeech(text) {
-      if (!text) return;
+      if (!text || window.__GC_AI_WINDOW__) return;
       clearTimeout(_aiSpeechTimer);
       _aiSpeechTimer = setTimeout(function() {
         speakAiCompanionVoice(text);
@@ -10160,6 +12101,16 @@
           closeAiCompareModal();
           return;
         }
+        var networkOv = document.getElementById('aiNetworkOverlay');
+        if (networkOv && networkOv.classList.contains('open')) {
+          closeAiNetworkModal();
+          return;
+        }
+        var complianceReportOv = document.getElementById('aiComplianceReportOverlay');
+        if (complianceReportOv && complianceReportOv.classList.contains('open')) {
+          aiOrderCloseComplianceReport();
+          return;
+        }
         var ovel = document.getElementById('aiCompanionOverlay');
         if (ovel && ovel.classList.contains('open')) closeAiCompanion();
       });
@@ -10170,11 +12121,26 @@
     if (localStorage.getItem('gc_auth') !== '0' && localStorage.getItem('gc_auth') !== '1') {
       localStorage.setItem('gc_auth', '0');
     }
-    syncDataBoardAuthState();
-    syncApproverStatCount();
-    initNiCarousel();
-    initAiCompanionWidget();
+    if (isAiWindowPage()) {
+      initAiCompanionWidget();
+      initAiWindowMode();
+    } else {
+      syncDataBoardAuthState();
+      syncApproverStatCount();
+      initAiCompanionWidget();
+      if (window.requestIdleCallback) {
+        requestIdleCallback(function() { initNiCarousel(); }, { timeout: 2000 });
+      } else {
+        setTimeout(initNiCarousel, 0);
+      }
+    }
   </script>
-<script src="../assets/unified_topbar.js"></script>
+  <script>
+    if (!window.__GC_AI_WINDOW__) {
+      var topbar = document.createElement('script');
+      topbar.src = '../assets/unified_topbar.js';
+      document.body.appendChild(topbar);
+    }
+  </script>
 </body>
 </html>

@@ -1332,6 +1332,16 @@
       min-height: 230px;
     }
 
+    .portrait-entry-layout {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 28px;
+      min-height: 174px;
+    }
+
     .portrait-entry-card::after {
       content: "";
       position: absolute;
@@ -1344,9 +1354,8 @@
     }
 
     .portrait-entry-content {
-      position: relative;
-      z-index: 1;
-      max-width: 760px;
+      flex: 1;
+      min-width: 0;
     }
 
     .portrait-entry-badge {
@@ -1377,12 +1386,34 @@
       color: #475569;
     }
 
-    .portrait-entry-actions {
-      margin-top: 22px;
+    .portrait-entry-side-actions {
+      flex-shrink: 0;
       display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      gap: 10px;
+      width: 148px;
+    }
+
+    .portrait-entry-side-actions .portrait-generate-btn,
+    .portrait-entry-side-actions .portrait-action-btn {
+      width: 100%;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .portrait-entry-side-actions .portrait-generate-btn {
+      height: 40px;
+      padding: 0 14px;
+      font-size: 13px;
+    }
+
+    .portrait-entry-side-actions .portrait-action-btn {
+      height: 38px;
+      padding: 0 14px;
     }
 
     .portrait-entry-meta {
@@ -1403,6 +1434,297 @@
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.72);
       border: 1px solid #eef2f7;
+    }
+
+    .network-compare-panel {
+      border: 1px solid #dbeafe;
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+    }
+
+    .network-compare-stack {
+      display: none;
+      margin-top: 16px;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .network-compare-stack.is-visible {
+      display: flex;
+      animation: portraitReveal 0.35s ease both;
+    }
+
+    .network-compare-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .network-compare-head-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .network-compare-head-main i {
+      color: #2563eb;
+    }
+
+    .network-compare-head-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .network-compare-loading {
+      padding: 28px 18px;
+      text-align: center;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .network-compare-loading i {
+      color: #2563eb;
+      margin-right: 8px;
+    }
+
+    .network-compare-table-wrap {
+      overflow-x: auto;
+    }
+
+    .network-compare-table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .network-compare-table th,
+    .network-compare-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #eef2f7;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .network-compare-table th {
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .network-compare-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .network-compare-table tbody tr.is-self {
+      background: #eff6ff;
+    }
+
+    .network-compare-table tbody tr.is-self td {
+      border-bottom-color: #bfdbfe;
+    }
+
+    .network-rank-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .network-platform-mark {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    .network-platform-mark.is-placeholder {
+      visibility: hidden;
+      box-shadow: none;
+    }
+
+    .network-rank-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 72px;
+      flex-shrink: 0;
+    }
+
+    .network-rank-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .network-rank-icon.is-gold {
+      background: #fef3c7;
+      color: #b45309;
+      box-shadow: inset 0 0 0 1px #fde68a;
+    }
+
+    .network-rank-icon.is-silver {
+      background: #f1f5f9;
+      color: #64748b;
+      box-shadow: inset 0 0 0 1px #e2e8f0;
+    }
+
+    .network-rank-icon.is-bronze {
+      background: #ffedd5;
+      color: #c2410c;
+      box-shadow: inset 0 0 0 1px #fdba74;
+    }
+
+    .network-rank-icon.is-normal {
+      background: #f8fafc;
+      color: #475569;
+      box-shadow: inset 0 0 0 1px #e2e8f0;
+      font-size: 12px;
+      gap: 1px;
+    }
+
+    .network-rank-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .network-product-name {
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.6;
+    }
+
+    .network-platform-tag {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .network-platform-tag.is-self {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    .network-supplier {
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .network-price {
+      font-size: 16px;
+      font-weight: 800;
+      color: #e2231a;
+      white-space: nowrap;
+    }
+
+    .network-price-unit {
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-left: 2px;
+    }
+
+    .network-spec-table th.is-self-col,
+    .network-spec-table td.is-self-col {
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .network-spec-table td.is-diff {
+      color: #b45309;
+      font-weight: 600;
+    }
+
+    .network-spec-table td.is-same {
+      color: #15803d;
+    }
+
+    .network-season-table-wrap {
+      padding: 0 18px 18px;
+    }
+
+    .network-season-table-title {
+      padding: 14px 0 12px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .network-season-table {
+      min-width: 0;
+    }
+
+    .network-season-table th,
+    .network-season-table td {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .network-season-table th {
+      text-align: center;
+    }
+
+    .network-season-table th:first-child,
+    .network-season-table td:first-child {
+      width: 150px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .network-season-table td:nth-child(2) {
+      width: 190px;
+      text-align: center;
+      font-weight: 800;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .network-season-table td:nth-child(3) {
+      color: #475569;
+    }
+
+    .network-season-table tbody tr.is-current-row {
+      background: #fffbeb;
+    }
+
+    .network-season-table tbody tr.is-current-row td:first-child {
+      color: #b45309;
     }
 
     .portrait-loading-head {
@@ -3798,6 +4120,33 @@
         grid-template-columns: 1fr;
       }
 
+      .portrait-entry-layout {
+        flex-direction: column;
+        gap: 18px;
+        min-height: 0;
+      }
+
+      .portrait-entry-side-actions {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .portrait-entry-side-actions .portrait-generate-btn,
+      .portrait-entry-side-actions .portrait-action-btn {
+        flex: 1 1 calc(33.333% - 8px);
+        min-width: 108px;
+      }
+
+      .network-season-table th:first-child,
+      .network-season-table td:first-child {
+        width: 120px;
+      }
+
+      .network-season-table td:nth-child(2) {
+        width: 150px;
+      }
+
       .compare-score-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -3976,24 +4325,102 @@
       <div class="portrait-body idle" id="portraitBody">
         <div class="portrait-entry">
           <div class="portrait-entry-card">
-            <div class="portrait-entry-content">
-              <div class="portrait-entry-badge"><i class="fa-solid fa-wand-magic-sparkles"></i>AI 决策辅助</div>
-              <div class="portrait-entry-title">生成 AI 商品画像，或直接进入比质比价分析</div>
-              <div class="portrait-entry-desc">系统可基于商品信息、合规资料、平台建议采购价格区间和最近一次价格变动生成当前商品画像；也可以直接选择同品同规、相近品规商品进入整体比质比价分析。</div>
-              <div class="portrait-entry-actions">
+            <div class="portrait-entry-layout">
+              <div class="portrait-entry-content">
+                <div class="portrait-entry-badge"><i class="fa-solid fa-wand-magic-sparkles"></i>AI 决策辅助</div>
+                <div class="portrait-entry-title">生成 AI 商品画像，或直接进入比质比价分析</div>
+                <div class="portrait-entry-desc">系统可基于商品信息、合规资料、平台建议采购价格区间和最近一次价格变动生成当前商品画像；也可以直接选择同品同规、相近品规商品进入整体比质比价分析。</div>
+                <div class="portrait-entry-meta">
+                  <span><i class="fa-solid fa-check"></i>六维画像评分</span>
+                  <span><i class="fa-solid fa-check"></i>商品安全与价格分析</span>
+                  <span><i class="fa-solid fa-check"></i>同品同规优先比质比价</span>
+                </div>
+              </div>
+              <div class="portrait-entry-side-actions">
                 <button class="portrait-generate-btn" id="generatePortraitBtn" type="button" onclick="generatePortrait()">
                   <i class="fa-solid fa-brain mr-1"></i>生成AI画像
                 </button>
                 <button class="portrait-action-btn" type="button" onclick="openComparePicker()">
                   <i class="fa-solid fa-scale-balanced mr-1"></i>比质比价
                 </button>
-              </div>
-              <div class="portrait-entry-meta">
-                <span><i class="fa-solid fa-check"></i>六维画像评分</span>
-                <span><i class="fa-solid fa-check"></i>商品安全与价格分析</span>
-                <span><i class="fa-solid fa-check"></i>同品同规优先比质比价</span>
+                <button class="portrait-action-btn" type="button" onclick="goToNetworkCompare()">
+                  <i class="fa-solid fa-globe mr-1"></i>全网比价
+                </button>
               </div>
             </div>
+          </div>
+
+          <div class="network-compare-stack" id="networkCompareStack">
+          <div class="network-compare-panel" id="networkComparePanel">
+            <div class="network-compare-head">
+              <div>
+                <div class="network-compare-head-main">
+                  <i class="fa-solid fa-globe"></i>
+                  <span>全网比价排名</span>
+                </div>
+                <div class="network-compare-head-sub" id="networkCompareSub">正在检索京东、拼多多、淘宝、天猫及国采e购同款商品…</div>
+              </div>
+            </div>
+            <div class="network-compare-loading" id="networkCompareLoading">
+              <i class="fa-solid fa-spinner fa-spin"></i>AI 正在汇总全网同款报价并生成排名…
+            </div>
+            <div class="network-compare-table-wrap" id="networkCompareTableWrap" hidden>
+              <table class="network-compare-table">
+                <thead>
+                  <tr>
+                    <th style="width:170px;">排名</th>
+                    <th>商品名称</th>
+                    <th style="width:26%;">供应商</th>
+                    <th style="width:140px;">价格</th>
+                  </tr>
+                </thead>
+                <tbody id="networkCompareBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="network-compare-panel" id="networkSpecPanel">
+            <div class="network-compare-head">
+              <div>
+                <div class="network-compare-head-main">
+                  <i class="fa-solid fa-table-list"></i>
+                  <span>规格参数对比</span>
+                </div>
+                <div class="network-compare-head-sub" id="networkSpecSub">对比各平台同款商品核心规格参数，便于识别差异项。</div>
+              </div>
+            </div>
+            <div class="network-compare-table-wrap">
+              <table class="network-compare-table network-spec-table">
+                <thead id="networkSpecHead"></thead>
+                <tbody id="networkSpecBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="network-compare-panel" id="networkSeasonPanel">
+            <div class="network-compare-head">
+              <div>
+                <div class="network-compare-head-main">
+                  <i class="fa-solid fa-chart-line"></i>
+                  <span>季节促销数据分析</span>
+                </div>
+                <div class="network-compare-head-sub" id="networkSeasonSub">汇总全年关键促销节点价格区间，辅助判断采购时机（示意数据）。</div>
+              </div>
+            </div>
+            <div class="network-season-table-wrap">
+              <div class="network-season-table-title">季节价格趋势参考</div>
+              <table class="network-compare-table network-season-table">
+                <thead>
+                  <tr>
+                    <th>时间节点</th>
+                    <th>价格参考</th>
+                    <th>说明</th>
+                  </tr>
+                </thead>
+                <tbody id="networkSeasonBody"></tbody>
+              </table>
+            </div>
+          </div>
           </div>
         </div>
 
@@ -4967,6 +5394,29 @@
       openContractDropdownSupplierId = null;
     }
 
+    function resetNetworkComparePanel() {
+      const stack = document.getElementById('networkCompareStack');
+      const loading = document.getElementById('networkCompareLoading');
+      const tableWrap = document.getElementById('networkCompareTableWrap');
+      const body = document.getElementById('networkCompareBody');
+      const sub = document.getElementById('networkCompareSub');
+      const specHead = document.getElementById('networkSpecHead');
+      const specBody = document.getElementById('networkSpecBody');
+      const specSub = document.getElementById('networkSpecSub');
+      const seasonBody = document.getElementById('networkSeasonBody');
+      const seasonSub = document.getElementById('networkSeasonSub');
+      if (stack) stack.classList.remove('is-visible');
+      if (loading) loading.hidden = false;
+      if (tableWrap) tableWrap.hidden = true;
+      if (body) body.innerHTML = '';
+      if (sub) sub.textContent = '正在检索京东、拼多多、淘宝、天猫及国采e购同款商品…';
+      if (specHead) specHead.innerHTML = '';
+      if (specBody) specBody.innerHTML = '';
+      if (specSub) specSub.textContent = '对比各平台同款商品核心规格参数，便于识别差异项。';
+      if (seasonBody) seasonBody.innerHTML = '';
+      if (seasonSub) seasonSub.textContent = '汇总全年关键促销节点价格区间，辅助判断采购时机（示意数据）。';
+    }
+
     function resetPortraitState() {
       const portraitSection = document.getElementById('portraitSection');
       const portraitBody = document.getElementById('portraitBody');
@@ -4977,6 +5427,7 @@
       const canvas = document.getElementById('portraitRadar');
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      resetNetworkComparePanel();
     }
 
     function generatePortrait() {
@@ -5521,6 +5972,284 @@
       const payload = buildAiComparePayloadFromProduct(currentProduct, sameRows);
       sessionStorage.setItem('aiComparePayload', JSON.stringify(payload));
       window.open('../pages-new/compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
+    }
+
+    function escapeNetworkText(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function buildNetworkCompareRows() {
+      const base = currentProduct;
+      const unit = base.unit || '件';
+      const sources = [
+        { platform: '拼多多', supplier: '多多优选办公专营', priceOffset: -0.095, link: 'https://mobile.yangkeduo.com/' },
+        { platform: '淘宝', supplier: '淘工厂优选店', priceOffset: 0.035, link: 'https://www.taobao.com/' },
+        { platform: '国采e购', supplier: base.supplier, priceOffset: 0, link: window.location.href, isSelf: true },
+        { platform: '京东', supplier: '京东慧采企业专区', priceOffset: 0.085, link: 'https://www.jd.com/' },
+        { platform: '天猫', supplier: '天猫超市企业购', priceOffset: 0.118, link: 'https://www.tmall.com/' }
+      ];
+
+      return sources.map(item => ({
+        ...item,
+        name: base.name,
+        unit,
+        price: +(base.price * (1 + item.priceOffset)).toFixed(2)
+      }))
+        .sort((a, b) => a.price - b.price)
+        .map((item, index) => ({ ...item, rank: index + 1 }));
+    }
+
+    function renderNetworkRankCell(rank) {
+      if (rank === 1) {
+        return `
+          <div class="network-rank-cell">
+            <span class="network-rank-icon is-gold" title="第1名"><i class="fa-solid fa-trophy"></i></span>
+            <span class="network-rank-label">第1名</span>
+          </div>
+        `;
+      }
+      if (rank === 2) {
+        return `
+          <div class="network-rank-cell">
+            <span class="network-rank-icon is-silver" title="第2名"><i class="fa-solid fa-medal"></i></span>
+            <span class="network-rank-label">第2名</span>
+          </div>
+        `;
+      }
+      if (rank === 3) {
+        return `
+          <div class="network-rank-cell">
+            <span class="network-rank-icon is-bronze" title="第3名"><i class="fa-solid fa-medal"></i></span>
+            <span class="network-rank-label">第3名</span>
+          </div>
+        `;
+      }
+      return `
+        <div class="network-rank-cell">
+          <span class="network-rank-icon is-normal" title="第${rank}名"><i class="fa-solid fa-hashtag"></i>${rank}</span>
+          <span class="network-rank-label">第${rank}名</span>
+        </div>
+      `;
+    }
+
+    function renderNetworkPlatformMark(isSelf) {
+      if (isSelf) {
+        return '<span class="network-platform-mark" title="国采e购 · 当前平台">采</span>';
+      }
+      return '<span class="network-platform-mark is-placeholder" aria-hidden="true">采</span>';
+    }
+
+    function renderNetworkCompareTable(rows) {
+      const body = document.getElementById('networkCompareBody');
+      if (!body) return;
+      body.innerHTML = rows.map(row => `
+        <tr class="${row.isSelf ? 'is-self' : ''}">
+          <td>
+            <div class="network-rank-wrap">
+              ${renderNetworkPlatformMark(row.isSelf)}
+              ${renderNetworkRankCell(row.rank)}
+            </div>
+          </td>
+          <td>
+            <div class="network-product-name">${escapeNetworkText(row.name)}</div>
+            <span class="network-platform-tag ${row.isSelf ? 'is-self' : ''}">${escapeNetworkText(row.platform)}${row.isSelf ? ' · 当前平台' : ''}</span>
+          </td>
+          <td><div class="network-supplier">${escapeNetworkText(row.supplier)}</div></td>
+          <td>
+            <span class="network-price">¥${row.price.toFixed(2)}</span>
+            <span class="network-price-unit">/${escapeNetworkText(row.unit)}</span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function buildNetworkSpecMatrix(rows) {
+      const selfRow = rows.find(item => item.isSelf);
+      const platformOrder = selfRow
+        ? [selfRow, ...rows.filter(item => !item.isSelf)]
+        : [...rows];
+      const baseParams = (currentProduct.params || []).slice(0, 6);
+      const params = baseParams.length
+        ? baseParams
+        : [['品牌', '—'], ['型号', '—'], ['规格', '—'], ['包装方式', '—']];
+
+      const externalVariants = {
+        '型号': ['（标准版）', '（企业版）', '（同款）', '（集采版）'],
+        '规格': ['·标配', '·升级版', '', '·同款'],
+        '包装方式': ['', '（整箱）', '', '（单件装）'],
+        '颜色': ['', '·常规色', '', ''],
+        '适用场景': ['', '·通用', '', '·政企专供']
+      };
+
+      return {
+        platforms: platformOrder.map(item => ({
+          name: item.platform,
+          isSelf: !!item.isSelf
+        })),
+        rows: params.map(([label, baseValue]) => {
+          const variants = externalVariants[label] || ['', '（同款）', '', '（标准）'];
+          const selfValue = String(baseValue || '—');
+          const values = platformOrder.map((platform, index) => {
+            if (platform.isSelf) return selfValue;
+            const suffix = variants[(index - 1) % variants.length] || '';
+            if (label === '品牌') return selfValue;
+            return `${selfValue}${suffix}`;
+          });
+          return { label, values, selfValue };
+        })
+      };
+    }
+
+    function renderNetworkSpecCompare(rows) {
+      const matrix = buildNetworkSpecMatrix(rows);
+      const head = document.getElementById('networkSpecHead');
+      const body = document.getElementById('networkSpecBody');
+      const sub = document.getElementById('networkSpecSub');
+      if (!head || !body) return;
+
+      head.innerHTML = `
+        <tr>
+          <th style="width:120px;">参数项</th>
+          ${matrix.platforms.map(platform => `
+            <th class="${platform.isSelf ? 'is-self-col' : ''}">${escapeNetworkText(platform.name)}</th>
+          `).join('')}
+        </tr>
+      `;
+
+      body.innerHTML = matrix.rows.map(row => `
+        <tr>
+          <td><strong>${escapeNetworkText(row.label)}</strong></td>
+          ${row.values.map((value, index) => {
+            const isSelf = matrix.platforms[index].isSelf;
+            const isSame = value === row.selfValue;
+            return `
+              <td class="${isSelf ? 'is-self-col' : ''} ${!isSelf && !isSame ? 'is-diff' : ''} ${!isSelf && isSame ? 'is-same' : ''}">
+                ${escapeNetworkText(value)}
+              </td>
+            `;
+          }).join('')}
+        </tr>
+      `).join('');
+
+      if (sub) {
+        const diffCount = matrix.rows.filter(row => row.values.some((value, index) => !matrix.platforms[index].isSelf && value !== row.selfValue)).length;
+        sub.textContent = diffCount
+          ? `共对比 ${matrix.rows.length} 项核心参数，发现 ${diffCount} 项存在平台差异（示意数据）。`
+          : `共对比 ${matrix.rows.length} 项核心参数，各平台规格基本一致。`;
+      }
+    }
+
+    function formatSeasonPrice(value) {
+      const amount = Math.round(Number(value) || 0);
+      return `¥${amount.toLocaleString('zh-CN')}`;
+    }
+
+    function formatSeasonPriceRange(min, max) {
+      return `约${formatSeasonPrice(min)}~${formatSeasonPrice(max)}`;
+    }
+
+    function getCurrentSeasonTrendKey() {
+      const month = new Date().getMonth() + 1;
+      if (month >= 3 && month <= 4) return 'spring';
+      if (month === 6) return '618';
+      if (month >= 7 && month <= 8) return 'summer';
+      if (month === 11) return 'double11';
+      if (month === 12) return 'yearend';
+      return '';
+    }
+
+    function buildSeasonTrendRows() {
+      const base = Number(currentProduct.price || 0) || 3000;
+      const lowest = Math.round(base * 0.83);
+      return [
+        {
+          key: 'spring',
+          node: '春季 (3-4月)',
+          priceRange: formatSeasonPriceRange(base * 1.03, base * 1.14),
+          desc: '开学季、企业采购旺季，价格相对坚挺'
+        },
+        {
+          key: '618',
+          node: '618 (6月)',
+          priceRange: formatSeasonPriceRange(base * 0.86, base * 0.97),
+          desc: '年中大促，京东等平台优惠力度大，建议蹲守'
+        },
+        {
+          key: 'summer',
+          node: '暑期 (7-8月)',
+          priceRange: formatSeasonPriceRange(base * 0.97, base * 1.06),
+          desc: '淡季，价格回落但促销较少'
+        },
+        {
+          key: 'double11',
+          node: '双11 (11月)',
+          priceRange: formatSeasonPriceRange(base * 0.83, base * 0.94),
+          desc: `全年最低价区间，历史采购价最低可到${formatSeasonPrice(lowest)}左右`
+        },
+        {
+          key: 'yearend',
+          node: '年末 (12月)',
+          priceRange: formatSeasonPriceRange(base * 0.97, base * 1.14),
+          desc: '年底采购需求回升，价格小幅上涨'
+        }
+      ];
+    }
+
+    function renderNetworkSeasonAnalysis() {
+      const body = document.getElementById('networkSeasonBody');
+      const sub = document.getElementById('networkSeasonSub');
+      if (!body) return;
+
+      const currentKey = getCurrentSeasonTrendKey();
+      const rows = buildSeasonTrendRows();
+      body.innerHTML = rows.map(row => `
+        <tr class="${row.key === currentKey ? 'is-current-row' : ''}">
+          <td>${escapeNetworkText(row.node)}</td>
+          <td>${escapeNetworkText(row.priceRange)}</td>
+          <td>${escapeNetworkText(row.desc)}</td>
+        </tr>
+      `).join('');
+
+      if (sub) {
+        const currentRow = rows.find(row => row.key === currentKey);
+        sub.textContent = currentRow
+          ? `当前处于「${currentRow.node}」，参考价格 ${currentRow.priceRange}。`
+          : '汇总全年关键促销节点价格区间，辅助判断采购时机（示意数据）。';
+      }
+    }
+
+    function goToNetworkCompare() {
+      if (!currentProduct) return;
+      const stack = document.getElementById('networkCompareStack');
+      const loading = document.getElementById('networkCompareLoading');
+      const tableWrap = document.getElementById('networkCompareTableWrap');
+      const sub = document.getElementById('networkCompareSub');
+      if (!stack || !loading || !tableWrap) return;
+
+      stack.classList.add('is-visible');
+      loading.hidden = false;
+      tableWrap.hidden = true;
+      if (sub) {
+        sub.textContent = `正在检索「${currentProduct.name}」在京东、拼多多、淘宝、天猫及国采e购的同款报价…`;
+      }
+      stack.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      window.setTimeout(() => {
+        const rows = buildNetworkCompareRows();
+        renderNetworkCompareTable(rows);
+        renderNetworkSpecCompare(rows);
+        renderNetworkSeasonAnalysis();
+        loading.hidden = true;
+        tableWrap.hidden = false;
+        if (sub) {
+          sub.textContent = `共检索 5 个平台同款商品，按价格从低到高排序；其中国采e购 ${rows.find(item => item.isSelf)?.rank || '-'} 名。`;
+        }
+      }, 850);
     }
 
     function buildAiComparePayloadFromProduct(base, sameRows) {

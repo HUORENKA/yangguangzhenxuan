@@ -691,9 +691,11 @@
     .admin-subpage-iframe {
       width: 100%;
       height: calc(100vh - 180px);
+      min-height: 320px;
       border: 1px solid #e2e8f0;
       border-radius: 0 0 14px 14px;
       background: #ffffff;
+      display: block;
     }
   </style>
 </head>
@@ -1416,6 +1418,36 @@
       return qs ? path + '?' + qs : path + '?embed=1';
     }
 
+    function getAdminSubpageMaxHeight() {
+      const frame = document.getElementById('adminSubpageFrame');
+      if (!frame) return Math.max(320, window.innerHeight - 180);
+      const top = frame.getBoundingClientRect().top;
+      return Math.max(320, window.innerHeight - top - 24);
+    }
+
+    function applyAdminSubpageHeight(contentHeight) {
+      const frame = document.getElementById('adminSubpageFrame');
+      if (!frame || !contentHeight) return;
+      const maxH = getAdminSubpageMaxHeight();
+      frame.style.height = Math.min(Math.max(contentHeight, 320), maxH) + 'px';
+    }
+
+    function setupAdminEmbedResize() {
+      window.addEventListener('message', function (e) {
+        if (!e.data || e.data.type !== 'gc-admin-embed-resize') return;
+        const shell = document.getElementById('adminSubpageShell');
+        if (!shell || shell.style.display === 'none') return;
+        applyAdminSubpageHeight(e.data.height);
+      });
+      window.addEventListener('resize', function () {
+        const frame = document.getElementById('adminSubpageFrame');
+        if (!frame || !frame.contentWindow) return;
+        try {
+          frame.contentWindow.postMessage({ type: 'gc-admin-embed-request-resize' }, '*');
+        } catch (_) {}
+      });
+    }
+
     function openAdminSubPage(menuEl, page, title) {
       hideAdminShellViews();
       const shell = document.getElementById('adminSubpageShell');
@@ -1423,7 +1455,10 @@
       const titleEl = document.getElementById('adminSubpageTitle');
       const src = buildAdminSubpageSrc(page);
       if (shell) shell.style.display = 'block';
-      if (frame && frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+      if (frame) {
+        frame.style.height = getAdminSubpageMaxHeight() + 'px';
+        if (frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+      }
       if (titleEl) titleEl.textContent = title || adminShellPageConfig[page] || '子功能页面';
       setAdminMenuActive(menuEl || document.querySelector(`.admin-menu-item[data-page-key="${page}"]`));
       if (page.indexOf('scope=supplier') >= 0) {
@@ -1800,6 +1835,7 @@
         icon.classList.remove('fa-chevron-left');
         icon.classList.add('fa-chevron-right');
       }
+      setupAdminEmbedResize();
       openAdminPageByQuery();
     });
   </script>
