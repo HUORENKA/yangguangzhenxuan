@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -557,24 +557,24 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <div class="rule-card">
-          <div class="rule-icon bg-blue-50 text-blue-600"><i class="fas fa-id-card"></i></div>
-          <div class="font-semibold text-slate-900 mb-2">营业执照核验</div>
-          <div class="text-sm text-slate-500 leading-6">核验营业执照的真实性、有效期、统一社会信用代码及经营范围与填报信息的匹配程度。</div>
+          <div class="rule-icon bg-blue-50 text-blue-600"><i class="fas fa-database"></i></div>
+          <div class="font-semibold text-slate-900 mb-2">合作风险数据源</div>
+          <div class="text-sm text-slate-500 leading-6">调用企查查「合作风险排查」接口（ApiCode 2006），以企业名称或统一社会信用代码为查询条件，获取工商、司法、税务等合作风险数据，作为 AI 资质审核的唯一数据源。</div>
         </div>
         <div class="rule-card">
-          <div class="rule-icon bg-amber-50 text-amber-600"><i class="fas fa-file-invoice-dollar"></i></div>
-          <div class="font-semibold text-slate-900 mb-2">税务资质审查</div>
-          <div class="text-sm text-slate-500 leading-6">审查增值税一般纳税人资格证、税务登记信息完整性，识别税务异常或高风险字段。</div>
+          <div class="rule-icon bg-amber-50 text-amber-600"><i class="fas fa-chart-pie"></i></div>
+          <div class="font-semibold text-slate-900 mb-2">六维风险检测</div>
+          <div class="text-sm text-slate-500 leading-6">从工商存续、司法风险、行政处罚、税务风险、经营合规、企业实力六个维度进行风险核验，并生成六维雷达图；产业链布局、行政许可仅作参考展示，不参与定级与阻断判定。</div>
         </div>
         <div class="rule-card">
-          <div class="rule-icon bg-emerald-50 text-emerald-600"><i class="fas fa-certificate"></i></div>
-          <div class="font-semibold text-slate-900 mb-2">行业证书比对</div>
-          <div class="text-sm text-slate-500 leading-6">比对供应商提交的行业资质证书（ISO、3C、生产许可等）是否与经营范围相符匹配。</div>
+          <div class="rule-icon bg-emerald-50 text-emerald-600"><i class="fas fa-shield-halved"></i></div>
+          <div class="font-semibold text-slate-900 mb-2">风险等级与入驻结论</div>
+          <div class="text-sm text-slate-500 leading-6">各维度按「通过 / 低风险 / 中风险 / 高风险」四级定级，雷达顶点以绿/黄/红点标识；仅存在高风险项时阻断入驻，中/低风险仅作提示，可由运营确认后人工通过。</div>
         </div>
         <div class="rule-card">
-          <div class="rule-icon bg-purple-50 text-purple-600"><i class="fas fa-link"></i></div>
-          <div class="font-semibold text-slate-900 mb-2">信息一致性校验</div>
-          <div class="text-sm text-slate-500 leading-6">交叉比对法人姓名、统一社会信用代码与营业执照一致性，识别材料伪造与信息矛盾。</div>
+          <div class="rule-icon bg-purple-50 text-purple-600"><i class="fas fa-file-circle-check"></i></div>
+          <div class="font-semibold text-slate-900 mb-2">资质文件人工复核</div>
+          <div class="text-sm text-slate-500 leading-6">供应商上传的营业执照、信用认证证书、法人身份证等资质文件由运营人工查看核验，不参与 AI 风险定级；企查查查无企业信息时，不生成 AI 结果面板，仍可由运营人工审核后决定是否通过入驻。</div>
         </div>
       </div>
     </div>
@@ -598,6 +598,7 @@
             <option>医疗卫生专区</option>
             <option>教育装备专区</option>
             <option>华东分站</option>
+            <option>办公用品专区</option>
           </select>
         </div>
         <div>
@@ -628,20 +629,50 @@
       </div>
     </div>
 
-    <!-- 基本信息填写 -->
+    <!-- 资质文件上传 -->
     <div class="page-card p-5 mb-5 fade-in">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
-            <i class="fas fa-pen-to-square"></i>
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
+            <i class="fas fa-folder-open"></i>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-slate-900">供应商基本信息</h2>
+            <h2 class="text-lg font-bold text-slate-900">待审核资质文件</h2>
           </div>
         </div>
-        <button class="action-btn action-btn-blue" onclick="openOneLicenseModal()">
-          <i class="fas fa-id-card"></i><span>一证登记</span>
-        </button>
+      </div>
+
+      <div class="text-sm text-slate-500 mb-4 min-h-[1.25rem]" id="uploadSummary"></div>
+
+      <div class="table-shell">
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-slate-50 text-slate-500 text-xs">
+              <tr>
+                <th class="text-left px-5 py-4 font-semibold">资质类型</th>
+                <th class="text-left px-5 py-4 font-semibold">要求说明</th>
+                <th class="text-left px-5 py-4 font-semibold">上传状态</th>
+                <th class="text-left px-5 py-4 font-semibold">AI审核结果</th>
+                <th class="text-left px-5 py-4 font-semibold">文件信息</th>
+                <th class="text-left px-5 py-4 font-semibold">操作</th>
+              </tr>
+            </thead>
+            <tbody id="qualTableBody" class="text-sm text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 基本信息填写 -->
+    <div class="page-card p-5 mb-5 fade-in">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+          <i class="fas fa-pen-to-square"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">供应商基本信息</h2>
+        </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4">
         <div>
@@ -675,45 +706,32 @@
       </div>
     </div>
 
-    <!-- 资质文件上传 -->
-    <div class="page-card p-5 mb-5 fade-in">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
+    <!-- AI资质审核模块（独立模块，详细流程后续扩展） -->
+    <div id="aiAuditModule" class="page-card p-5 mb-5 fade-in border border-blue-100/80">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
-            <i class="fas fa-folder-open"></i>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+            <i class="fas fa-robot"></i>
           </div>
           <div>
-            <h2 class="text-lg font-bold text-slate-900">待审核资质文件</h2>
+            <h2 class="text-lg font-bold text-slate-900">AI 资质审核</h2>
+            <p class="text-sm text-slate-500 mt-1">基于企查查「合作风险排查」对企业进行六维风险核验；仅高风险阻断入驻，低/中风险仅提示。</p>
           </div>
         </div>
-        <div class="flex flex-wrap gap-3">
-          <button type="button" class="action-btn action-btn-blue" id="aiAuditBtn" onclick="startAiAudit()">
-            <i class="fas fa-shield-halved"></i><span>AI资质审核</span>
-          </button>
-        </div>
+        <button type="button" class="action-btn action-btn-blue" id="aiAuditBtn" onclick="startAiAudit()">
+          <i class="fas fa-shield-halved"></i><span>AI资质审核</span>
+        </button>
       </div>
 
-      <div class="text-sm text-slate-500 mb-4 min-h-[1.25rem]" id="uploadSummary"></div>
-
-      <div class="table-shell">
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white">
-            <thead class="bg-slate-50 text-slate-500 text-xs">
-              <tr>
-                <th class="text-left px-5 py-4 font-semibold">资质类型</th>
-                <th class="text-left px-5 py-4 font-semibold">要求说明</th>
-                <th class="text-left px-5 py-4 font-semibold">上传状态</th>
-                <th class="text-left px-5 py-4 font-semibold">AI审核结果</th>
-                <th class="text-left px-5 py-4 font-semibold">文件信息</th>
-                <th class="text-left px-5 py-4 font-semibold">操作</th>
-              </tr>
-            </thead>
-            <tbody id="qualTableBody" class="text-sm text-slate-700"></tbody>
-          </table>
-        </div>
+      <!-- AI 审核分析内容（点击「AI资质审核」完成后展示） -->
+      <div id="resultSection" class="hidden pt-4 border-t border-slate-100">
+        <div id="aiAuditDashboard"></div>
       </div>
+    </div>
 
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+    <!-- 审核操作：固定在页面最下方 -->
+    <div class="page-card p-5 mb-8 fade-in">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
         <button type="button" class="action-btn action-btn-secondary border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300"
           onclick="openRejectSettleModal()">
           <i class="fas fa-ban"></i><span>驳回入驻申请</span>
@@ -724,35 +742,6 @@
           <i class="fas fa-circle-check"></i><span>通过入驻申请</span>
         </button>
       </div>
-    </div>
-
-    <!-- AI审核结果汇总（审核完成后显示） -->
-    <div id="resultSection" class="page-card p-5 mb-5 hidden fade-in">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-5">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900">AI 审核结果汇总</h2>
-        </div>
-        <div class="text-sm text-slate-500" id="resultSummaryText">本次共提交 0 份资质</div>
-      </div>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
-        <div class="rounded-2xl border border-slate-100 bg-gradient-to-b from-white to-slate-50 p-5">
-          <div class="text-sm text-slate-500">提交资质数</div>
-          <div class="text-3xl font-bold text-slate-900 mt-3" id="resultTotal">0</div>
-        </div>
-        <div class="rounded-2xl border border-green-100 bg-gradient-to-b from-white to-green-50 p-5">
-          <div class="text-sm text-slate-500">审核通过</div>
-          <div class="text-3xl font-bold text-green-600 mt-3" id="resultPass">0</div>
-        </div>
-        <div class="rounded-2xl border border-amber-100 bg-gradient-to-b from-white to-amber-50 p-5">
-          <div class="text-sm text-slate-500">待整改</div>
-          <div class="text-3xl font-bold text-amber-600 mt-3" id="resultWarn">0</div>
-        </div>
-        <div class="rounded-2xl border border-red-100 bg-gradient-to-b from-white to-red-50 p-5">
-          <div class="text-sm text-slate-500">审核不通过</div>
-          <div class="text-3xl font-bold text-red-600 mt-3" id="resultFail">0</div>
-        </div>
-      </div>
-      <div id="resultCards" class="space-y-3"></div>
     </div>
 
   </div>
@@ -951,6 +940,10 @@
   </div>
 </div>
 
+<script src="modules/supplier_settle_data.js"></script>
+<script src="modules/qcc_risk_engine.js"></script>
+<script src="modules/qcc_mock_data.js"></script>
+<script src="modules/supplier_ai_audit.js"></script>
 <script>
   // ===== 资质文件模拟数据 =====
   const qualFilesTemplate = [
@@ -968,30 +961,6 @@
         { title: '经营范围比对', desc: '经营范围与填报企业信息一致，比对通过。', finalStatus: 'pass' },
       ],
       aiIssues: []
-    },
-    {
-      id: 'QF-002', type: '税务登记证', required: true,
-      requirement: 'JPG/PDF，≤5MB，需显示纳税人资格',
-      uploadStatus: 'neutral', aiResult: '', summary: '', issues: [],
-      aiResultFinal: 'warn',
-      finalSummary: '税务登记证存在一项待整改：增值税一般纳税人资格认定日期与营业执照成立时间差异较大，建议补充说明材料。',
-      aiRecognized: '纳税人名称：XX科技有限公司\n纳税人识别号：91110000123456789X\n纳税人资质：增值税一般纳税人\n认定日期：2022-08-15',
-      checks: [
-        { title: '纳税资质核验', desc: '增值税一般纳税人资格已认定，资质合规。', finalStatus: 'pass' },
-        { title: '信息完整性', desc: '纳税人名称和识别号字段完整可识别。', finalStatus: 'pass' },
-        { title: '认定日期合理性', desc: '认定日期2022-08-15与营业执照成立时间差异过大（超过3年），建议补充说明。', finalStatus: 'warn' },
-        { title: '有效期验证', desc: '税务登记证状态正常，未检测到注销或异常标记。', finalStatus: 'pass' },
-      ],
-      aiIssues: [
-        {
-          id: 'ISS-Q2-1', field: '认定日期', level: 'warn',
-          problem: '增值税一般纳税人资格认定日期（2022-08-15）与营业执照成立时间差异超过3年，存在合规性疑问。',
-          rule: '供应商入驻规则 · 税务资质合规要求',
-          originalValue: '认定日期：2022-08-15（成立时间：2018-03-20）',
-          suggestedValue: '建议供应商补充早期未认定的说明材料或提供更早期的税务证明文件。',
-          adopted: true
-        }
-      ]
     },
     {
       id: 'QF-003', type: '供应商基本信用认证证书', required: true,
@@ -1026,11 +995,6 @@
   ];
 
   let qualFiles = [];
-  let isAuditRunning = false;
-  let auditTimers = [];
-  let activeAuditIndex = -1;
-  let selectedQueueIndex = -1;
-  let activeAssistantFileId = null;
   let dialogOnConfirm = null;
   let oneLicenseSelectedFile = null;
 
@@ -1071,16 +1035,19 @@
     if (file.uploadStatus === 'neutral') {
       return `<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 text-xs font-semibold hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition-all cursor-pointer" onclick="mockSingleUpload('${file.id}')"><i class="fas fa-upload"></i>上传文件</button>`;
     }
-    if (file.uploadStatus === 'uploaded' && !file.aiResult) {
-      return `<span class="text-xs text-slate-400">等待AI审核</span>`;
-    }
-    if (file.aiResult === 'warn' || file.aiResult === 'fail') {
-      return `<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-all cursor-pointer" onclick="openAssistant('${file.id}')"><i class="fas fa-robot"></i>AI助手</button>`;
-    }
-    if (file.aiResult === 'pass') {
-      return `<span class="text-xs text-green-600 font-semibold"><i class="fas fa-circle-check mr-1"></i>已通过</span>`;
-    }
-    return '<span class="text-xs text-slate-300">—</span>';
+    return `<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-semibold hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition-all cursor-pointer" onclick="viewQualFile('${file.id}')"><i class="fas fa-eye"></i>查看</button>`;
+  }
+
+  function viewQualFile(id) {
+    const f = qualFiles.find(x => x.id === id);
+    if (!f || f.uploadStatus === 'neutral') return;
+    const fileName = f.type.replace('（正反面）', '') + '-资质.pdf';
+    showDialog({
+      title: '查看资质文件',
+      message: '文件：' + fileName + '\n\n正式环境将在此处预览 PDF / 图片原件。',
+      type: 'info',
+      confirmText: '关闭',
+    });
   }
 
   // ===== 渲染资质文件表格 =====
@@ -1090,7 +1057,7 @@
 
     const uploaded = qualFiles.filter(f => f.uploadStatus !== 'neutral').length;
     summary.textContent = uploaded
-      ? `已上传 ${uploaded} / ${qualFiles.length} 份资质文件，${uploaded === qualFiles.length ? '全部上传完成，可点击"AI资质审核"。' : '请继续上传剩余文件。'}`
+      ? `已上传 ${uploaded} / ${qualFiles.length} 份资质文件，${uploaded === qualFiles.length ? '全部上传完成，可前往下方「AI 资质审核」模块进行核验。' : '请继续上传剩余文件。'}`
       : '当前暂未上传任何资质文件，请点击"一证登记"上传营业执照，或逐项上传资质文件。';
 
     tbody.innerHTML = qualFiles.map(f => `
@@ -1188,7 +1155,7 @@
       closeOneLicenseModal();
       showDialog({
         title: '一证登记完成',
-        message: '营业执照识别完成，已自动回填供应商基本信息，并生成全部资质文件上传记录。请继续点击"AI资质审核"完成核验。',
+        message: '营业执照识别完成，已自动回填供应商基本信息，并生成全部资质文件上传记录。请前往下方「AI 资质审核」模块完成核验。',
         type: 'success',
         confirmText: '确定'
       });
@@ -1230,416 +1197,6 @@
     renderQualTable();
   }
 
-  // ===== AI 资质审核 =====
-  function startAiAudit() {
-    if (!qualFiles.length) {
-      showDialog({ title: '提示', message: '请先通过"一证登记"上传营业执照，或逐项上传资质文件后再进行审核。', type: 'warn', confirmText: '确定' });
-      return;
-    }
-    const uploaded = qualFiles.filter(f => f.uploadStatus !== 'neutral');
-    if (!uploaded.length) {
-      showDialog({ title: '提示', message: '请先上传至少一份资质文件，再启动AI审核。', type: 'warn', confirmText: '确定' });
-      return;
-    }
-    if (isAuditRunning) return;
-
-    isAuditRunning = true;
-    document.getElementById('aiAuditBtn').disabled = true;
-    document.getElementById('aiAuditBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>审核中...</span>';
-    resetModalContent();
-    document.getElementById('complianceOverlay').classList.add('show');
-
-    qualFiles.forEach(f => {
-      f.uploadStatus = f.uploadStatus !== 'neutral' ? 'checking' : 'neutral';
-      f.aiResult = '';
-      f.summary = '';
-      f.issues = [];
-      f.logs = [];
-      f.checks.forEach(c => { c.runtimeStatus = 'pending'; });
-    });
-
-    renderQualTable();
-    renderQueue();
-
-    const totalChecks = qualFiles.filter(f => f.uploadStatus !== 'neutral')
-      .reduce((sum, f) => sum + f.checks.length, 0);
-    let completedChecks = 0;
-    let delay = 0;
-
-    qualFiles.forEach((file, fileIndex) => {
-      if (file.uploadStatus === 'neutral') return;
-
-      const startDelay = delay;
-      const activateTimer = window.setTimeout(() => {
-        activeAuditIndex = fileIndex;
-        if (selectedQueueIndex === -1) selectedQueueIndex = fileIndex;
-        renderQueue(fileIndex);
-        if (selectedQueueIndex === fileIndex) renderSelectedFile(fileIndex, -1);
-        appendLog(fileIndex, `开始审核：${file.type}`, '系统已读取文件内容，准备逐项核验资质信息。');
-      }, startDelay);
-      auditTimers.push(activateTimer);
-
-      file.checks.forEach((check, checkIndex) => {
-        delay += 800;
-        const startCheckTimer = window.setTimeout(() => {
-          check.runtimeStatus = 'running';
-          if (selectedQueueIndex === fileIndex) renderSelectedFile(fileIndex, checkIndex);
-          appendLog(fileIndex, `${file.type} · ${check.title}`, '正在比对规则与文件信息，请稍候…');
-        }, delay - 400);
-        auditTimers.push(startCheckTimer);
-
-        const finishTimer = window.setTimeout(() => {
-          check.runtimeStatus = check.finalStatus;
-          completedChecks++;
-          if (selectedQueueIndex === fileIndex) renderSelectedFile(fileIndex, checkIndex);
-          document.getElementById('complianceProgressBar').style.width =
-            `${Math.round(completedChecks / totalChecks * 100)}%`;
-          appendLog(fileIndex, `${file.type} · ${check.title} 完成`, check.desc);
-        }, delay);
-        auditTimers.push(finishTimer);
-      });
-
-      delay += 260;
-      const finalizeTimer = window.setTimeout(() => {
-        file.aiResult = file.aiResultFinal;
-        file.uploadStatus = 'uploaded';
-        file.summary = file.finalSummary;
-        renderQualTable();
-        renderQueue(fileIndex);
-        if (selectedQueueIndex === fileIndex) renderSelectedFile(fileIndex, -1);
-      }, delay);
-      auditTimers.push(finalizeTimer);
-    });
-
-    const finishAllTimer = window.setTimeout(() => {
-      isAuditRunning = false;
-      activeAuditIndex = -1;
-      document.getElementById('aiAuditBtn').disabled = false;
-      document.getElementById('aiAuditBtn').innerHTML = '<i class="fas fa-shield-halved"></i><span>AI资质审核</span>';
-      renderResultSection();
-      renderQueue(-1);
-      setModalFinishedStatus();
-    }, delay + 300);
-    auditTimers.push(finishAllTimer);
-  }
-
-  function resetModalContent() {
-    activeAuditIndex = -1;
-    selectedQueueIndex = -1;
-    document.getElementById('complianceProgressBar').style.width = '0%';
-    document.getElementById('modalStatusTag').className = 'status-tag status-run';
-    document.getElementById('modalStatusTag').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>审核中';
-    document.getElementById('auditSummaryText').textContent = '系统正在逐项核验资质信息，请稍候。';
-    document.getElementById('subcheckGrid').innerHTML = '';
-    renderAuditLog(-1);
-  }
-
-  function setModalFinishedStatus() {
-    const pass = qualFiles.filter(f => f.aiResult === 'pass').length;
-    const warn = qualFiles.filter(f => f.aiResult === 'warn').length;
-    const fail = qualFiles.filter(f => f.aiResult === 'fail').length;
-    const tag  = document.getElementById('modalStatusTag');
-    if (fail) { tag.className = 'status-tag status-block'; tag.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>存在阻断项'; }
-    else if (warn) { tag.className = 'status-tag status-warn'; tag.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>需整改'; }
-    else { tag.className = 'status-tag status-pass'; tag.innerHTML = '<i class="fa-solid fa-circle-check"></i>全部通过'; }
-
-    const checked = qualFiles.filter(f => f.aiResult).length;
-    document.getElementById('batchProgressText').textContent =
-      `本次共核验 ${checked} 份资质，${pass} 份通过，${warn} 份待整改，${fail} 份不通过。`;
-    document.getElementById('auditSummaryText').textContent = fail
-      ? '存在关键阻断项，建议驳回相关资质并通知供应商重新上传。'
-      : warn
-        ? '部分资质待整改，建议通知供应商补充说明或更换文件后重新审核。'
-        : '全部资质审核通过，可确认供应商入驻上线。';
-  }
-
-  function renderQueue(activeIndex = -1) {
-    const uploaded = qualFiles.filter(f => f.uploadStatus !== 'neutral');
-    const pass = uploaded.filter(f => f.aiResult === 'pass').length;
-    const warn = uploaded.filter(f => f.aiResult === 'warn').length;
-    const fail = uploaded.filter(f => f.aiResult === 'fail').length;
-    const done = pass + warn + fail;
-    document.getElementById('queueTotalCount').textContent = uploaded.length;
-    document.getElementById('queueDoneCount').textContent  = done;
-    document.getElementById('queuePassCount').textContent  = pass;
-    document.getElementById('queueWarnCount').textContent  = warn;
-    document.getElementById('queueFailCount').textContent  = fail;
-    document.getElementById('batchProgressText').textContent = uploaded.length
-      ? `当前审核第 ${Math.min(activeIndex + 1, uploaded.length)} 份资质，已完成 ${done}/${uploaded.length} 份。`
-      : '系统将按上传顺序对每份资质逐项核查。';
-
-    const queue = document.getElementById('qualQueue');
-    queue.innerHTML = qualFiles.filter(f => f.uploadStatus !== 'neutral').map((file, index) => {
-      const origIndex = qualFiles.indexOf(file);
-      const cls = origIndex === selectedQueueIndex ? 'queue-item active'
-        : file.aiResult === 'fail' ? 'queue-item rejected'
-        : file.aiResult ? 'queue-item done' : 'queue-item';
-      const badge = file.aiResult
-        ? (file.aiResult === 'pass' ? '<span class="mini-badge badge-success" style="padding:3px 8px;font-size:11px;">通过</span>'
-          : file.aiResult === 'warn' ? '<span class="mini-badge badge-warn" style="padding:3px 8px;font-size:11px;">待整改</span>'
-          : '<span class="mini-badge badge-fail" style="padding:3px 8px;font-size:11px;">不通过</span>')
-        : (origIndex === activeAuditIndex
-          ? '<span class="mini-badge badge-progress" style="padding:3px 8px;font-size:11px;"><i class="fas fa-spinner fa-spin"></i>审核中</span>'
-          : '<span class="mini-badge badge-neutral" style="padding:3px 8px;font-size:11px;">等待中</span>');
-      return `
-        <div class="${cls}" onclick="selectQueueItem(${origIndex})">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-            <div class="queue-name">${file.type}</div>${badge}
-          </div>
-          <div class="text-xs text-slate-400 mt-1">${file.id}</div>
-        </div>`;
-    }).join('');
-  }
-
-  function selectQueueItem(origIndex) {
-    selectedQueueIndex = origIndex;
-    renderQueue(activeAuditIndex);
-    renderSelectedFile(origIndex, activeAuditIndex === origIndex ? -1 : -1);
-  }
-
-  function renderSelectedFile(index, activeCheckIndex) {
-    const file = qualFiles[index];
-    if (!file) {
-      document.getElementById('subcheckGrid').innerHTML = '';
-      document.getElementById('auditSummaryText').textContent = '点击顶部资质文件队列查看详情。';
-      renderAuditLog(-1);
-      return;
-    }
-
-    const grid = document.getElementById('subcheckGrid');
-    grid.innerHTML = file.checks.map((check, i) => {
-      const cls = check.runtimeStatus === 'running' ? 'subcheck-item active'
-        : check.runtimeStatus === 'pass'  ? 'subcheck-item done'
-        : check.runtimeStatus === 'warn'  ? 'subcheck-item warn-item'
-        : check.runtimeStatus === 'block' ? 'subcheck-item block'
-        : 'subcheck-item';
-      const icon = check.runtimeStatus === 'running' ? '<i class="fas fa-spinner fa-spin text-blue-500"></i>'
-        : check.runtimeStatus === 'pass'  ? '<i class="fas fa-circle-check text-green-600"></i>'
-        : check.runtimeStatus === 'warn'  ? '<i class="fas fa-triangle-exclamation text-amber-600"></i>'
-        : check.runtimeStatus === 'block' ? '<i class="fas fa-circle-xmark text-red-600"></i>'
-        : '<i class="fas fa-circle text-slate-300"></i>';
-      return `
-        <div class="${cls}">
-          <div class="subcheck-title">${icon}${check.title}</div>
-          <div class="subcheck-desc">${['pass','warn','block'].includes(check.runtimeStatus) || check.runtimeStatus === 'running' ? check.desc : '等待核验…'}</div>
-        </div>`;
-    }).join('');
-
-    document.getElementById('auditSummaryText').textContent = file.summary
-      ? `${file.type}：${file.summary}`
-      : (file.uploadStatus === 'checking' ? `${file.type} 正在逐项核验中，请查看右侧审核日志。` : `${file.type} 等待开始审核。`);
-
-    renderAuditLog(index);
-  }
-
-  function appendLog(fileIndex, title, detail) {
-    const file = qualFiles[fileIndex];
-    if (!file) return;
-    file.logs.unshift({ title, detail });
-    if (selectedQueueIndex === fileIndex) renderAuditLog(fileIndex);
-  }
-
-  function renderAuditLog(index) {
-    const log = document.getElementById('auditLog');
-    const file = index >= 0 ? qualFiles[index] : null;
-    if (!file || !file.logs.length) {
-      log.innerHTML = `<div class="audit-log-item"><strong>等待选择资质文件</strong><div class="text-sm text-slate-500 leading-6">点击顶部队列中的资质项，查看对应的详细审核日志。</div></div>`;
-      return;
-    }
-    log.innerHTML = file.logs.map(l => `
-      <div class="audit-log-item">
-        <strong>${l.title}</strong>
-        <div class="text-sm text-slate-500 leading-6">${l.detail}</div>
-      </div>`).join('');
-  }
-
-  function closeComplianceModal() {
-    if (isAuditRunning) return;
-    document.getElementById('complianceOverlay').classList.remove('show');
-  }
-
-  // ===== 审核结果汇总 =====
-  function renderResultSection() {
-    const uploaded = qualFiles.filter(f => f.aiResult);
-    const pass = uploaded.filter(f => f.aiResult === 'pass').length;
-    const warn = uploaded.filter(f => f.aiResult === 'warn').length;
-    const fail = uploaded.filter(f => f.aiResult === 'fail').length;
-
-    document.getElementById('resultSection').classList.remove('hidden');
-    document.getElementById('resultTotal').textContent = uploaded.length;
-    document.getElementById('resultPass').textContent  = pass;
-    document.getElementById('resultWarn').textContent  = warn;
-    document.getElementById('resultFail').textContent  = fail;
-    document.getElementById('resultSummaryText').textContent =
-      `本次共核验 ${uploaded.length} 份资质，${pass} 份通过，${warn} 份待整改，${fail} 份不通过`;
-
-    document.getElementById('resultCards').innerHTML = uploaded.map(f => `
-      <div class="rounded-2xl border ${f.aiResult === 'pass' ? 'border-green-100 bg-green-50' : f.aiResult === 'warn' ? 'border-amber-100 bg-amber-50' : 'border-red-100 bg-red-50'} p-4">
-        <div class="flex items-center justify-between gap-3 mb-2 flex-wrap">
-          <div>
-            <div class="text-sm font-bold text-slate-900">${f.type}</div>
-            <div class="text-xs text-slate-400 mt-0.5">${f.id}</div>
-          </div>
-          ${getAiResultBadge(f.aiResult)}
-        </div>
-        <div class="text-sm leading-7 ${f.aiResult === 'pass' ? 'text-green-800' : f.aiResult === 'warn' ? 'text-amber-800' : 'text-red-800'}">
-          ${f.aiResult === 'pass' ? '<i class="fas fa-circle-check mr-1"></i>' : f.aiResult === 'warn' ? '<i class="fas fa-triangle-exclamation mr-1"></i>' : '<i class="fas fa-circle-xmark mr-1"></i>'}${f.finalSummary}
-        </div>
-        ${(f.aiResult === 'warn' || f.aiResult === 'fail') ? `<button class="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-200 bg-white text-blue-700 text-xs font-semibold hover:bg-blue-50 transition-all cursor-pointer" onclick="openAssistant('${f.id}')"><i class="fas fa-robot"></i>AI 资质助手</button>` : ''}
-      </div>`).join('');
-  }
-
-  // ===== AI 资质助手 =====
-  function openAssistant(id) {
-    const file = qualFiles.find(f => f.id === id);
-    if (!file) return;
-    if (!file.aiResult) {
-      showDialog({ title: '提示', message: '请先完成 AI 资质审核后，再使用 AI 资质助手查看问题项。', type: 'info', confirmText: '知道了' });
-      return;
-    }
-
-    activeAssistantFileId = id;
-    const level = file.aiResult;
-    const badge = document.getElementById('assistantLevelBadge');
-    badge.className = `assistant-badge ${level === 'fail' ? 'fail' : level === 'warn' ? 'warn' : 'pass'}`;
-    badge.textContent = level === 'fail' ? '审核不通过' : level === 'warn' ? '待整改' : '已通过';
-
-    document.getElementById('assistantSubText').textContent =
-      `${file.type} · ${file.id} · 系统已识别 ${file.aiIssues.length} 项问题，并生成整改建议。`;
-
-    // 左侧：文件信息
-    document.getElementById('assistantFileInfo').innerHTML = [
-      { label: '资质类型', value: file.type },
-      { label: '文件编号', value: file.id },
-      { label: '是否必须', value: file.required ? '必须上传' : '选填' },
-      { label: 'AI审核结论', value: level === 'pass' ? '通过' : level === 'warn' ? '待整改' : '不通过' },
-    ].map(item => `
-      <div style="display:flex;flex-direction:column;gap:2px;">
-        <div style="font-size:11px;color:#94a3b8;">${item.label}</div>
-        <div style="font-size:13px;color:#0f172a;font-weight:600;">${item.value}</div>
-      </div>`).join('');
-
-    document.getElementById('assistantAiRecognized').innerHTML = file.aiRecognized.replace(/\n/g, '<br>');
-
-    // 右侧：问题项
-    renderAssistantIssues(file);
-    updateAssistantFoot(file);
-
-    document.getElementById('assistantOverlay').classList.add('show');
-  }
-
-  function renderAssistantIssues(file) {
-    const list = document.getElementById('assistantIssueList');
-    const countBadge = document.getElementById('assistantIssueCountBadge');
-
-    if (!file.aiIssues.length) {
-      countBadge.textContent = '0 项';
-      countBadge.className = 'assistant-badge pass';
-      list.innerHTML = `
-        <div style="text-align:center;padding:40px 12px;color:#64748b;font-size:13px;">
-          <div style="width:56px;height:56px;border-radius:16px;background:#ecfdf5;color:#16a34a;display:inline-flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:12px;"><i class="fa-solid fa-circle-check"></i></div>
-          <div style="font-size:14px;color:#0f172a;font-weight:700;margin-bottom:6px;">未发现问题项</div>
-          <div>当前资质文件全部符合平台要求。</div>
-        </div>`;
-      return;
-    }
-
-    const failCount = file.aiIssues.filter(i => i.level === 'fail').length;
-    countBadge.className = `assistant-badge ${failCount ? 'fail' : 'warn'}`;
-    countBadge.textContent = `${file.aiIssues.length} 项`;
-
-    list.innerHTML = file.aiIssues.map((issue, index) => `
-      <div class="issue-card level-${issue.level}">
-        <div class="issue-head">
-          <div class="issue-head-left">
-            <span class="issue-level ${issue.level}">
-              <i class="fa-solid ${issue.level === 'fail' ? 'fa-circle-xmark' : 'fa-triangle-exclamation'}"></i>
-              ${issue.level === 'fail' ? '阻断' : '待整改'}
-            </span>
-            <span class="issue-field">${issue.field}</span>
-          </div>
-          <label class="issue-adopt">
-            <input type="checkbox" ${issue.adopted ? 'checked' : ''} onchange="toggleIssueAdopt('${issue.id}',this.checked)">
-            <span>采纳此建议</span>
-          </label>
-        </div>
-        <div class="issue-problem">${index + 1}. ${issue.problem}</div>
-        <div class="issue-rule"><i class="fa-solid fa-gavel"></i>${issue.rule}</div>
-        <div class="diff-box">
-          <div class="diff-col original">
-            <div class="diff-col-label"><i class="fa-solid fa-circle-xmark"></i>当前问题</div>
-            <div>${escHtml(issue.originalValue)}</div>
-          </div>
-          <div class="diff-col suggested">
-            <div class="diff-col-label"><i class="fa-solid fa-wand-magic-sparkles"></i>AI 整改建议</div>
-            <div>${escHtml(issue.suggestedValue)}</div>
-          </div>
-        </div>
-      </div>`).join('');
-  }
-
-  function escHtml(s) {
-    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  function toggleIssueAdopt(issueId, checked) {
-    const file = qualFiles.find(f => f.id === activeAssistantFileId);
-    if (!file) return;
-    const issue = file.aiIssues.find(i => i.id === issueId);
-    if (issue) { issue.adopted = checked; updateAssistantFoot(file); }
-  }
-
-  function updateAssistantFoot(file) {
-    const total   = file.aiIssues.length;
-    const adopted = file.aiIssues.filter(i => i.adopted).length;
-    document.getElementById('assistantAdoptCount').textContent = adopted;
-    document.getElementById('assistantTotalCount').textContent = total;
-  }
-
-  function closeAssistant() {
-    document.getElementById('assistantOverlay').classList.remove('show');
-    activeAssistantFileId = null;
-  }
-
-  function notifySupplier() {
-    closeAssistant();
-    showDialog({
-      title: '通知已发送',
-      message: '已向供应商发送资质整改通知。\n供应商可在供应商工作台查看问题详情并重新上传文件，提交后系统将自动触发二次AI审核。',
-      type: 'success',
-      confirmText: '确定'
-    });
-  }
-
-  function rejectQual() {
-    const file = qualFiles.find(f => f.id === activeAssistantFileId);
-    closeAssistant();
-    if (file) {
-      showDialog({
-        title: '驳回确认',
-        message: `确认驳回【${file.type}】吗？\n驳回后供应商需重新上传该项资质并再次提交审核。`,
-        type: 'warn',
-        confirmText: '确认驳回',
-        cancelText: '取消',
-        onConfirm: () => {
-          file.aiResult = 'fail';
-          renderQualTable();
-          showDialog({ title: '已驳回', message: `【${file.type}】已驳回，系统将通知供应商重新上传。`, type: 'success', confirmText: '确定' });
-        }
-      });
-    }
-  }
-
-  function approveQual() {
-    const file = qualFiles.find(f => f.id === activeAssistantFileId);
-    closeAssistant();
-    if (file) {
-      file.aiResult = 'pass';
-      file.aiIssues = [];
-      renderQualTable();
-      showDialog({ title: '已标记通过', message: `【${file.type}】已手动标记为审核通过。`, type: 'success', confirmText: '确定' });
-    }
-  }
 
   function validateVendorAccountBlock() {
     const station = (document.getElementById('settleStation').value || '').trim();
@@ -1740,32 +1297,45 @@
 
   function passSettleApplication() {
     if (!validateVendorAccountBlock()) return;
-    if (!qualFiles.length) {
-      showDialog({ title: '提示', message: '请先上传资质文件并完成 AI 审核，再通过入驻申请。', type: 'warn', confirmText: '确定' });
-      return;
-    }
-    const passCount = qualFiles.filter(f => f.aiResult === 'pass').length;
-    const failCount = qualFiles.filter(f => f.aiResult === 'fail').length;
-    const warnCount = qualFiles.filter(f => f.aiResult === 'warn').length;
-    const noAudit   = qualFiles.filter(f => !f.aiResult && f.required).length;
 
-    if (noAudit) {
-      showDialog({ title: '提示', message: `还有 ${noAudit} 份必须上传的资质尚未完成 AI 审核，请先完成全部审核。`, type: 'warn', confirmText: '确定' });
-      return;
-    }
-    if (failCount) {
-      showDialog({ title: '无法通过', message: `当前有 ${failCount} 份资质审核不通过，请先处理后再通过入驻申请。`, type: 'error', confirmText: '确定' });
+    const uploaded = qualFiles.filter(f => f.uploadStatus !== 'neutral');
+    if (!uploaded.length) {
+      showDialog({ title: '提示', message: '请先上传资质文件，再通过入驻申请。', type: 'warn', confirmText: '确定' });
       return;
     }
 
-    let msg = `AI 审核结果：${passCount} 份通过`;
-    if (warnCount) msg += `，${warnCount} 份待整改`;
-    msg += `。\n确认通过后该供应商将正式上线，可被采购方检索（演示）。`;
+    if (window.SupplierAiAuditModule && SupplierAiAuditModule.isBlocked()) {
+      const ev = SupplierAiAuditModule.getLastEvaluation();
+      showDialog({
+        title: '无法通过',
+        message: (ev && ev.summaryText)
+          ? (ev.summaryText + '\n\n存在高风险（阻断）项，请处理后再通过入驻申请。')
+          : '企查查合作风险排查存在高风险（阻断）项，暂不可通过入驻。',
+        type: 'error',
+        confirmText: '确定',
+      });
+      return;
+    }
+
+    const ev = window.SupplierAiAuditModule ? SupplierAiAuditModule.getLastEvaluation() : null;
+    let msg = '确认通过后该供应商将正式上线，可被采购方检索（演示）。';
+    let dlgType = 'info';
+    if (ev && ev.ok) {
+      msg = `企查查 AI 审核结论：${ev.overallLabel}（高风险 ${ev.counts.high} / 中风险 ${ev.counts.mid} / 低风险 ${ev.counts.low}）。\n`;
+      if (ev.counts.mid || ev.counts.low) {
+        msg += '当前无高风险阻断项，低/中风险仅作提示。\n';
+        dlgType = 'warn';
+      }
+      msg += '确认通过后该供应商将正式上线（演示）。';
+    } else {
+      msg = '尚未完成企查查 AI 资质审核，将按人工审核通过处理。\n确认通过后该供应商将正式上线（演示）。';
+      dlgType = 'warn';
+    }
 
     showDialog({
       title: '通过入驻申请',
       message: msg,
-      type: warnCount ? 'warn' : 'info',
+      type: dlgType,
       confirmText: '确认通过',
       cancelText: '取消',
       onConfirm: () => {
@@ -1822,11 +1392,32 @@
     qualFiles = cloneQualFiles();
     renderQualTable();
 
+    SupplierAiAuditModule.init({
+      getQualFiles: () => qualFiles,
+      getSupplierInfo: () => ({
+        companyName: (document.getElementById('companyName')?.value || '').trim(),
+        creditCode: (document.getElementById('creditCode')?.value || '').trim(),
+        legalPerson: (document.getElementById('legalPerson')?.value || '').trim(),
+        address: (document.getElementById('address')?.value || '').trim(),
+        supplierId: new URLSearchParams(location.search).get('id') || '',
+      }),
+      showDialog,
+      renderQualTable,
+      getAiResultBadge,
+    });
+
     const sid = new URLSearchParams(location.search).get('id');
-    const hintEl = document.getElementById('supplierEditHint');
-    if (sid && hintEl) {
-      hintEl.textContent = '演示：办理供应商 ' + sid + ' 的入驻审核（真实环境将加载对应资料）。';
-      hintEl.classList.remove('hidden');
+    if (sid && window.SupplierSettleData) {
+      const record = SupplierSettleData.hydratePage(sid, qualFiles, {
+        renderQualTable,
+      });
+      if (!record) {
+        const hintEl = document.getElementById('supplierEditHint');
+        if (hintEl) {
+          hintEl.textContent = '未找到供应商 ' + sid + ' 的演示数据。';
+          hintEl.classList.remove('hidden');
+        }
+      }
     }
 
     const rejectTa = document.getElementById('rejectReasonInput');

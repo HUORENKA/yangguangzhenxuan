@@ -78,25 +78,191 @@
       box-shadow: 0 8px 24px rgba(15,23,42,0.05);
     }
     .summary-card {
-      margin-top: 20px;
-      padding: 22px 26px;
+      padding: 16px 20px;
       background: linear-gradient(135deg, var(--primary-light) 0%, #fff 100%);
       border-color: var(--primary-border);
-      margin-bottom: 18px;
     }
+    .summary-hero-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 32%);
+      gap: 14px;
+      align-items: stretch;
+      margin: 16px 0 14px;
+    }
+    .summary-ai-panel,
+    .summary-recipient-panel {
+      margin: 0;
+      min-height: 0;
+    }
+    .summary-ai-panel .summary-body {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .summary-ai-panel .summary-stats {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .summary-ai-panel .summary-stat {
+      padding: 8px 10px;
+      min-width: 88px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .summary-ai-panel .stat-label { font-size: 11px; }
+    .summary-ai-panel .stat-value { margin-top: 2px; font-size: 18px; }
+    .summary-recipient-panel {
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.05);
+    }
+    .summary-recipient-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0 0 10px;
+    }
+    .bid-recipient-card {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(47, 107, 255, 0.14);
+      background: #fff;
+    }
+    .bid-recipient-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #2f6bff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+    .bid-recipient-body { flex: 1; min-width: 0; }
+    .bid-recipient-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .bid-recipient-user {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .bid-recipient-user span {
+      margin-left: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+    }
+    .bid-recipient-edit {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid rgba(47, 107, 255, 0.22);
+      background: #fff;
+      color: #2f6bff;
+      font-size: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bid-recipient-edit:hover { background: #eff6ff; }
+    .bid-recipient-address {
+      margin-top: 6px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #475569;
+      word-break: break-word;
+    }
+    .bid-recipient-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.48);
+      z-index: 220;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .bid-recipient-overlay.show { display: flex; }
+    .bid-recipient-modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 520px;
+      max-height: min(88vh, 640px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 56px rgba(15, 23, 42, 0.2);
+    }
+    .bid-recipient-modal-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .bid-recipient-modal-title { margin: 0; font-size: 17px; font-weight: 800; }
+    .bid-recipient-modal-list {
+      padding: 12px 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .bid-recipient-option {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .bid-recipient-option.active { border-color: #93c5fd; background: #f8fbff; }
+    .bid-recipient-option-main {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 14px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+    .bid-recipient-option-name { font-size: 14px; font-weight: 800; color: #0f172a; }
+    .bid-recipient-option-phone { margin-left: 10px; font-size: 13px; color: #64748b; font-weight: 500; }
+    .bid-recipient-option-address { margin-top: 6px; font-size: 13px; color: #475569; line-height: 1.5; }
     .summary-top {
       display: flex; align-items: flex-start; justify-content: space-between;
       gap: 16px; flex-wrap: wrap;
     }
     .summary-left { display: flex; gap: 14px; align-items: flex-start; }
     .summary-icon {
-      width: 44px; height: 44px; border-radius: 14px; flex: none;
+      width: 40px; height: 40px; border-radius: 12px; flex: none;
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px;
-      box-shadow: 0 10px 20px rgba(22,163,74,0.2);
+      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px;
+      box-shadow: 0 8px 16px rgba(22,163,74,0.18);
     }
-    .summary-title { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
-    .summary-meta { margin-top: 8px; display: flex; gap: 18px; flex-wrap: wrap; color: var(--text-sub); font-size: 13px; }
+    .summary-title { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
+    .summary-meta { margin-top: 6px; display: flex; gap: 14px; flex-wrap: wrap; color: var(--text-sub); font-size: 12px; }
     .summary-meta span { display: inline-flex; align-items: center; gap: 6px; }
     .view-file-link {
       display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px;
@@ -105,25 +271,25 @@
       text-decoration: none; transition: all 0.18s; margin-left: 12px; vertical-align: middle;
     }
     .view-file-link:hover { background: rgba(22,163,74,0.14); border-color: var(--primary); }
-    .summary-divider { margin: 16px 0; border: none; border-top: 1px solid rgba(187,247,208,0.7); }
+    .summary-divider { margin: 12px 0; border: none; border-top: 1px solid rgba(187,247,208,0.7); }
     .summary-body {
       display: grid; grid-template-columns: minmax(0,1fr) auto;
-      gap: 24px; align-items: center;
+      gap: 16px; align-items: center;
     }
-    .ai-row { display: flex; gap: 12px; align-items: flex-start; }
+    .ai-row { display: flex; gap: 10px; align-items: flex-start; min-width: 0; }
     .ai-icon {
-      width: 30px; height: 30px; border-radius: 50%; flex: none;
+      width: 28px; height: 28px; border-radius: 50%; flex: none;
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px;
+      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px;
     }
-    .ai-text { font-size: 14px; line-height: 1.8; color: #166534; }
-    .summary-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 0; }
+    .ai-text { font-size: 13px; line-height: 1.65; color: #166534; }
+    .summary-stats { display: flex; gap: 8px; flex-wrap: nowrap; margin-top: 0; flex-shrink: 0; }
     .summary-stat {
-      padding: 10px 16px; border-radius: 14px;
+      padding: 8px 12px; border-radius: 12px;
       background: rgba(255,255,255,0.88); border: 1px solid rgba(187,247,208,0.9);
     }
-    .stat-label { font-size: 12px; color: var(--text-sub); }
-    .stat-value { margin-top: 4px; font-size: 22px; font-weight: 800; line-height: 1; color: var(--primary); }
+    .stat-label { font-size: 11px; color: var(--text-sub); white-space: nowrap; }
+    .stat-value { margin-top: 2px; font-size: 18px; font-weight: 800; line-height: 1; color: var(--primary); }
 
     .section { margin-top: 0; margin-bottom: 16px; }
     .section-head {
@@ -385,19 +551,16 @@
       gap: 7px;
       transition: all 0.18s ease;
     }
-    .btn-notice-generate,
-    .btn-notice-upload {
+    .btn-notice-generate {
       border: 1px solid var(--border);
       background: #f8fafc;
       color: #64748b;
     }
-    .btn-notice-generate:hover:not(.active),
-    .btn-notice-upload:hover:not(.active) {
+    .btn-notice-generate:hover:not(.active) {
       border-color: rgba(22, 163, 74, 0.35);
       color: var(--primary-dark);
     }
-    .btn-notice-generate.active,
-    .btn-notice-upload.active {
+    .btn-notice-generate.active {
       background: var(--primary);
       border-color: var(--primary);
       color: #fff;
@@ -447,10 +610,103 @@
       color: #047857;
       border: 1px solid #a7f3d0;
     }
-    .notice-preview-tag.upload {
+    .notice-preview-tag.edit {
       background: #eff6ff;
       color: #1d4ed8;
       border-color: #bfdbfe;
+    }
+    .notice-edit-inline {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e8eef5;
+    }
+    .notice-edit-inline-title {
+      margin: 0 0 14px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .notice-edit-form { display: flex; flex-direction: column; gap: 18px; }
+    .notice-edit-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+    .notice-edit-field label .req { color: #dc2626; }
+    .notice-edit-input,
+    .notice-edit-select,
+    .notice-edit-textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: #0f172a;
+    }
+    .notice-edit-input:focus,
+    .notice-edit-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+    }
+    .notice-edit-select:disabled,
+    .notice-edit-input:disabled {
+      background: #f8fafc;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+    .notice-edit-textarea {
+      min-height: 220px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+    .notice-edit-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .btn-notice-secondary {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .btn-notice-secondary:hover { background: #f8fafc; border-color: #94a3b8; }
+    .btn-notice-primary {
+      height: 38px;
+      padding: 0 18px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .btn-notice-primary:hover { background: var(--primary-dark); }
+    .notice-preview-tag.preview {
+      background: #f1f5f9;
+      color: #475569;
+      border-color: #e2e8f0;
     }
     .notice-preview-body {
       padding: 20px 22px 22px;
@@ -516,7 +772,10 @@
     .btn-danger-text:hover { background: #fef2f2; }
 
     @media (max-width: 960px) {
-      .summary-body { grid-template-columns: 1fr; }
+      .summary-hero-row { grid-template-columns: 1fr; }
+      .summary-ai-panel .summary-body,
+      .summary-body { grid-template-columns: 1fr; gap: 12px; }
+      .summary-ai-panel .summary-stats { flex-direction: row; flex-wrap: wrap; }
       .rule-config-grid { grid-template-columns: 1fr; }
       .supplier-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
     }
@@ -721,7 +980,26 @@
 </div>
 
 <div class="page-wrap">
-  <div class="card summary-card" id="summaryCard"></div>
+  <div class="summary-hero-row">
+    <div class="card summary-card summary-ai-panel" id="summaryCard"></div>
+    <div class="summary-recipient-panel" id="summaryRecipientPanel">
+      <div class="summary-recipient-title">收货信息</div>
+      <div class="bid-recipient-card">
+        <div class="bid-recipient-icon"><i class="fa-solid fa-location-dot"></i></div>
+        <div class="bid-recipient-body">
+          <div class="bid-recipient-head">
+            <div class="bid-recipient-user">
+              <span id="bidRecipientName">张三</span><span id="bidRecipientPhone">138****8000</span>
+            </div>
+            <button type="button" class="bid-recipient-edit" onclick="openBidRecipientModal()" aria-label="修改收货地址" title="修改收货地址">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+          </div>
+          <div class="bid-recipient-address" id="bidRecipientAddress">北京市海淀区中关村大街1号政务中心3层</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="card section">
     <div class="section-head">
@@ -828,24 +1106,47 @@
           <div class="notice-panel hidden" id="noticePanel">
             <div class="notice-actions">
               <button type="button" class="btn-notice btn-notice-generate" id="noticeGenerateBtn" onclick="generateNotice()">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> 生成公告
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI生成
               </button>
-              <button type="button" class="btn-notice btn-notice-upload" id="noticeUploadBtn" onclick="triggerUploadNotice()">
-                <i class="fa-solid fa-cloud-arrow-up"></i> 上传公告
-              </button>
-              <input type="file" id="noticeFileInput" hidden accept=".pdf,.doc,.docx,.txt">
-              <span class="notice-status" id="noticeStatus"><i class="fa-regular fa-circle"></i> 尚未生成或上传公告</span>
+              <span class="notice-status" id="noticeStatus"><i class="fa-regular fa-circle"></i> 尚未 AI 生成或编辑公告</span>
             </div>
-            <div class="notice-preview hidden" id="noticePreviewInline">
-              <div class="notice-preview-head">
-                <h4 class="notice-preview-title"><i class="fa-regular fa-file-lines"></i> 公告预览</h4>
-                <span class="notice-preview-tag" id="noticePreviewTag">系统生成</span>
+            <div class="notice-edit-inline">
+              <h4 class="notice-edit-inline-title"><i class="fa-solid fa-pen-to-square"></i> 编辑公告</h4>
+              <div class="notice-edit-form">
+                <div class="notice-edit-field">
+                  <label for="noticeEditTitle">公告标题 <span class="req">*</span></label>
+                  <input type="text" id="noticeEditTitle" class="notice-edit-input" placeholder="请输入公告标题">
+                </div>
+                <div class="notice-edit-field">
+                  <label for="noticeEditType">公告类型 <span class="req">*</span></label>
+                  <input type="text" id="noticeEditType" class="notice-edit-input" disabled>
+                </div>
+                <div class="notice-edit-field">
+                  <label for="noticeEditBody">正文 <span class="req">*</span></label>
+                  <textarea id="noticeEditBody" class="notice-edit-textarea" placeholder="请输入公告正文"></textarea>
+                </div>
+                <div class="notice-edit-actions">
+                  <button type="button" class="btn-notice-secondary" onclick="previewNoticeEditForm()"><i class="fa-solid fa-eye"></i> 预览</button>
+                  <button type="button" class="btn-notice-primary" onclick="saveNoticeEditForm()"><i class="fa-solid fa-paper-plane"></i> 保存并发布</button>
+                </div>
               </div>
-              <div class="notice-preview-body" id="noticePreviewContent"></div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="bid-recipient-overlay" id="bidRecipientOverlay" onclick="if(event.target===this)closeBidRecipientModal()">
+  <div class="bid-recipient-modal" onclick="event.stopPropagation()">
+    <div class="bid-recipient-modal-head">
+      <h3 class="bid-recipient-modal-title">选择收货地址</h3>
+      <button type="button" class="modal-x" onclick="closeBidRecipientModal()" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="bid-recipient-modal-list" id="bidRecipientModalList"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn" onclick="closeBidRecipientModal()">关闭</button>
     </div>
   </div>
 </div>
@@ -870,6 +1171,16 @@
 (function () {
   var STORAGE_KEY = 'bidAssistDemo';
   var HISTORY_KEY = 'planBidNewRecords';
+  var BID_RECIPIENT_KEY = 'bidAssistRecipientId';
+  var BID_NOTICE_PREVIEW_KEY = 'bidNoticePreviewDraft';
+  var BID_NOTICE_PUBLISHED_KEY = 'bidNoticePublished';
+
+  var bidRecipientOptions = [
+    { id: 'addr-bj', name: '张三', phone: '138****8000', address: '北京市海淀区中关村大街1号政务中心3层' },
+    { id: 'addr-gz', name: '李四', phone: '139****9000', address: '广东省广州市天河区天河路888号采购中心5层' },
+    { id: 'addr-sh', name: '王五', phone: '137****7000', address: '上海市浦东新区世纪大道100号采购大厦8层' }
+  ];
+  var bidSelectedRecipientId = 'addr-bj';
 
   var PLATFORM_SUPPLIERS = [
     { id: 's1', name: '京采云商贸有限公司', region: '北京', score: 92, cover: 2 },
@@ -922,7 +1233,9 @@
     publishNotice: false,
     noticeReady: false,
     noticeSource: '',
-    noticeFileName: '',
+    noticeTitle: '',
+    noticeType: '',
+    noticeBody: '',
     noticeHtml: '',
     fromProduct: false,
     policyFile: '',
@@ -955,7 +1268,7 @@
         + '<i class="fa-solid fa-triangle-exclamation"></i>'
         + '<div>当前已匹配商品采购金额为 <strong>' + fmtMoney(amount) + '</strong>，'
         + '已超过直接采购限额 <strong>' + fmtMoney(DIRECT_PURCHASE_LIMIT) + '</strong>。'
-        + '请生成或上传公告文件后方可提交。</div>';
+        + '请 AI 生成或编辑公告后方可提交。</div>';
     }
 
     document.getElementById('methodBody').classList.toggle('hidden', method === 'direct' && !over);
@@ -969,6 +1282,7 @@
     if (toggleRow) toggleRow.classList.toggle('hidden', isDirectForcedNotice);
     if (noticePanel) {
       noticePanel.classList.toggle('hidden', isDirectForcedNotice ? false : !state.publishNotice);
+      if (!noticePanel.classList.contains('hidden')) syncNoticeEditForm();
     }
   }
 
@@ -977,8 +1291,8 @@
     if (!mustPublish && !state.publishNotice) return true;
     if (!state.noticeReady) {
       alert(mustPublish
-        ? '采购金额已超过直接采购限额（' + fmtMoney(DIRECT_PURCHASE_LIMIT) + '），请先生成或上传公告。'
-        : '已选择发布平台公告，请先生成或上传公告。');
+        ? '采购金额已超过直接采购限额（' + fmtMoney(DIRECT_PURCHASE_LIMIT) + '），请先 AI 生成或编辑公告。'
+        : '已选择发布平台公告，请先 AI 生成或编辑公告。');
       return false;
     }
     return true;
@@ -1064,6 +1378,63 @@
     ];
   }
 
+  function getBidSelectedRecipient() {
+    return bidRecipientOptions.find(function (r) { return r.id === bidSelectedRecipientId; })
+      || bidRecipientOptions[0]
+      || null;
+  }
+
+  function renderBidRecipientCard() {
+    var r = getBidSelectedRecipient();
+    if (!r) return;
+    var nameEl = document.getElementById('bidRecipientName');
+    var phoneEl = document.getElementById('bidRecipientPhone');
+    var addrEl = document.getElementById('bidRecipientAddress');
+    if (nameEl) nameEl.textContent = r.name;
+    if (phoneEl) phoneEl.textContent = r.phone;
+    if (addrEl) addrEl.textContent = r.address;
+  }
+
+  function renderBidRecipientModalList() {
+    var listEl = document.getElementById('bidRecipientModalList');
+    if (!listEl) return;
+    listEl.innerHTML = bidRecipientOptions.map(function (item) {
+      return ''
+        + '<div class="bid-recipient-option' + (item.id === bidSelectedRecipientId ? ' active' : '') + '">'
+        + '<button type="button" class="bid-recipient-option-main" onclick="selectBidRecipient(\'' + item.id + '\')">'
+        + '<div><span class="bid-recipient-option-name">' + esc(item.name) + '</span>'
+        + '<span class="bid-recipient-option-phone">' + esc(item.phone) + '</span></div>'
+        + '<div class="bid-recipient-option-address">' + esc(item.address) + '</div>'
+        + '</button></div>';
+    }).join('');
+  }
+
+  function initBidAssistRecipient() {
+    try {
+      var saved = sessionStorage.getItem(BID_RECIPIENT_KEY);
+      if (saved && bidRecipientOptions.some(function (r) { return r.id === saved; })) {
+        bidSelectedRecipientId = saved;
+      }
+    } catch (e) {}
+    renderBidRecipientCard();
+  }
+
+  window.openBidRecipientModal = function () {
+    renderBidRecipientModalList();
+    document.getElementById('bidRecipientOverlay').classList.add('show');
+  };
+
+  window.closeBidRecipientModal = function () {
+    document.getElementById('bidRecipientOverlay').classList.remove('show');
+  };
+
+  window.selectBidRecipient = function (id) {
+    bidSelectedRecipientId = id;
+    try { sessionStorage.setItem(BID_RECIPIENT_KEY, id); } catch (e) {}
+    renderBidRecipientCard();
+    closeBidRecipientModal();
+  };
+
   function fileIconClass(name) {
     if (/\.pdf$/i.test(name)) return 'fa-file-pdf';
     if (/\.doc/i.test(name)) return 'fa-file-word';
@@ -1111,7 +1482,7 @@
       + '<div class="summary-icon"><i class="fa-solid fa-file-waveform"></i></div>'
       + '<div>'
       + '<h2 class="summary-title">'
-      + 'AI 竞价采购分析结果'
+      + 'AI 采购分析结果'
       + '<a class="view-file-link" href="#" onclick="return false" title="查看源文件"><i class="fa-solid ' + fIcon + '"></i> 查看源文件</a>'
       + '</h2>'
       + '<div class="summary-meta">'
@@ -1303,7 +1674,18 @@
     return d.toLocaleString('zh-CN', { hour12: false });
   }
 
-  function buildNoticeDocument() {
+  function getNoticeTypeLabel() {
+    if (state.purchaseMethod === 'bidding') return '竞价公告';
+    if (state.purchaseMethod === 'inquiry') return '询价公告';
+    return '直接采购公告';
+  }
+
+  function getDefaultNoticeTitle() {
+    var methodLabel = METHOD_LABELS[state.purchaseMethod] || '采购';
+    return '国采e购平台' + methodLabel + '公告——' + state.fileName;
+  }
+
+  function buildDefaultNoticeBody() {
     var method = state.purchaseMethod;
     var methodLabel = METHOD_LABELS[method] || '采购';
     var deadline = document.getElementById('deadlineInput').value;
@@ -1313,12 +1695,10 @@
       return (idx + 1) + '. ' + L.name + '（' + L.qty + L.unit + '）';
     }).join('\n');
     var supplierNames = state.suppliers.map(function (S) { return S.name; }).join('、') || '平台认证供应商';
-    var now = new Date().toLocaleString('zh-CN', { hour12: false });
     var amount = calcMatchedAmount();
-    var content;
 
     if (method === 'direct') {
-      content = ''
+      return ''
         + '各有关供应商：\n\n'
         + '根据采购需求文件《' + state.fileName + '》，现通过国采e购平台发起' + methodLabel + '。'
         + '本次采购金额 ' + Number(amount).toLocaleString('zh-CN') + ' 元，已超过直接采购限额 '
@@ -1328,63 +1708,143 @@
         + (budget ? ('三、预算上限：' + Number(budget).toLocaleString('zh-CN') + ' 元\n') : '')
         + '\n采购清单：\n' + (itemLines || '详见平台采购需求明细') + '\n\n'
         + '请登录国采e购平台查看详情。';
-    } else {
-      content = ''
-        + '各有关供应商：\n\n'
-        + '根据采购需求文件《' + state.fileName + '》，现通过国采e购平台发起' + methodLabel + '。'
-        + '欢迎符合条件的供应商在报价截止时间前参与报价。\n\n'
-        + '一、采购方式：' + methodLabel + '\n'
-        + '二、报价截止时间：' + formatDeadlineDisplay(deadline) + '\n'
-        + (budget ? ('三、预算上限：' + Number(budget).toLocaleString('zh-CN') + ' 元\n') : '')
-        + (method === 'bidding' ? ('四、最小降价幅度：' + (document.getElementById('bidStepInput').value || '500') + ' 元\n') : '')
-        + '\n采购清单：\n' + (itemLines || '详见平台采购需求明细') + '\n\n'
-        + '邀请供应商：' + supplierNames + '\n\n'
-        + '请登录国采e购供应商工作台查看详情并提交报价。';
     }
-
     return ''
-      + '<h3 class="notice-doc-title">国采e购平台' + esc(methodLabel) + '公告</h3>'
+      + '各有关供应商：\n\n'
+      + '根据采购需求文件《' + state.fileName + '》，现通过国采e购平台发起' + methodLabel + '。'
+      + '欢迎符合条件的供应商在报价截止时间前参与报价。\n\n'
+      + '一、采购方式：' + methodLabel + '\n'
+      + '二、报价截止时间：' + formatDeadlineDisplay(deadline) + '\n'
+      + (budget ? ('三、预算上限：' + Number(budget).toLocaleString('zh-CN') + ' 元\n') : '')
+      + (method === 'bidding' ? ('四、最小降价幅度：' + (document.getElementById('bidStepInput').value || '500') + ' 元\n') : '')
+      + '\n采购清单：\n' + (itemLines || '详见平台采购需求明细') + '\n\n'
+      + '邀请供应商：' + supplierNames + '\n\n'
+      + '请登录国采e购供应商工作台查看详情并提交报价。';
+  }
+
+  function buildNoticeHtmlFromFields(title, typeLabel, body) {
+    var now = new Date().toLocaleString('zh-CN', { hour12: false });
+    return ''
+      + '<h3 class="notice-doc-title">' + esc(title) + '</h3>'
       + '<div class="notice-doc-meta">'
+      + '<div>公告类型：' + esc(typeLabel) + '</div>'
       + '<div>公告编号：GC-' + Date.now().toString().slice(-8) + '</div>'
       + '<div>发布时间：' + esc(now) + '</div>'
       + '<div>来源文件：' + esc(state.fileName) + '</div>'
       + '</div>'
-      + '<div class="notice-doc-content">' + esc(content) + '</div>';
+      + '<div class="notice-doc-content">' + esc(body) + '</div>';
+  }
+
+  function buildNoticeDocument() {
+    var title = state.noticeTitle || getDefaultNoticeTitle();
+    var typeLabel = state.noticeType || getNoticeTypeLabel();
+    var body = state.noticeBody || buildDefaultNoticeBody();
+    return buildNoticeHtmlFromFields(title, typeLabel, body);
   }
 
   function setNoticeActionActive(source) {
     var generateBtn = document.getElementById('noticeGenerateBtn');
-    var uploadBtn = document.getElementById('noticeUploadBtn');
     if (generateBtn) generateBtn.classList.toggle('active', source === 'generated');
-    if (uploadBtn) uploadBtn.classList.toggle('active', source === 'upload');
   }
 
-  function renderNoticePreview(html, source, fileName) {
+  function updateNoticeStatus(kind) {
+    var status = document.getElementById('noticeStatus');
+    if (!status) return;
+    if (kind === 'ready-edit') {
+      status.className = 'notice-status ready';
+      status.innerHTML = '<i class="fa-solid fa-circle-check"></i> 公告已编辑并保存';
+    } else if (kind === 'draft-generated') {
+      status.className = 'notice-status';
+      status.innerHTML = '<i class="fa-regular fa-circle"></i> 已生成草稿，请确认后保存并发布';
+    } else {
+      status.className = 'notice-status';
+      status.innerHTML = '<i class="fa-regular fa-circle"></i> 尚未 AI 生成或编辑公告';
+    }
+  }
+
+  function markNoticeSaved(source) {
     state.noticeReady = true;
     state.noticeSource = source;
-    state.noticeFileName = fileName || '';
-    state.noticeHtml = html;
+    state.noticeHtml = buildNoticeHtmlFromFields(state.noticeTitle, state.noticeType, state.noticeBody);
+    setNoticeActionActive(source === 'generated' ? 'generated' : '');
+    updateNoticeStatus('ready-edit');
+  }
 
-    setNoticeActionActive(source);
+  function readNoticeEditForm() {
+    var titleEl = document.getElementById('noticeEditTitle');
+    var bodyEl = document.getElementById('noticeEditBody');
+    return {
+      title: (titleEl && titleEl.value || '').trim(),
+      type: getNoticeTypeLabel(),
+      body: (bodyEl && bodyEl.value || '').trim()
+    };
+  }
 
-    var tag = document.getElementById('noticePreviewTag');
-    var inline = document.getElementById('noticePreviewInline');
-    var content = document.getElementById('noticePreviewContent');
-    var status = document.getElementById('noticeStatus');
+  function resetNoticeEditFormBlank() {
+    var titleEl = document.getElementById('noticeEditTitle');
+    var typeEl = document.getElementById('noticeEditType');
+    var bodyEl = document.getElementById('noticeEditBody');
+    if (titleEl) titleEl.value = '';
+    if (typeEl) typeEl.value = getNoticeTypeLabel();
+    if (bodyEl) bodyEl.value = '';
+  }
 
-    if (tag) {
-      tag.textContent = source === 'upload' ? '上传文件' : '系统生成';
-      tag.className = 'notice-preview-tag' + (source === 'upload' ? ' upload' : '');
-    }
-    if (content) content.innerHTML = html;
-    if (inline) inline.classList.remove('hidden');
-    if (status) {
-      status.className = 'notice-status ready';
-      status.innerHTML = source === 'upload'
-        ? '<i class="fa-solid fa-circle-check"></i> 已上传：' + esc(fileName)
-        : '<i class="fa-solid fa-circle-check"></i> 公告已生成';
+  function syncNoticeEditForm() {
+    var titleEl = document.getElementById('noticeEditTitle');
+    var typeEl = document.getElementById('noticeEditType');
+    var bodyEl = document.getElementById('noticeEditBody');
+    if (typeEl) typeEl.value = getNoticeTypeLabel();
+    if (state.noticeReady) {
+      if (titleEl) titleEl.value = state.noticeTitle || '';
+      if (bodyEl) bodyEl.value = state.noticeBody || '';
+    } else {
+      if (titleEl) titleEl.value = '';
+      if (bodyEl) bodyEl.value = '';
     }
   }
+
+  window.previewNoticeEditForm = function () {
+    var form = readNoticeEditForm();
+    if (!form.title) {
+      alert('请填写公告标题');
+      return;
+    }
+    if (!form.body) {
+      alert('请填写公告正文');
+      return;
+    }
+    try {
+      sessionStorage.setItem(BID_NOTICE_PREVIEW_KEY, JSON.stringify({
+        title: form.title,
+        type: form.type,
+        body: form.body,
+        fileName: state.fileName,
+        mode: state.purchaseMethod,
+        projectTitle: (state.fileName || '').replace(/\.[^.]+$/, ''),
+        deadline: formatDeadlineDisplay(document.getElementById('deadlineInput').value),
+        budget: document.getElementById('budgetInput').value || state.budget,
+        returnUrl: window.location.href,
+        source: 'preview'
+      }));
+    } catch (e) {}
+    window.open('bid_notice_preview.html', '_blank');
+  };
+
+  window.saveNoticeEditForm = function () {
+    var form = readNoticeEditForm();
+    if (!form.title) {
+      alert('请填写公告标题');
+      return;
+    }
+    if (!form.body) {
+      alert('请填写公告正文');
+      return;
+    }
+    state.noticeTitle = form.title;
+    state.noticeType = form.type;
+    state.noticeBody = form.body;
+    markNoticeSaved('edit');
+  };
 
   window.setPublishNotice = function (yes) {
     state.publishNotice = yes;
@@ -1392,38 +1852,30 @@
     document.getElementById('noticeYes').classList.toggle('active', yes);
     if (state.purchaseMethod === 'direct' && isDirectOverLimit()) return;
     document.getElementById('noticePanel').classList.toggle('hidden', !yes);
-    if (!yes) setNoticeActionActive('');
+    if (yes) syncNoticeEditForm();
+    if (!yes) {
+      setNoticeActionActive('');
+      updateNoticeStatus(state.noticeReady ? 'ready-edit' : 'idle');
+    }
   };
 
   window.generateNotice = function () {
     if (state.purchaseMethod !== 'direct' && !state.suppliers.length) {
-      alert('请先添加至少 1 家邀请供应商，再生成公告。');
+      alert('请先添加至少 1 家邀请供应商，再使用 AI 生成。');
       return;
     }
-    renderNoticePreview(buildNoticeDocument(), 'generated');
-  };
-
-  window.triggerUploadNotice = function () {
-    var input = document.getElementById('noticeFileInput');
-    if (input) input.click();
-  };
-
-  window.handleNoticeUpload = function (input) {
-    var file = input && input.files && input.files[0];
-    if (!file) return;
-    var html = ''
-      + '<h3 class="notice-doc-title">平台采购公告（上传稿）</h3>'
-      + '<div class="notice-doc-meta">'
-      + '<div>文件名称：' + esc(file.name) + '</div>'
-      + '<div>文件大小：' + (file.size / 1024).toFixed(1) + ' KB</div>'
-      + '<div>上传时间：' + esc(new Date().toLocaleString('zh-CN', { hour12: false })) + '</div>'
-      + '</div>'
-      + '<div class="notice-doc-content">'
-      + '您已上传公告文件。正式环境中此处将解析并展示公告正文；当前为原型演示，发起时将随采购单一并提交该附件。'
-      + '</div>'
-      + '<div class="notice-upload-name"><i class="fa-solid fa-paperclip"></i> ' + esc(file.name) + '</div>';
-    renderNoticePreview(html, 'upload', file.name);
-    input.value = '';
+    state.noticeTitle = getDefaultNoticeTitle();
+    state.noticeType = getNoticeTypeLabel();
+    state.noticeBody = buildDefaultNoticeBody();
+    state.noticeReady = false;
+    var titleEl = document.getElementById('noticeEditTitle');
+    var typeEl = document.getElementById('noticeEditType');
+    var bodyEl = document.getElementById('noticeEditBody');
+    if (titleEl) titleEl.value = state.noticeTitle;
+    if (typeEl) typeEl.value = state.noticeType;
+    if (bodyEl) bodyEl.value = state.noticeBody;
+    setNoticeActionActive('generated');
+    updateNoticeStatus('draft-generated');
   };
 
   window.openAddSupplierModal = function () {
@@ -1621,6 +2073,24 @@
       hist.unshift(record);
       sessionStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
     } catch (e) {}
+    if (state.noticeReady && state.noticeTitle && state.noticeBody) {
+      try {
+        sessionStorage.setItem(BID_NOTICE_PUBLISHED_KEY, JSON.stringify({
+          noticeId: record.id,
+          code: bidCode,
+          title: state.noticeTitle,
+          type: state.noticeType || (method === 'inquiry' ? '询价公告' : '竞价公告'),
+          body: state.noticeBody,
+          fileName: state.fileName,
+          mode: method,
+          projectTitle: (state.fileName || '').replace(/\.[^.]+$/, ''),
+          deadline: formatDeadlineDisplay(deadline),
+          budget: record.budget,
+          publishedAt: new Date().toLocaleString('zh-CN', { hour12: false }),
+          source: 'published'
+        }));
+      } catch (e2) {}
+    }
     alert(METHOD_LABELS[method] + '已发起（演示）\n已邀请 ' + state.suppliers.length + ' 家供应商');
     window.location.href = getBidAssistReturnUrl();
   }
@@ -1705,6 +2175,7 @@
   initBidAssistReturnLink();
   loadDemo();
   applyProductLaunchChrome();
+  initBidAssistRecipient();
   renderDemandTableHead();
   renderSummary();
   renderDemandTable();
@@ -1712,9 +2183,6 @@
   initDeadlineDefault();
   setPurchaseMethod('bidding');
   setPublishNotice(false);
-  document.getElementById('noticeFileInput').addEventListener('change', function () {
-    handleNoticeUpload(this);
-  });
 })();
 </script>
 <script src="../assets/order_basis_modal.js"></script>

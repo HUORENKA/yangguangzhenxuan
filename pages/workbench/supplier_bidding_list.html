@@ -26,6 +26,8 @@
     th { background:#f8fafc; color:#64748b; font-size:13px; font-weight:700; }
     td, th { padding:12px 14px; border-bottom:1px solid #f1f5f9; text-align:left; vertical-align:top; }
     .col-lowest-hidden .col-lowest { display:none; }
+    tr.row-from-notice { background:#ecfdf5; box-shadow:inset 4px 0 0 #0f766e; }
+    tr.row-from-notice td { background:transparent; }
     .money { font-weight:800; color:#dc2626; font-variant-numeric:tabular-nums; }
     .hint-xs { font-size:11px; color:#94a3b8; margin-top:4px; }
     table.data-wide { min-width:1180px; }
@@ -48,7 +50,106 @@
       box-shadow:0 24px 56px rgba(15,23,42,.2);
     }
     .modal-box.w-detail { max-width:800px; }
-    .modal-box.w-quote { max-width:1100px; }
+    .modal-box.w-quote { max-width:1280px; max-height:min(92vh, 900px); }
+    .quote-modal-body { padding:14px 18px; display:flex; flex-direction:column; gap:12px; }
+    .rule-banner-sm { border-radius:10px; padding:10px 12px; font-size:12px; margin-bottom:0; line-height:1.5; }
+    .quote-top-dual {
+      display:grid; grid-template-columns:1fr 1fr; gap:12px; flex-shrink:0;
+    }
+    .quote-buyer-address, .quote-hist-panel {
+      background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:12px 14px;
+    }
+    .quote-panel-label {
+      font-size:12px; font-weight:800; color:#64748b; margin:0 0 8px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .quote-buyer-card { display:flex; gap:10px; align-items:flex-start; }
+    .quote-buyer-icon {
+      width:32px; height:32px; border-radius:8px; background:#eff6ff; color:#2f6bff;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px;
+    }
+    .quote-buyer-user { font-size:13px; font-weight:700; color:#0f172a; }
+    .quote-buyer-user span { margin-left:8px; font-weight:500; color:#64748b; }
+    .quote-buyer-addr { margin-top:4px; font-size:12px; color:#475569; line-height:1.5; }
+    .quote-buyer-hint { margin-top:6px; font-size:11px; color:#94a3b8; line-height:1.45; }
+    .quote-hist-head {
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .quote-hist-summary { font-size:12px; color:#334155; line-height:1.55; flex:1; min-width:0; margin-bottom:8px; }
+    .quote-hist-summary strong { color:#0f172a; }
+    .quote-hist-detail {
+      margin-top:0; max-height:min(28vh, 200px); overflow-y:auto; padding-right:2px;
+    }
+    .hist-compare-warn { color:#c2410c; font-weight:700; }
+    .hist-compare-ok { color:#047857; font-weight:700; }
+    .hist-row-m {
+      display:grid; grid-template-columns:118px 84px 1fr auto auto; gap:8px; align-items:center;
+      padding:8px 10px; background:#f8fafc; border-radius:8px; font-size:12px; border:1px solid #eef2f7; margin-bottom:6px;
+    }
+    .hist-tag-valid { font-size:10px; font-weight:800; color:#047857; background:#ecfdf5; padding:2px 8px; border-radius:999px; white-space:nowrap; }
+    .hist-detail-btn {
+      display:inline-flex; align-items:center; gap:4px; padding:0; border:none; background:none;
+      color:#0f766e; font-size:12px; font-weight:800; cursor:pointer; white-space:nowrap;
+    }
+    .hist-detail-btn:hover { text-decoration:underline; color:#115e59; }
+    .quote-hist-detail-modal-overlay {
+      position:fixed; inset:0; background:rgba(15,23,42,.52); z-index:120;
+      display:none; align-items:center; justify-content:center; padding:20px;
+    }
+    .quote-hist-detail-modal-overlay.open { display:flex; }
+    .quote-hist-detail-box {
+      background:#fff; border-radius:16px; width:100%; max-width:1280px; max-height:min(88vh,820px);
+      display:flex; flex-direction:column; overflow:hidden;
+      box-shadow:0 24px 56px rgba(15,23,42,.22);
+    }
+    .quote-hist-detail-meta {
+      margin:0 0 14px; padding:12px 14px; border-radius:10px;
+      background:#f8fafc; border:1px solid #e8eef5; font-size:13px; color:#64748b; line-height:1.6;
+    }
+    .quote-hist-detail-table-wrap {
+      overflow-x:auto; border:1px solid #e8eef5; border-radius:10px; background:#fff;
+    }
+    .quote-hist-detail-table {
+      width:100%; border-collapse:collapse; font-size:13px; min-width:1180px;
+    }
+    .quote-hist-detail-table th {
+      padding:10px 12px; text-align:left; background:#f8fafc;
+      border-bottom:1px solid #e8eef5; font-size:12px; font-weight:600; color:#64748b;
+    }
+    .quote-hist-detail-table td {
+      padding:10px 12px; border-bottom:1px solid #f1f5f9; color:#334155; vertical-align:top; line-height:1.45;
+    }
+    .quote-hist-detail-table .t-money { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .quote-hist-detail-table .t-price { font-weight:800; color:#dc2626; }
+    .quote-hist-detail-table .t-sub { font-weight:800; color:#0f172a; }
+    .quote-hist-supplement {
+      margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:12px;
+    }
+    .quote-hist-supplement-item {
+      padding:12px 14px; border:1px solid #e8eef5; border-radius:10px; background:#fafcff;
+    }
+    .quote-hist-supplement-label { font-size:12px; font-weight:800; color:#64748b; margin-bottom:6px; }
+    .quote-hist-supplement-value { font-size:13px; color:#334155; line-height:1.55; word-break:break-word; }
+    .quote-hist-file-btn {
+      display:inline-flex; align-items:center; gap:6px; padding:0; border:none; background:none;
+      color:#0f766e; font-size:13px; font-weight:700; cursor:pointer;
+    }
+    .quote-hist-file-btn:hover { text-decoration:underline; }
+    .quote-form-card { margin-top:0 !important; padding:18px 20px !important; }
+    .quote-lines-wrap {
+      overflow-x:auto; width:100%;
+      border:1px solid #e8eef5; border-radius:10px; background:#fff;
+    }
+    .quote-lines-wrap table { width:100%; border-collapse:collapse; min-width:1180px; }
+    .quote-lines-wrap thead th {
+      position:sticky; top:0; z-index:1; background:#f8fafc;
+      box-shadow:0 1px 0 #e2e8f0;
+    }
+    tr.row-unlinked { background:#fffbeb; }
+    tr.row-unlinked .m-p-unit:disabled {
+      background:#f1f5f9; color:#94a3b8; cursor:not-allowed; border-color:#e2e8f0;
+    }
+    .quote-form-foot { margin-top:0; padding-top:0; }
     .bid-product-cell { min-width:140px; }
     .bid-product-name { font-weight:700; color:#0f172a; line-height:1.45; }
     .bid-product-spec { font-size:11px; color:#94a3b8; margin-top:3px; line-height:1.4; }
@@ -93,18 +194,13 @@
     .modal-body { padding:16px 20px; overflow-y:auto; flex:1; }
 
     .inner-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px 20px; box-shadow:0 4px 14px rgba(15,23,42,.04); }
-    .inner-card + .inner-card { margin-top:16px; }
+    .inner-card + .inner-card { margin-top:0; }
 
     .seg { display:flex; border-radius:10px; overflow:hidden; border:1px solid #e2e8f0; max-width:100%; }
     .seg button { flex:1; padding:9px 12px; font-size:13px; font-weight:700; background:#f8fafc; color:#64748b; border:none; cursor:pointer; }
     .seg button.active { background:#0f766e; color:#fff; }
     .in-field { border:1px solid #cbd5e1; border-radius:8px; padding:10px 12px; font-size:14px; width:100%; max-width:320px; }
     .btn-lg { height:40px; padding:0 18px; border-radius:10px; font-size:14px; font-weight:700; }
-    .hist-row-m {
-      display:grid; grid-template-columns:120px 72px 1fr 88px; gap:8px; align-items:center;
-      padding:10px 12px; background:#f8fafc; border-radius:10px; font-size:13px; border:1px solid #eef2f7; margin-bottom:8px;
-    }
-    .rule-banner-sm { border-radius:12px; padding:12px 14px; font-size:13px; margin-bottom:14px; }
     .rule-bid { background:linear-gradient(135deg,#ecfdf5,#fff); border:1px solid #a7f3d0; color:#115e59; }
     .rule-inq { background:linear-gradient(135deg,#eff6ff,#fff); border:1px solid #bfdbfe; color:#1e40af; }
 
@@ -249,7 +345,7 @@
     </div>
   </div>
 
-  <!-- 报价：与截图一致的两卡片布局 -->
+  <!-- 报价弹窗 -->
   <div class="modal-overlay" id="modalQuote" onclick="if(event.target===this)closeQuoteModal()">
     <div class="modal-box w-quote" onclick="event.stopPropagation()">
       <div class="modal-head">
@@ -259,19 +355,27 @@
         </div>
         <button type="button" class="modal-x" onclick="closeQuoteModal()" aria-label="关闭"><i class="fas fa-xmark"></i></button>
       </div>
-      <div class="modal-body bg-slate-50/80">
+      <div class="modal-body quote-modal-body bg-slate-50/80">
         <div id="quoteRuleBanner"></div>
 
-        <div class="inner-card">
-          <h4 class="font-bold text-slate-900 text-base mb-1">我方报价历史</h4>
-          <p class="text-xs text-slate-500 mb-3">按提交时间从新到旧排列。</p>
-          <div id="mHistBox"></div>
+        <div class="quote-top-dual">
+          <div class="quote-buyer-address">
+            <div class="quote-panel-label"><i class="fas fa-location-dot"></i> 采购人收货地址</div>
+            <div id="quoteBuyerAddressBox"></div>
+          </div>
+          <div class="quote-hist-panel">
+            <div class="quote-hist-head">
+              <div class="quote-panel-label" style="margin-bottom:0"><i class="fas fa-clock-rotate-left"></i> 我方报价</div>
+            </div>
+            <div id="quoteHistSummary" class="quote-hist-summary"></div>
+            <div id="mHistBox" class="quote-hist-detail"></div>
+          </div>
         </div>
 
-        <div class="inner-card">
-          <h4 class="font-bold text-slate-900 text-base mb-4">填写报价信息</h4>
+        <div class="inner-card quote-form-card">
+          <h4 class="font-bold text-slate-900 text-base mb-1">填写报价信息</h4>
           <p class="text-xs text-slate-500 mb-3">填写各行报价，自动汇总总价；单行报价<strong class="text-slate-700">不得超过平台最高价</strong>，超出将无法提交。</p>
-          <div class="overflow-x-auto">
+          <div class="quote-lines-wrap">
             <table class="w-full border-collapse text-sm" id="mLinesTable"></table>
           </div>
           <div class="mt-3 text-right font-bold">汇总：<span class="money text-lg" id="mSumLines">¥0</span></div>
@@ -305,6 +409,20 @@
     </div>
   </div>
 
+  <!-- 我方报价详情 -->
+  <div class="quote-hist-detail-modal-overlay" id="modalQuoteHistDetail" onclick="if(event.target===this)closeQuoteHistDetail()">
+    <div class="quote-hist-detail-box" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <h3 id="quoteHistDetailTitle">报价详情</h3>
+          <p id="quoteHistDetailSub" class="text-sm text-slate-500 mt-1"></p>
+        </div>
+        <button type="button" class="modal-x" onclick="closeQuoteHistDetail()" aria-label="关闭"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="quoteHistDetailBody"></div>
+    </div>
+  </div>
+
   <!-- 参与竞价商品选择 -->
   <div class="picker-overlay" id="bidProductPicker" onclick="if(event.target===this)closeBidProductPicker()">
     <div class="picker-box" onclick="event.stopPropagation()">
@@ -330,6 +448,14 @@
 (function () {
   var STORAGE_KEY = 'supplierRfQ_demoRows';
   var HISTORY_KEY = 'supplierRfQ_demoHist';
+  var EXTRA_ROWS_KEY = 'supplierRfQ_extraRows';
+  var EXTRA_DEMAND_KEY = 'supplierRfQ_extraDemand';
+  var BID_RECIPIENT_KEY = 'bidAssistRecipientId';
+  var BUYER_RECIPIENT_CATALOG = [
+    { id: 'addr-bj', name: '张三', phone: '138****8000', address: '北京市海淀区中关村大街1号政务中心3层' },
+    { id: 'addr-gz', name: '李四', phone: '139****9000', address: '广东省广州市天河区天河路888号采购中心5层' },
+    { id: 'addr-sh', name: '王五', phone: '137****7000', address: '上海市浦东新区世纪大道100号采购大厦8层' }
+  ];
 
   /** supply: in_stock | no_stock | not_listed */
   var PROJECT_DEMAND = {
@@ -408,7 +534,7 @@
   function getLineCatalog(pid, idx) {
     var key = catalogKey(pid, idx);
     if (SUPPLIER_LINE_CATALOG[key]) return SUPPLIER_LINE_CATALOG[key];
-    var dem = PROJECT_DEMAND[pid];
+    var dem = getProjectDemand(pid);
     if (!dem || !dem.lines[idx]) return { same: [], similar: [] };
     var L = dem.lines[idx];
     return {
@@ -466,15 +592,36 @@
     { id:'S7', code:'BID20260502007', title:'复印纸框架协议竞价', rfqFile:'复印纸框架协议.docx', docType:'word', mode:'bidding', buyer:'财政局采购办', lowest:null, mine:null, st:'terminated', deadline:'2026-05-02 18:00' }
   ];
 
+  function loadExtraRows() {
+    try {
+      var raw = sessionStorage.getItem(EXTRA_ROWS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function getProjectDemand(pid) {
+    if (PROJECT_DEMAND[pid]) return PROJECT_DEMAND[pid];
+    try {
+      var map = JSON.parse(sessionStorage.getItem(EXTRA_DEMAND_KEY) || '{}');
+      if (map[pid]) return map[pid];
+    } catch (e) {}
+    return PROJECT_DEMAND.S2;
+  }
+
   function loadRows() {
     try {
-      var raw = sessionStorage.getItem(STORAGE_KEY);
-      if (!raw) return BASE.map(function (r) { return Object.assign({}, r); });
-      var saved = JSON.parse(raw);
-      return BASE.map(function (r) {
+      var saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}');
+      var base = BASE.map(function (r) {
         var o = saved[r.id];
         return o ? Object.assign({}, r, o) : Object.assign({}, r);
       });
+      var extra = loadExtraRows().map(function (r) {
+        var o = saved[r.id];
+        return o ? Object.assign({}, r, o) : Object.assign({}, r);
+      });
+      return extra.concat(base);
     } catch (e) {
       return BASE.map(function (r) { return Object.assign({}, r); });
     }
@@ -521,7 +668,7 @@
   /* ---------- 详情弹窗 ---------- */
   window.openDetailModal = function (id) {
     var r = getMergedRow(id);
-    var dem = PROJECT_DEMAND[id];
+    var dem = getProjectDemand(id);
     if (!r || !dem) return;
     document.getElementById('detailTitle').textContent = '采购商品需求 · ' + r.code;
     document.getElementById('detailSub').textContent = r.title + ' ｜ ' + (r.mode === 'inquiry' ? '询价' : '竞价') + ' ｜ 报价截止 ' + r.deadline;
@@ -549,6 +696,196 @@
 
   /* ---------- 报价弹窗 ---------- */
   var modalQuotePid = null;
+  var modalQuoteHistEntries = [];
+
+  function getBuyerRecipientId() {
+    try {
+      var saved = sessionStorage.getItem(BID_RECIPIENT_KEY);
+      if (saved) return saved;
+    } catch (e) {}
+    return 'addr-bj';
+  }
+
+  function renderBuyerAddress() {
+    var box = document.getElementById('quoteBuyerAddressBox');
+    if (!box) return;
+    var rid = getBuyerRecipientId();
+    var rec = BUYER_RECIPIENT_CATALOG.filter(function (r) { return r.id === rid; })[0]
+      || BUYER_RECIPIENT_CATALOG[0];
+    box.innerHTML = ''
+      + '<div class="quote-buyer-card">'
+      + '<div class="quote-buyer-icon"><i class="fas fa-map-marker-alt"></i></div>'
+      + '<div>'
+      + '<div class="quote-buyer-user">' + esc(rec.name) + '<span>' + esc(rec.phone) + '</span></div>'
+      + '<div class="quote-buyer-addr">' + esc(rec.address) + '</div>'
+      + '<div class="quote-buyer-hint">与采购端所选收货地址一致，请按该地址评估配送/安装成本。</div>'
+      + '</div></div>';
+  }
+
+  function buildQuoteHistDetailItems(pid, entry) {
+    if (entry.lineItems && entry.lineItems.length) {
+      var dem = getProjectDemand(pid);
+      return entry.lineItems.map(function (it, i) {
+        var L = dem && dem.lines[i] ? dem.lines[i] : {};
+        return Object.assign({
+          demandName: L.name || it.demandName,
+          refName: L.refName,
+          refId: L.refId,
+          spec: L.spec || it.spec,
+          qty: L.qty != null ? L.qty : it.qty,
+          maxPrice: L.maxPrice != null ? L.maxPrice : it.maxPrice
+        }, it);
+      });
+    }
+    var dem = getProjectDemand(pid);
+    if (!dem || !dem.lines.length) return [];
+    var baseSum = dem.lines.reduce(function (sum, L) {
+      return sum + (L.maxPrice != null ? L.maxPrice * L.qty * 0.92 : 0);
+    }, 0);
+    var ratio = baseSum > 0 && entry.amount ? entry.amount / baseSum : 1;
+    return dem.lines.map(function (L, i) {
+      var bp = entry.bidProducts && entry.bidProducts[i] ? entry.bidProducts[i] : null;
+      var unitBase = L.maxPrice != null ? L.maxPrice * 0.92 : 1000;
+      var price = Math.max(1, Math.round(unitBase * ratio * 100) / 100);
+      return {
+        demandName: L.name,
+        refName: L.refName,
+        refId: L.refId,
+        bidProductName: bp ? bp.name : '—',
+        bidProductId: bp ? bp.id : '',
+        bidProductSpec: bp ? (bp.spec || '') : '',
+        spec: L.spec || '—',
+        qty: L.qty,
+        maxPrice: L.maxPrice,
+        unitPrice: price,
+        subtotal: Math.round(price * L.qty * 100) / 100
+      };
+    });
+  }
+
+  function renderHistBidProductCell(it) {
+    if (it.bidProductName && it.bidProductName !== '—') {
+      return ''
+        + '<td class="p-2 border-t border-slate-100 bid-product-cell">'
+        + '<div class="bid-product-name">' + bidProductDetailLink(it.bidProductId, it.bidProductName) + '</div>'
+        + '<div class="bid-product-spec">' + esc(it.bidProductSpec || '—') + '</div>'
+        + '</td>';
+    }
+    return '<td class="p-2 border-t border-slate-100 text-slate-400">—</td>';
+  }
+
+  function renderQuoteHistDetailTable(items) {
+    var thead = '<thead><tr>'
+      + '<th class="text-left p-2 bg-slate-50">商品名称</th>'
+      + '<th class="text-left p-2 bg-slate-50">平台参考商品</th>'
+      + '<th class="text-left p-2 bg-slate-50">参与竞价商品</th>'
+      + '<th class="text-left p-2 bg-slate-50">规格</th>'
+      + '<th class="p-2 bg-slate-50">数量</th>'
+      + '<th class="p-2 bg-slate-50 whitespace-nowrap">平台最高价</th>'
+      + '<th class="p-2 bg-slate-50">报价</th>'
+      + '<th class="p-2 bg-slate-50">小计</th>'
+      + '</tr></thead>';
+    var tbody = '<tbody>' + (items.length ? items.map(function (it) {
+      var refCell = it.refName
+        ? '<a class="ref-link" href="../product.html?id=' + encodeURIComponent(it.refId || '') + '" target="_blank" rel="noopener noreferrer">' + esc(it.refName) + '</a>'
+        : '<span class="text-slate-400">—</span>';
+      return ''
+        + '<tr>'
+        + '<td class="p-2 border-t border-slate-100 font-semibold">' + esc(it.demandName || '—') + '</td>'
+        + '<td class="p-2 border-t border-slate-100">' + refCell + '</td>'
+        + renderHistBidProductCell(it)
+        + '<td class="p-2 border-t border-slate-100 text-slate-600">' + esc(it.spec || '—') + '</td>'
+        + '<td class="p-2 border-t border-slate-100 text-center">' + (it.qty != null ? it.qty : '—') + '</td>'
+        + '<td class="p-2 border-t border-slate-100 text-center max-price">' + (it.maxPrice != null ? fmtMoney(it.maxPrice) : '—') + '</td>'
+        + '<td class="p-2 border-t border-slate-100 text-center t-price money">' + fmtMoney(it.unitPrice || 0) + '</td>'
+        + '<td class="p-2 border-t border-slate-100 m-line-sub money whitespace-nowrap">' + fmtMoney(it.subtotal || 0) + '</td>'
+        + '</tr>';
+    }).join('') : '<tr><td colspan="8" class="p-4 text-center text-slate-400">暂无明细数据</td></tr>') + '</tbody>';
+    return thead + tbody;
+  }
+
+  window.openQuoteHistDescFile = function (fileName) {
+    alert('演示：打开文件「' + fileName + '」');
+  };
+
+  function normalizeQuoteHistDetailItems(pid, entry, items) {
+    if (!items.length) return items;
+    var sum = items.reduce(function (s, it) { return s + (it.subtotal || 0); }, 0);
+    if (!entry.amount || Math.abs(sum - entry.amount) < 1) return items;
+    var diff = entry.amount - sum;
+    var last = items[items.length - 1];
+    if (last && last.qty) {
+      last.unitPrice = Math.max(0.01, Math.round((last.unitPrice + diff / last.qty) * 100) / 100);
+      last.subtotal = Math.round(last.unitPrice * last.qty * 100) / 100;
+    }
+    return items;
+  }
+
+  window.openQuoteHistDetail = function (idx) {
+    var entry = modalQuoteHistEntries[idx];
+    var pid = modalQuotePid;
+    var r = pid ? getMergedRow(pid) : null;
+    if (!entry || !pid || !r) return;
+    var items = normalizeQuoteHistDetailItems(pid, entry, buildQuoteHistDetailItems(pid, entry));
+    var modeLabel = r.mode === 'bidding' ? '竞价' : '询价';
+    var remarkLabel = r.mode === 'inquiry' ? '询价说明' : '竞价说明';
+    var fileLabel = r.mode === 'inquiry' ? '询价说明文件' : '竞价说明文件';
+    var remark = entry.quoteRemark || (entry.note && entry.note !== '按商品单价' ? entry.note : '') || '—';
+    var fileBlock = entry.descFileName
+      ? '<button type="button" class="quote-hist-file-btn" onclick="openQuoteHistDescFile(' + JSON.stringify(entry.descFileName) + ')"><i class="fas fa-file-lines"></i> ' + esc(entry.descFileName) + '</button>'
+      : '—';
+    var validTag = entry.isValid
+      ? '<span class="hist-tag-valid">当前有效</span>'
+      : '<span class="text-slate-400">已失效</span>';
+
+    document.getElementById('quoteHistDetailTitle').textContent = '商品报价明细';
+    document.getElementById('quoteHistDetailSub').textContent = entry.time + ' ｜ 汇总 ' + fmtMoney(entry.amount) + ' ｜ ' + modeLabel;
+    document.getElementById('quoteHistDetailBody').innerHTML = ''
+      + '<div class="quote-hist-detail-meta">'
+      + '报价时间 <strong style="color:#0f172a">' + esc(entry.time) + '</strong>'
+      + ' · 汇总金额 <strong class="money">' + fmtMoney(entry.amount) + '</strong>'
+      + ' · ' + validTag
+      + '</div>'
+      + '<div class="quote-hist-detail-table-wrap"><table class="quote-hist-detail-table">'
+      + renderQuoteHistDetailTable(items)
+      + '</table></div>'
+      + '<div class="mt-3 text-right font-bold">汇总：<span class="money text-lg">' + fmtMoney(entry.amount) + '</span></div>'
+      + '<div class="quote-hist-supplement">'
+      + '<div class="quote-hist-supplement-item"><div class="quote-hist-supplement-label">' + remarkLabel + '</div>'
+      + '<div class="quote-hist-supplement-value">' + esc(remark) + '</div></div>'
+      + '<div class="quote-hist-supplement-item"><div class="quote-hist-supplement-label">' + fileLabel + '</div>'
+      + '<div class="quote-hist-supplement-value">' + fileBlock + '</div></div>'
+      + '</div>';
+    document.getElementById('modalQuoteHistDetail').classList.add('open');
+  };
+
+  window.closeQuoteHistDetail = function () {
+    document.getElementById('modalQuoteHistDetail').classList.remove('open');
+  };
+
+  function captureModalLineItems(pid) {
+    var dem = getProjectDemand(pid);
+    if (!dem) return [];
+    return dem.lines.map(function (L, i) {
+      var tr = document.querySelector('#mLinesTable tbody tr[data-line-idx="' + i + '"]');
+      var inp = tr ? tr.querySelector('.m-p-unit') : null;
+      var price = inp && !inp.disabled ? (parseFloat(inp.value) || 0) : 0;
+      var bp = modalBidProducts[i];
+      return {
+        demandName: L.name,
+        refName: L.refName,
+        refId: L.refId,
+        bidProductName: bp ? bp.name : '—',
+        bidProductId: bp ? bp.id : '',
+        bidProductSpec: bp ? (bp.spec || '') : '',
+        spec: L.spec || '—',
+        qty: L.qty,
+        maxPrice: L.maxPrice,
+        unitPrice: price,
+        subtotal: Math.round(price * L.qty * 100) / 100
+      };
+    });
+  }
 
   function renderBidProductCell(pid, idx) {
     var p = modalBidProducts[idx];
@@ -569,7 +906,7 @@
 
   function rebuildModalLinesTable() {
     var pid = modalQuotePid;
-    var dem = PROJECT_DEMAND[pid];
+    var dem = getProjectDemand(pid);
     if (!pid || !dem) return;
     var prices = {};
     document.querySelectorAll('#mLinesTable tbody tr').forEach(function (tr) {
@@ -586,7 +923,7 @@
 
   window.openBidProductPicker = function (lineIdx) {
     var pid = modalQuotePid;
-    var dem = PROJECT_DEMAND[pid];
+    var dem = getProjectDemand(pid);
     if (!pid || !dem || !dem.lines[lineIdx]) return;
     var L = dem.lines[lineIdx];
     pickerContext = { pid: pid, lineIdx: lineIdx, tab: 'same' };
@@ -656,13 +993,13 @@
     rows.forEach(function (tr) {
       var p = tr.querySelector('.m-p-unit');
       var q = parseFloat(tr.dataset.qty) || 0;
-      var price = parseFloat(p && p.value) || 0;
+      var price = (p && !p.disabled) ? (parseFloat(p.value) || 0) : 0;
       var maxP = parseFloat(tr.dataset.maxPrice);
       var overLimit = !isNaN(maxP) && price > maxP;
       sum += price * q;
       var sub = tr.querySelector('.m-line-sub');
       if (sub) sub.textContent = fmtMoney(price * q);
-      if (p) p.classList.toggle('in-field-over', overLimit);
+      if (p && !p.disabled) p.classList.toggle('in-field-over', overLimit);
       tr.classList.toggle('row-over-limit', overLimit);
     });
     var el = document.getElementById('mSumLines');
@@ -677,7 +1014,8 @@
       var maxP = parseFloat(tr.dataset.maxPrice);
       if (isNaN(maxP)) return;
       var p = tr.querySelector('.m-p-unit');
-      var price = parseFloat(p && p.value);
+      if (!p || p.disabled) return;
+      var price = parseFloat(p.value);
       if (isNaN(price) || price <= 0) return;
       if (price > maxP) {
         var nameCell = tr.querySelector('td');
@@ -703,38 +1041,110 @@
       + '<th class="p-2 bg-slate-50">小计</th>'
       + '</tr></thead>';
     var tbody = '<tbody>' + lines.map(function (L, idx) {
+      var linked = !!(modalBidProducts[idx] && modalBidProducts[idx].name);
       var refCell = L.refName
         ? '<a class="ref-link" href="../product.html?id=' + encodeURIComponent(L.refId || '') + '" target="_blank" rel="noopener noreferrer">' + esc(L.refName) + '</a>'
         : '<span class="text-slate-400">—</span>';
-      var savedPrice = L._savedPrice ? ' value="' + esc(String(L._savedPrice)) + '"' : '';
-      return '<tr data-qty="' + L.qty + '" data-line-idx="' + idx + '"' + (L.maxPrice != null ? ' data-max-price="' + L.maxPrice + '"' : '') + '>'
+      var savedPrice = linked && L._savedPrice ? ' value="' + esc(String(L._savedPrice)) + '"' : '';
+      var disAttr = linked ? '' : ' disabled title="请先关联参与竞价商品"';
+      var rowCls = linked ? '' : ' class="row-unlinked"';
+      return '<tr data-qty="' + L.qty + '" data-line-idx="' + idx + '"' + (L.maxPrice != null ? ' data-max-price="' + L.maxPrice + '"' : '') + rowCls + '>'
         + '<td class="p-2 border-t border-slate-100 font-semibold">' + esc(L.name) + '</td>'
         + '<td class="p-2 border-t border-slate-100">' + refCell + '</td>'
         + renderBidProductCell(pid, idx)
         + '<td class="p-2 border-t border-slate-100 text-slate-600">' + esc(L.spec || '—') + '</td>'
         + '<td class="p-2 border-t border-slate-100 text-center">' + L.qty + '</td>'
         + '<td class="p-2 border-t border-slate-100 text-center max-price">' + (L.maxPrice != null ? fmtMoney(L.maxPrice) : '—') + '</td>'
-        + '<td class="p-2 border-t border-slate-100"><input type="number" class="in-field m-p-unit max-w-[120px]" min="0" step="0.01" placeholder="0"' + savedPrice + ' oninput="recalcModalLines()"></td>'
+        + '<td class="p-2 border-t border-slate-100"><input type="number" class="in-field m-p-unit max-w-[120px]" min="0" step="0.01" placeholder="' + (linked ? '0' : '先关联') + '"' + savedPrice + disAttr + ' oninput="recalcModalLines()"></td>'
         + '<td class="p-2 border-t border-slate-100 m-line-sub money whitespace-nowrap">¥0</td>'
         + '</tr>';
     }).join('') + '</tbody>';
     document.getElementById('mLinesTable').innerHTML = thead + tbody;
   }
 
+  function buildHistCompareText(r, validAmount) {
+    if (validAmount == null) return '';
+    if (r.mode === 'inquiry') return ' · <span class="hist-compare-ok">询价以最新一条为有效</span>';
+    if (r.lowest == null) return ' · <span class="hist-compare-ok">首场报价</span>';
+    if (validAmount < r.lowest) {
+      var pct = ((r.lowest - validAmount) / r.lowest * 100).toFixed(1);
+      return ' · <span class="hist-compare-ok">低于公示最低价 ' + pct + '%</span>';
+    }
+    if (validAmount > r.lowest) {
+      var pct2 = ((validAmount - r.lowest) / r.lowest * 100).toFixed(1);
+      return ' · <span class="hist-compare-warn">高于公示最低价 ' + pct2 + '%</span>';
+    }
+    return ' · <span class="hist-compare-warn">与公示最低价并列（不可提交）</span>';
+  }
+
   function renderModalHist(r) {
     var pid = modalQuotePid;
-    var list = (loadHist()[pid] || []).slice().reverse();
+    var rawList = (loadHist()[pid] || []).slice();
+    var hasDemoOnly = r.mine != null && !rawList.length;
+    var list = rawList.slice().reverse();
+    var summaryEl = document.getElementById('quoteHistSummary');
     var box = document.getElementById('mHistBox');
-    var rows = [];
-    if (r.mine != null && !list.length) {
-      rows.push('<div class="hist-row-m"><span class="text-slate-500">（初始演示）</span><span>—</span><span>来自内置示例 · </span><span class="money">' + fmtMoney(r.mine) + '</span></div>');
+    if (!summaryEl || !box) return;
+
+    modalQuoteHistEntries = [];
+
+    if (!list.length && !hasDemoOnly) {
+      summaryEl.innerHTML = '首场报价，<strong>暂无历史</strong>';
+      box.innerHTML = '';
+      return;
     }
-    list.forEach(function (h) {
-      var noteText = h.quoteRemark || h.note || '';
-      if (h.descFileName) noteText = (noteText ? noteText + ' · ' : '') + h.descFileName;
-      rows.push('<div class="hist-row-m"><span class="text-slate-500">' + esc(h.time) + '</span><span>' + esc(h.way) + '</span><span>' + esc(noteText) + '</span><span class="money">' + fmtMoney(h.amount) + '</span></div>');
+
+    var count = list.length || (hasDemoOnly ? 1 : 0);
+    var validAmount = list.length ? list[list.length - 1].amount : r.mine;
+    var compare = buildHistCompareText(r, validAmount);
+    summaryEl.innerHTML = '已报价 <strong>' + count + '</strong> 次 · 当前有效 <strong class="money">' + fmtMoney(validAmount) + '</strong>' + compare;
+
+    var rows = [];
+    if (hasDemoOnly && !list.length) {
+      var dem = getProjectDemand(pid);
+      modalQuoteHistEntries.push({
+        time: '（初始演示）',
+        way: '—',
+        amount: r.mine,
+        note: '来自内置示例',
+        quoteRemark: '',
+        descFileName: '',
+        bidProducts: dem ? dem.lines.map(function (_, i) {
+          var p = modalBidProducts[i];
+          return p ? { id: p.id, name: p.name, spec: p.spec || '' } : null;
+        }) : null,
+        lineItems: null,
+        isValid: true
+      });
+      rows.push(
+        '<div class="hist-row-m">'
+        + '<span class="text-slate-500">（初始演示）</span>'
+        + '<span class="money">' + fmtMoney(r.mine) + '</span>'
+        + '<span>来自内置示例</span>'
+        + '<span class="hist-tag-valid">当前有效</span>'
+        + '<button type="button" class="hist-detail-btn" onclick="openQuoteHistDetail(0)"><i class="fas fa-list-ul"></i> 查看详情</button>'
+        + '</div>'
+      );
+    }
+    list.forEach(function (h, i) {
+      var noteText = h.quoteRemark || h.note || '—';
+      if (h.descFileName) noteText = (noteText !== '—' ? noteText + ' · ' : '') + h.descFileName;
+      var entryIdx = modalQuoteHistEntries.length;
+      modalQuoteHistEntries.push(Object.assign({}, h, { isValid: i === 0 }));
+      var validTag = i === 0
+        ? '<span class="hist-tag-valid">当前有效</span>'
+        : '<span class="text-slate-400">已失效</span>';
+      rows.push(
+        '<div class="hist-row-m">'
+        + '<span class="text-slate-500">' + esc(h.time) + '</span>'
+        + '<span class="money">' + fmtMoney(h.amount) + '</span>'
+        + '<span>' + esc(noteText) + '</span>'
+        + validTag
+        + '<button type="button" class="hist-detail-btn" onclick="openQuoteHistDetail(' + entryIdx + ')"><i class="fas fa-list-ul"></i> 查看详情</button>'
+        + '</div>'
+      );
     });
-    box.innerHTML = rows.length ? rows.join('') : '<p class="text-sm text-slate-400">暂无提交记录</p>';
+    box.innerHTML = rows.join('');
   }
 
   function resetQuoteFormExtras(mode) {
@@ -777,12 +1187,13 @@
 
   window.openQuoteModal = function (id) {
     var r = getMergedRow(id);
-    var dem = PROJECT_DEMAND[id];
+    var dem = getProjectDemand(id);
     if (!r || !dem || (r.st !== 'quoting' && r.st !== 'pending')) return;
 
     modalQuotePid = id;
+    var modeLabel = r.mode === 'bidding' ? '竞价' : '询价';
     document.getElementById('quoteModalTitle').textContent = '报价 · ' + r.code;
-    document.getElementById('quoteModalSub').textContent = r.title + ' ｜ 截止 ' + r.deadline;
+    document.getElementById('quoteModalSub').textContent = r.title + ' ｜ ' + modeLabel + ' ｜ 截止 ' + r.deadline;
 
     var rb = document.getElementById('quoteRuleBanner');
     if (r.mode === 'bidding') {
@@ -790,6 +1201,9 @@
     } else {
       rb.innerHTML = '<div class="rule-banner-sm rule-inq"><strong>询价：</strong>不展示他人报价；截止前可多次提交，<strong>有效报价为您最新一条</strong>。</div>';
     }
+
+    resetQuoteFormExtras(r.mode);
+    renderBuyerAddress();
 
     modalBidProducts = initBidProductsForProject(id, dem.lines);
     dem.lines.forEach(function (L) { delete L._savedPrice; });
@@ -803,16 +1217,18 @@
 
   window.closeQuoteModal = function () {
     document.getElementById('modalQuote').classList.remove('open');
+    closeQuoteHistDetail();
     closeBidProductPicker();
     modalQuotePid = null;
     modalBidProducts = {};
+    modalQuoteHistEntries = [];
   };
 
   window.submitModalQuote = function () {
     var id = modalQuotePid;
     if (!id) return;
     var r = getMergedRow(id);
-    var dem = PROJECT_DEMAND[id];
+    var dem = getProjectDemand(id);
     if (!r || !dem) return;
 
     var amount = recalcModalLines();
@@ -878,8 +1294,9 @@
       descFileName: descFileName,
       bidProducts: dem.lines.map(function (_, i) {
         var p = modalBidProducts[i];
-        return p ? { name: p.name, spec: p.spec || '' } : null;
-      })
+        return p ? { id: p.id, name: p.name, spec: p.spec || '' } : null;
+      }),
+      lineItems: captureModalLineItems(id)
     });
     saveHist(hm);
 
@@ -970,7 +1387,7 @@
       if (r.mode === 'bidding' && r.lowest != null && r.mine != null && r.mine >= r.lowest && r.st === 'quoting') {
         mineWarn = '<div class="hint-xs text-orange-600"><i class="fas fa-triangle-exclamation"></i> 高于或等于最低价，提交将被拦截</div>';
       }
-      return '<tr>'
+      return '<tr data-row-id="' + esc(r.id) + '">'
         + '<td><span class="font-semibold text-slate-900">' + esc(r.code) + '</span></td>'
         + renderRfqFileCell(r)
         + '<td>' + tag + '</td>'
@@ -988,11 +1405,32 @@
     }
   }
 
+  function getUrlParam(name) {
+    try {
+      return new URLSearchParams(window.location.search).get(name);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function focusRowFromNotice() {
+    var focusId = getUrlParam('focus');
+    if (!focusId) return;
+    var tr = null;
+    document.querySelectorAll('#tbody tr[data-row-id]').forEach(function (el) {
+      if (el.getAttribute('data-row-id') === focusId) tr = el;
+    });
+    if (!tr) return;
+    tr.classList.add('row-from-notice');
+    tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   window.applyFilters = applyFilters;
   window.resetFilters = resetFilters;
 
   ROWS = loadRows();
   applyFilters();
+  setTimeout(focusRowFromNotice, 80);
 })();
 </script>
 </body>

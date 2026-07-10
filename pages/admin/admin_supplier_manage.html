@@ -409,7 +409,6 @@
                 <th class="text-left px-4 py-3 font-semibold whitespace-nowrap">联系人</th>
                 <th class="text-left px-4 py-3 font-semibold">所在分站</th>
                 <th class="text-left px-4 py-3 font-semibold">入驻时间</th>
-                <th class="text-left px-4 py-3 font-semibold">资质状态</th>
                 <th class="text-left px-4 py-3 font-semibold">AI审核结果</th>
                 <th class="text-left px-4 py-3 font-semibold">上架状态</th>
                 <th class="text-left px-4 py-3 font-semibold">操作</th>
@@ -458,10 +457,10 @@
 <script>
   // ===== 模拟数据（与资质详情页 SUPPLIER_DETAIL_DB 保持一致） =====
   const suppliersData = [
+    { id:'SP-003', name:'广州得力办公用品贸易公司', station:'医疗卫生专区', settleDate:'2026-02-18', qualStatus:'pass', aiResult:'pass', onlineStatus:'reviewing', applicantName:'张伟', applicantMobile:'13500108820', contact:'赵老师', phone:'135-0010-8820', legalPerson:'张某', creditCode:'12110000MB9876543B', address:'广州市天河区珠江新城' },
+    { id:'SP-001', name:'北京联合科技有限公司', station:'北京分站', settleDate:'2025-12-10', qualStatus:'warn', aiResult:'warn', onlineStatus:'reviewing', applicantName:'王小明', applicantMobile:'13800102334', contact:'王主任', phone:'138-0010-2334', legalPerson:'王某', creditCode:'91110000MA0012345X', address:'北京市朝阳区望京SOHO T1栋' },
+    { id:'SP-002', name:'上海联华网络设备有限公司', station:'华东分站', settleDate:'2026-01-05', qualStatus:'fail', aiResult:'fail', onlineStatus:'reviewing', applicantName:'李丽', applicantMobile:'13600101028', contact:'李老师', phone:'136-0010-1028', legalPerson:'李某', creditCode:'52110000MJ1234567A', address:'上海市浦东新区张江高科技园区' },
     { id:'SP-009', name:'得力办公用品专卖店', station:'办公用品专区', settleDate:'2024-01-15', qualStatus:'pass', aiResult:'pass', onlineStatus:'online', applicantName:'得力管理员', applicantMobile:'400-820-8056', contact:'企业客服', phone:'400-820-8056', legalPerson:'陈德强', creditCode:'9133020025438442XD', address:'中国（江苏）自由贸易试验区苏州片区苏州工业园区汇智街8号', registeredCapital:'36225万元', companyName:'得力集团有限公司' },
-    { id:'SP-001', name:'北京联合科技有限公司', station:'北京分站', settleDate:'2025-12-10', qualStatus:'warn', aiResult:'warn', onlineStatus:'online', applicantName:'王小明', applicantMobile:'13800102334', contact:'王主任', phone:'138-0010-2334', legalPerson:'王某', creditCode:'91110000MA0012345X', address:'北京市朝阳区望京SOHO T1栋' },
-    { id:'SP-002', name:'上海联华网络设备有限公司', station:'华东分站', settleDate:'2026-01-05', qualStatus:'fail', aiResult:'fail', onlineStatus:'offline', applicantName:'李丽', applicantMobile:'13600101028', contact:'李老师', phone:'136-0010-1028', legalPerson:'李某', creditCode:'52110000MJ1234567A', address:'上海市浦东新区张江高科技园区' },
-    { id:'SP-003', name:'广州得力办公用品贸易公司', station:'医疗卫生专区', settleDate:'2026-02-18', qualStatus:'pass', aiResult:'pass', onlineStatus:'online', applicantName:'张伟', applicantMobile:'13500108820', contact:'赵老师', phone:'135-0010-8820', legalPerson:'张某', creditCode:'12110000MB9876543B', address:'广州市天河区珠江新城' },
     { id:'SP-004', name:'深圳华强IT配件有限公司', station:'教育装备专区', settleDate:'2026-03-01', qualStatus:'progress', aiResult:'none', onlineStatus:'reviewing', applicantName:'陈晨', applicantMobile:'13900109900', contact:'钱老师', phone:'139-0010-9900', legalPerson:'陈某', creditCode:'91310000MB4455667C', address:'深圳市福田区华强北路' },
     { id:'SP-005', name:'杭州智创家具科技股份公司', station:'华东分站', settleDate:'2026-03-15', qualStatus:'warn', aiResult:'warn', onlineStatus:'pending', applicantName:'刘洋', applicantMobile:'13700106677', contact:'孙老师', phone:'137-0010-6677', legalPerson:'刘某', creditCode:'91110000MB8899001D', address:'杭州市西湖区文三路' },
     { id:'SP-006', name:'成都宇宙电子商务有限公司', station:'北京分站', settleDate:'2026-01-20', qualStatus:'pass', aiResult:'pass', onlineStatus:'offline', applicantName:'赵敏', applicantMobile:'13300652345', contact:'赵总', phone:'133-0065-2345', legalPerson:'赵某', creditCode:'91510000654321987E', address:'成都市高新区天府大道' },
@@ -498,17 +497,6 @@
   }
 
   // ===== 徽章生成 =====
-  function getQualBadge(status) {
-    const map = {
-      pass:     '<span class="mini-badge badge-success"><i class="fas fa-circle-check"></i>资质通过</span>',
-      warn:     '<span class="mini-badge badge-warn"><i class="fas fa-wrench"></i>待整改</span>',
-      fail:     '<span class="mini-badge badge-fail"><i class="fas fa-circle-xmark"></i>审核不通过</span>',
-      progress: '<span class="mini-badge badge-progress"><i class="fas fa-spinner fa-spin"></i>审核中</span>',
-      neutral:  '<span class="mini-badge badge-neutral"><i class="fas fa-file-lines"></i>待上传</span>',
-    };
-    return map[status] || map.neutral;
-  }
-
   function getAiBadge(result) {
     const map = {
       pass: '<span class="mini-badge badge-success"><i class="fas fa-robot"></i>全部通过</span>',
@@ -572,7 +560,7 @@
     if (!filteredData.length) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="10" class="empty-state">
+          <td colspan="9" class="empty-state">
             <div class="icon-wrap"><i class="fas fa-store-slash"></i></div>
             <div class="text-base font-semibold text-slate-700 mb-2">暂无匹配供应商</div>
             <div class="text-sm">请调整筛选条件，或点击"供应商入驻"添加新供应商。</div>
@@ -598,7 +586,6 @@
           <span class="inline-flex px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">${s.station}</span>
         </td>
         <td class="px-4 py-4 text-slate-600">${s.settleDate}</td>
-        <td class="px-4 py-4">${getQualBadge(s.qualStatus)}</td>
         <td class="px-4 py-4">${getAiBadge(s.aiResult)}</td>
         <td class="px-4 py-4">${getOnlineBadge(s.onlineStatus)}</td>
         <td class="px-4 py-4">${getOperationCell(s)}</td>

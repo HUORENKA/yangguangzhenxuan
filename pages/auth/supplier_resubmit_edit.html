@@ -278,24 +278,24 @@
         </div>
         <div class="rule-grid">
           <div class="rule-item">
-            <div class="ricon" style="background:#eff6ff;color:#2563eb;"><i class="fa-regular fa-id-card"></i></div>
-            <div class="rtitle">营业执照核验</div>
-            <div class="rdesc">核验营业执照的真实性、有效期、统一社会信用代码及经营范围与主营类目的匹配程度。</div>
+            <div class="ricon" style="background:#eff6ff;color:#2563eb;"><i class="fa-solid fa-database"></i></div>
+            <div class="rtitle">合作风险数据源</div>
+            <div class="rdesc">调用企查查「合作风险排查」接口（ApiCode 2006），以企业名称或统一社会信用代码为查询条件，获取工商、司法、税务等合作风险数据，作为 AI 资质审核的唯一数据源。</div>
           </div>
           <div class="rule-item">
-            <div class="ricon" style="background:#fffbeb;color:#d97706;"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-            <div class="rtitle">税务资质审查</div>
-            <div class="rdesc">审查增值税一般纳税人资格证、税务登记信息完整性，识别税务异常或高风险字段。</div>
+            <div class="ricon" style="background:#fffbeb;color:#d97706;"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="rtitle">六维风险检测</div>
+            <div class="rdesc">从工商存续、司法风险、行政处罚、税务风险、经营合规、企业实力六个维度进行风险核验，并生成六维雷达图；产业链布局、行政许可仅作参考展示，不参与定级与阻断判定。</div>
           </div>
           <div class="rule-item">
-            <div class="ricon" style="background:#ecfdf5;color:#059669;"><i class="fa-solid fa-certificate"></i></div>
-            <div class="rtitle">行业证书比对</div>
-            <div class="rdesc">比对供应商主营类目与提交的行业资质证书（ISO、3C、生产许可等）是否相符匹配。</div>
+            <div class="ricon" style="background:#ecfdf5;color:#059669;"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="rtitle">风险等级与入驻结论</div>
+            <div class="rdesc">各维度按「通过 / 低风险 / 中风险 / 高风险」四级定级，雷达顶点以绿/黄/红点标识；仅存在高风险项时阻断入驻，中/低风险仅作提示，可由运营确认后人工通过。</div>
           </div>
           <div class="rule-item">
-            <div class="ricon" style="background:#f5f3ff;color:#6d28d9;"><i class="fa-solid fa-link"></i></div>
-            <div class="rtitle">信息一致性校验</div>
-            <div class="rdesc">交叉比对法人姓名、统一社会信用代码与营业执照一致性，识别材料伪造与信息矛盾。</div>
+            <div class="ricon" style="background:#f5f3ff;color:#6d28d9;"><i class="fa-solid fa-file-circle-check"></i></div>
+            <div class="rtitle">资质文件人工复核</div>
+            <div class="rdesc">供应商上传的营业执照、信用认证证书、法人身份证等资质文件由运营人工查看核验，不参与 AI 风险定级；企查查查无企业信息时，不生成 AI 结果面板，仍可由运营人工审核后决定是否通过入驻。</div>
           </div>
         </div>
       </div>
@@ -418,7 +418,6 @@
 
     var qualRows = [
       { id: 'QF-001', type: '营业执照', req: true, requirement: 'JPG/PDF，≤5MB，需清晰可辨识', uploaded: false, ai: '' },
-      { id: 'QF-002', type: '税务登记证', req: true, requirement: 'JPG/PDF，≤5MB，需显示纳税人资格', uploaded: false, ai: '' },
       { id: 'QF-003', type: '供应商基本信用认证证书', req: true, requirement: 'JPG/PDF，≤5MB，需清晰显示证书编号、公示主体、信用等级及有效期', uploaded: false, ai: '' },
       { id: 'QF-004', type: '法人身份证（正反面）', req: true, requirement: '正反面各一张，JPG，≤2MB/张', uploaded: false, ai: '' }
     ];
@@ -497,7 +496,7 @@
         r.ai = i === 1 ? 'warn' : 'pass';
       });
       renderQualTable();
-      alert('演示：AI 资质审核已完成（示意）。税务登记证示例为「待整改」，其余为「审核通过」。');
+      alert('演示：AI 资质审核已完成（示意）。');
     });
 
     document.getElementById('btnSubmit').addEventListener('click', function () {

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>竞价/询价公告 | 国采e购</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #16a34a;
+      --primary-dark: #15803d;
+      --primary-light: #f0fdf4;
+      --text-main: #0f172a;
+      --text-sub: #64748b;
+      --border: #e2e8f0;
+      --bg: #f5f7fb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+    .topbar {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      box-shadow: 0 2px 16px rgba(22, 163, 74, 0.22);
+    }
+    .topbar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .topbar h1 { margin: 0; font-size: 18px; font-weight: 800; }
+    .topbar p { margin: 4px 0 0; font-size: 12px; opacity: 0.9; }
+    .btn-back {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.22); }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+    }
+    .preview-banner {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      border: 1px solid #bbf7d0;
+      font-size: 13px;
+      color: #166534;
+      line-height: 1.6;
+    }
+    .preview-banner.hidden { display: none; }
+    .notice-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+    .notice-card-head {
+      padding: 22px 24px 18px;
+      border-bottom: 1px solid #eef2f7;
+      background: linear-gradient(180deg, #fafcff 0%, #fff 100%);
+    }
+    .notice-type-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      margin-bottom: 10px;
+    }
+    .notice-title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.45;
+      color: var(--text-main);
+    }
+    .notice-meta {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 20px;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+    .notice-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .notice-card-body {
+      padding: 24px;
+      font-size: 15px;
+      line-height: 1.85;
+      color: #334155;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .notice-action-bar {
+      padding: 18px 24px 22px;
+      border-top: 1px solid #eef2f7;
+      background: #fafcff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .notice-action-tip {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.55;
+      flex: 1;
+      min-width: 220px;
+    }
+    .notice-action-btns {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-participate {
+      height: 42px;
+      padding: 0 22px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.28);
+      white-space: nowrap;
+    }
+    .btn-participate:hover { filter: brightness(1.03); }
+    .btn-participate.participated {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      box-shadow: none;
+      cursor: pointer;
+    }
+    .btn-participate.participated:hover { background: #e2e8f0; filter: none; }
+    .btn-participate:disabled {
+      opacity: 1;
+      cursor: not-allowed;
+    }
+    .empty-box {
+      text-align: center;
+      padding: 48px 20px;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div>
+        <h1 id="pageHeading">竞价/询价公告</h1>
+        <p id="pageSubHeading">平台采购公告详情</p>
+      </div>
+      <a class="btn-back" id="backLink" href="bid_assist_result.html"><i class="fa-solid fa-arrow-left"></i> 返回</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="preview-banner" id="previewBanner">
+      <i class="fa-solid fa-circle-info"></i>
+      本页为原型预览；底部同时展示「参与竞价/询价」与「已参与竞价/询价」两种按钮态，便于对照查看。
+    </div>
+    <article class="notice-card" id="noticeCard">
+      <div class="empty-box">正在加载公告内容…</div>
+    </article>
+  </main>
+
+<script>
+(function () {
+  var PREVIEW_KEY = 'bidNoticePreviewDraft';
+  var PUBLISHED_KEY = 'bidNoticePublished';
+  var EXTRA_ROWS_KEY = 'supplierRfQ_extraRows';
+  var EXTRA_DEMAND_KEY = 'supplierRfQ_extraDemand';
+  var SUPPLIER_MGMT_URL = '../pages/workbench/supplier_bidding_list.html';
+
+  var DEMAND_TPL_MEETING = {
+    budget: 120000,
+    lines: [
+      { name: '会议控制器', qty: 2, spec: '支持中控/WiFi', supply: 'in_stock', refName: '中控会议主机 MC-200', refId: 'P10021', maxPrice: 28500 },
+      { name: '高清摄像机', qty: 4, spec: '1080P及以上', supply: 'no_stock', refName: '1080P 会议摄像机 CAM-HD01', refId: 'P10022', maxPrice: 8600 },
+      { name: '音箱套装', qty: 2, spec: '会议室吊装', supply: 'not_listed', refName: '吊顶式会议音箱 SPK-88', refId: 'P10023', maxPrice: 4200 }
+    ]
+  };
+  var DEMAND_TPL_SUPPLY = {
+    budget: 90000,
+    lines: [
+      { name: 'A4复印纸', qty: 100, spec: '70g / 500张×8包', supply: 'in_stock', refName: '得力 A4 复印纸 70g 8包装', refId: 'P20001', maxPrice: 1280 },
+      { name: '硒鼓', qty: 20, spec: 'HP 85A 兼容', supply: 'not_listed', refName: 'HP 85A 兼容硒鼓 CE285A', refId: 'P20002', maxPrice: 420 }
+    ]
+  };
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function loadJson(key) {
+    try {
+      var raw = sessionStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveJson(key, data) {
+    try { sessionStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
+  }
+
+  function resolveMode(notice) {
+    if (notice.mode) return notice.mode;
+    if (notice.type === '询价公告') return 'inquiry';
+    return 'bidding';
+  }
+
+  function resolveParticipateLabel(mode) {
+    return mode === 'inquiry' ? '参与询价' : '参与竞价';
+  }
+
+  function resolveParticipatedLabel(mode) {
+    return mode === 'inquiry' ? '已参与询价' : '已参与竞价';
+  }
+
+  function resolveNoticeKey(notice) {
+    if (notice.code) return 'code:' + notice.code;
+    if (notice.noticeId) return 'nid:' + notice.noticeId;
+    var mode = resolveMode(notice);
+    return 'draft:' + mode + ':' + (notice.fileName || '') + ':' + (notice.title || '');
+  }
+
+  function pickDemandTemplate(fileName, budget) {
+    var name = fileName || '';
+    var tpl = /会议|音视频/.test(name) ? DEMAND_TPL_MEETING : DEMAND_TPL_SUPPLY;
+    var copy = JSON.parse(JSON.stringify(tpl));
+    if (budget) copy.budget = Number(budget) || copy.budget;
+    return copy;
+  }
+
+  function docTypeFromName(fileName) {
+    if (!fileName) return 'excel';
+    if (/\.pdf$/i.test(fileName)) return 'pdf';
+    if (/\.docx?$/i.test(fileName)) return 'word';
+    return 'excel';
+  }
+
+  function loadExtraRows() {
+    var list = loadJson(EXTRA_ROWS_KEY);
+    return Array.isArray(list) ? list : [];
+  }
+
+  function findExistingParticipation(notice) {
+    if (!notice) return null;
+    var key = resolveNoticeKey(notice);
+    var mode = resolveMode(notice);
+    var fallbackTitle = notice.projectTitle || (notice.fileName || '').replace(/\.[^.]+$/, '') || notice.title;
+    var rows = loadExtraRows();
+    return rows.filter(function (r) {
+      if (r.noticeKey && r.noticeKey === key) return true;
+      if (notice.code && r.noticeCode === notice.code) return true;
+      if (!r.noticeKey && r.title === fallbackTitle && r.mode === mode) return true;
+      return false;
+    })[0] || null;
+  }
+
+  function createSupplierBusinessRow(notice) {
+    var mode = resolveMode(notice);
+    var noticeKey = resolveNoticeKey(notice);
+    var existing = findExistingParticipation(notice);
+    if (existing) return existing.id;
+
+    var code = notice.code || ((mode === 'inquiry' ? 'RFQ' : 'BID') + Date.now().toString().slice(-10));
+    var id = 'SX' + Date.now().toString().slice(-6);
+    var row = {
+      id: id,
+      code: code,
+      noticeCode: code,
+      noticeKey: noticeKey,
+      title: notice.projectTitle || (notice.fileName || '').replace(/\.[^.]+$/, '') || notice.title,
+      rfqFile: notice.fileName || '',
+      docType: docTypeFromName(notice.fileName),
+      mode: mode,
+      buyer: '平台采购单位',
+      lowest: null,
+      mine: null,
+      st: 'quoting',
+      deadline: notice.deadline || '—'
+    };
+
+    var extra = loadExtraRows();
+    extra.unshift(row);
+    saveJson(EXTRA_ROWS_KEY, extra);
+
+    var demandMap = loadJson(EXTRA_DEMAND_KEY) || {};
+    demandMap[id] = pickDemandTemplate(notice.fileName, notice.budget);
+    saveJson(EXTRA_DEMAND_KEY, demandMap);
+
+    return id;
+  }
+
+  window.participateInNotice = function () {
+    var notice = window.__noticePayload;
+    if (!notice) {
+      alert('公告数据无效，请返回后重试。');
+      return;
+    }
+    var existed = findExistingParticipation(notice);
+    var rowId = createSupplierBusinessRow(notice);
+    if (!existed) {
+      var modeLabel = resolveParticipateLabel(resolveMode(notice));
+      alert('已生成' + modeLabel + '业务单（演示），即将进入供应商管理页。');
+    }
+    window.location.href = SUPPLIER_MGMT_URL + '?focus=' + encodeURIComponent(rowId) + '&from=notice';
+  };
+
+  var published = loadJson(PUBLISHED_KEY);
+  var draft = loadJson(PREVIEW_KEY);
+  var notice = published || draft;
+
+  var back = document.getElementById('backLink');
+  if (back) {
+    if (notice && notice.returnUrl && notice.source === 'preview') back.setAttribute('href', notice.returnUrl);
+    else if (published) back.setAttribute('href', 'bid_assist_result.html');
+  }
+
+  var heading = document.getElementById('pageHeading');
+  var subHeading = document.getElementById('pageSubHeading');
+  var banner = document.getElementById('previewBanner');
+  if (notice && notice.source === 'published') {
+    if (heading) heading.textContent = '平台公告详情';
+    if (subHeading) subHeading.textContent = '已发布的竞价/询价公告';
+    if (banner) banner.classList.add('hidden');
+  } else if (notice && notice.source === 'preview') {
+    if (heading) heading.textContent = '公告预览';
+    if (subHeading) subHeading.textContent = '保存并发布前预览效果';
+  }
+
+  var card = document.getElementById('noticeCard');
+  if (!notice || !notice.title || !notice.body) {
+    card.innerHTML = '<div class="empty-box">暂无公告数据，请返回编辑页填写公告后点击「预览」。</div>';
+    return;
+  }
+
+  window.__noticePayload = notice;
+  var mode = resolveMode(notice);
+  var participateLabel = resolveParticipateLabel(mode);
+  var participatedLabel = resolveParticipatedLabel(mode);
+  var actionTip = '点击「' + participateLabel + '」将生成业务单并进入供应商管理页；「' + participatedLabel + '」为参与后的按钮示意。';
+  var timeText = notice.publishedAt || new Date().toLocaleString('zh-CN', { hour12: false });
+
+  card.innerHTML = ''
+    + '<div class="notice-card-head">'
+    + '<div class="notice-type-tag"><i class="fa-solid fa-bullhorn"></i> ' + esc(notice.type || '公告') + '</div>'
+    + '<h2 class="notice-title">' + esc(notice.title) + '</h2>'
+    + '<div class="notice-meta">'
+    + (notice.code ? '<span><i class="fa-solid fa-hashtag"></i> ' + esc(notice.code) + '</span>' : '')
+    + '<span><i class="fa-regular fa-clock"></i> ' + esc(timeText) + '</span>'
+    + (notice.fileName ? '<span><i class="fa-regular fa-file-lines"></i> ' + esc(notice.fileName) + '</span>' : '')
+    + (notice.deadline ? '<span><i class="fa-solid fa-hourglass-half"></i> 截止 ' + esc(notice.deadline) + '</span>' : '')
+    + '</div></div>'
+    + '<div class="notice-card-body">' + esc(notice.body) + '</div>'
+    + '<div class="notice-action-bar">'
+    + '<div class="notice-action-tip">' + esc(actionTip) + '</div>'
+    + '<div class="notice-action-btns">'
+    + '<button type="button" class="btn-participate" onclick="participateInNotice()"><i class="fa-solid fa-hand-pointer"></i> ' + esc(participateLabel) + '</button>'
+    + '<button type="button" class="btn-participate participated" disabled><i class="fa-solid fa-circle-check"></i> ' + esc(participatedLabel) + '</button>'
+    + '</div></div>';
+})();
+</script>
+</body>
+</html>

@@ -233,6 +233,108 @@
     .text-muted { color: #cbd5e1; font-size: 12px; }
     .qual-code { font-size: 11px; color: #94a3b8; margin-top: 4px; }
     .qual-code .must { color: #dc2626; font-weight: 700; }
+
+    .compliance-overlay {
+      position: fixed; inset: 0;
+      background: rgba(15, 23, 42, 0.52);
+      backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px; z-index: 100;
+    }
+    .compliance-overlay.show { display: flex; }
+    .compliance-dialog {
+      width: min(560px, 96vw);
+      max-height: 80vh;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .compliance-head {
+      padding: 20px 22px 14px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .compliance-head h3 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .compliance-head p {
+      margin: 8px 0 0;
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+    .compliance-body {
+      padding: 14px 22px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .compliance-issue {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #991b1b;
+      line-height: 1.65;
+    }
+    .compliance-issue:last-child { margin-bottom: 0; }
+    .compliance-issue i { color: #dc2626; margin-top: 2px; flex-shrink: 0; }
+    .compliance-ok {
+      padding: 16px;
+      border-radius: 12px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      font-size: 13px;
+      line-height: 1.65;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .compliance-foot {
+      padding: 16px 22px 20px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .btn-compliance-primary {
+      height: 42px;
+      padding: 0 20px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--blue) 0%, #2494ff 100%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-compliance-secondary {
+      height: 42px;
+      padding: 0 20px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #fff;
+      color: #475569;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-compliance-secondary:hover { background: #f8fafc; }
   </style>
 </head>
 <body>
@@ -258,24 +360,24 @@
         </div>
         <div class="rule-grid">
           <div class="rule-item">
-            <div class="ricon" style="background:#eff6ff;color:#2563eb;"><i class="fa-regular fa-id-card"></i></div>
-            <div class="rtitle">营业执照核验</div>
-            <div class="rdesc">核验营业执照的真实性、有效期、统一社会信用代码及经营范围与填报信息的匹配程度。</div>
+            <div class="ricon" style="background:#eff6ff;color:#2563eb;"><i class="fa-solid fa-database"></i></div>
+            <div class="rtitle">合作风险数据源</div>
+            <div class="rdesc">调用企查查「合作风险排查」接口（ApiCode 2006），以企业名称或统一社会信用代码为查询条件，获取工商、司法、税务等合作风险数据，作为 AI 资质审核的唯一数据源。</div>
           </div>
           <div class="rule-item">
-            <div class="ricon" style="background:#fffbeb;color:#d97706;"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-            <div class="rtitle">税务资质审查</div>
-            <div class="rdesc">审查增值税一般纳税人资格证、税务登记信息完整性，识别税务异常或高风险字段。</div>
+            <div class="ricon" style="background:#fffbeb;color:#d97706;"><i class="fa-solid fa-chart-pie"></i></div>
+            <div class="rtitle">六维风险检测</div>
+            <div class="rdesc">从工商存续、司法风险、行政处罚、税务风险、经营合规、企业实力六个维度进行风险核验，并生成六维雷达图；产业链布局、行政许可仅作参考展示，不参与定级与阻断判定。</div>
           </div>
           <div class="rule-item">
-            <div class="ricon" style="background:#ecfdf5;color:#059669;"><i class="fa-solid fa-certificate"></i></div>
-            <div class="rtitle">行业证书比对</div>
-            <div class="rdesc">比对供应商提交的行业资质证书（ISO、3C、生产许可等）是否与经营范围相符匹配。</div>
+            <div class="ricon" style="background:#ecfdf5;color:#059669;"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="rtitle">风险等级与入驻结论</div>
+            <div class="rdesc">各维度按「通过 / 低风险 / 中风险 / 高风险」四级定级，雷达顶点以绿/黄/红点标识；仅存在高风险项时阻断入驻，中/低风险仅作提示，可由运营确认后人工通过。</div>
           </div>
           <div class="rule-item">
-            <div class="ricon" style="background:#f5f3ff;color:#6d28d9;"><i class="fa-solid fa-link"></i></div>
-            <div class="rtitle">信息一致性校验</div>
-            <div class="rdesc">交叉比对法人姓名、统一社会信用代码与营业执照一致性，识别材料伪造与信息矛盾。</div>
+            <div class="ricon" style="background:#f5f3ff;color:#6d28d9;"><i class="fa-solid fa-file-circle-check"></i></div>
+            <div class="rtitle">资质文件人工复核</div>
+            <div class="rdesc">供应商上传的营业执照、信用认证证书、法人身份证等资质文件由运营人工查看核验，不参与 AI 风险定级；企查查查无企业信息时，不生成 AI 结果面板，仍可由运营人工审核后决定是否通过入驻。</div>
           </div>
         </div>
       </div>
@@ -325,6 +427,33 @@
         </div>
       </div>
 
+      <!-- 待审核资质文件 -->
+      <div class="page-card">
+        <div class="section-head-row" style="margin-bottom:10px;">
+          <div class="left">
+            <div class="card-head-icon" style="margin:0;background:#ecfdf5;color:#059669;"><i class="fa-solid fa-folder-open"></i></div>
+            <div>
+              <h2>待审核资质文件</h2>
+            </div>
+          </div>
+        </div>
+        <p class="hint-lines" id="uploadSummary"></p>
+        <div class="table-wrap">
+          <table class="qual">
+            <thead>
+              <tr>
+                <th>资质类型</th>
+                <th>要求说明</th>
+                <th>上传状态</th>
+                <th>文件信息</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="qualBody"></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- 供应商基本信息 -->
       <div class="page-card">
         <div class="section-head-row">
@@ -334,7 +463,6 @@
               <h2>供应商基本信息</h2>
             </div>
           </div>
-          <button type="button" class="btn-blue-outline" id="btnOneCert"><i class="fa-solid fa-id-card"></i>一证登记</button>
         </div>
         <div class="grid3">
           <div>
@@ -368,66 +496,270 @@
         </div>
       </div>
 
-      <!-- 待审核资质文件 -->
       <div class="page-card">
-        <div class="section-head-row" style="margin-bottom:10px;">
-          <div class="left">
-            <div class="card-head-icon" style="margin:0;background:#ecfdf5;color:#059669;"><i class="fa-solid fa-folder-open"></i></div>
-            <div>
-              <h2>待审核资质文件</h2>
-            </div>
-          </div>
-          <div class="qual-toolbar">
-            <button type="button" class="btn-ai" id="btnAiAudit"><i class="fa-solid fa-shield-halved"></i>AI资质审核</button>
-          </div>
-        </div>
-        <p class="hint-lines" id="uploadSummary"></p>
-        <div class="table-wrap">
-          <table class="qual">
-            <thead>
-              <tr>
-                <th>资质类型</th>
-                <th>要求说明</th>
-                <th>上传状态</th>
-                <th>AI审核结果</th>
-                <th>文件信息</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody id="qualBody"></tbody>
-          </table>
-        </div>
-        <button type="button" class="btn-submit" id="btnSubmit">提交入驻申请</button>
-        <p class="footnote">演示：「AI资质审核」与表格上传为示意交互；最终以「提交入驻申请」汇总并跳转登录。</p>
+        <button type="button" class="btn-submit" id="btnSubmit" style="margin-top:0;">提交入驻申请</button>
+        <p class="footnote">演示：表格上传为示意交互；提交后由运营商平台进行资质审核，最终以「提交入驻申请」汇总并跳转登录。</p>
       </div>
     </form>
+  </div>
+
+  <!-- 基础信息合规性检查弹窗 -->
+  <div class="compliance-overlay" id="complianceOverlay" role="dialog" aria-modal="true" aria-labelledby="complianceTitle">
+    <div class="compliance-dialog">
+      <div class="compliance-head">
+        <h3 id="complianceTitle"><i class="fa-solid fa-triangle-exclamation" style="color:#d97706;"></i>基础信息合规性检查</h3>
+        <p id="complianceSummary">系统已比对填报信息与资质文件识别结果，请确认以下不合格项。</p>
+      </div>
+      <div class="compliance-body" id="complianceIssueList"></div>
+      <div class="compliance-foot">
+        <button type="button" class="btn-compliance-primary" id="btnComplianceContinue">继续提交</button>
+        <button type="button" class="btn-compliance-secondary" id="btnComplianceCancel">取消</button>
+      </div>
+    </div>
   </div>
 
   <script>
     function isPhone(v) { return /^1\d{10}$/.test((v || '').trim()); }
 
     var qualRows = [
-      { id: 'QF-001', type: '营业执照', req: true, requirement: 'JPG/PDF，≤5MB，需清晰可辨识', uploaded: false, ai: '' },
-      { id: 'QF-002', type: '税务登记证', req: true, requirement: 'JPG/PDF，≤5MB，需显示纳税人资格', uploaded: false, ai: '' },
-      { id: 'QF-003', type: '供应商基本信用认证证书', req: true, requirement: 'JPG/PDF，≤5MB，需清晰显示证书编号、公示主体、信用等级及有效期', uploaded: false, ai: '' },
-      { id: 'QF-004', type: '法人身份证（正反面）', req: true, requirement: '正反面各一张，JPG，≤2MB/张', uploaded: false, ai: '' }
+      { id: 'QF-001', type: '营业执照', req: true, requirement: 'JPG/PDF，≤5MB，需清晰可辨识', uploaded: false },
+      { id: 'QF-003', type: '供应商基本信用认证证书', req: true, requirement: 'JPG/PDF，≤5MB，需清晰显示证书编号、公示主体、信用等级及有效期', uploaded: false },
+      { id: 'QF-004', type: '法人身份证（正反面）', req: true, requirement: '正反面各一张，JPG，≤2MB/张', uploaded: false }
     ];
+
+    /** 演示：资质上传后模拟 OCR 识别结果（正式环境由识别服务返回） */
+    var OCR_DEMO = {
+      'QF-001': {
+        companyName: '北京阳光办公科技有限公司',
+        creditCode: '91110108MA01SUN88X',
+        legalPerson: '张三',
+        address: '北京市海淀区中关村科技园区阳光路88号',
+        validUntil: '长期',
+      },
+      'QF-003': {
+        publicEntity: '北京阳光办公科技有限公司',
+        validUntil: '2026-12-31',
+      },
+      'QF-004': {
+        name: '张三',
+        idNumber: '110101199001011234',
+        validUntil: '2035-09-01',
+        frontBackOk: true,
+      },
+    };
+
+    function normalizeText(s) {
+      return String(s || '')
+        .trim()
+        .replace(/\s+/g, '')
+        .replace(/[（）]/g, function (c) { return c === '（' ? '(' : ')'; });
+    }
+
+    function textEqual(a, b) {
+      return normalizeText(a) === normalizeText(b);
+    }
+
+    function addressMatch(formAddr, ocrAddr) {
+      var a = normalizeText(formAddr);
+      var b = normalizeText(ocrAddr);
+      if (!a || !b) return false;
+      return a.indexOf(b) >= 0 || b.indexOf(a) >= 0;
+    }
+
+    function isCreditCodeValid(code) {
+      var c = String(code || '').trim().toUpperCase();
+      return /^[0-9A-Z]{18}$/.test(c);
+    }
+
+    function isIdCardValid(num) {
+      return /^[1-9]\d{16}[\dXx]$/.test(String(num || '').trim());
+    }
+
+    function isDateExpired(dateStr) {
+      if (!dateStr || dateStr === '长期' || dateStr === '长期有效') return false;
+      var m = String(dateStr).match(/(\d{4})[.\-/年](\d{1,2})[.\-/月](\d{1,2})/);
+      if (!m) return false;
+      var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 23, 59, 59);
+      return d.getTime() < Date.now();
+    }
+
+    function isQualUploaded(id) {
+      var row = qualRows.find(function (r) { return r.id === id; });
+      return !!(row && row.uploaded);
+    }
+
+    function getFormSnapshot() {
+      return {
+        companyName: (document.getElementById('companyName').value || '').trim(),
+        creditCode: (document.getElementById('creditCode').value || '').trim().toUpperCase(),
+        legalPerson: (document.getElementById('legalPerson').value || '').trim(),
+        address: (document.getElementById('address').value || '').trim(),
+      };
+    }
+
+    function runComplianceChecks() {
+      var issues = [];
+      var form = getFormSnapshot();
+
+      if (!isCreditCodeValid(form.creditCode)) {
+        issues.push('统一社会信用代码格式不正确，应为 18 位字母数字组合。');
+      }
+
+      if (isQualUploaded('QF-001')) {
+        var lic = OCR_DEMO['QF-001'];
+        if (!textEqual(form.companyName, lic.companyName)) {
+          issues.push('企业名称与营业执照不一致：填报「' + (form.companyName || '（空）') + '」，营业执照识别为「' + lic.companyName + '」。');
+        }
+        if (!textEqual(form.creditCode, lic.creditCode)) {
+          issues.push('统一社会信用代码与营业执照不一致：填报「' + (form.creditCode || '（空）') + '」，营业执照识别为「' + lic.creditCode + '」。');
+        }
+        if (!textEqual(form.legalPerson, lic.legalPerson)) {
+          issues.push('法人姓名与营业执照法定代表人不一致：填报「' + (form.legalPerson || '（空）') + '」，营业执照识别为「' + lic.legalPerson + '」。');
+        }
+        if (!addressMatch(form.address, lic.address)) {
+          issues.push('企业地址与营业执照住所无法匹配：填报「' + (form.address || '（空）') + '」，营业执照识别为「' + lic.address + '」。');
+        }
+        if (isDateExpired(lic.validUntil)) {
+          issues.push('营业执照已过期：营业期限至 ' + lic.validUntil + '。');
+        }
+      }
+
+      if (isQualUploaded('QF-004')) {
+        var idc = OCR_DEMO['QF-004'];
+        if (!textEqual(form.legalPerson, idc.name)) {
+          issues.push('法人姓名与身份证姓名不一致：填报「' + (form.legalPerson || '（空）') + '」，身份证识别为「' + idc.name + '」。');
+        }
+        if (!isIdCardValid(idc.idNumber)) {
+          issues.push('身份证号码格式不正确：识别结果为「' + idc.idNumber + '」。');
+        }
+        if (isDateExpired(idc.validUntil)) {
+          issues.push('法人身份证已过期：有效期限至 ' + idc.validUntil + '。');
+        }
+        if (!idc.frontBackOk) {
+          issues.push('法人身份证正反面不完整，请补充上传反面或重新拍摄。');
+        }
+        if (isQualUploaded('QF-001') && !textEqual(OCR_DEMO['QF-001'].legalPerson, idc.name)) {
+          issues.push('营业执照法定代表人与身份证姓名不一致：营业执照「' + OCR_DEMO['QF-001'].legalPerson + '」，身份证「' + idc.name + '」。');
+        }
+      }
+
+      if (isQualUploaded('QF-003')) {
+        var cert = OCR_DEMO['QF-003'];
+        if (!textEqual(form.companyName, cert.publicEntity)) {
+          issues.push('企业名称与信用认证证书公示主体不一致：填报「' + (form.companyName || '（空）') + '」，证书识别为「' + cert.publicEntity + '」。');
+        }
+        if (isDateExpired(cert.validUntil)) {
+          issues.push('供应商基本信用认证证书已过期：有效期至 ' + cert.validUntil + '。');
+        }
+        if (isQualUploaded('QF-001') && !textEqual(OCR_DEMO['QF-001'].companyName, cert.publicEntity)) {
+          issues.push('营业执照企业名称与信用认证证书公示主体不一致：营业执照「' + OCR_DEMO['QF-001'].companyName + '」，证书「' + cert.publicEntity + '」。');
+        }
+      }
+
+      return issues;
+    }
+
+    function showComplianceModal(issues) {
+      var listEl = document.getElementById('complianceIssueList');
+      var summaryEl = document.getElementById('complianceSummary');
+      if (!issues.length) {
+        summaryEl.textContent = '未发现信息一致性问题，可继续提交入驻申请。';
+        listEl.innerHTML = '<div class="compliance-ok"><i class="fa-solid fa-circle-check"></i><span>填报信息与已上传资质文件的识别结果一致，未检测到不合格项。</span></div>';
+      } else {
+        summaryEl.textContent = '发现 ' + issues.length + ' 项不合格，请核对后选择继续提交或返回修改。';
+        listEl.innerHTML = issues.map(function (msg) {
+          return '<div class="compliance-issue"><i class="fa-solid fa-circle-xmark"></i><span>' + msg + '</span></div>';
+        }).join('');
+      }
+      document.getElementById('complianceOverlay').classList.add('show');
+    }
+
+    function closeComplianceModal() {
+      document.getElementById('complianceOverlay').classList.remove('show');
+    }
+
+    function finalizeSubmit() {
+      closeComplianceModal();
+      alert('演示：入驻申请已记录（不产生真实账号）。');
+      location.href = '../../login.html';
+    }
+
+    function validateRequiredBeforeCompliance() {
+      if (!(document.getElementById('settleStation').value || '').trim()) {
+        alert('请选择入驻分站');
+        return false;
+      }
+      if (!(document.getElementById('applicantName').value || '').trim()) {
+        alert('请填写申请人姓名');
+        return false;
+      }
+      if (!isPhone(document.getElementById('applicantMobile').value)) {
+        alert('请填写正确的申请人手机号');
+        return false;
+      }
+      if (!(document.getElementById('applicantSmsCode').value || '').trim()) {
+        alert('请填写短信验证码');
+        return false;
+      }
+      var p1 = document.getElementById('applicantPwd').value;
+      var p2 = document.getElementById('applicantPwdConfirm').value;
+      if ((p1 || '').length < 6) {
+        alert('登录密码不少于 6 位');
+        return false;
+      }
+      if (p1 !== p2) {
+        alert('两次输入的密码不一致');
+        return false;
+      }
+      if (!(document.getElementById('companyName').value || '').trim()) {
+        alert('请填写企业名称');
+        return false;
+      }
+      if (!(document.getElementById('creditCode').value || '').trim()) {
+        alert('请填写统一社会信用代码');
+        return false;
+      }
+      if (!(document.getElementById('legalPerson').value || '').trim()) {
+        alert('请填写法人姓名');
+        return false;
+      }
+      if (!(document.getElementById('contactName').value || '').trim()) {
+        alert('请填写联系人');
+        return false;
+      }
+      if (!isPhone(document.getElementById('contactPhone').value)) {
+        alert('请填写正确的联系电话');
+        return false;
+      }
+      if (!(document.getElementById('address').value || '').trim()) {
+        alert('请填写企业地址');
+        return false;
+      }
+      var nUp = qualRows.filter(function (r) { return r.uploaded; }).length;
+      if (nUp < qualRows.length) {
+        alert('请先上传全部必传资质文件（' + nUp + ' / ' + qualRows.length + '）。');
+        return false;
+      }
+      return true;
+    }
+
+    document.getElementById('btnComplianceContinue').addEventListener('click', finalizeSubmit);
+    document.getElementById('btnComplianceCancel').addEventListener('click', closeComplianceModal);
+    document.getElementById('complianceOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeComplianceModal();
+    });
 
     function renderQualTable() {
       var tbody = document.getElementById('qualBody');
       var nUp = qualRows.filter(function (r) { return r.uploaded; }).length;
       document.getElementById('uploadSummary').textContent = nUp
-        ? ('已上传 ' + nUp + ' / ' + qualRows.length + ' 份资质文件，' + (nUp === qualRows.length ? '全部上传完成，可点击「AI资质审核」。' : '请继续上传剩余文件。'))
-        : '当前暂未上传任何资质文件，请点击「一证登记」上传营业执照，或逐项上传资质文件。';
+        ? ('已上传 ' + nUp + ' / ' + qualRows.length + ' 份资质文件，' + (nUp === qualRows.length ? '全部上传完成，可提交入驻申请。' : '请继续上传剩余文件。'))
+        : '当前暂未上传任何资质文件，请逐项上传资质文件。';
 
       tbody.innerHTML = qualRows.map(function (r) {
         var stBadge = r.uploaded
           ? '<span class="badge badge-ok"><i class="fa-solid fa-check"></i>已上传</span>'
           : '<span class="badge badge-neutral"><i class="fa-solid fa-minus"></i>未上传</span>';
-        var aiBadge = !r.ai ? '<span style="color:#94a3b8;font-size:12px;">待审核</span>' :
-          r.ai === 'pass' ? '<span class="badge badge-pass"><i class="fa-solid fa-circle-check"></i>审核通过</span>' :
-          r.ai === 'warn' ? '<span class="badge badge-warn"><i class="fa-solid fa-triangle-exclamation"></i>待整改</span>' :
-          '<span class="badge badge-fail"><i class="fa-solid fa-circle-xmark"></i>审核不通过</span>';
         var fileCell = r.uploaded
           ? '<span style="font-size:12px;color:#64748b;"><i class="fa-regular fa-file-pdf" style="color:#ef4444;"></i> ' + r.type.replace('（正反面）', '') + '-示意.pdf</span>'
           : '<span class="text-muted">—</span>';
@@ -439,7 +771,6 @@
           '<div class="qual-code">' + r.id + (r.req ? ' <span class="must">*必须</span>' : '') + '</div></td>' +
           '<td style="max-width:200px;font-size:12px;color:#64748b;">' + r.requirement + '</td>' +
           '<td>' + stBadge + '</td>' +
-          '<td>' + aiBadge + '</td>' +
           '<td>' + fileCell + '</td>' +
           '<td>' + op + '</td></tr>';
       }).join('');
@@ -450,7 +781,6 @@
           var row = qualRows.find(function (x) { return x.id === id; });
           if (row) {
             row.uploaded = true;
-            row.ai = '';
             renderQualTable();
           }
         });
@@ -483,88 +813,9 @@
       alert('演示：已发送注册场景验证码至 ' + mb);
     });
 
-    document.getElementById('btnOneCert').addEventListener('click', function () {
-      if (!confirm('演示：模拟上传营业执照并完成识别，将回填示例企业信息并标记全部资质为「已上传」。是否继续？')) return;
-      document.getElementById('companyName').value = '北京阳光办公科技有限公司';
-      document.getElementById('creditCode').value = '91110108MA01SUN88X';
-      document.getElementById('legalPerson').value = '张三';
-      document.getElementById('contactName').value = '张三';
-      document.getElementById('contactPhone').value = '13800138000';
-      document.getElementById('afterSalesPhone').value = '4008889999';
-      document.getElementById('address').value = '北京市海淀区中关村科技园区阳光路88号';
-      qualRows.forEach(function (r) {
-        r.uploaded = true;
-        r.ai = '';
-      });
-      renderQualTable();
-      alert('演示：一证登记完成（示意）。');
-    });
-
-    document.getElementById('btnAiAudit').addEventListener('click', function () {
-      if (!qualRows.every(function (r) { return r.uploaded; })) {
-        alert('请先上传全部必传资质文件，或使用「一证登记」模拟上传。');
-        return;
-      }
-      qualRows.forEach(function (r, i) {
-        r.ai = i === 1 ? 'warn' : 'pass';
-      });
-      renderQualTable();
-      alert('演示：AI 资质审核已完成（示意）。税务登记证示例为「待整改」，其余为「审核通过」。');
-    });
-
     document.getElementById('btnSubmit').addEventListener('click', function () {
-      if (!(document.getElementById('settleStation').value || '').trim()) {
-        alert('请选择入驻分站');
-        return;
-      }
-      if (!(document.getElementById('applicantName').value || '').trim()) {
-        alert('请填写申请人姓名');
-        return;
-      }
-      if (!isPhone(document.getElementById('applicantMobile').value)) {
-        alert('请填写正确的申请人手机号');
-        return;
-      }
-      if (!(document.getElementById('applicantSmsCode').value || '').trim()) {
-        alert('请填写短信验证码');
-        return;
-      }
-      var p1 = document.getElementById('applicantPwd').value;
-      var p2 = document.getElementById('applicantPwdConfirm').value;
-      if ((p1 || '').length < 6) {
-        alert('登录密码不少于 6 位');
-        return;
-      }
-      if (p1 !== p2) {
-        alert('两次输入的密码不一致');
-        return;
-      }
-      if (!(document.getElementById('companyName').value || '').trim()) {
-        alert('请填写企业名称');
-        return;
-      }
-      if (!(document.getElementById('creditCode').value || '').trim()) {
-        alert('请填写统一社会信用代码');
-        return;
-      }
-      if (!(document.getElementById('legalPerson').value || '').trim()) {
-        alert('请填写法人姓名');
-        return;
-      }
-      if (!(document.getElementById('contactName').value || '').trim()) {
-        alert('请填写联系人');
-        return;
-      }
-      if (!isPhone(document.getElementById('contactPhone').value)) {
-        alert('请填写正确的联系电话');
-        return;
-      }
-      if (!(document.getElementById('address').value || '').trim()) {
-        alert('请填写企业地址');
-        return;
-      }
-      alert('演示：入驻申请已记录（不产生真实账号）。');
-      location.href = '../../login.html';
+      if (!validateRequiredBeforeCompliance()) return;
+      showComplianceModal(runComplianceChecks());
     });
   </script>
 </body>

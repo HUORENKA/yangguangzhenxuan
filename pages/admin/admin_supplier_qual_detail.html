@@ -118,6 +118,38 @@
 
     @keyframes fadeInUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     .fade-in { animation: fadeInUp 0.45s ease-out; }
+
+    .dialog-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(3px);
+      z-index: 1200; display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .dialog-overlay.show { display: flex; }
+    .dialog-card {
+      width: min(480px, 92vw); background: #fff; border: 1px solid #e2e8f0; border-radius: 18px;
+      box-shadow: 0 26px 48px rgba(15,23,42,0.24); overflow: hidden; padding: 24px;
+    }
+    .dialog-icon {
+      width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 14px;
+    }
+    .dialog-icon.info { background: #eff6ff; color: #2563eb; }
+    .dialog-icon.success { background: #ecfdf5; color: #16a34a; }
+    .dialog-icon.warn { background: #fffbeb; color: #d97706; }
+    .dialog-icon.error { background: #fef2f2; color: #dc2626; }
+    .dialog-title { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    .dialog-body { font-size: 14px; color: #475569; line-height: 1.7; white-space: pre-wrap; margin-bottom: 18px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+    .dialog-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border-radius: 10px; padding: 9px 16px; font-size: 14px; font-weight: 600; cursor: pointer; border: none;
+    }
+    .dialog-btn-cancel { background: #fff; border: 1px solid #e2e8f0; color: #475569; }
+    .dialog-btn-confirm { background: linear-gradient(135deg,#3b82f6,#1d4ed8); color: #fff; }
+    .reject-textarea {
+      width: 100%; min-height: 120px; border: 1px solid #e2e8f0; border-radius: 12px;
+      padding: 12px; font-size: 13px; color: #334155; resize: vertical; outline: none;
+    }
+    .reject-textarea:focus { border-color: #E2231A; box-shadow: 0 0 0 3px rgba(226,35,26,0.1); }
   </style>
 </head>
 <body class="text-slate-800">
@@ -187,11 +219,6 @@
         </div>
       </div>
       <div class="flex flex-wrap gap-3">
-        <button type="button" class="action-btn action-btn-ai hidden" id="btnAiAnalysis" onclick="openSupplierCapabilityModal()">
-          <i class="fas fa-wand-magic-sparkles"></i>
-          <span>AI 智能分析</span>
-          <span class="ai-score" id="btnAiScore">--</span>
-        </button>
         <button type="button" class="action-btn action-btn-secondary" onclick="location.href=withAdminEmbed('admin_supplier_manage.html')">
           <i class="fas fa-list"></i><span>返回列表</span>
         </button>
@@ -225,24 +252,24 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           <div class="rule-card">
-            <div class="rule-icon bg-blue-50 text-blue-600"><i class="fas fa-id-card"></i></div>
-            <div class="font-semibold text-slate-900 mb-2">营业执照核验</div>
-            <div class="text-sm text-slate-500 leading-6">核验营业执照的真实性、有效期、统一社会信用代码及登记信息的匹配程度。</div>
+            <div class="rule-icon bg-blue-50 text-blue-600"><i class="fas fa-database"></i></div>
+            <div class="font-semibold text-slate-900 mb-2">合作风险数据源</div>
+            <div class="text-sm text-slate-500 leading-6">调用企查查「合作风险排查」接口（ApiCode 2006），以企业名称或统一社会信用代码为查询条件，获取工商、司法、税务等合作风险数据，作为 AI 资质审核的唯一数据源。</div>
           </div>
           <div class="rule-card">
-            <div class="rule-icon bg-amber-50 text-amber-600"><i class="fas fa-file-invoice-dollar"></i></div>
-            <div class="font-semibold text-slate-900 mb-2">税务资质审查</div>
-            <div class="text-sm text-slate-500 leading-6">审查增值税一般纳税人资格证、税务登记信息完整性，识别税务异常或高风险字段。</div>
+            <div class="rule-icon bg-amber-50 text-amber-600"><i class="fas fa-chart-pie"></i></div>
+            <div class="font-semibold text-slate-900 mb-2">六维风险检测</div>
+            <div class="text-sm text-slate-500 leading-6">从工商存续、司法风险、行政处罚、税务风险、经营合规、企业实力六个维度进行风险核验，并生成六维雷达图；产业链布局、行政许可仅作参考展示，不参与定级与阻断判定。</div>
           </div>
           <div class="rule-card">
-            <div class="rule-icon bg-emerald-50 text-emerald-600"><i class="fas fa-certificate"></i></div>
-            <div class="font-semibold text-slate-900 mb-2">信用与证书比对</div>
-            <div class="text-sm text-slate-500 leading-6">核验供应商基本信用认证证书等与主体信息的一致性。</div>
+            <div class="rule-icon bg-emerald-50 text-emerald-600"><i class="fas fa-shield-halved"></i></div>
+            <div class="font-semibold text-slate-900 mb-2">风险等级与入驻结论</div>
+            <div class="text-sm text-slate-500 leading-6">各维度按「通过 / 低风险 / 中风险 / 高风险」四级定级，雷达顶点以绿/黄/红点标识；仅存在高风险项时阻断入驻，中/低风险仅作提示，可由运营确认后人工通过。</div>
           </div>
           <div class="rule-card">
-            <div class="rule-icon bg-purple-50 text-purple-600"><i class="fas fa-link"></i></div>
-            <div class="font-semibold text-slate-900 mb-2">信息一致性校验</div>
-            <div class="text-sm text-slate-500 leading-6">交叉比对法人姓名、统一社会信用代码与营业执照一致性，识别材料矛盾。</div>
+            <div class="rule-icon bg-purple-50 text-purple-600"><i class="fas fa-file-circle-check"></i></div>
+            <div class="font-semibold text-slate-900 mb-2">资质文件人工复核</div>
+            <div class="text-sm text-slate-500 leading-6">供应商上传的营业执照、信用认证证书、法人身份证等资质文件由运营人工查看核验，不参与 AI 风险定级；企查查查无企业信息时，不生成 AI 结果面板，仍可由运营人工审核后决定是否通过入驻。</div>
           </div>
         </div>
       </div>
@@ -289,20 +316,88 @@
         </div>
       </div>
 
-      <div class="page-card p-5 mb-8 fade-in">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
-            <i class="fas fa-robot"></i>
+      <div class="page-card p-5 mb-5 fade-in border border-blue-100/80">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold text-slate-900">AI 智能分析</h2>
+              <p class="text-sm text-slate-500 mt-1">基于企查查「合作风险排查」输出六维分析结果；点击后在本页下方展示，不弹窗。</p>
+            </div>
           </div>
-          <h2 class="text-lg font-bold text-slate-900">AI 审核结果汇总</h2>
+          <button type="button" class="action-btn action-btn-ai hidden" id="btnAiAnalysis" onclick="runInlineAiAnalysis()">
+            <i class="fas fa-wand-magic-sparkles"></i>
+            <span>AI 智能分析</span>
+            <span class="ai-score" id="btnAiScore">--</span>
+          </button>
         </div>
-        <div id="aiSummaryBox" class="rounded-xl p-4 text-sm leading-7 border mb-1"></div>
+
+        <div id="aiAnalysisLoading" class="hidden mt-5 pt-5 border-t border-slate-100">
+          <div class="flex items-center gap-3 text-sm text-slate-600">
+            <i class="fas fa-spinner fa-spin text-blue-500"></i>
+            <span id="aiAnalysisLoadingText">正在查询企查查企业风险数据…</span>
+          </div>
+          <div class="mt-3 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div id="aiAnalysisProgressBar" class="h-full w-0 bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-500"></div>
+          </div>
+        </div>
+
+        <div id="resultSection" class="hidden mt-5 pt-5 border-t border-slate-100">
+          <div id="aiAuditDashboard"></div>
+        </div>
+      </div>
+
+      <div class="page-card p-5 mb-8 fade-in">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
+          <button type="button" class="action-btn action-btn-secondary border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300"
+            onclick="openRejectSettleModal()">
+            <i class="fas fa-ban"></i><span>驳回入驻申请</span>
+          </button>
+          <button type="button" class="action-btn"
+            style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 10px 20px rgba(16,185,129,0.22);"
+            onclick="passSettleApplication()">
+            <i class="fas fa-circle-check"></i><span>通过入驻申请</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<script src="../../assets/capability_analysis.js"></script>
+<!-- 驳回入驻申请 -->
+<div class="dialog-overlay" id="rejectOverlay" onclick="if (event.target === this) closeRejectSettleModal()">
+  <div class="dialog-card" onclick="event.stopPropagation()">
+    <div class="dialog-icon warn"><i class="fas fa-ban"></i></div>
+    <div class="dialog-title">驳回入驻申请</div>
+    <div class="dialog-body">
+      <textarea id="rejectReasonInput" class="reject-textarea" maxlength="500" placeholder="请填写驳回原因，提交后将通知供应商并按理由整改后重新提交。"></textarea>
+      <div class="text-xs text-slate-400 mt-2 text-right"><span id="rejectReasonCount">0</span>/500</div>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="dialog-btn dialog-btn-cancel" onclick="closeRejectSettleModal()">取消</button>
+      <button type="button" class="dialog-btn dialog-btn-confirm" onclick="submitRejectSettle()">提交驳回</button>
+    </div>
+  </div>
+</div>
+
+<!-- 通用对话框 -->
+<div class="dialog-overlay" id="dialogOverlay">
+  <div class="dialog-card">
+    <div class="dialog-icon info" id="dialogIcon"><i class="fas fa-circle-info"></i></div>
+    <div class="dialog-title" id="dialogTitle">提示</div>
+    <div class="dialog-body" id="dialogBody"></div>
+    <div class="dialog-actions">
+      <button class="dialog-btn dialog-btn-cancel" id="dialogCancelBtn" onclick="closeDialog('cancel')">取消</button>
+      <button class="dialog-btn dialog-btn-confirm" id="dialogConfirmBtn" onclick="closeDialog('confirm')">确定</button>
+    </div>
+  </div>
+</div>
+
+<script src="modules/qcc_risk_engine.js"></script>
+<script src="modules/qcc_mock_data.js"></script>
+<script src="modules/supplier_ai_audit.js"></script>
 <script src="../../assets/admin_embed.js"></script>
 <script>
   /** 与列表页 mock 保持一致结构（演示） */
@@ -315,7 +410,6 @@
       creditCode: '91110000MA0012345X', address: '北京市朝阳区望京SOHO T1栋',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'pass' },
-        { code: 'QF-002', type: '税务登记证', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'uploaded', ai: 'warn' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'uploaded', ai: 'pass' },
       ],
@@ -328,7 +422,6 @@
       creditCode: '52110000MJ1234567A', address: '上海市浦东新区张江高科技园区',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'pass' },
-        { code: 'QF-002', type: '税务登记证', upload: 'uploaded', ai: 'fail' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'uploaded', ai: 'fail' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'uploaded', ai: 'pass' },
       ],
@@ -341,7 +434,6 @@
       creditCode: '12110000MB9876543B', address: '广州市天河区珠江新城',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'pass' },
-        { code: 'QF-002', type: '税务登记证', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'uploaded', ai: 'pass' },
       ],
@@ -354,7 +446,6 @@
       creditCode: '91310000MB4455667C', address: '深圳市福田区华强北路',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'progress' },
-        { code: 'QF-002', type: '税务登记证', upload: 'pending', ai: 'none' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'neutral', ai: 'none' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'neutral', ai: 'none' },
       ],
@@ -367,7 +458,6 @@
       creditCode: '91110000MB8899001D', address: '杭州市西湖区文三路',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'pass' },
-        { code: 'QF-002', type: '税务登记证', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'uploaded', ai: 'warn' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'uploaded', ai: 'pass' },
       ],
@@ -380,7 +470,6 @@
       creditCode: '91510000654321987E', address: '成都市高新区天府大道',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'pass' },
-        { code: 'QF-002', type: '税务登记证', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'uploaded', ai: 'pass' },
       ],
@@ -393,7 +482,6 @@
       creditCode: '91420000987123456F', address: '武汉市洪山区光谷广场',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'pass' },
-        { code: 'QF-002', type: '税务登记证', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'uploaded', ai: 'pass' },
       ],
@@ -406,7 +494,6 @@
       creditCode: '91320000147258369G', address: '南京市鼓楼区江北新区',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'progress' },
-        { code: 'QF-002', type: '税务登记证', upload: 'neutral', ai: 'none' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'neutral', ai: 'none' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'neutral', ai: 'none' },
       ],
@@ -420,7 +507,6 @@
       address: '中国（江苏）自由贸易试验区苏州片区苏州工业园区汇智街8号',
       qualFiles: [
         { code: 'QF-001', type: '营业执照', upload: 'uploaded', ai: 'pass' },
-        { code: 'QF-002', type: '税务登记证', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-003', type: '供应商基本信用认证证书', upload: 'uploaded', ai: 'pass' },
         { code: 'QF-004', type: '法人身份证（正反面）', upload: 'uploaded', ai: 'pass' },
       ],
@@ -481,9 +567,48 @@
     const showOnline = s.onlineStatus === 'offline' && s.aiResult === 'pass';
     document.getElementById('btnOnline').classList.toggle('hidden', !showOnline);
 
-    var capData = GcCapabilityAnalysis.buildFromSupplier(s, '../../assets/');
+    var capData = null;
+    try {
+      if (window.QccMockData && window.QccRiskEngine) {
+        var preview = QccMockData.fetchMock(s.creditCode || s.name, {
+          supplierId: s.id,
+          companyName: s.companyName || s.name,
+          creditCode: s.creditCode,
+          legalPerson: s.legalPerson,
+          address: s.address,
+        });
+        var evPreview = QccRiskEngine.evaluate(preview);
+        if (evPreview.ok) {
+          var scoreMap = { pass: 92, low: 78, mid: 62, high: 45 };
+          document.getElementById('btnAiScore').textContent = scoreMap[evPreview.overall] || 78;
+        } else {
+          document.getElementById('btnAiScore').textContent = '--';
+        }
+      } else {
+        document.getElementById('btnAiScore').textContent = '--';
+      }
+    } catch (e) {
+      document.getElementById('btnAiScore').textContent = '--';
+    }
     document.getElementById('btnAiAnalysis').classList.remove('hidden');
-    document.getElementById('btnAiScore').textContent = capData.capabilityAnalysis.overallScore;
+
+    // 切换供应商时重置分析结果
+    document.getElementById('resultSection').classList.add('hidden');
+    document.getElementById('aiAnalysisLoading').classList.add('hidden');
+    document.getElementById('aiAuditDashboard').innerHTML = '';
+    if (window.SupplierAiAuditModule) SupplierAiAuditModule.init({
+      getSupplierInfo: () => {
+        const cur = SUPPLIER_DETAIL_DB[currentId] || {};
+        return {
+          companyName: cur.companyName || cur.name || '',
+          creditCode: cur.creditCode || '',
+          legalPerson: cur.legalPerson || '',
+          address: cur.address || '',
+          supplierId: currentId || '',
+        };
+      },
+      showDialog,
+    });
 
     const accFields = [
       ['入驻分站', s.station],
@@ -514,27 +639,181 @@
         <td class="px-5 py-4">${uploadBadge(q.upload)}</td>
         <td class="px-5 py-4">${aiCell(q.ai)}</td>
       </tr>`).join('');
-
-    const sum = document.getElementById('aiSummaryBox');
-    const styles = {
-      pass: 'bg-green-50 border-green-100 text-green-800',
-      warn: 'bg-amber-50 border-amber-100 text-amber-800',
-      fail: 'bg-red-50 border-red-100 text-red-800',
-      none: 'bg-slate-50 border-slate-200 text-slate-600',
-    };
-    const msg = {
-      pass: 'AI 审核通过，全部资质文件符合平台要求。',
-      warn: 'AI 发现部分资质需整改，请在审核流程中协助供应商补充材料并复核。',
-      fail: 'AI 判定关键资质未通过或存在高风险项，请在审核流程中处理驳回或复审。',
-      none: '资质尚在 AI 逐项审核或未全部上传，请稍后在列表刷新查看。',
-    };
-    sum.className = 'rounded-xl p-4 text-sm leading-7 border ' + (styles[s.aiResult] || styles.none);
-    sum.innerHTML = '<i class="fas fa-robot mr-2"></i>' + (msg[s.aiResult] || msg.none);
   }
 
-  function openSupplierCapabilityModal() {
+  let dialogOnConfirm = null;
+  let analysisRunning = false;
+
+  function showDialog({ title = '提示', message = '', type = 'info', confirmText = '确定', cancelText = '', onConfirm = null }) {
+    const typeMap = {
+      info: { cls: 'info', icon: 'fa-circle-info' },
+      success: { cls: 'success', icon: 'fa-circle-check' },
+      warn: { cls: 'warn', icon: 'fa-triangle-exclamation' },
+      error: { cls: 'error', icon: 'fa-circle-xmark' },
+    };
+    const t = typeMap[type] || typeMap.info;
+    document.getElementById('dialogIcon').className = `dialog-icon ${t.cls}`;
+    document.getElementById('dialogIcon').innerHTML = `<i class="fas ${t.icon}"></i>`;
+    document.getElementById('dialogTitle').textContent = title;
+    document.getElementById('dialogBody').textContent = message;
+    document.getElementById('dialogConfirmBtn').textContent = confirmText;
+    const cancelBtn = document.getElementById('dialogCancelBtn');
+    if (cancelText) { cancelBtn.style.display = 'inline-flex'; cancelBtn.textContent = cancelText; }
+    else { cancelBtn.style.display = 'none'; }
+    dialogOnConfirm = onConfirm;
+    document.getElementById('dialogOverlay').classList.add('show');
+  }
+
+  function closeDialog(action) {
+    document.getElementById('dialogOverlay').classList.remove('show');
+    if (action === 'confirm' && typeof dialogOnConfirm === 'function') dialogOnConfirm();
+    dialogOnConfirm = null;
+  }
+
+  function runInlineAiAnalysis() {
     if (!currentId || !SUPPLIER_DETAIL_DB[currentId]) return;
-    GcCapabilityAnalysis.open(GcCapabilityAnalysis.buildFromSupplier(SUPPLIER_DETAIL_DB[currentId], '../../assets/'));
+    if (analysisRunning) return;
+    if (!window.QccRiskEngine || !window.QccMockData || !window.SupplierAiAuditModule) {
+      showDialog({ title: '提示', message: '企查查分析模块未加载，请刷新页面后重试。', type: 'error', confirmText: '确定' });
+      return;
+    }
+
+    const s = SUPPLIER_DETAIL_DB[currentId];
+    const searchKey = (s.creditCode || s.name || '').trim();
+    if (!searchKey) {
+      showDialog({ title: '提示', message: '缺少企业名称或统一社会信用代码，无法发起分析。', type: 'warn', confirmText: '确定' });
+      return;
+    }
+
+    analysisRunning = true;
+    const btn = document.getElementById('btnAiAnalysis');
+    if (btn) btn.disabled = true;
+
+    document.getElementById('resultSection').classList.add('hidden');
+    document.getElementById('aiAuditDashboard').innerHTML = '';
+    document.getElementById('aiAnalysisLoading').classList.remove('hidden');
+    document.getElementById('aiAnalysisLoadingText').textContent = '正在查询企查查企业风险数据…';
+    document.getElementById('aiAnalysisProgressBar').style.width = '18%';
+
+    setTimeout(() => {
+      document.getElementById('aiAnalysisProgressBar').style.width = '55%';
+      document.getElementById('aiAnalysisLoadingText').textContent = '正在按六维规则核验合作风险…';
+    }, 450);
+
+    setTimeout(() => {
+      const payload = QccMockData.fetchMock(searchKey, {
+        supplierId: s.id,
+        companyName: s.companyName || s.name,
+        creditCode: s.creditCode,
+        legalPerson: s.legalPerson,
+        address: s.address,
+      });
+      const evaluation = QccRiskEngine.evaluate(payload);
+
+      analysisRunning = false;
+      if (btn) btn.disabled = false;
+      document.getElementById('aiAnalysisLoading').classList.add('hidden');
+      document.getElementById('aiAnalysisProgressBar').style.width = '0%';
+
+      if (!evaluation.ok) {
+        showDialog({
+          title: '无法查询到企业信息',
+          message: evaluation.message,
+          type: 'warn',
+          confirmText: '知道了',
+        });
+        return;
+      }
+
+      const scoreMap = { pass: 92, low: 78, mid: 62, high: 45 };
+      document.getElementById('btnAiScore').textContent = scoreMap[evaluation.overall] || 78;
+      SupplierAiAuditModule.renderResultSection(evaluation);
+
+      const panel = document.getElementById('resultSection');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 1400);
+  }
+
+  function updateRejectReasonCount() {
+    const ta = document.getElementById('rejectReasonInput');
+    const el = document.getElementById('rejectReasonCount');
+    if (ta && el) el.textContent = String((ta.value || '').length);
+  }
+
+  function openRejectSettleModal() {
+    const ta = document.getElementById('rejectReasonInput');
+    if (ta) ta.value = '';
+    updateRejectReasonCount();
+    document.getElementById('rejectOverlay').classList.add('show');
+  }
+
+  function closeRejectSettleModal() {
+    document.getElementById('rejectOverlay').classList.remove('show');
+  }
+
+  function submitRejectSettle() {
+    const v = (document.getElementById('rejectReasonInput').value || '').trim();
+    if (!v) {
+      showDialog({ title: '提示', message: '请填写驳回理由。', type: 'warn', confirmText: '确定' });
+      return;
+    }
+    closeRejectSettleModal();
+    showDialog({
+      title: '已驳回入驻申请',
+      message: '已向供应商发送驳回通知（演示）。\n\n驳回理由：\n' + v,
+      type: 'info',
+      confirmText: '返回供应商列表',
+      onConfirm: () => { location.href = withAdminEmbed('admin_supplier_manage.html'); },
+    });
+  }
+
+  function passSettleApplication() {
+    if (!currentId || !SUPPLIER_DETAIL_DB[currentId]) return;
+
+    if (window.SupplierAiAuditModule && SupplierAiAuditModule.isBlocked()) {
+      const ev = SupplierAiAuditModule.getLastEvaluation();
+      showDialog({
+        title: '无法通过',
+        message: (ev && ev.summaryText)
+          ? (ev.summaryText + '\n\n存在高风险（阻断）项，请处理后再通过入驻申请。')
+          : '企查查合作风险排查存在高风险（阻断）项，暂不可通过入驻。',
+        type: 'error',
+        confirmText: '确定',
+      });
+      return;
+    }
+
+    const ev = window.SupplierAiAuditModule ? SupplierAiAuditModule.getLastEvaluation() : null;
+    let msg = '确认通过后该供应商将正式上线，可被采购方检索（演示）。';
+    let dlgType = 'info';
+    if (ev && ev.ok) {
+      msg = `企查查 AI 审核结论：${ev.overallLabel}（高风险 ${ev.counts.high} / 中风险 ${ev.counts.mid} / 低风险 ${ev.counts.low}）。\n`;
+      if (ev.counts.mid || ev.counts.low) {
+        msg += '当前无高风险阻断项，低/中风险仅作提示。\n';
+        dlgType = 'warn';
+      }
+      msg += '确认通过后该供应商将正式上线（演示）。';
+    } else {
+      msg = '尚未完成 AI 智能分析，将按人工审核通过处理。\n确认通过后该供应商将正式上线（演示）。';
+      dlgType = 'warn';
+    }
+
+    showDialog({
+      title: '通过入驻申请',
+      message: msg,
+      type: dlgType,
+      confirmText: '确认通过',
+      cancelText: '取消',
+      onConfirm: () => {
+        showDialog({
+          title: '审核已通过',
+          message: '已通过入驻申请并完成上线（演示）。\n供应商账号将激活，可登录供应商工作台。',
+          type: 'success',
+          confirmText: '返回供应商列表',
+          onConfirm: () => { location.href = withAdminEmbed('admin_supplier_manage.html'); },
+        });
+      },
+    });
   }
 
   function goAudit() {
@@ -571,6 +850,24 @@
       document.getElementById('adminSidebar').classList.add('collapsed');
       document.getElementById('sidebarToggleIcon').classList.replace('fa-chevron-left', 'fa-chevron-right');
     }
+    if (window.SupplierAiAuditModule) {
+      SupplierAiAuditModule.init({
+        getSupplierInfo: () => {
+          const cur = SUPPLIER_DETAIL_DB[currentId] || {};
+          return {
+            companyName: cur.companyName || cur.name || '',
+            creditCode: cur.creditCode || '',
+            legalPerson: cur.legalPerson || '',
+            address: cur.address || '',
+            supplierId: currentId || '',
+          };
+        },
+        showDialog,
+      });
+    }
+    const rejectTa = document.getElementById('rejectReasonInput');
+    if (rejectTa) rejectTa.addEventListener('input', updateRejectReasonCount);
+
     const id = new URLSearchParams(location.search).get('id');
     renderDetail(id || '');
   });
