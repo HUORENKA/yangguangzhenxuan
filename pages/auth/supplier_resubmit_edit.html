@@ -364,6 +364,10 @@
             <input type="text" id="legalPerson" placeholder="请输入法定代表人姓名">
           </div>
           <div>
+            <label for="legalPersonId">法人身份证号<span class="req">*</span></label>
+            <input type="text" id="legalPersonId" maxlength="18" placeholder="18位身份证号码">
+          </div>
+          <div>
             <label for="contactName">联系人<span class="req">*</span></label>
             <input type="text" id="contactName" placeholder="请输入对接联系人姓名">
           </div>
@@ -415,6 +419,7 @@
 
   <script>
     function isPhone(v) { return /^1\d{10}$/.test((v || '').trim()); }
+    function isIdCard(v) { return /^[1-9]\d{16}[\dXx]$/.test((v || '').trim()); }
 
     var qualRows = [
       { id: 'QF-001', type: '营业执照', req: true, requirement: 'JPG/PDF，≤5MB，需清晰可辨识', uploaded: false, ai: '' },
@@ -476,6 +481,7 @@
       document.getElementById('creditCode').value = '91110108MA01SUN88X';
       document.getElementById('mainCategory').value = '办公设备';
       document.getElementById('legalPerson').value = '张三';
+      document.getElementById('legalPersonId').value = '110101199001011234';
       document.getElementById('contactName').value = '张三';
       document.getElementById('contactPhone').value = '13800138000';
       document.getElementById('address').value = '北京市海淀区中关村科技园区阳光路88号';
@@ -514,6 +520,14 @@
       }
       if (!(document.getElementById('legalPerson').value || '').trim()) {
         alert('请填写法人姓名');
+        return;
+      }
+      if (!(document.getElementById('legalPersonId').value || '').trim()) {
+        alert('请填写法人身份证号');
+        return;
+      }
+      if (!isIdCard(document.getElementById('legalPersonId').value)) {
+        alert('请填写正确的法人身份证号（18位）');
         return;
       }
       if (!(document.getElementById('contactName').value || '').trim()) {

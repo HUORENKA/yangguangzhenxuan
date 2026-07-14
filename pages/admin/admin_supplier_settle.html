@@ -668,6 +668,10 @@
           <input class="form-input" type="text" placeholder="请输入法定代表人姓名" id="legalPerson">
         </div>
         <div>
+          <label class="form-label">法人身份证号<span class="required">*</span></label>
+          <input class="form-input" type="text" placeholder="18位身份证号码" id="legalPersonId" maxlength="18">
+        </div>
+        <div>
           <label class="form-label">联系人<span class="required">*</span></label>
           <input class="form-input" type="text" placeholder="请输入对接联系人姓名" id="contactName">
         </div>
@@ -1147,6 +1151,7 @@
       companyName: '北京阳光办公科技有限公司',
       creditCode: '91110108MA01SUN88X',
       legalPerson: '张三',
+      legalPersonId: '110101199001011234',
       contactName: '张三',
       contactPhone: '13800138000',
       afterSalesPhone: '4008889999',
@@ -1378,6 +1383,7 @@
         companyName: (document.getElementById('companyName')?.value || '').trim(),
         creditCode: (document.getElementById('creditCode')?.value || '').trim(),
         legalPerson: (document.getElementById('legalPerson')?.value || '').trim(),
+        legalPersonId: (document.getElementById('legalPersonId')?.value || '').trim(),
         address: (document.getElementById('address')?.value || '').trim(),
         supplierId: new URLSearchParams(location.search).get('id') || '',
       }),

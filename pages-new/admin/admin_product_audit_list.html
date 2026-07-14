@@ -486,19 +486,15 @@
       gap: 12px 14px;
     }
     @media (min-width: 640px) {
-      .audit-filter-row--primary {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .audit-filter-row--advanced {
+      .audit-filter-row--line1,
+      .audit-filter-row--line2 {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
     @media (min-width: 1024px) {
-      .audit-filter-row--primary {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-      .audit-filter-row--advanced {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+      .audit-filter-row--line1,
+      .audit-filter-row--line2 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
       }
     }
     .audit-filter-field {
@@ -558,22 +554,6 @@
     .audit-filter-advanced-inner {
       overflow: hidden;
       min-height: 0;
-    }
-    .audit-filter-advanced-divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #bfbfbf;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-    .audit-filter-advanced-divider::before,
-    .audit-filter-advanced-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #f0f0f0;
     }
   </style>
 </head>
@@ -659,42 +639,31 @@
       </div>
 
       <div class="audit-filter-body">
-        <div class="audit-filter-row audit-filter-row--primary">
+        <div class="audit-filter-row audit-filter-row--line1">
           <div class="audit-filter-field">
             <label for="auditFilterNameSku" class="audit-filter-label">商品名称或 SKU</label>
             <input type="text" id="auditFilterNameSku" class="audit-filter-control" placeholder="输入关键词">
           </div>
           <div class="audit-filter-field">
-            <label for="auditFilterSupplier" class="audit-filter-label">供应商</label>
-            <input type="text" id="auditFilterSupplier" class="audit-filter-control" placeholder="供应商名称关键字">
+            <label for="auditFilterCat1" class="audit-filter-label">一级类目</label>
+            <select id="auditFilterCat1" class="audit-filter-control"></select>
           </div>
           <div class="audit-filter-field">
-            <label for="auditFilterListStatus" class="audit-filter-label">当前状态</label>
-            <select id="auditFilterListStatus" class="audit-filter-control">
-              <option value="">全部状态</option>
-              <option value="pending">待审核</option>
-              <option value="rejected">已驳回</option>
-              <option value="online">已上架</option>
-              <option value="offline">已下架</option>
-            </select>
+            <label for="auditFilterCat2" class="audit-filter-label">二级类目</label>
+            <select id="auditFilterCat2" class="audit-filter-control"></select>
+          </div>
+          <div class="audit-filter-field">
+            <label for="auditFilterCat3" class="audit-filter-label">三级类目</label>
+            <select id="auditFilterCat3" class="audit-filter-control"></select>
           </div>
         </div>
 
         <div class="audit-filter-advanced-wrap" id="auditFilterAdvancedWrap">
           <div class="audit-filter-advanced-inner">
-            <div class="audit-filter-advanced-divider">更多筛选</div>
-            <div class="audit-filter-row audit-filter-row--advanced" style="margin-top: 14px;">
+            <div class="audit-filter-row audit-filter-row--line2">
               <div class="audit-filter-field">
-                <label for="auditFilterCat1" class="audit-filter-label">一级类目</label>
-                <select id="auditFilterCat1" class="audit-filter-control"></select>
-              </div>
-              <div class="audit-filter-field">
-                <label for="auditFilterCat2" class="audit-filter-label">二级类目</label>
-                <select id="auditFilterCat2" class="audit-filter-control"></select>
-              </div>
-              <div class="audit-filter-field">
-                <label for="auditFilterCat3" class="audit-filter-label">三级类目</label>
-                <select id="auditFilterCat3" class="audit-filter-control"></select>
+                <label for="auditFilterSupplier" class="audit-filter-label">供应商</label>
+                <input type="text" id="auditFilterSupplier" class="audit-filter-control" placeholder="供应商名称关键字">
               </div>
               <div class="audit-filter-field">
                 <label for="auditFilterAuditKind" class="audit-filter-label">审核类型</label>
@@ -702,6 +671,16 @@
                   <option value="">全部类型</option>
                   <option value="NEW_LISTING">新建上架</option>
                   <option value="CHANGE_INFO">信息变更</option>
+                </select>
+              </div>
+              <div class="audit-filter-field">
+                <label for="auditFilterListStatus" class="audit-filter-label">当前状态</label>
+                <select id="auditFilterListStatus" class="audit-filter-control">
+                  <option value="">全部状态</option>
+                  <option value="pending">待审核</option>
+                  <option value="rejected">已驳回</option>
+                  <option value="online">已上架</option>
+                  <option value="offline">已下架</option>
                 </select>
               </div>
               <div class="audit-filter-field">

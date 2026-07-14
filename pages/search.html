@@ -84,15 +84,13 @@
     }
 
     .search-bar {
-      grid-column: 2;
-      grid-row: 1;
       width: 100%;
       height: 48px;
       border-radius: 999px;
       border: 1px solid rgba(226, 232, 240, 0.96);
       background: #fff;
       display: grid;
-      grid-template-columns: 92px 1fr 96px;
+      grid-template-columns: 92px minmax(0, 1fr) 96px;
       align-items: center;
       overflow: hidden;
       box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
@@ -236,13 +234,93 @@
       padding-right: 14px;
     }
 
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      height: 100%;
+      padding: 0 14px;
+    }
+
     .search-input {
+      width: 100%;
       height: 100%;
       border: none;
       outline: none;
       font-size: 15px;
       background: transparent;
       color: var(--text-main);
+    }
+
+    .search-chip-bar {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .search-chip-list {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .search-query-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f0f5ff;
+      border: 1px solid rgba(47, 107, 255, 0.22);
+      color: var(--brand-dark);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .search-query-chip span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-query-chip button {
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .search-query-chip button:hover {
+      color: #ef4444;
+    }
+
+    .search-chip-clear {
+      border: none;
+      background: transparent;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      padding: 6px 0;
+      flex-shrink: 0;
+    }
+
+    .search-chip-clear:hover {
+      color: var(--brand-dark);
     }
 
     .search-btn {
@@ -419,28 +497,219 @@
       font-weight: 700;
     }
 
-    .ai-strip {
+    .search-bar-wrap {
       grid-column: 2;
-      grid-row: 2;
-      margin: 0;
-      padding: 0;
-      background: transparent;
-      border: none;
+      grid-row: 1;
+      position: relative;
+      width: 100%;
     }
 
-    .ai-suggest {
+    .search-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid rgba(226, 232, 240, 0.96);
+      border-radius: 14px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+      z-index: 40;
+      overflow: hidden;
+    }
+
+    .search-dropdown-section {
+      padding: 10px 14px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .search-dropdown-section:first-child {
+      border-top: none;
+    }
+
+    .search-dropdown-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-dropdown-clear {
+      border: none;
+      background: transparent;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .search-suggest-list {
+      display: grid;
+      gap: 4px;
+    }
+
+    .search-suggest-item {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .search-suggest-item:hover,
+    .search-suggest-item.active {
+      background: #f0f5ff;
+      color: var(--brand-dark);
+    }
+
+    .search-suggest-item i {
+      color: #94a3b8;
+      width: 14px;
+      text-align: center;
+    }
+
+    .search-history-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 6px 4px 4px;
+      border-radius: 8px;
+    }
+
+    .search-history-item:hover {
+      background: #f0f5ff;
+    }
+
+    .search-history-main {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      background: transparent;
+      text-align: left;
+      padding: 4px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .search-history-main span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .search-history-remove {
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 6px 8px;
+      font-size: 14px;
+      line-height: 1;
+      flex-shrink: 0;
+      border-radius: 6px;
+    }
+
+    .search-history-remove:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .ai-explain-bar {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f0f5ff 0%, #fff 100%);
+      border: 1px solid rgba(47, 107, 255, 0.18);
+      color: #334155;
+      font-size: 13px;
+      line-height: 1.7;
+      font-weight: 600;
+    }
+
+    .ai-explain-bar strong {
+      color: var(--brand-dark);
+    }
+
+    .ai-explain-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(47, 107, 255, 0.12);
+      color: var(--brand-dark);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .active-filters {
+      margin-top: 10px;
       display: flex;
       align-items: center;
       flex-wrap: wrap;
       gap: 8px;
-      justify-content: flex-start;
+    }
+
+    .active-filter-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid rgba(203, 213, 225, 0.95);
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .active-filter-tag button {
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .active-filter-clear {
+      border: none;
+      background: transparent;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .ai-suggest-row {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .ai-suggest-label {
       font-size: 13px;
       color: var(--text-sub);
-      font-weight: 600;
-      margin-right: 2px;
+      font-weight: 700;
     }
 
     .suggest-chip {
@@ -452,18 +721,42 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.18s ease;
     }
 
-    .suggest-chip:hover {
-      background: var(--brand-light);
-      border-color: rgba(47, 107, 255, 0.45);
-    }
-
+    .suggest-chip:hover,
     .suggest-chip.active {
       background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
       border-color: var(--brand);
       color: #fff;
+    }
+
+    .search-correct-tip {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .search-correct-tip button {
+      border: none;
+      background: transparent;
+      color: var(--brand);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .empty-box {
+      grid-column: 1 / -1;
+      padding: 36px 24px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px dashed rgba(203, 213, 225, 0.95);
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.8;
+      font-weight: 600;
     }
 
     .results-zone {
@@ -476,8 +769,85 @@
       padding: 0;
     }
 
-    .results-wrap {
-      margin-top: 16px;
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .shop-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .shop-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+      border-color: var(--brand);
+    }
+
+    .shop-card-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shop-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      flex-shrink: 0;
+    }
+
+    .shop-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1.4;
+    }
+
+    .shop-meta {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-sub);
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .shop-samples {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .shop-sample {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #eef2f7;
+      background: #f8fafc;
+    }
+
+    .shop-sample img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    .shop-sample-price {
+      padding: 4px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--mall-red);
+      text-align: center;
     }
 
     .product-grid {
@@ -651,16 +1021,6 @@
 
     .action-btn.cart:hover {
       background: #fff0ef;
-    }
-
-    .empty-box {
-      background: #fff;
-      border: 1px dashed #d1d5db;
-      border-radius: 16px;
-      padding: 60px 20px;
-      text-align: center;
-      color: #9ca3af;
-      grid-column: 1 / -1;
     }
 
     .compare-picker-overlay {
@@ -848,18 +1208,16 @@
         grid-row: 1;
         justify-self: center;
       }
-      .search-bar {
+      .search-bar-wrap {
         grid-column: 1;
         grid-row: 2;
-        grid-template-columns: 84px 1fr 88px;
+      }
+      .search-bar {
+        grid-template-columns: 84px minmax(0, 1fr) 88px;
       }
       .cat-assistant-btn {
         grid-column: 2;
         grid-row: 2;
-      }
-      .ai-strip {
-        grid-column: 1 / -1;
-        grid-row: 3;
       }
     }
 
@@ -891,15 +1249,32 @@
         <a class="eshop-brand" href="./merged_home.html?tab=mall">
           <span class="eshop-name">E<em>·</em>SHOPPING</span>
         </a>
-        <div class="search-bar">
-          <div class="search-type">
-            <select id="searchTypeSelect" class="search-type-select" aria-label="搜索类型">
-              <option value="product">宝贝</option>
-              <option value="shop">店铺</option>
-            </select>
+        <div class="search-bar-wrap" id="searchBarWrap">
+          <div class="search-bar">
+            <div class="search-type">
+              <select id="searchTypeSelect" class="search-type-select" aria-label="搜索类型">
+                <option value="product">商品</option>
+                <option value="shop">店铺</option>
+              </select>
+            </div>
+            <div class="search-input-wrap" id="searchInputWrap">
+              <input id="searchInput" class="search-input" placeholder="请输入商品名称、品牌或类目" autocomplete="off">
+            </div>
+            <button id="searchBtn" class="search-btn" type="button">搜索</button>
           </div>
-          <input id="searchInput" class="search-input" placeholder="请输入采购需求，如“A4打印纸，15元以内，华南供应商，高时效”">
-          <button id="searchBtn" class="search-btn" type="button">搜索</button>
+          <div class="search-dropdown" id="searchDropdown" hidden>
+            <div class="search-dropdown-section" id="searchSuggestSection" hidden>
+              <div class="search-dropdown-title">搜索联想</div>
+              <div class="search-suggest-list" id="searchSuggestList"></div>
+            </div>
+            <div class="search-dropdown-section" id="searchHistorySection" hidden>
+              <div class="search-dropdown-title">
+                <span>搜索历史</span>
+                <button class="search-dropdown-clear" type="button" id="clearHistoryBtn">清空</button>
+              </div>
+              <div class="search-suggest-list" id="searchHistoryList"></div>
+            </div>
+          </div>
         </div>
         <a class="cat-assistant-btn" href="../pages-new/ai_assistant.html" title="猫助手 · AI 智能采购">
           <span class="cat-mini" aria-hidden="true">
@@ -915,9 +1290,6 @@
           </span>
           <span class="cat-assistant-label">猫助手</span>
         </a>
-        <div class="ai-strip">
-          <div class="ai-suggest" id="aiSuggest"></div>
-        </div>
       </div>
     </section>
   </div>
@@ -925,21 +1297,40 @@
   <div class="results-zone" id="resultsZone">
   <main class="page-wrap">
 
-    <section class="tab-row" id="tabRow"></section>
+    <div class="search-correct-tip" id="searchCorrectTip" hidden></div>
 
-    <section class="filter-bar">
+    <div class="ai-explain-bar" id="aiExplainBar" hidden></div>
+
+    <div class="ai-suggest-row" id="aiSuggestRow" hidden>
+      <span class="ai-suggest-label">智能推荐：</span>
+    </div>
+
+    <div class="search-chip-bar" id="searchChipBar" hidden>
+      <div class="search-chip-list" id="searchQueryChips"></div>
+      <button class="search-chip-clear" type="button" id="clearAllChipsBtn">清空</button>
+    </div>
+
+    <section class="filter-bar" id="filterBar">
       <div class="filter-left">
         <button class="sort-btn active" data-sort="comprehensive">综合</button>
         <button class="sort-btn" data-sort="priceAsc">价格 <i class="fa-solid fa-chevron-down text-xs"></i></button>
         <button class="sort-btn" data-sort="priceDesc">价格高低 <i class="fa-solid fa-chevron-up text-xs"></i></button>
-        <select class="filter-select" id="regionSelect">
-          <option value="全部">销地区</option>
+        <button class="sort-btn" data-sort="soldDesc">销量</button>
+        <button class="sort-btn" data-sort="newest">上新</button>
+        <select class="filter-select" id="priceRangeSelect" aria-label="价格区间">
+          <option value="全部">价格区间</option>
         </select>
-        <select class="filter-select" id="citySelect">
-          <option value="全部">销地市</option>
+        <select class="filter-select" id="categoryL1Select" aria-label="一级类目">
+          <option value="全部">一级类目</option>
         </select>
-        <select class="filter-select" id="attrSelect">
-          <option value="全部">属性</option>
+        <select class="filter-select" id="categoryL2Select" aria-label="二级类目">
+          <option value="全部">二级类目</option>
+        </select>
+        <select class="filter-select" id="categoryL3Select" aria-label="三级类目">
+          <option value="全部">三级类目</option>
+        </select>
+        <select class="filter-select" id="brandSelect" aria-label="品牌">
+          <option value="全部">品牌</option>
         </select>
       </div>
     </section>
@@ -950,7 +1341,7 @@
 
     <section class="results-footer" id="resultsFooter">
       <div class="results-footer-meta">
-        <span>共 <b id="resultCount">0</b> 件商品</span>
+        <span>共 <b id="resultCount">0</b> <span id="resultCountUnit">件商品</span></span>
       </div>
       <div class="results-pagination">
         <button class="page-btn" type="button" id="pagePrevBtn" disabled>上一页</button>
@@ -1014,17 +1405,30 @@
 
   <script src="../assets/unified_topbar.js"></script>
   <script>
-    const TAB_META = {
-      guess: { label: '猜你喜欢', icon: 'fa-regular fa-star', tip: '基于采购偏好推荐相关商品' },
-      quality: { label: '品质甄选', icon: 'fa-solid fa-medal', tip: '优先展示合规资料齐全、质量稳定商品' },
-      value: { label: '性价之选', icon: 'fa-solid fa-bolt', tip: '优先展示价格竞争力较高的商品' },
-      hot: { label: '热门商品', icon: 'fa-solid fa-fire', tip: '近期热度较高的采购商品' }
+    const CATEGORY_TREE = {
+      办公物资: {
+        办公耗材: ['纸张用品', '书写用品', '收纳用品'],
+        办公家具: ['桌椅类'],
+        办公设备: ['打印设备', '电脑设备', '会议设备']
+      }
     };
+
+    const PRICE_RANGES = [
+      { value: '全部', label: '价格区间', min: null, max: null },
+      { value: '0-50', label: '0-50元', min: 0, max: 50 },
+      { value: '50-500', label: '50-500元', min: 50, max: 500 },
+      { value: '500-3000', label: '500-3000元', min: 500, max: 3000 },
+      { value: '3000+', label: '3000元以上', min: 3000, max: null }
+    ];
 
     const PRODUCTS = [
       {
         id: 'GC-001',
         name: '办公桌套装 1.2米简约现代电脑桌书桌写字台',
+        brand: '德邦',
+        categoryL1: '办公物资',
+        categoryL2: '办公家具',
+        categoryL3: '桌椅类',
         category: '办公家具',
         unit: '套',
         supplier: '德邦办公家具有限公司',
@@ -1051,6 +1455,10 @@
       {
         id: 'GC-002',
         name: '商务笔记本电脑 i7处理器 16G内存 512G固态硬盘',
+        brand: '联想',
+        categoryL1: '办公物资',
+        categoryL2: '办公设备',
+        categoryL3: '电脑设备',
         category: '办公设备',
         unit: '台',
         supplier: '联采科技项目有限公司',
@@ -1077,6 +1485,10 @@
       {
         id: 'GC-003',
         name: '人体工学办公椅 网布透气 可躺靠背 电脑椅老板椅',
+        brand: '黑白调',
+        categoryL1: '办公物资',
+        categoryL2: '办公家具',
+        categoryL3: '桌椅类',
         category: '办公家具',
         unit: '把',
         supplier: '黑白调家具股份有限公司',
@@ -1103,6 +1515,10 @@
       {
         id: 'GC-004',
         name: '激光打印机 黑白双面打印 办公家用A4打印机',
+        brand: '惠普',
+        categoryL1: '办公物资',
+        categoryL2: '办公设备',
+        categoryL3: '打印设备',
         category: '办公设备',
         unit: '台',
         supplier: '慧普贸易有限公司',
@@ -1129,6 +1545,10 @@
       {
         id: 'GC-005',
         name: 'A4打印纸 70g 500张/包 8包整箱 高白复印纸',
+        brand: '晨采',
+        categoryL1: '办公物资',
+        categoryL2: '办公耗材',
+        categoryL3: '纸张用品',
         category: '办公耗材',
         unit: '箱',
         supplier: '晨采办公用品有限公司',
@@ -1155,6 +1575,10 @@
       {
         id: 'GC-006',
         name: '中性笔 0.5mm 黑色 12支装 会议签字笔办公文具',
+        brand: '晨光',
+        categoryL1: '办公物资',
+        categoryL2: '办公耗材',
+        categoryL3: '书写用品',
         category: '办公耗材',
         unit: '盒',
         supplier: '晨光政采供应站',
@@ -1181,6 +1605,10 @@
       {
         id: 'GC-007',
         name: '档案盒 55mm A4蓝色办公文件盒 资料收纳盒',
+        brand: '齐心',
+        categoryL1: '办公物资',
+        categoryL2: '办公耗材',
+        categoryL3: '收纳用品',
         category: '办公耗材',
         unit: '个',
         supplier: '齐心政企采购中心',
@@ -1207,6 +1635,10 @@
       {
         id: 'GC-008',
         name: '会议平板一体机 65寸 智能投屏 远程会议终端',
+        brand: '华采',
+        categoryL1: '办公物资',
+        categoryL2: '办公设备',
+        categoryL3: '会议设备',
         category: '会议设备',
         unit: '台',
         supplier: '华采视讯科技有限公司',
@@ -1232,19 +1664,58 @@
       }
     ];
 
+    PRODUCTS.forEach((item, index) => {
+      item.listedAt = item.listedAt || `2026-0${Math.min(4, Math.floor(index / 2) + 1)}-${String(12 + index).padStart(2, '0')}`;
+    });
+
+    function buildShops() {
+      const map = new Map();
+      PRODUCTS.forEach(product => {
+        if (!map.has(product.supplier)) {
+          map.set(product.supplier, {
+            id: `shop-${map.size + 1}`,
+            name: product.supplier,
+            region: product.deliveryArea,
+            productCount: 0,
+            sold: 0,
+            image: product.image,
+            sampleProducts: []
+          });
+        }
+        const shop = map.get(product.supplier);
+        shop.productCount += 1;
+        shop.sold += product.sold;
+        if (shop.sampleProducts.length < 3) shop.sampleProducts.push(product);
+      });
+      return [...map.values()];
+    }
+
+    const SHOPS = buildShops();
+
     const PAGE_SIZE = 24;
+    const HISTORY_KEY = 'gc_search_history_v1';
 
     const state = {
-      tab: 'hot',
       query: '',
+      rawQuery: '',
       searchType: 'product',
       sort: 'comprehensive',
-      region: '全部',
-      city: '全部',
-      attr: '全部',
+      priceRange: '全部',
+      categoryL1: '全部',
+      categoryL2: '全部',
+      categoryL3: '全部',
+      brand: '全部',
       page: 1,
-      cart: { 'GC-001': 1, 'GC-005': 2 }
+      cart: { 'GC-001': 1, 'GC-005': 2 },
+      activeSuggestIndex: -1,
+      queryChips: [],
+      queryKeywordSegments: [],
+      priceChipLabel: ''
     };
+
+    let dropdownItems = [];
+    let historyEntriesCache = [];
+    let parseDebounceTimer = null;
 
     let currentCompareProduct = null;
     let currentCompareTab = 'same';
@@ -1296,124 +1767,688 @@
       return '高客单价';
     }
 
-    function getTabData(tab) {
-      const list = [...PRODUCTS];
-      if (tab === 'guess') return list.sort((a, b) => b.prefScore - a.prefScore);
-      if (tab === 'quality') return list.sort((a, b) => getQualityScore(b) - getQualityScore(a));
-      if (tab === 'value') return list.sort((a, b) => getPriceScore(b) - getPriceScore(a));
-      if (tab === 'hot') return list.sort((a, b) => b.hotScore - a.hotScore);
-      return list;
+    function getSearchHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      } catch (error) {
+        return [];
+      }
     }
 
-    function applySearch(list) {
-      if (!state.query.trim()) return list;
-      const tokens = state.query.toLowerCase().split(/[\s,，]+/).filter(Boolean);
-      return list.filter(item => {
-        const blob = state.searchType === 'shop'
-          ? [item.supplier, item.deliveryArea, item.deliveryCity].join(' ').toLowerCase()
-          : [
-              item.name,
-              item.category,
-              item.supplier,
-              item.deliveryArea,
-              item.deliveryCity,
-              item.deliveryTime,
-              item.tags.join(' ')
-            ].join(' ').toLowerCase();
-        return tokens.every(token => blob.includes(token));
+    function historyPrefix() {
+      return isProductMode() ? '商品:' : '店铺:';
+    }
+
+    function getSearchHistoryEntriesForMode() {
+      return getSearchHistory()
+        .filter(item => {
+          if (item.startsWith('商品:')) return isProductMode();
+          if (item.startsWith('店铺:')) return !isProductMode();
+          return isProductMode();
+        })
+        .map(item => ({
+          raw: item,
+          display: (item.startsWith('商品:') || item.startsWith('店铺:'))
+            ? item.slice(item.indexOf(':') + 1)
+            : item
+        }));
+    }
+
+    function getSearchHistoryForMode() {
+      return getSearchHistoryEntriesForMode().map(item => item.display);
+    }
+
+    function removeSearchHistoryItem(rawItem) {
+      const next = getSearchHistory().filter(item => item !== rawItem);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+      renderSearchDropdown();
+    }
+
+    function saveSearchHistory(keyword) {
+      const text = `${historyPrefix()}${String(keyword || '').trim()}`;
+      if (!text || text === historyPrefix()) return;
+      const next = [text, ...getSearchHistory().filter(item => item !== text)].slice(0, 8);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+    }
+
+    function tokenizeQuery(text) {
+      return String(text || '').toLowerCase().split(/[\s,，]+/).filter(Boolean);
+    }
+
+    function shouldParseToChips(text) {
+      const value = String(text || '').trim();
+      if (!value || !isProductMode()) return false;
+      if (value.length >= 8 && /[\s,，、和与及]/.test(value)) return true;
+      return /(\d+\s*元\s*(以内|以下|内))|(打印纸|复印纸|a4|办公椅|会议|打印机|电脑|中性笔|笔|晨光|得力|齐心)/i.test(value);
+    }
+
+    const KEYWORD_STOP_WORDS = new Set([
+      '帮我', '帮忙', '找', '搜索', '采购', '想要', '需要', '一下', '一些', '的', '了', '要', '买', '请', '给',
+      '我', '我们', '便宜', '品质', '好', '不错', '合适', '适合', '有没有', '预算', '价格', '品牌', '类目', '品类'
+    ]);
+
+    function mergeKeywordSegments(...lists) {
+      const seen = new Set();
+      const result = [];
+      lists.flat().forEach(item => {
+        const seg = String(item || '').trim();
+        const key = seg.toLowerCase();
+        if (!seg || seen.has(key) || KEYWORD_STOP_WORDS.has(seg)) return;
+        seen.add(key);
+        result.push(seg);
       });
+      return result;
+    }
+
+    function splitKeywordSegments(text) {
+      const normalized = String(text || '')
+        .replace(/(\d+(?:\.\d+)?)\s*元\s*(以内|以下|内)/gi, ' ')
+        .replace(/(24|48|72|二十四|四十八|七十二)\s*小时(内)?发货?/gi, ' ')
+        .replace(/[，,。.!！?？、；;：:]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (!normalized) return [];
+
+      return mergeKeywordSegments(
+        normalized.split(/[\s和与及\/]+/).filter(part => {
+          if (!part || KEYWORD_STOP_WORDS.has(part)) return false;
+          return part.length >= 2 || /[笔纸]/u.test(part);
+        })
+      );
+    }
+
+    function buildKeywordChips(segments) {
+      return segments.map((label, index) => ({
+        type: 'keyword',
+        id: `kw-${index}-${encodeURIComponent(label).slice(0, 24)}`,
+        label
+      }));
+    }
+
+    function syncQueryFromSegments() {
+      state.query = state.queryKeywordSegments.join(' ');
+    }
+
+    function getChipKey(chip) {
+      return chip.id || chip.type;
+    }
+
+    function parseQueryInput(rawText) {
+      const text = String(rawText || '').trim();
+      const parsed = {
+        priceRange: '全部',
+        categoryL1: '全部',
+        categoryL2: '全部',
+        categoryL3: '全部',
+        brand: '全部',
+        query: text,
+        keywordHints: [],
+        priceChipLabel: ''
+      };
+      if (!text) return parsed;
+
+      const lower = text.toLowerCase();
+      let cleaned = text;
+
+      const priceCap = lower.match(/(\d+(?:\.\d+)?)\s*元\s*(以内|以下|内)/);
+      if (priceCap) {
+        const cap = parseFloat(priceCap[1]);
+        parsed.priceChipLabel = `≤${cap}元`;
+        if (cap <= 50) parsed.priceRange = '0-50';
+        else if (cap <= 500) parsed.priceRange = '50-500';
+        else if (cap <= 3000) parsed.priceRange = '500-3000';
+        else parsed.priceRange = '3000+';
+        cleaned = cleaned.replace(priceCap[0], ' ');
+      }
+
+      const paperMatch = text.match(/A4打印纸|A4复印纸|A4纸|复印纸|打印纸/gi);
+      if (/打印纸|复印纸|a4纸|a4/.test(lower)) {
+        parsed.categoryL1 = '办公物资';
+        parsed.categoryL2 = '办公耗材';
+        parsed.categoryL3 = '纸张用品';
+        if (paperMatch) parsed.keywordHints.push(...paperMatch);
+        cleaned = cleaned.replace(/A4打印纸|A4复印纸|A4纸|复印纸|打印纸|a4纸|a4/gi, ' ');
+      } else if (/会议|平板/.test(lower)) {
+        parsed.categoryL1 = '办公物资';
+        parsed.categoryL2 = '办公设备';
+        parsed.categoryL3 = '会议设备';
+        const hint = text.match(/会议平板|会议设备|平板/g)?.[0];
+        if (hint) parsed.keywordHints.push(hint);
+        cleaned = cleaned.replace(/会议平板|会议设备|平板|会议/g, ' ');
+      } else if (/办公椅|办公桌|家具/.test(lower)) {
+        parsed.categoryL1 = '办公物资';
+        parsed.categoryL2 = '办公家具';
+        parsed.categoryL3 = '桌椅类';
+        const hint = text.match(/办公椅|办公桌|家具/g)?.[0];
+        if (hint) parsed.keywordHints.push(hint);
+        cleaned = cleaned.replace(/办公椅|办公桌|家具/g, ' ');
+      } else if (/电脑|笔记本|打印机|激光打印机/.test(lower)) {
+        parsed.categoryL1 = '办公物资';
+        parsed.categoryL2 = '办公设备';
+        parsed.categoryL3 = /打印机/.test(lower) ? '打印设备' : '电脑设备';
+        const hint = text.match(/激光打印机|打印机|笔记本|电脑/g)?.[0];
+        if (hint) parsed.keywordHints.push(hint);
+        cleaned = cleaned.replace(/激光打印机|打印机|笔记本|电脑/g, ' ');
+      } else if (/中性笔|签字笔/.test(lower)) {
+        parsed.categoryL1 = '办公物资';
+        parsed.categoryL2 = '办公耗材';
+        parsed.categoryL3 = '书写用品';
+        const hint = text.match(/中性笔|签字笔/g)?.[0];
+        if (hint) parsed.keywordHints.push(hint);
+        cleaned = cleaned.replace(/中性笔|签字笔/g, ' ');
+      } else if (/笔/.test(lower)) {
+        parsed.categoryL1 = '办公物资';
+        parsed.categoryL2 = '办公耗材';
+        parsed.categoryL3 = '书写用品';
+        const hint = text.match(/笔/g)?.[0];
+        if (hint) parsed.keywordHints.push(hint);
+        cleaned = cleaned.replace(/笔/g, ' ');
+      }
+
+      const brandHit = [...new Set(PRODUCTS.map(item => item.brand))].find(brand => lower.includes(brand.toLowerCase()));
+      if (brandHit) {
+        parsed.brand = brandHit;
+        cleaned = cleaned.replace(new RegExp(brandHit, 'gi'), ' ');
+      }
+
+      cleaned = cleaned.replace(/(\d+(?:\.\d+)?)\s*元\s*(以内|以下|内)/g, ' ');
+      cleaned = cleaned.replace(/[，,]/g, ' ').replace(/\s+/g, ' ').trim();
+      parsed.keywordSegments = mergeKeywordSegments(parsed.keywordHints, splitKeywordSegments(cleaned));
+      parsed.query = parsed.keywordSegments.join(' ');
+      return parsed;
+    }
+
+    function hasStructuredParse(parsed) {
+      return parsed.priceRange !== '全部'
+        || parsed.categoryL1 !== '全部'
+        || parsed.brand !== '全部';
+    }
+
+    function shouldSplitIntoChips(parsed, rawText, force) {
+      if (hasStructuredParse(parsed)) return true;
+      if (parsed.keywordSegments.length > 1) return true;
+      return !!force && String(rawText || '').trim().length >= 8;
+    }
+
+    function applyParsedQuery(parsed) {
+      state.priceRange = parsed.priceRange;
+      state.categoryL1 = parsed.categoryL1;
+      state.categoryL2 = parsed.categoryL2;
+      state.categoryL3 = parsed.categoryL3;
+      state.brand = parsed.brand;
+      state.priceChipLabel = parsed.priceChipLabel || '';
+      state.queryKeywordSegments = [...parsed.keywordSegments];
+      syncQueryFromSegments();
+    }
+
+    function clearQueryChips() {
+      state.queryChips = [];
+      state.queryKeywordSegments = [];
+      state.priceChipLabel = '';
+    }
+
+    function getChipDisplayLabel(chip) {
+      const prefixMap = {
+        keyword: '关键词',
+        priceRange: '价格',
+        category: '类目',
+        brand: '品牌'
+      };
+      const prefix = prefixMap[chip.type];
+      return prefix ? `${prefix}：${chip.label}` : chip.label;
+    }
+
+    function buildSearchDisplayText() {
+      const parts = [...state.queryKeywordSegments];
+      if (state.priceRange !== '全部') parts.push(getPriceRangeRule(state.priceRange).label);
+      const categoryLabel = getCategoryFilterLabel();
+      if (categoryLabel) parts.push(categoryLabel);
+      if (state.brand !== '全部') parts.push(state.brand);
+      const inputText = $('searchInput').value.trim();
+      if (inputText) parts.push(inputText);
+      return parts.join(' ').trim();
+    }
+
+    function getPriceChipLabel() {
+      if (state.priceRange === '全部') return '';
+      if (state.priceChipLabel) return state.priceChipLabel;
+      return getPriceRangeRule(state.priceRange).label;
+    }
+
+    function renderQueryChips() {
+      const bar = $('searchChipBar');
+      const wrap = $('searchQueryChips');
+      if (!wrap || !bar) return;
+
+      if (!isProductMode() || !state.queryChips.length) {
+        wrap.innerHTML = '';
+        bar.hidden = true;
+        return;
+      }
+
+      bar.hidden = false;
+      wrap.innerHTML = state.queryChips.map(chip => {
+        const label = getChipDisplayLabel(chip);
+        const chipKey = getChipKey(chip);
+        return `
+          <span class="search-query-chip" data-chip-type="${chip.type}">
+            <span>${label}</span>
+            <button type="button" data-remove-chip="${chipKey}" aria-label="移除${label}">×</button>
+          </span>
+        `;
+      }).join('');
+
+      wrap.querySelectorAll('[data-remove-chip]').forEach(btn => {
+        btn.onclick = event => {
+          event.stopPropagation();
+          removeQueryChip(btn.dataset.removeChip);
+        };
+      });
+    }
+
+    function clearAllQueryChips() {
+      state.query = '';
+      state.rawQuery = '';
+      state.priceRange = '全部';
+      state.categoryL1 = '全部';
+      state.categoryL2 = '全部';
+      state.categoryL3 = '全部';
+      state.brand = '全部';
+      state.queryKeywordSegments = [];
+      state.priceChipLabel = '';
+      $('searchInput').value = '';
+      clearQueryChips();
+      render(true);
+    }
+
+    function removeQueryChip(chipKey) {
+      if (chipKey.startsWith('kw-')) {
+        const chip = state.queryChips.find(item => getChipKey(item) === chipKey);
+        if (chip) {
+          state.queryKeywordSegments = state.queryKeywordSegments.filter(seg => seg !== chip.label);
+          syncQueryFromSegments();
+        }
+      } else if (chipKey === 'priceRange') {
+        state.priceRange = '全部';
+        state.priceChipLabel = '';
+      } else if (chipKey === 'category') {
+        state.categoryL1 = '全部';
+        state.categoryL2 = '全部';
+        state.categoryL3 = '全部';
+      } else if (chipKey === 'brand') {
+        state.brand = '全部';
+      }
+
+      state.rawQuery = buildSearchDisplayText();
+      render(true);
+    }
+
+    function rebuildQueryChipsFromState() {
+      if (!isProductMode()) {
+        clearQueryChips();
+        return;
+      }
+
+      const segments = state.queryKeywordSegments.length
+        ? state.queryKeywordSegments
+        : splitKeywordSegments(state.query);
+      if (segments.length && !state.queryKeywordSegments.length) {
+        state.queryKeywordSegments = segments;
+        syncQueryFromSegments();
+      }
+
+      const chips = [...buildKeywordChips(state.queryKeywordSegments)];
+
+      if (state.priceRange !== '全部') {
+        chips.push({
+          type: 'priceRange',
+          id: 'priceRange',
+          label: getPriceChipLabel() || getPriceRangeRule(state.priceRange).label
+        });
+      }
+      const categoryLabel = getCategoryFilterLabel();
+      if (categoryLabel) {
+        chips.push({ type: 'category', id: 'category', label: categoryLabel });
+      }
+      if (state.brand !== '全部') {
+        chips.push({ type: 'brand', id: 'brand', label: state.brand });
+      }
+
+      state.queryChips = chips;
+    }
+
+    function tryParseInputToChips(rawText, force) {
+      if (!isProductMode()) return false;
+      const text = String(rawText || '').trim();
+      if (!text) return false;
+      if (!force && !shouldParseToChips(text)) return false;
+
+      const parsed = parseQueryInput(text);
+      if (!shouldSplitIntoChips(parsed, text, force)) return false;
+
+      applyParsedQuery(parsed);
+      rebuildQueryChipsFromState();
+      $('searchInput').value = '';
+      renderQueryChips();
+      return true;
+    }
+
+    function setQueryFromRawText(rawText) {
+      const text = String(rawText || '').trim();
+      state.queryKeywordSegments = splitKeywordSegments(text);
+      if (!state.queryKeywordSegments.length && text) {
+        state.queryKeywordSegments = [text];
+      }
+      syncQueryFromSegments();
+    }
+
+    function getCategoryL1Options() {
+      return ['全部', ...Object.keys(CATEGORY_TREE)];
+    }
+
+    function getCategoryL2Options(l1) {
+      if (l1 === '全部') return ['全部'];
+      return ['全部', ...Object.keys(CATEGORY_TREE[l1] || {})];
+    }
+
+    function getCategoryL3Options(l1, l2) {
+      if (l1 === '全部' || l2 === '全部') return ['全部'];
+      return ['全部', ...(CATEGORY_TREE[l1]?.[l2] || [])];
+    }
+
+    function setCategoryLevel(level, value) {
+      if (level === 1) {
+        state.categoryL1 = value;
+        state.categoryL2 = '全部';
+        state.categoryL3 = '全部';
+      } else if (level === 2) {
+        state.categoryL2 = value;
+        state.categoryL3 = '全部';
+      } else {
+        state.categoryL3 = value;
+      }
+    }
+
+    function syncCategoryFromLegacy(categoryName) {
+      const hit = PRODUCTS.find(item => item.category === categoryName);
+      if (!hit) return;
+      state.categoryL1 = hit.categoryL1;
+      state.categoryL2 = hit.categoryL2;
+      state.categoryL3 = hit.categoryL3;
+    }
+
+    function productMatchesCategory(product) {
+      if (state.categoryL1 !== '全部' && product.categoryL1 !== state.categoryL1) return false;
+      if (state.categoryL2 !== '全部' && product.categoryL2 !== state.categoryL2) return false;
+      if (state.categoryL3 !== '全部' && product.categoryL3 !== state.categoryL3) return false;
+      return true;
+    }
+
+    function getCategoryFilterLabel() {
+      const parts = [state.categoryL1, state.categoryL2, state.categoryL3].filter(item => item !== '全部');
+      return parts.length ? parts.join(' / ') : '';
+    }
+
+    function getPriceRangeRule(value) {
+      return PRICE_RANGES.find(item => item.value === value) || PRICE_RANGES[0];
+    }
+
+    function matchPriceRange(product, rangeValue) {
+      const rule = getPriceRangeRule(rangeValue);
+      if (rule.value === '全部') return true;
+      if (rule.max == null) return product.price >= rule.min;
+      return product.price >= rule.min && product.price <= rule.max;
+    }
+
+    function isProductMode() {
+      return state.searchType === 'product';
     }
 
     function updateSearchPlaceholder() {
       const input = $('searchInput');
       if (!input) return;
-      input.placeholder = state.searchType === 'shop'
-        ? '请输入供应商或店铺名称，如“德邦办公、晨采办公”'
-        : '请输入采购需求，如“A4打印纸，15元以内，华南供应商，高时效”';
+      input.placeholder = isProductMode()
+        ? '请输入商品名称、品牌或类目'
+        : '请输入店铺名称，如“晨光政采供应站”';
+    }
+
+    function updateSearchModeUI() {
+      updateSearchPlaceholder();
+      $('searchTypeSelect').value = state.searchType;
+      $('filterBar').hidden = !isProductMode();
+      $('aiExplainBar').hidden = true;
+      $('aiSuggestRow').hidden = true;
+      $('searchCorrectTip').hidden = true;
+      if (!isProductMode()) {
+        clearQueryChips();
+        renderQueryChips();
+      }
+    }
+
+    function applyShopSearch(list) {
+      if (!state.query.trim()) return list;
+      const tokens = tokenizeQuery(state.query);
+      return list.filter(shop => {
+        const blob = [shop.name, shop.region].join(' ').toLowerCase();
+        return tokens.every(token => blob.includes(token));
+      });
+    }
+
+    function applySearch(list) {
+      if (!state.query.trim()) return list;
+      const rawTokens = tokenizeQuery(state.query);
+      return list.filter(item => {
+        const blob = [
+          item.name,
+          item.category,
+          item.brand,
+          item.supplier,
+          item.categoryL1,
+          item.categoryL2,
+          item.categoryL3
+        ].join(' ').toLowerCase();
+        return rawTokens.every(token => blob.includes(token));
+      });
+    }
+
+    function sortShopResults(list) {
+      const sorted = [...list];
+      if (state.sort === 'soldDesc') sorted.sort((a, b) => b.sold - a.sold || a.name.localeCompare(b.name));
+      else sorted.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+      return sorted;
+    }
+
+    function sortResults(list) {
+      const sorted = [...list];
+      if (state.sort === 'priceAsc') sorted.sort((a, b) => a.price - b.price);
+      else if (state.sort === 'priceDesc') sorted.sort((a, b) => b.price - a.price);
+      else if (state.sort === 'soldDesc') sorted.sort((a, b) => b.sold - a.sold || a.price - b.price);
+      else if (state.sort === 'newest') sorted.sort((a, b) => String(b.listedAt).localeCompare(String(a.listedAt)) || b.sold - a.sold);
+      else {
+        sorted.sort((a, b) => productScore(b) - productScore(a) || a.price - b.price);
+      }
+      return sorted;
+    }
+
+    function syncUrl() {
+      const params = new URLSearchParams();
+      if (state.rawQuery.trim()) params.set('keyword', state.rawQuery.trim());
+      if (state.searchType !== 'product') params.set('type', state.searchType);
+      if (state.categoryL1 !== '全部') params.set('categoryL1', state.categoryL1);
+      if (state.categoryL2 !== '全部') params.set('categoryL2', state.categoryL2);
+      if (state.categoryL3 !== '全部') params.set('categoryL3', state.categoryL3);
+      if (state.brand !== '全部') params.set('brand', state.brand);
+      if (state.priceRange !== '全部') params.set('priceRange', state.priceRange);
+      if (state.sort !== 'comprehensive') params.set('sort', state.sort);
+      if (state.page > 1) params.set('page', String(state.page));
+      const query = params.toString();
+      const nextUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
+      window.history.replaceState(null, '', nextUrl);
     }
 
     function initFromUrl() {
       const params = new URLSearchParams(window.location.search);
+      if (params.get('type') === 'shop' || params.get('type') === 'product') {
+        state.searchType = params.get('type');
+      }
+      if (params.get('priceRange')) state.priceRange = params.get('priceRange');
+      if (params.get('category') && !params.get('categoryL1')) {
+        syncCategoryFromLegacy(params.get('category'));
+      }
+      if (params.get('categoryL1')) state.categoryL1 = params.get('categoryL1');
+      if (params.get('categoryL2')) state.categoryL2 = params.get('categoryL2');
+      if (params.get('categoryL3')) state.categoryL3 = params.get('categoryL3');
+      if (params.get('brand')) state.brand = params.get('brand');
+      if (params.get('sort')) state.sort = params.get('sort');
+      if (params.get('page')) state.page = Math.max(1, parseInt(params.get('page'), 10) || 1);
+
       const keyword = (params.get('keyword') || params.get('q') || '').trim();
-      const type = params.get('type');
       if (keyword) {
-        state.query = keyword;
-        $('searchInput').value = keyword;
+        state.rawQuery = keyword;
+        if (!tryParseInputToChips(keyword, true)) {
+          $('searchInput').value = keyword;
+          setQueryFromRawText(keyword);
+        }
+      } else {
+        rebuildQueryChipsFromState();
       }
-      if (type === 'shop' || type === 'product') {
-        state.searchType = type;
-        $('searchTypeSelect').value = type;
-      }
-      updateSearchPlaceholder();
     }
 
     function applyFilters(list) {
       let result = [...list];
-      if (state.region !== '全部') result = result.filter(item => item.deliveryArea === state.region);
-      if (state.city !== '全部') result = result.filter(item => item.deliveryCity === state.city);
-      if (state.attr !== '全部') {
-        result = result.filter(item => {
-          if (state.attr === '高合规') return item.inspectionReport.status === '有效' && getRiskScore(item) >= 94;
-          if (state.attr === '48小时可发货') return /24小时|48小时/.test(item.deliveryTime);
-          if (state.attr === '低价优先') return item.price <= item.ceiling * 0.92;
-          return item.tags.includes(state.attr) || item.category === state.attr;
-        });
-      }
-
-      if (state.sort === 'priceAsc') result.sort((a, b) => a.price - b.price);
-      else if (state.sort === 'priceDesc') result.sort((a, b) => b.price - a.price);
-      else result.sort((a, b) => productScore(b) - productScore(a) || a.price - b.price);
-
-      return result;
+      result = result.filter(item => productMatchesCategory(item));
+      if (state.brand !== '全部') result = result.filter(item => item.brand === state.brand);
+      result = result.filter(item => matchPriceRange(item, state.priceRange));
+      return sortResults(result);
     }
 
     function currentResults() {
-      return applyFilters(applySearch(getTabData(state.tab)));
+      if (!isProductMode()) return sortShopResults(applyShopSearch([...SHOPS]));
+      return applyFilters(applySearch([...PRODUCTS]));
     }
 
-    function renderTabs() {
-      $('tabRow').innerHTML = Object.entries(TAB_META).map(([key, meta]) => `
-        <button class="tab-item ${state.tab === key ? 'active' : ''}" data-tab="${key}">
-          <i class="${meta.icon}"></i>${meta.label}
+    function buildSuggestions(keyword) {
+      const text = String(keyword || '').trim().toLowerCase();
+      const pool = [];
+      if (isProductMode()) {
+        PRODUCTS.forEach(item => {
+          pool.push({ type: '商品', label: item.name, value: item.name });
+          pool.push({ type: '品牌', label: item.brand, value: item.brand });
+          pool.push({ type: '类目', label: `${item.categoryL1} / ${item.categoryL2}`, value: item.name });
+        });
+      } else {
+        SHOPS.forEach(shop => {
+          pool.push({ type: '店铺', label: shop.name, value: shop.name });
+        });
+      }
+
+      const seen = new Set();
+      return pool.filter(item => {
+        const key = `${item.type}-${item.label}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        if (!text) return !isProductMode() && item.type === '店铺';
+        return item.label.toLowerCase().includes(text);
+      }).slice(0, 8);
+    }
+
+    function renderSearchDropdown() {
+      const dropdown = $('searchDropdown');
+      const keyword = $('searchInput').value.trim();
+      const suggestions = buildSuggestions(keyword);
+      const historyEntries = getSearchHistoryEntriesForMode();
+      historyEntriesCache = historyEntries;
+
+      dropdownItems = [
+        ...suggestions.map(item => ({ kind: 'suggest', value: item.value, label: item.label, meta: item.type })),
+        ...historyEntries.map(item => ({ kind: 'history', value: item.display, label: item.display, meta: '历史', raw: item.raw }))
+      ];
+
+      $('searchSuggestSection').hidden = !keyword || !suggestions.length;
+      $('searchSuggestList').innerHTML = suggestions.map((item, index) => `
+        <button class="search-suggest-item" type="button" data-dropdown-index="${index}">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>${item.label}</span>
+          <span style="margin-left:auto;color:#94a3b8;font-size:11px;">${item.type}</span>
         </button>
       `).join('');
 
-      document.querySelectorAll('.tab-item[data-tab]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          state.tab = btn.dataset.tab;
-          render(true);
-        });
+      $('searchHistorySection').hidden = !historyEntries.length;
+      $('searchHistoryList').innerHTML = historyEntries.map((item, index) => `
+        <div class="search-history-item">
+          <button class="search-history-main" type="button" data-dropdown-index="${suggestions.length + index}">
+            <i class="fa-regular fa-clock"></i><span>${item.display}</span>
+          </button>
+          <button class="search-history-remove" type="button" data-remove-history-index="${index}" aria-label="删除历史记录">×</button>
+        </div>
+      `).join('');
+
+      bindDropdownEvents();
+    }
+
+    function bindDropdownEvents() {
+      document.querySelectorAll('[data-dropdown-index]').forEach(btn => {
+        btn.onclick = () => {
+          const item = dropdownItems[Number(btn.dataset.dropdownIndex)];
+          if (!item) return;
+          $('searchInput').value = item.value;
+          hideSearchDropdown();
+          runSearch(true);
+        };
       });
+      document.querySelectorAll('[data-remove-history-index]').forEach(btn => {
+        btn.onclick = event => {
+          event.stopPropagation();
+          const entry = historyEntriesCache[Number(btn.dataset.removeHistoryIndex)];
+          if (entry) removeSearchHistoryItem(entry.raw);
+        };
+      });
+      $('clearHistoryBtn').onclick = () => {
+        localStorage.removeItem(HISTORY_KEY);
+        renderSearchDropdown();
+      };
+    }
+
+    function showSearchDropdown() {
+      renderSearchDropdown();
+      $('searchDropdown').hidden = false;
+    }
+
+    function hideSearchDropdown() {
+      $('searchDropdown').hidden = true;
+      state.activeSuggestIndex = -1;
+    }
+
+    function renderCategorySelects() {
+      const l1Options = getCategoryL1Options();
+      const l2Options = getCategoryL2Options(state.categoryL1);
+      const l3Options = getCategoryL3Options(state.categoryL1, state.categoryL2);
+
+      $('categoryL1Select').innerHTML = l1Options.map(v => `
+        <option value="${v}" ${state.categoryL1 === v ? 'selected' : ''}>${v === '全部' ? '一级类目' : v}</option>
+      `).join('');
+      $('categoryL2Select').innerHTML = l2Options.map(v => `
+        <option value="${v}" ${state.categoryL2 === v ? 'selected' : ''}>${v === '全部' ? '二级类目' : v}</option>
+      `).join('');
+      $('categoryL3Select').innerHTML = l3Options.map(v => `
+        <option value="${v}" ${state.categoryL3 === v ? 'selected' : ''}>${v === '全部' ? '三级类目' : v}</option>
+      `).join('');
+
+      $('categoryL2Select').disabled = state.categoryL1 === '全部';
+      $('categoryL3Select').disabled = state.categoryL1 === '全部' || state.categoryL2 === '全部';
     }
 
     function renderSelectOptions() {
-      const regions = ['全部', ...new Set(PRODUCTS.map(item => item.deliveryArea))];
-      const cities = ['全部', ...new Set(PRODUCTS.map(item => item.deliveryCity))];
-      const attrs = ['全部', '高合规', '48小时可发货', '低价优先', ...new Set(PRODUCTS.flatMap(item => item.tags).slice(0, 4))];
+      $('priceRangeSelect').innerHTML = PRICE_RANGES.map(item => `
+        <option value="${item.value}" ${state.priceRange === item.value ? 'selected' : ''}>${item.label}</option>
+      `).join('');
 
-      $('regionSelect').innerHTML = regions.map(v => `<option value="${v}" ${state.region === v ? 'selected' : ''}>${v}</option>`).join('');
-      $('citySelect').innerHTML = cities.map(v => `<option value="${v}" ${state.city === v ? 'selected' : ''}>${v}</option>`).join('');
-      $('attrSelect').innerHTML = attrs.map(v => `<option value="${v}" ${state.attr === v ? 'selected' : ''}>${v}</option>`).join('');
-    }
+      renderCategorySelects();
 
-    function renderSuggestTags() {
-      const suggestions = [];
-      suggestions.push('高合规', '48小时可发货', '低价优先');
-      if (state.query.includes('打印') || state.query.includes('纸')) suggestions.push('办公耗材');
-      if (state.query.includes('会议')) suggestions.push('会议设备');
-      if (state.query.includes('椅') || state.query.includes('桌')) suggestions.push('办公家具');
-      const unique = [...new Set(suggestions)].slice(0, 6);
-      const chips = unique.map(item => {
-        const active = state.attr === item ? ' active' : '';
-        return `<button class="suggest-chip${active}" type="button" data-suggest="${item}">${item}</button>`;
-      }).join('');
-      $('aiSuggest').innerHTML = `<span class="ai-suggest-label">智能推荐：</span>${chips}`;
-      document.querySelectorAll('.suggest-chip').forEach(btn => {
-        btn.addEventListener('click', () => {
-          state.attr = state.attr === btn.dataset.suggest ? '全部' : btn.dataset.suggest;
-          render(true);
-        });
-      });
+      const brands = ['全部', ...new Set(PRODUCTS.map(item => item.brand))];
+      $('brandSelect').innerHTML = brands.map(v => `
+        <option value="${v}" ${state.brand === v ? 'selected' : ''}>${v === '全部' ? '品牌' : v}</option>
+      `).join('');
     }
 
     function getPageMeta(list) {
@@ -1429,31 +2464,64 @@
     function renderCounts(list, pageMeta) {
       const meta = pageMeta || getPageMeta(list);
       $('resultCount').textContent = list.length;
+      $('resultCountUnit').textContent = isProductMode() ? '件商品' : '家店铺';
       $('pageInfo').textContent = `${meta.page} / ${meta.totalPages}`;
       $('pagePrevBtn').disabled = meta.page <= 1;
       $('pageNextBtn').disabled = meta.page >= meta.totalPages;
     }
 
-    function scrollToResults() {
-      const zone = $('resultsZone');
-      if (!zone) return;
-      const top = zone.getBoundingClientRect().top + window.scrollY - 8;
-      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    function renderShopCards(list, pageMeta) {
+      const grid = $('productGrid');
+      grid.className = 'shop-grid';
+      const meta = pageMeta || getPageMeta(list);
+      const pageList = list.slice(meta.start, meta.start + PAGE_SIZE);
+      if (!list.length) {
+        grid.innerHTML = `
+          <div class="empty-box">
+            未找到符合条件的店铺。<br>
+            请尝试更换关键词，或切换回商品搜索。
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = pageList.map(shop => `
+        <article class="shop-card" onclick="window.open('../pages-new/store/store_detail.html?shop=${encodeURIComponent(shop.name)}', '_blank')">
+          <div class="shop-card-head">
+            <img class="shop-logo" src="${shop.image}" alt="${shop.name}">
+            <div>
+              <div class="shop-name">${shop.name}</div>
+              <div class="shop-meta">${shop.region} · ${shop.productCount} 款商品 · 累计成交 ${shop.sold}</div>
+            </div>
+          </div>
+          <div class="shop-samples">
+            ${shop.sampleProducts.map(product => `
+              <div class="shop-sample" onclick="event.stopPropagation();window.open('product.html?id=${product.id}', '_blank')">
+                <img src="${product.image}" alt="${product.name}">
+                <div class="shop-sample-price">¥${product.price.toFixed(0)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </article>
+      `).join('');
     }
 
     function tagText(item) {
-      if (state.tab === 'quality') return '品质甄选';
-      if (state.tab === 'value') return '性价之选';
-      if (state.tab === 'hot') return '热门商品';
-      return item.tags[0] || '猜你喜欢';
+      return item.tags[0] || item.category;
     }
 
     function renderCards(list, pageMeta) {
       const grid = $('productGrid');
+      grid.className = 'product-grid';
       const meta = pageMeta || getPageMeta(list);
       const pageList = list.slice(meta.start, meta.start + PAGE_SIZE);
       if (!list.length) {
-        grid.innerHTML = `<div class="empty-box">未找到符合条件的商品，请调整搜索条件或清空筛选。</div>`;
+        grid.innerHTML = `
+          <div class="empty-box">
+            未找到符合条件的商品。<br>
+            建议放宽价格区间或切换类目后重试。
+          </div>
+        `;
         return;
       }
 
@@ -1735,42 +2803,101 @@
 
     function render(resetPage) {
       if (resetPage) state.page = 1;
-      renderTabs();
-      renderSelectOptions();
+      updateSearchModeUI();
+      if (isProductMode()) rebuildQueryChipsFromState();
+      renderQueryChips();
+      if (isProductMode()) renderSelectOptions();
       const list = currentResults();
       const pageMeta = getPageMeta(list);
       renderCounts(list, pageMeta);
-      renderSuggestTags();
-      renderCards(list, pageMeta);
-      document.querySelectorAll('.sort-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.sort === state.sort);
-      });
-    }
-
-    function goToPage(nextPage) {
-      state.page = nextPage;
-      render();
-      scrollToResults();
+      if (isProductMode()) {
+        renderCards(list, pageMeta);
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.sort === state.sort);
+        });
+      } else {
+        renderShopCards(list, pageMeta);
+      }
+      syncUrl();
     }
 
     function runSearch(scrollResults) {
-      state.query = $('searchInput').value.trim();
+      const raw = $('searchInput').value.trim();
+
+      if (isProductMode()) {
+        if (raw) {
+          if (!tryParseInputToChips(raw, true)) {
+            setQueryFromRawText(raw);
+          }
+        } else if (!state.queryChips.length) {
+          state.query = '';
+          state.queryKeywordSegments = [];
+        }
+        state.rawQuery = buildSearchDisplayText();
+        if (state.rawQuery) saveSearchHistory(state.rawQuery);
+      } else {
+        clearQueryChips();
+        renderQueryChips();
+        state.rawQuery = raw;
+        state.query = raw;
+        if (raw) saveSearchHistory(raw);
+      }
+
+      hideSearchDropdown();
       render(true);
       if (scrollResults) scrollToResults();
+    }
+
+    function scrollToResults() {
+      const zone = $('resultsZone');
+      if (!zone) return;
+      const top = zone.getBoundingClientRect().top + window.scrollY - 8;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
     }
 
     function bindStaticEvents() {
       $('searchBtn').addEventListener('click', () => runSearch(true));
 
       $('searchInput').addEventListener('keydown', event => {
-        if (event.key === 'Enter') runSearch(true);
+        if (event.key === 'Enter') {
+          runSearch(true);
+          return;
+        }
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          if ($('searchDropdown').hidden) showSearchDropdown();
+          event.preventDefault();
+        }
       });
 
       $('searchTypeSelect').addEventListener('change', event => {
         state.searchType = event.target.value;
-        updateSearchPlaceholder();
-        if (state.query.trim()) render(true);
+        state.page = 1;
+        clearQueryChips();
+        $('searchInput').value = '';
+        state.query = '';
+        state.rawQuery = '';
+        updateSearchModeUI();
+        render(true);
       });
+
+      $('searchInput').addEventListener('focus', () => showSearchDropdown());
+      $('searchInput').addEventListener('input', () => {
+        renderSearchDropdown();
+        if (!isProductMode()) return;
+        clearTimeout(parseDebounceTimer);
+        const text = $('searchInput').value.trim();
+        if (shouldParseToChips(text)) {
+          parseDebounceTimer = setTimeout(() => {
+            if (tryParseInputToChips(text, false)) render(true);
+          }, 450);
+        }
+      });
+
+      document.addEventListener('click', event => {
+        if (!$('searchBarWrap').contains(event.target)) hideSearchDropdown();
+      });
+
+      $('clearAllChipsBtn').addEventListener('click', clearAllQueryChips);
 
       document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1779,18 +2906,29 @@
         });
       });
 
-      $('regionSelect').addEventListener('change', event => {
-        state.region = event.target.value;
+      $('priceRangeSelect').addEventListener('change', event => {
+        state.priceRange = event.target.value;
+        state.priceChipLabel = '';
         render(true);
       });
 
-      $('citySelect').addEventListener('change', event => {
-        state.city = event.target.value;
+      $('categoryL1Select').addEventListener('change', event => {
+        setCategoryLevel(1, event.target.value);
         render(true);
       });
 
-      $('attrSelect').addEventListener('change', event => {
-        state.attr = event.target.value;
+      $('categoryL2Select').addEventListener('change', event => {
+        setCategoryLevel(2, event.target.value);
+        render(true);
+      });
+
+      $('categoryL3Select').addEventListener('change', event => {
+        setCategoryLevel(3, event.target.value);
+        render(true);
+      });
+
+      $('brandSelect').addEventListener('change', event => {
+        state.brand = event.target.value;
         render(true);
       });
 
@@ -1806,14 +2944,22 @@
       bindCompareTabs();
     }
 
+    function goToPage(nextPage) {
+      state.page = nextPage;
+      render();
+      scrollToResults();
+    }
+
     const fadeStyle = document.createElement('style');
     fadeStyle.textContent = `@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(-8px);}15%{opacity:1;transform:translateX(-50%) translateY(0);}75%{opacity:1;}100%{opacity:0;transform:translateX(-50%) translateY(-8px);}}`;
     document.head.appendChild(fadeStyle);
 
     bindStaticEvents();
+    renderSearchDropdown();
     initFromUrl();
+    updateSearchModeUI();
     render();
-    if (state.query) {
+    if (state.rawQuery) {
       requestAnimationFrame(() => scrollToResults());
     }
   </script>

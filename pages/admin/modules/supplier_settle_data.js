@@ -178,6 +178,7 @@
       companyName: record.companyName || record.name,
       creditCode: record.creditCode,
       legalPerson: record.legalPerson,
+      legalPersonId: record.legalPersonId || '110101199001011234',
       contactName: record.contact,
       contactPhone: String(record.phone || '').replace(/\D/g, '').slice(0, 11) || record.phone,
       afterSalesPhone: record.afterSalesPhone || '',
