@@ -24,12 +24,10 @@
 <body>
 <div class="p-5 max-w-[1920px] mx-auto">
   <div class="page-card p-5">
-    <div class="flex flex-wrap justify-between items-start gap-3 mb-4">
-      <div>
-        <h1 class="text-xl font-bold text-slate-900" id="pageTitle">角色列表</h1>
-        <p class="text-xs text-slate-500 mt-1" id="selectedUnitHint">以下为该单位已配置的角色，可新增或编辑</p>
-        <span class="rbac-unit-badge mt-2 inline-block" id="unitBadge"></span>
-      </div>
+    <div class="flex flex-wrap justify-end items-start gap-3 mb-4">
+      <h1 class="text-xl font-bold text-slate-900 sr-only" id="pageTitle" aria-hidden="true">角色列表</h1>
+      <p class="text-xs text-slate-500 mt-1 sr-only" id="selectedUnitHint" aria-hidden="true">以下为该单位已配置的角色，可新增或编辑</p>
+      <span class="rbac-unit-badge mt-2 inline-block sr-only" id="unitBadge" aria-hidden="true"></span>
       <button type="button" class="action-btn action-btn-primary" onclick="window._rbacRole.openDrawer()"><i class="fas fa-plus"></i>新增角色</button>
     </div>
     <div class="flex flex-wrap gap-2 mb-4">

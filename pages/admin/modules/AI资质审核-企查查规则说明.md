@@ -5,7 +5,7 @@
 
 ## 1. 审核维度
 
-### 1.1 六维（参与雷达与通过计数）
+### 1.1 五维（参与雷达与通过计数）
 
 | 维度 | 主要字段 | 是否参与阻断 | 雷达分值 | 状态标签 |
 | --- | --- | --- | --- | --- |
@@ -14,13 +14,13 @@
 | 行政处罚 | AdminPenalty、EnvPunishment、PublicSecurityNotice | 是 | 同上 | 有 |
 | 税务风险 | TaxIllegal、TaxAbnormal、TaxOweNotice、TaxHurry、TaxReminder、TaxCreditList | 是 | 同上 | 有 |
 | 经营合规 | SeriousIllegal、Exception、ChattelMortgage、EquityPledge、SpotCheckList | 是 | 同上 | 有 |
-| 企业实力 | Scale、RegistCapi、InsuredCount、PersonScope、TaxpayerType、IsSmall | **否（仅展示）** | 固定按通过=3 | 有 |
 
-### 1.2 仅展示（不进六维图、不打通过/风险标签）
+### 1.2 仅展示（不进五维雷达图，标签为「仅展示」）
 
 | 维度 | 主要字段 | 说明 |
 | --- | --- | --- |
-| 产业链布局 | IndustryChainList | 卡片展示参考信息，不参与雷达与入驻阻断 |
+| 企业实力 | Scale、RegistCapi、InsuredCount、PersonScope、TaxpayerType、IsSmall | 卡片展示参考信息，不参与雷达与入驻阻断 |
+| 产业链布局 | IndustryChainList | 同上 |
 | 行政许可 | AdminLicenseList | 同上 |
 
 ## 2. 四级等级与雷达点色
@@ -55,7 +55,7 @@
 | --- | --- | --- |
 | 高风险 | 存在 ≥1 项高风险（阻断） | 红叉 +「暂不建议通过入驻」 |
 | 中低风险 | 无高风险，但有中/低风险 | 黄叹号 + 提示关注后人工确认 |
-| 全部通过 | 六维均无中/低/高风险 | 绿勾 + 综合信用良好 |
+| 全部通过 | 五维均无中/低/高风险 | 绿勾 + 综合信用良好 |
 
 其他约定：
 

@@ -505,7 +505,7 @@
     <a href="admin_station.html" class="admin-menu-item"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
     <a href="admin_supplier_manage.html" class="admin-menu-item active"><i class="fas fa-store"></i><span>供应商管理</span></a>
     <a href="admin_buyer_manage.html" class="admin-menu-item"><i class="fas fa-users"></i><span>采购商管理</span></a>
-    <a href="../../pages-new/admin/admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a>
+    <a href="../../pages-new/admin/admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品管理</span></a>
     <a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a>
     <a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
     <a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a>
@@ -518,31 +518,11 @@
 <div class="admin-content">
   <div class="max-w-[1680px] mx-auto p-5">
 
-    <!-- 页面头部 -->
-    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
-      <div>
-        <div class="text-sm text-slate-500 mb-2">
-          <a href="admin_dashboard.html" class="hover:text-primary transition-colors">管理后台</a>
-          <span class="mx-2">/</span>
-          <a href="admin_supplier_manage.html" class="hover:text-primary transition-colors">供应商管理</a>
-          <span class="mx-2">/</span>
-          <span>供应商入驻</span>
-        </div>
-        <div class="flex items-start gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-lg">
-            <i class="fas fa-building text-xl"></i>
-          </div>
-          <div>
-            <h1 class="text-3xl font-bold text-slate-900">供应商入驻</h1>
-            <p id="supplierEditHint" class="text-sm text-amber-700 mt-2 hidden"></p>
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-wrap gap-3">
-        <button class="action-btn action-btn-secondary" onclick="window.location.href=withAdminEmbed('admin_supplier_manage.html')">
-          <i class="fas fa-list"></i><span>返回列表</span>
-        </button>
-      </div>
+    <p id="supplierEditHint" class="text-sm text-amber-700 mb-3 hidden"></p>
+    <div class="flex flex-wrap justify-end gap-3 mb-5">
+      <button class="action-btn action-btn-secondary" onclick="window.location.href=withAdminEmbed('admin_supplier_manage.html')">
+        <i class="fas fa-list"></i><span>返回列表</span>
+      </button>
     </div>
 
     <!-- 资质审核规则说明（置顶：位于账号信息登记之前） -->
@@ -563,8 +543,8 @@
         </div>
         <div class="rule-card">
           <div class="rule-icon bg-amber-50 text-amber-600"><i class="fas fa-chart-pie"></i></div>
-          <div class="font-semibold text-slate-900 mb-2">六维风险检测</div>
-          <div class="text-sm text-slate-500 leading-6">从工商存续、司法风险、行政处罚、税务风险、经营合规、企业实力六个维度进行风险核验，并生成六维雷达图；产业链布局、行政许可仅作参考展示，不参与定级与阻断判定。</div>
+          <div class="font-semibold text-slate-900 mb-2">五维风险检测</div>
+          <div class="text-sm text-slate-500 leading-6">从工商存续、司法风险、行政处罚、税务风险、经营合规五个维度进行风险核验，并生成五维雷达图；企业实力、产业链布局、行政许可仅作参考展示，不参与定级与阻断判定。</div>
         </div>
         <div class="rule-card">
           <div class="rule-icon bg-emerald-50 text-emerald-600"><i class="fas fa-shield-halved"></i></div>
@@ -715,7 +695,7 @@
           </div>
           <div>
             <h2 class="text-lg font-bold text-slate-900">AI 资质审核</h2>
-            <p class="text-sm text-slate-500 mt-1">基于企查查「合作风险排查」对企业进行六维风险核验；仅高风险阻断入驻，低/中风险仅提示。</p>
+            <p class="text-sm text-slate-500 mt-1">基于企查查「合作风险排查」对企业进行五维风险核验；仅高风险阻断入驻，低/中风险仅提示。</p>
           </div>
         </div>
         <button type="button" class="action-btn action-btn-blue" id="aiAuditBtn" onclick="startAiAudit()">

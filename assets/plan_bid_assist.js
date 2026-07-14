@@ -96,7 +96,8 @@
     { id: 'h3', code: 'BID20260506003', file: '办公家具更新项目.xlsx', docType: 'excel', mode: 'bidding', suppliers: '6 家', status: 'ordered', deadline: '2026-05-08T18:00', budget: 140000, bidStep: 1000, lowest: 128000, lowestSupplier: '中采智联供应链', procurementBasis: PLAN_BID_DEMO_BASIS.furniture, quotes: [{ time: '2026-05-04 16:10', supplier: '国采办公服务中心', amount: 136500, valid: true }, { time: '2026-05-05 09:30', supplier: '中采智联供应链', amount: 131200, valid: true }, { time: '2026-05-05 14:55', supplier: '北京华政科技', amount: 129800, valid: true }, { time: '2026-05-06 11:18', supplier: '中采智联供应链', amount: 128000, valid: true }] },
     { id: 'h4', code: 'RFQ20260505004', file: '机房布线耗材询价.pdf', docType: 'pdf', mode: 'inquiry', suppliers: '3 家', status: 'terminated', deadline: '2026-05-05T18:00', budget: 65000, bidStep: null, lowest: 59900, lowestSupplier: '北京华政科技', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-03 13:20', supplier: '京采云商贸', amount: 62800, valid: true }, { time: '2026-05-03 17:45', supplier: '北京华政科技', amount: 61200, valid: true }, { time: '2026-05-04 09:10', supplier: '北京华政科技', amount: 59900, valid: true }, { time: '2026-05-04 10:02', supplier: '政采优选数码', amount: 60500, valid: false }] },
     { id: 'h5', code: 'RFQ20260503006', file: '保安服务费竞价.docx', docType: 'word', mode: 'bidding', suppliers: '4 家', status: 'failed', deadline: '2026-05-06T18:00', budget: 120000, bidStep: 500, lowest: null, lowestSupplier: null, procurementBasis: PLAN_BID_DEMO_BASIS.minimal, quotes: [{ time: '2026-05-05 09:00', supplier: '甲保安服务有限公司', amount: 120000, valid: false }, { time: '2026-05-05 11:30', supplier: '乙安防服务中心', amount: 118000, valid: false }, { time: '2026-05-05 15:10', supplier: '丙安保集团', amount: 121500, valid: false }] },
-    { id: 'h6', code: 'BID20260507008', file: '绿化养护外包询价.xlsx', docType: 'excel', mode: 'inquiry', suppliers: '5 家', status: 'quoting', deadline: '2026-06-30T18:00', budget: 35000, bidStep: null, lowest: 31500, lowestSupplier: '政采优选数码', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-07 07:50', supplier: '绿化园林工程队', amount: 35200, valid: true }, { time: '2026-05-07 09:18', supplier: '政采优选数码', amount: 33200, valid: true }, { time: '2026-05-07 12:40', supplier: '京采云商贸', amount: 32800, valid: true }, { time: '2026-05-07 16:05', supplier: '政采优选数码', amount: 31500, valid: true }, { time: '2026-05-07 18:22', supplier: '绿化园林工程队', amount: 31800, valid: true }] }
+    { id: 'h6', code: 'BID20260507008', file: '绿化养护外包询价.xlsx', docType: 'excel', mode: 'inquiry', suppliers: '5 家', status: 'quoting', deadline: '2026-06-30T18:00', budget: 35000, bidStep: null, lowest: 31500, lowestSupplier: '政采优选数码', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [{ time: '2026-05-07 07:50', supplier: '绿化园林工程队', amount: 35200, valid: true }, { time: '2026-05-07 09:18', supplier: '政采优选数码', amount: 33200, valid: true }, { time: '2026-05-07 12:40', supplier: '京采云商贸', amount: 32800, valid: true }, { time: '2026-05-07 16:05', supplier: '政采优选数码', amount: 31500, valid: true }, { time: '2026-05-07 18:22', supplier: '绿化园林工程队', amount: 31800, valid: true }] },
+    { id: 'h7', code: 'DIR20260708001', file: '办公设备及劳保用品采购计划.pdf', docType: 'pdf', mode: 'direct', purchaseMethod: 'direct', suppliers: '—', status: 'ordered', deadline: '2026-07-08T18:00', budget: 86000, bidStep: null, lowest: 84200, lowestSupplier: '京采云商贸', procurementBasis: PLAN_BID_DEMO_BASIS.office, quotes: [] }
   ];
 
   function planBidGetHistory() {
@@ -442,6 +443,116 @@
     });
   }
 
+  function planBidRowBizMode(row) {
+    return row.purchaseMethod || row.mode || 'bidding';
+  }
+
+  function planBidBizTypeLabel(row) {
+    var mode = planBidRowBizMode(row);
+    if (mode === 'direct') return '直接采购';
+    if (mode === 'inquiry') return '询价采购';
+    return '竞价采购';
+  }
+
+  function planBidBizTypeCls(row) {
+    var mode = planBidRowBizMode(row);
+    if (mode === 'direct') return 'direct';
+    if (mode === 'inquiry') return 'inquiry';
+    return 'bidding';
+  }
+
+  function planBidFileRowMeta(row) {
+    var st = PLAN_BID_STATUS[row.status];
+    var parts = [];
+    if (row.uploadedAt) parts.push(row.uploadedAt.slice(0, 10).replace(/-/g, '/'));
+    else if (row.deadline) parts.push(planBidFmtDeadline(row.deadline).slice(0, 10));
+    if (st) parts.push(st.text);
+    if (row.suppliers && row.suppliers !== '—') parts.push(planBidFmtSuppliers(row.suppliers) + '参与');
+    if (row.lowest != null) parts.push('当前报价 ' + planBidFmtMoney(row.lowest));
+    else if (row.budget != null) parts.push('预算 ' + planBidFmtMoney(row.budget));
+    return parts.join(' · ');
+  }
+
+  function planBidFilterRows(rows) {
+    if (PLAN_BID_HISTORY_FILTER === 'all') return rows;
+    return rows.filter(function (row) {
+      return planBidRowBizMode(row) === PLAN_BID_HISTORY_FILTER;
+    });
+  }
+
+  function planBidRenderFileRow(row) {
+    var ic = planBidDocIcon(row.docType);
+    var bizLabel = planBidBizTypeLabel(row);
+    var bizCls = planBidBizTypeCls(row);
+    var meta = planBidFileRowMeta(row);
+    return ''
+      + '<div class="bi-file-row" data-id="' + planBidEsc(row.id) + '">'
+      + '<button type="button" class="bi-file-main" onclick="planBidOpenHistoryRecord(\'' + row.id + '\')">'
+      + '<div class="bi-file-icon ' + ic.cls + '"><i class="fa-solid ' + ic.icon + '"></i></div>'
+      + '<div class="bi-file-info">'
+      + '<div class="bi-file-name">' + planBidEsc(row.file) + '</div>'
+      + '<div class="bi-file-meta">' + planBidEsc(meta) + '</div>'
+      + '</div></button>'
+      + '<div class="bi-file-biz"><span class="bi-biz-tag ' + bizCls + '">' + bizLabel + '</span></div>'
+      + '<div class="bi-file-action">'
+      + '<button type="button" class="bi-btn-progress" onclick="planBidOpenProgressDemo()">查看进度</button>'
+      + '</div></div>';
+  }
+
+  function planBidRenderFileList() {
+    var listEl = document.getElementById('planBidFileList');
+    var empty = document.getElementById('planBidHistoryEmpty');
+    if (!listEl) return;
+    var rows = planBidFilterRows(planBidGetHistory());
+    if (!rows.length) {
+      listEl.innerHTML = '';
+      listEl.classList.add('hidden');
+      if (empty) empty.classList.remove('hidden');
+      planBidUpdateWorkbenchStats();
+      return;
+    }
+    listEl.classList.remove('hidden');
+    if (empty) empty.classList.add('hidden');
+    listEl.innerHTML = rows.map(planBidRenderFileRow).join('');
+    planBidUpdateWorkbenchStats();
+  }
+
+  window.planBidOpenProgressDemo = function planBidOpenProgressDemo() {
+    planBidOpenModal('biModalProgressDemo');
+  };
+
+  window.planBidOpenHistoryRecord = function planBidOpenHistoryRecord(id) {
+    var row = planBidFindRow(id);
+    if (!row) return;
+    var st = PLAN_BID_STATUS[row.status];
+    var titleEl = document.getElementById('biModalHistoryRecordTitle');
+    var bodyEl = document.getElementById('biModalHistoryRecordBody');
+    if (!titleEl || !bodyEl) return;
+    titleEl.textContent = '历史记录 · ' + row.file;
+    var hasQuotes = row.quotes && row.quotes.length;
+    var canStop = row.status === 'quoting' || row.status === 'pending_confirm';
+    var canConfirm = row.status === 'pending_confirm' && row.lowest != null && row.lowestSupplier;
+    bodyEl.innerHTML = ''
+      + '<p class="bi-history-record-tip">该文件已完成分析并进入采购流程，可在此查看编号、状态与报价摘要，并继续操作。</p>'
+      + '<div class="bi-history-record-grid">'
+      + '<div class="bi-history-record-item"><label>业务编号</label><span>' + planBidRowCode(row) + '</span></div>'
+      + '<div class="bi-history-record-item"><label>采购形式</label><span>' + planBidEsc(planBidBizTypeLabel(row)) + '</span></div>'
+      + '<div class="bi-history-record-item"><label>当前状态</label><span>' + planBidEsc(st ? st.text : '—') + '</span></div>'
+      + '<div class="bi-history-record-item"><label>参与供应商</label><span>' + planBidEsc(planBidFmtSuppliers(row.suppliers) || '—') + '</span></div>'
+      + '<div class="bi-history-record-item"><label>报价截止</label><span>' + planBidEsc(planBidFmtDeadline(row.deadline)) + '</span></div>'
+      + '<div class="bi-history-record-item"><label>预算上限</label><span>' + planBidFmtMoney(row.budget) + '</span></div>'
+      + '<div class="bi-history-record-item"><label>当前报价</label><span>' + planBidFmtMoney(row.lowest) + '</span></div>'
+      + '<div class="bi-history-record-item"><label>报价供应商</label><span>' + planBidEsc(row.lowestSupplier || '—') + '</span></div>'
+      + '</div>'
+      + '<div class="bi-history-record-actions">'
+      + '<button type="button" class="bi-op-link primary" onclick="planBidCloseModal(\'biModalHistoryRecord\');planBidOpenBasis(\'' + row.id + '\')"><i class="fa-solid fa-file-lines"></i> 查看采购依据</button>'
+      + '<button type="button" class="bi-op-link primary" onclick="planBidCloseModal(\'biModalHistoryRecord\');planBidOpenQuotes(\'' + row.id + '\')" ' + (!hasQuotes ? 'disabled' : '') + '><i class="fa-solid fa-list-ul"></i> 查看报价详情</button>'
+      + '<button type="button" class="bi-op-link primary" onclick="planBidCloseModal(\'biModalHistoryRecord\');planBidOpenConfirm(\'' + row.id + '\')" ' + (!canConfirm ? 'disabled' : '') + '><i class="fa-solid fa-cart-plus"></i> 确认下单</button>'
+      + '<button type="button" class="bi-op-link danger" onclick="planBidCloseModal(\'biModalHistoryRecord\');planBidOpenStop(\'' + row.id + '\')" ' + (!canStop ? 'disabled' : '') + '><i class="fa-solid fa-ban"></i> 停止采购</button>'
+      + '</div>';
+    planBidOpenModal('biModalHistoryRecord');
+  };
+
   window.planBidSetFilter = function planBidSetFilter(mode) {
     PLAN_BID_HISTORY_FILTER = mode;
     document.querySelectorAll('.bi-filter').forEach(function (btn) {
@@ -451,14 +562,15 @@
   };
 
   window.planBidRenderHistory = function planBidRenderHistory() {
+    if (!planBidIsWorkbench()) {
+      planBidRenderFileList();
+      return;
+    }
     var tb = document.getElementById('planBidHistoryBody');
     var wrap = document.getElementById('planBidHistoryWrap');
     var empty = document.getElementById('planBidHistoryEmpty');
     if (!tb) return;
-    var rows = planBidGetHistory().filter(function (row) {
-      if (PLAN_BID_HISTORY_FILTER === 'all') return true;
-      return row.mode === PLAN_BID_HISTORY_FILTER;
-    });
+    var rows = planBidFilterRows(planBidGetHistory());
     if (!rows.length) {
       tb.innerHTML = '';
       if (wrap) wrap.classList.add('hidden');
@@ -470,8 +582,8 @@
     if (empty) empty.classList.add('hidden');
     tb.innerHTML = rows.map(function (row) {
       var st = PLAN_BID_STATUS[row.status];
-      var modeCls = row.mode === 'inquiry' ? 'inquiry' : 'bidding';
-      var modeText = row.mode === 'inquiry' ? '询价' : '竞价';
+      var modeCls = row.mode === 'inquiry' ? 'inquiry' : (row.mode === 'direct' ? 'direct' : 'bidding');
+      var modeText = planBidBizTypeLabel(row);
       var canStop = row.status === 'quoting' || row.status === 'pending_confirm';
       var canConfirm = row.status === 'pending_confirm' && row.lowest != null && row.lowestSupplier;
       var hasQuotes = row.quotes && row.quotes.length;

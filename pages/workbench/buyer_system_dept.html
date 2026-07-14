@@ -23,13 +23,8 @@
 </head>
 <body>
 <div class="p-5 max-w-[1920px] mx-auto">
-  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
-    <div class="text-sm text-slate-500 mb-1">采购工作台 <span class="mx-2">/</span> 部门管理</div>
-    <div class="flex flex-wrap items-center gap-3">
-      <h1 class="text-xl font-bold text-slate-900" id="pageTitle">部门列表</h1>
-      <span class="rbac-unit-badge" id="unitBadge"></span>
-    </div>
-  </div>
+  <h1 class="text-xl font-bold text-slate-900 sr-only" id="pageTitle" aria-hidden="true">部门列表</h1>
+  <span class="rbac-unit-badge sr-only" id="unitBadge" aria-hidden="true"></span>
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
     <div class="lg:col-span-5 page-card p-4">
       <div class="flex flex-wrap gap-2 mb-3 items-center">

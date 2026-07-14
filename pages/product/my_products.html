@@ -447,6 +447,21 @@
       border: 1px solid #fed7aa;
     }
 
+    .operator-listed-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      margin-right: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
     .result-badge {
       display: inline-flex;
       align-items: center;
@@ -1045,25 +1060,6 @@
 </head>
 <body class="text-slate-800">
   <div class="max-w-[1680px] mx-auto p-5">
-    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
-      <div>
-        <div class="text-sm text-slate-500 mb-2">
-          <a href="../workbench/workbench_home.html" class="hover:text-primary transition-colors">工作台</a>
-          <span class="mx-2">/</span>
-          <span>我的商品</span>
-        </div>
-        <div class="flex items-start gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500 to-orange-500 text-white flex items-center justify-center shadow-lg">
-            <i class="fas fa-box-open text-xl"></i>
-          </div>
-          <div>
-            <h1 class="text-3xl font-bold text-slate-900">我的商品</h1>
-            <p class="text-sm text-slate-500 mt-1">按 SKU、品类与时间筛选查看商品列表；可在下方直接添加、批量上传或提交审核。</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="page-card p-5 mb-5">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-8 gap-3">
         <div class="md:col-span-2 xl:col-span-2">
@@ -1165,7 +1161,8 @@
                 <th class="text-left px-5 py-4 font-semibold">商品信息</th>
                 <th class="text-left px-5 py-4 font-semibold">SKU</th>
                 <th class="text-left px-5 py-4 font-semibold">品类</th>
-                <th class="text-left px-5 py-4 font-semibold">当前状态</th>
+                <th class="text-left px-5 py-4 font-semibold">上架状态</th>
+                <th class="text-left px-5 py-4 font-semibold">审核状态</th>
                 <th class="text-left px-5 py-4 font-semibold">提交日期</th>
                 <th class="text-left px-5 py-4 font-semibold">操作</th>
               </tr>
@@ -1481,7 +1478,8 @@
         <th class="text-left px-5 py-4 font-semibold">商品信息</th>
         <th class="text-left px-5 py-4 font-semibold">SKU</th>
         <th class="text-left px-5 py-4 font-semibold">品类</th>
-        <th class="text-left px-5 py-4 font-semibold">当前状态</th>
+        <th class="text-left px-5 py-4 font-semibold">上架状态</th>
+        <th class="text-left px-5 py-4 font-semibold">审核状态</th>
         <th class="text-left px-5 py-4 font-semibold">提交日期</th>
         <th class="text-left px-5 py-4 font-semibold">操作</th>
       `;
@@ -1579,6 +1577,242 @@
         return `<span class="ai-chip-expired"><i class="fas fa-arrows-rotate"></i>信息已变更 · 需重新校验</span>`;
       }
       return '';
+    }
+
+    function isOperatorListed(item) {
+      return item && (item.operatorListed === true || item.operatorPending === true || item.auditExempt === true);
+    }
+
+    function operatorListedChipHtml(item) {
+      if (!isOperatorListed(item)) return '';
+      const label = item.operatorPending ? '运营待传' : '运营代传';
+      return `<span class="operator-listed-chip"><i class="fas fa-building-columns"></i>${label}</span>`;
+    }
+
+    function isOperatorChangePending(productId) {
+      try {
+        const pend = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_PENDING_MAP') || '{}');
+        return !!(pend && pend[productId]);
+      } catch {
+        return false;
+      }
+    }
+
+    function specsEqualForAudit(a, b) {
+      const ka = Object.keys(a || {}).sort();
+      const kb = Object.keys(b || {}).sort();
+      if (ka.length !== kb.length) return false;
+      return ka.every(k => String((a || {})[k]) === String((b || {})[k]));
+    }
+
+    function arrEqualForAudit(a, b) {
+      const aa = [...(a || [])].map(String);
+      const bb = [...(b || [])].map(String);
+      if (aa.length !== bb.length) return false;
+      return aa.every((v, i) => v === bb[i]);
+    }
+
+    function buildBeforeSnapshotFromProduct(productId) {
+      const item = products.find(p => p.id === productId);
+      if (!item) return null;
+      const extra = PREVIEW_BY_ID[productId] || {};
+      const ws = normalizeWarehouseStocks(
+        item.warehouseStocks !== undefined && item.warehouseStocks !== null
+          ? item.warehouseStocks
+          : extra.warehouseStocks
+      );
+      const catPath =
+        Array.isArray(extra.catPath) && extra.catPath.length >= 3
+          ? extra.catPath
+          : [item.category || '—', '—', '—'];
+      let specs =
+        extra.specs && typeof extra.specs === 'object' && Object.keys(extra.specs).length
+          ? { ...extra.specs }
+          : {};
+      if (!Object.keys(specs).length && item.spec && item.spec !== '-') {
+        specs = { 规格摘要: item.spec };
+      }
+      let mainImage = typeof extra.mainImage === 'string' ? extra.mainImage.trim() : '';
+      if (!mainImage) {
+        mainImage = `https://picsum.photos/seed/myprod-ph-${encodeURIComponent(productId).slice(-16)}/480/480`;
+      }
+      return {
+        name: item.name,
+        price: typeof extra.price === 'number' && extra.price >= 0 ? extra.price : 0,
+        unit: extra.unit || '台',
+        cat1: catPath[0],
+        cat2: catPath[1],
+        cat3: catPath[2],
+        specs,
+        specLabels: Object.keys(specs),
+        warehouseStocks: { ...ws },
+        mainImage,
+        subImages: Array.isArray(extra.subImages) ? [...extra.subImages] : [],
+        detailImages: Array.isArray(extra.detailImages) ? [...extra.detailImages] : []
+      };
+    }
+
+    function buildAfterSnapshotFromEditor(product) {
+      const specs = product.specs && typeof product.specs === 'object' ? { ...product.specs } : {};
+      return {
+        name: product.name,
+        price: typeof product.price === 'number' && Number.isFinite(product.price) ? product.price : Number(product.price) || 0,
+        unit: product.unit || '台',
+        cat1: product.cat1,
+        cat2: product.cat2,
+        cat3: product.cat3,
+        specs,
+        specLabels: Object.keys(specs),
+        warehouseStocks: normalizeWarehouseStocks(product.warehouseStocks),
+        mainImage: product.mainImage || '',
+        subImages: Array.isArray(product.subImages) ? [...product.subImages] : [],
+        detailImages: Array.isArray(product.detailImages) ? [...product.detailImages] : []
+      };
+    }
+
+    function snapshotsEqualForAudit(before, after) {
+      return (
+        before.name === after.name &&
+        Math.round(Number(before.price || 0) * 100) === Math.round(Number(after.price || 0) * 100) &&
+        before.unit === after.unit &&
+        before.cat1 === after.cat1 &&
+        before.cat2 === after.cat2 &&
+        before.cat3 === after.cat3 &&
+        specsEqualForAudit(before.specs, after.specs) &&
+        JSON.stringify(before.warehouseStocks) === JSON.stringify(after.warehouseStocks) &&
+        (before.mainImage || '') === (after.mainImage || '') &&
+        arrEqualForAudit(before.subImages, after.subImages) &&
+        arrEqualForAudit(before.detailImages, after.detailImages)
+      );
+    }
+
+    function padAuditNow() {
+      const d = new Date();
+      const p = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    function submitOperatorEditChangeAudit(productId, product) {
+      const item = products.find(p => p.id === productId);
+      if (!item || !isOperatorListed(item)) return false;
+      if (item.status !== 'published' && item.status !== 'offline') return false;
+
+      if (isOperatorChangePending(productId)) {
+        if (typeof showDialog === 'function') {
+          showDialog({
+            title: '变更审核处理中',
+            message: '该商品已有变更审核待处理，请等待运营审批后再编辑。',
+            type: 'warn'
+          });
+        } else {
+          alert('该商品已有变更审核待处理，请等待运营审批后再编辑。');
+        }
+        return false;
+      }
+
+      const beforeSnap = buildBeforeSnapshotFromProduct(productId);
+      if (!beforeSnap) return false;
+      const afterSnap = buildAfterSnapshotFromEditor(product);
+
+      if (snapshotsEqualForAudit(beforeSnap, afterSnap)) {
+        if (typeof showDialog === 'function') {
+          showDialog({ title: '提示', message: '请至少修改一项后再提交审核。', type: 'warn' });
+        } else {
+          alert('请至少修改一项后再提交审核。');
+        }
+        return false;
+      }
+
+      const ticketId = `CHG-${Date.now()}`;
+      const row = {
+        id: ticketId,
+        auditKind: 'CHANGE_INFO',
+        linkedProductId: productId,
+        listStatus: 'pending',
+        sku: item.sku || productId,
+        specLabels: afterSnap.specLabels,
+        name: afterSnap.name,
+        price: afterSnap.price,
+        unit: afterSnap.unit,
+        cat1: afterSnap.cat1,
+        cat2: afterSnap.cat2,
+        cat3: afterSnap.cat3,
+        specs: { ...afterSnap.specs },
+        warehouseStocks: { ...afterSnap.warehouseStocks },
+        mainImage: afterSnap.mainImage,
+        subImages: [...afterSnap.subImages],
+        detailImages: [...afterSnap.detailImages],
+        supplierName: item.supplierName || '演示供应商（工作台）',
+        submittedAt: padAuditNow(),
+        aiKind: 'warn',
+        operatorManagedEdit: true,
+        beforeSnapshot: beforeSnap,
+        afterSnapshot: afterSnap,
+        shelfSnapshot: item.status === 'published' ? 'online' : 'offline'
+      };
+
+      let append = [];
+      try {
+        append = JSON.parse(sessionStorage.getItem('PROTOTYPE_AUDIT_QUEUE_APPEND') || '[]');
+        if (!Array.isArray(append)) append = [];
+      } catch {
+        append = [];
+      }
+      append.push(row);
+      sessionStorage.setItem('PROTOTYPE_AUDIT_QUEUE_APPEND', JSON.stringify(append));
+
+      let pend = {};
+      try {
+        pend = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_PENDING_MAP') || '{}');
+        if (!pend || typeof pend !== 'object') pend = {};
+      } catch {
+        pend = {};
+      }
+      pend[productId] = ticketId;
+      sessionStorage.setItem('PRODUCT_CHANGE_PENDING_MAP', JSON.stringify(pend));
+      return true;
+    }
+
+    function applyApprovedChangeSnapshots() {
+      let applied = {};
+      try {
+        applied = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_APPLIED_MAP') || '{}');
+        if (!applied || typeof applied !== 'object') return;
+      } catch {
+        return;
+      }
+
+      let changed = false;
+      Object.keys(applied).forEach(productId => {
+        const snap = applied[productId];
+        const item = products.find(p => p.id === productId);
+        if (!item || !snap) return;
+        item.name = snap.name || item.name;
+        item.category = snap.category || item.category;
+        item.spec = snap.spec || item.spec;
+        if (snap.status === 'published' || snap.status === 'offline') {
+          item.status = snap.status;
+        }
+        if (snap.warehouseStocks) {
+          item.warehouseStocks = normalizeWarehouseStocks(snap.warehouseStocks);
+        }
+        PREVIEW_BY_ID[productId] = {
+          price: snap.price,
+          unit: snap.unit,
+          catPath: Array.isArray(snap.catPath) ? [...snap.catPath] : [item.category || '—', '—', '—'],
+          specs: { ...(snap.specs || {}) },
+          warehouseStocks: normalizeWarehouseStocks(snap.warehouseStocks),
+          mainImage: snap.mainImage || '',
+          subImages: [...(snap.subImages || [])],
+          detailImages: [...(snap.detailImages || [])]
+        };
+        changed = true;
+        delete applied[productId];
+      });
+
+      if (changed) {
+        sessionStorage.setItem('PRODUCT_CHANGE_APPLIED_MAP', JSON.stringify(applied));
+      }
     }
 
     function mockAiCheckProduct(item) {
@@ -2160,6 +2394,34 @@
         submittedAt: '2026-05-11 17:08',
         summary: '尚未进行 AI 合规校验。',
         issues: []
+      },
+      {
+        id: 'ADM-DIRECT-INK',
+        sku: 'SKU-GC-INK-BK500',
+        name: '原装黑色墨盒 BK-500',
+        category: '办公耗材',
+        spec: '黑色 / 标准容量 / CM480 系列',
+        status: 'published',
+        operatorListed: true,
+        supplierName: '国采平台自营供应链',
+        result: 'pass',
+        submittedAt: '2026-05-14 09:30',
+        summary: '由平台运营代传上架，供应商可编辑商品信息并进行上下架操作。',
+        issues: []
+      },
+      {
+        id: 'ADM-DIRECT-CABLE',
+        sku: 'SKU-GC-CBL-HDMI2',
+        name: 'HDMI 2.1 高清连接线 2米',
+        category: '办公设备',
+        spec: 'HDMI / 2m / HDMI 2.1',
+        status: 'offline',
+        operatorListed: true,
+        supplierName: '智联网络设备（上海）有限公司',
+        result: 'pass',
+        submittedAt: '2026-05-13 16:20',
+        summary: '由平台运营代传维护，供应商可编辑商品信息并进行上下架操作。',
+        issues: []
       }
     ];
 
@@ -2262,6 +2524,26 @@
         mainImage: 'https://picsum.photos/seed/myprod-scan-main/520/520',
         subImages: [],
         detailImages: ['https://picsum.photos/seed/myprod-scan-d/820/460']
+      },
+      'ADM-DIRECT-INK': {
+        price: 89,
+        unit: '个',
+        catPath: ['办公耗材', '打印耗材', '墨盒'],
+        specs: { 颜色: '黑色', 容量: '标准容量', 适用机型: 'CM480 系列', 包装规格: '单支装' },
+        warehouseStocks: { 华东一号仓: 500, 华北物流中心: 320, 华南保税仓: 180, 西南协同仓: 90, 华中中心仓: 210 },
+        mainImage: 'https://picsum.photos/seed/guocai-adm-ink/480/480',
+        subImages: [],
+        detailImages: []
+      },
+      'ADM-DIRECT-CABLE': {
+        price: 45,
+        unit: '根',
+        catPath: ['办公设备', '外设配件', '线缆转接'],
+        specs: { 线材类型: 'HDMI', 长度: '2m', 接口版本: 'HDMI 2.1', 屏蔽工艺: '多层屏蔽' },
+        warehouseStocks: { 华东一号仓: 0, 华北物流中心: 150, 华南保税仓: 80, 西南协同仓: 40, 华中中心仓: 60 },
+        mainImage: 'https://picsum.photos/seed/guocai-adm-hdmi/480/480',
+        subImages: [],
+        detailImages: []
       }
     };
 
@@ -2289,6 +2571,10 @@
     function buildInfoChangePayload(productId) {
       const item = products.find(p => p.id === productId);
       if (!item || (item.status !== 'published' && item.status !== 'offline')) return null;
+      if (isOperatorListed(item)) {
+        alert('运营代传商品由平台维护，供应商侧不可发起信息变更（原型）。');
+        return null;
+      }
 
       let pend = {};
       try {
@@ -2507,6 +2793,47 @@
       return parseSubmittedDay(item.submittedAt);
     }
 
+    function getShelfStatusBadge(item) {
+      const shelfMeta = {
+        unshelved: { label: '未上架', className: 'status-badge status-draft', icon: 'fa-box' },
+        published: { label: '已上架', className: 'status-badge status-published', icon: 'fa-circle-check' },
+        offline: { label: '已下架', className: 'status-badge status-offline', icon: 'fa-box-archive' }
+      };
+      let key = 'unshelved';
+      if (item.status === 'published') key = 'published';
+      else if (item.status === 'offline') key = 'offline';
+      const meta = shelfMeta[key];
+      return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+    }
+
+    function getAuditStatusBadge(item) {
+      if (isOperatorChangePending(item.id)) {
+        return `<span class="status-badge status-reviewing"><i class="fas fa-code-branch"></i>变更审核中</span>`;
+      }
+      if (isOperatorListed(item)) {
+        return `<span class="text-sm text-slate-400">—</span>`;
+      }
+      if (item.status === 'draft') {
+        const ai = getDraftAiCheckStatus(item);
+        const draftAuditMeta = {
+          none: { label: '待提交', className: 'status-badge status-draft-ai-pending', icon: 'fa-clock' },
+          pass: { label: 'AI已通过', className: 'status-badge status-draft-ai-pass', icon: 'fa-circle-check' },
+          fail: { label: 'AI未通过', className: 'status-badge status-draft-ai-fail', icon: 'fa-circle-xmark' }
+        };
+        const meta = draftAuditMeta[ai] || draftAuditMeta.none;
+        return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+      }
+      const auditMeta = {
+        reviewing: { label: '审核中', className: 'status-badge status-reviewing', icon: 'fa-spinner' },
+        rejected: { label: '审核未通过', className: 'status-badge status-rejected', icon: 'fa-triangle-exclamation' },
+        published: { label: '已通过', className: 'status-badge status-published', icon: 'fa-circle-check' },
+        offline: { label: '已通过', className: 'status-badge status-published', icon: 'fa-circle-check' }
+      };
+      const meta = auditMeta[item.status];
+      if (!meta) return `<span class="text-sm text-slate-400">—</span>`;
+      return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+    }
+
     function getStatusBadge(item) {
       if (typeof item === 'string') {
         const meta = statusMeta[item];
@@ -2581,6 +2908,25 @@
 
     function applyEditorResultToMyProducts(productId, product) {
       const item = products.find(p => p.id === productId);
+      if (item && isOperatorListed(item) && (item.status === 'published' || item.status === 'offline')) {
+        const ok = submitOperatorEditChangeAudit(productId, product);
+        if (ok) {
+          const ov = document.getElementById('addProductOverlay');
+          if (ov) ov.classList.remove('show');
+          if (typeof showDialog === 'function') {
+            showDialog({
+              title: '已提交审核',
+              message:
+                '运营代传/待传商品编辑后需经平台审核。\n变更已提交至运营后台「商品管理」，审核通过前前台仍展示原信息。',
+              type: 'success',
+              confirmText: '知道了'
+            });
+          }
+          renderTable();
+        }
+        return;
+      }
+
       if (item) {
         item.name = product.name;
         const vs = Object.values(product.specs || {}).filter(v => String(v).trim());
@@ -2619,6 +2965,18 @@
 
     function goEdit(productId) {
       const item = products.find(p => p.id === productId);
+      if (item && isOperatorListed(item) && isOperatorChangePending(productId)) {
+        if (typeof showDialog === 'function') {
+          showDialog({
+            title: '变更审核处理中',
+            message: '该商品已有变更审核待处理，请等待运营审批后再编辑。',
+            type: 'warn'
+          });
+        } else {
+          alert('该商品已有变更审核待处理，请等待运营审批后再编辑。');
+        }
+        return;
+      }
       const snap = buildSnapshotForEditor(productId);
       if (!snap) return;
       const ov = document.getElementById('addProductOverlay');
@@ -2633,13 +2991,29 @@
       window.applyProductSnapshotToApmForm(snap);
       const bd = document.getElementById('mpEditBadge');
       const ttl = document.getElementById('mpEditTitle');
-      if (bd) bd.textContent = '单笔录入 · 编辑';
+      if (bd) {
+        bd.textContent =
+          item && isOperatorListed(item) && (item.status === 'published' || item.status === 'offline')
+            ? '运营商品 · 编辑'
+            : '单笔录入 · 编辑';
+      }
       if (ttl) ttl.textContent = '编辑商品';
       const submitLbl = document.getElementById('mpEditSubmitLabel');
-      if (submitLbl) submitLbl.textContent = item && item.status === 'rejected' ? '再次提交' : '保存修改';
+      if (submitLbl) {
+        if (item && isOperatorListed(item) && (item.status === 'published' || item.status === 'offline')) {
+          submitLbl.textContent = '提交审核';
+        } else {
+          submitLbl.textContent = item && item.status === 'rejected' ? '再次提交' : '保存修改';
+        }
+      }
     }
 
     function deleteProduct(productId) {
+      const item = products.find(p => p.id === productId);
+      if (item && isOperatorListed(item)) {
+        alert('运营代传商品由平台维护，供应商侧不可删除（原型）。');
+        return;
+      }
       if (!confirm('确定删除该商品？此为原型页面的示例操作。')) return;
       const index = products.findIndex(p => p.id === productId);
       if (index >= 0) {
@@ -2650,8 +3024,8 @@
     }
 
     function setProductOffline(productId) {
-      if (!confirm('确定下架该商品？')) return;
       const item = products.find(p => p.id === productId);
+      if (!confirm('确定下架该商品？')) return;
       if (item) {
         item.status = 'offline';
         renderTabs();
@@ -2661,8 +3035,8 @@
     }
 
     function setProductOnline(productId) {
-      if (!confirm('确定重新上架该商品？')) return;
       const item = products.find(p => p.id === productId);
+      if (!confirm('确定重新上架该商品？')) return;
       if (item) {
         item.status = 'published';
         if (item.warehouseStocks === undefined || item.warehouseStocks === null) {
@@ -2684,6 +3058,40 @@
                 <i class="fas fa-camera"></i>
                 <span>预览</span>
               </button>`;
+
+      if (isOperatorListed(item)) {
+        if (isOperatorChangePending(item.id)) {
+          return previewBtn;
+        }
+        const editBtn = `
+              <button class="action-btn action-btn-secondary" type="button" onclick="goEdit('${id}')">
+                <i class="fas fa-pen"></i>
+                <span>编辑</span>
+              </button>`;
+        if (item.status === 'published') {
+          return (
+            previewBtn +
+            editBtn +
+            `
+              <button class="action-btn action-btn-secondary" type="button" onclick="setProductOffline('${id}')">
+                <i class="fas fa-arrow-down-long"></i>
+                <span>下架</span>
+              </button>`
+          );
+        }
+        if (item.status === 'offline') {
+          return (
+            previewBtn +
+            editBtn +
+            `
+              <button class="action-btn action-btn-primary" type="button" onclick="setProductOnline('${id}')">
+                <i class="fas fa-arrow-up-from-bracket"></i>
+                <span>上架</span>
+              </button>`
+          );
+        }
+        return previewBtn + editBtn;
+      }
 
       if (item.status === 'draft' || item.status === 'rejected') {
         const aiStatus = getDraftAiCheckStatus(item);
@@ -2765,7 +3173,7 @@
       const rows = getFilteredProducts();
       const tbody = document.getElementById('productTableBody');
       const summary = document.getElementById('tableSummary');
-      const colSpan = isDraftTabActive() ? 7 : 6;
+      const colSpan = isDraftTabActive() ? 8 : 7;
 
       summary.textContent = `${statusMeta[currentStatus].label} · 共 ${rows.length} 条商品记录`;
 
@@ -2795,12 +3203,14 @@
           ${checkCell}
           <td class="px-5 py-4">
             <div class="font-semibold text-slate-900">${item.name}</div>
+            ${operatorListedChipHtml(item)}
             ${aiExpiredChipHtml(item)}
             ${changePendingChipHtml(item.id)}
           </td>
           <td class="px-5 py-4 font-mono text-sm text-slate-700">${getSku(item)}</td>
           <td class="px-5 py-4 text-sm text-slate-600">${formatCategoryCell(item)}</td>
-          <td class="px-5 py-4">${getStatusBadge(item)}</td>
+          <td class="px-5 py-4">${getShelfStatusBadge(item)}</td>
+          <td class="px-5 py-4">${getAuditStatusBadge(item)}</td>
           <td class="px-5 py-4 text-slate-500">${getSubmittedDate(item)}</td>
           <td class="px-5 py-4">
             <div class="flex flex-wrap gap-2">
@@ -2885,6 +3295,10 @@
     window.openStockModal = function openStockModal(productId) {
       const item = products.find(p => p.id === productId && (p.status === 'published' || p.status === 'offline'));
       if (!item) return;
+      if (isOperatorListed(item)) {
+        alert('运营代传商品库存由平台运营维护（原型）。');
+        return;
+      }
       stockModalProductId = productId;
       const extra = PREVIEW_BY_ID[productId] || {};
       const ws = normalizeWarehouseStocks(
@@ -3025,6 +3439,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       attachInitialWarehouseSnapshots();
+      applyApprovedChangeSnapshots();
       currentStatus = getQueryStatus();
       renderTabs();
       renderTable();

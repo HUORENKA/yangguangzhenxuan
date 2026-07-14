@@ -113,15 +113,7 @@
 </head>
 <body>
   <div class="p-5 max-w-[1680px] mx-auto">
-    <!-- 页头 -->
-    <div class="page-card p-5 mb-5 flex items-center justify-between flex-wrap gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center"><i class="fas fa-gavel text-xl"></i></div>
-        <div>
-          <h1 class="text-2xl font-bold">竞价/询价</h1>
-          <p class="text-sm text-slate-500 mt-1">上传采购需求文件，AI 提取品类、规格与预算，推荐商品与供应商并发起竞价 / 询价。</p>
-        </div>
-      </div>
+    <div class="flex flex-wrap justify-end gap-3 mb-5">
       <input id="planBidAssistantFile" class="hidden-input" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx">
       <button class="btn btn-teal" type="button" onclick="document.getElementById('planBidAssistantFile').click()">
         <i class="fas fa-cloud-arrow-up"></i> 上传采购需求文件

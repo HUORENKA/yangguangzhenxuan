@@ -13,16 +13,16 @@
     high: '高风险',
   };
 
-  /** 看板维度：六维参与雷达；产业链/行政许可仅展示、不打标签、不进雷达 */
+  /** 看板维度：五维参与雷达；企业实力/产业链/行政许可仅展示、不进雷达 */
   const DIMENSIONS = [
-    { key: 'biz', name: '工商存续', icon: 'fa-building', color: '#2563eb', refOnly: false, inRadar: true, showBadge: true },
-    { key: 'judicial', name: '司法风险', icon: 'fa-scale-balanced', color: '#dc2626', refOnly: false, inRadar: true, showBadge: true },
-    { key: 'penalty', name: '行政处罚', icon: 'fa-file-circle-exclamation', color: '#d97706', refOnly: false, inRadar: true, showBadge: true },
-    { key: 'tax', name: '税务风险', icon: 'fa-file-invoice-dollar', color: '#059669', refOnly: false, inRadar: true, showBadge: true },
-    { key: 'compliance', name: '经营合规', icon: 'fa-clipboard-check', color: '#7c3aed', refOnly: false, inRadar: true, showBadge: true },
-    { key: 'strength', name: '企业实力', icon: 'fa-star', color: '#2563eb', refOnly: true, inRadar: true, showBadge: true },
-    { key: 'chain', name: '产业链布局', icon: 'fa-diagram-project', color: '#0891b2', refOnly: true, inRadar: false, showBadge: false },
-    { key: 'license', name: '行政许可', icon: 'fa-stamp', color: '#6366f1', refOnly: true, inRadar: false, showBadge: false },
+    { key: 'biz', name: '工商存续', icon: 'fa-building', color: '#2563eb', refOnly: false, inRadar: true, displayOnly: false },
+    { key: 'judicial', name: '司法风险', icon: 'fa-scale-balanced', color: '#dc2626', refOnly: false, inRadar: true, displayOnly: false },
+    { key: 'penalty', name: '行政处罚', icon: 'fa-file-circle-exclamation', color: '#d97706', refOnly: false, inRadar: true, displayOnly: false },
+    { key: 'tax', name: '税务风险', icon: 'fa-file-invoice-dollar', color: '#059669', refOnly: false, inRadar: true, displayOnly: false },
+    { key: 'compliance', name: '经营合规', icon: 'fa-clipboard-check', color: '#7c3aed', refOnly: false, inRadar: true, displayOnly: false },
+    { key: 'strength', name: '企业实力', icon: 'fa-star', color: '#2563eb', refOnly: true, inRadar: false, displayOnly: true },
+    { key: 'chain', name: '产业链布局', icon: 'fa-diagram-project', color: '#0891b2', refOnly: true, inRadar: false, displayOnly: true },
+    { key: 'license', name: '行政许可', icon: 'fa-stamp', color: '#6366f1', refOnly: true, inRadar: false, displayOnly: true },
   ];
 
   /** 雷达图分值映射（不在界面展示分数）：通过3 / 低风险2 / 中风险1 / 高风险0 */
@@ -219,7 +219,7 @@
       `纳税人资质：${data.TaxpayerType || '—'}`,
     ];
     if (data.IsSmall === '1') lines.push('标识：小微企业（仅展示，不参与风险定级）。');
-    lines.push('本维度仅作信息参考，固定为「通过」，不影响入驻结论。');
+    lines.push('本维度仅作信息参考，不参与五维雷达图与入驻判定。');
     return { level: LEVEL.PASS, lines };
   }
 
@@ -232,7 +232,7 @@
       const names = list.slice(0, 5).map(x => x.Name || x.IndustryChainName || x.ChainName || '产业链节点').filter(Boolean);
       lines.push(`关联产业链 ${list.length} 条：${names.join('、')}${list.length > 5 ? '…' : ''}`);
     }
-    lines.push('本维度仅作信息参考，不参与六维图与入驻判定。');
+    lines.push('本维度仅作信息参考，不参与五维雷达图与入驻判定。');
     return { level: LEVEL.PASS, lines };
   }
 
@@ -246,7 +246,7 @@
       const sample = list.slice(0, 3).map(x => x.Licensename || x.LicenseName || x.Name || '许可项目');
       lines.push(`示例：${sample.join('；')}${list.length > 3 ? '…' : ''}`);
     }
-    lines.push('本维度仅作信息参考，不参与六维图与入驻判定。');
+    lines.push('本维度仅作信息参考，不参与五维雷达图与入驻判定。');
     return { level: LEVEL.PASS, lines };
   }
 
@@ -324,7 +324,7 @@
       summaryText = `企业「${companyName}」无高风险阻断项；存在 ${midCount} 项中风险、${lowCount} 项低风险，可提示关注后由运营确认入驻。`;
     } else {
       summaryCase = 'pass';
-      summaryText = `企业「${companyName}」6 项合作风险与资质检测全部通过，综合信用良好。`;
+      summaryText = `企业「${companyName}」5 项合作风险检测全部通过，综合信用良好。`;
     }
 
     return {

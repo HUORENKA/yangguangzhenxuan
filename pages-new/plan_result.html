@@ -1124,7 +1124,213 @@
       line-height: 1.4;
     }
 
-    /* ─── 竞价采购助手 ─── */
+    /* ─── 竞价采购助手 · 图二文件列表布局 ─── */
+    .bi-assistant-layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+    .bi-upload-pane {
+      background: linear-gradient(180deg, #f8fffb 0%, #fff 100%);
+      border: 1px dashed #a7f3d0;
+      border-radius: 14px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+    .bi-upload-pane:hover {
+      border-color: #0f766e;
+      box-shadow: 0 8px 24px rgba(15, 118, 110, 0.1);
+      transform: translateY(-1px);
+    }
+    .bi-upload-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.22);
+    }
+    .bi-upload-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .bi-upload-desc {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.65;
+    }
+    .bi-upload-hint {
+      margin: 10px 0 0;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+    .bi-recent-pane {
+      background: #fafcff;
+      border: 1px solid #e8eef5;
+      border-radius: 14px;
+      padding: 14px 16px 16px;
+      min-width: 0;
+    }
+    .bi-recent-head { margin-bottom: 12px; }
+    .bi-recent-head-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .bi-recent-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .bi-file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      background: #fff;
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .bi-file-list.hidden { display: none; }
+    .bi-file-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 108px 108px;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.15s ease;
+    }
+    .bi-file-row:last-child { border-bottom: none; }
+    .bi-file-row:hover { background: #fafcff; }
+    .bi-file-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 0;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      text-align: left;
+      width: 100%;
+    }
+    .bi-file-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      background: #d1fae5;
+      color: #0f766e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .bi-file-icon.pdf { background: #fee2e2; color: #b91c1c; }
+    .bi-file-icon.word { background: #dbeafe; color: #1d4ed8; }
+    .bi-file-info { min-width: 0; flex: 1; }
+    .bi-file-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.4;
+      word-break: break-all;
+    }
+    .bi-file-meta {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+    .bi-file-biz { display: flex; justify-content: center; }
+    .bi-biz-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 76px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .bi-biz-tag.direct { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+    .bi-biz-tag.bidding { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .bi-biz-tag.inquiry { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .bi-file-action { display: flex; justify-content: flex-end; }
+    .bi-btn-progress {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 8px;
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+      color: #047857;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .bi-btn-progress:hover {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #065f46;
+    }
+    .bi-modal-title-proto { color: #dc2626 !important; }
+    .bi-history-record-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 16px;
+      margin-bottom: 14px;
+    }
+    .bi-history-record-item label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .bi-history-record-item span {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.45;
+    }
+    .bi-history-record-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .bi-history-record-tip {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e8eef5;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    /* ─── 竞价采购助手 · 历史表格（工作台沿用） ─── */
     .bi-history-panel {
       background: #fafcff;
       border: 1px solid #e8eef5;
@@ -1258,6 +1464,7 @@
     }
     .bi-tag-mode.bidding { background: #ecfdf5; color: #0f766e; border: 1px solid #a7f3d0; }
     .bi-tag-mode.inquiry { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .bi-tag-mode.direct { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
 
     .bi-status-pill {
       display: inline-flex;
@@ -1300,6 +1507,7 @@
       background: none;
       font-size: 13px;
       font-weight: 700;
+      color: #475569;
       cursor: pointer;
       transition: color 0.18s ease;
     }
@@ -1587,6 +1795,10 @@
       .plan-hero-wrap { padding: 20px 16px 28px; }
       .scene-tag-grid { grid-template-columns: 1fr; }
       .bi-history-toolbar { width: 100%; justify-content: space-between; }
+      .bi-assistant-layout { grid-template-columns: 1fr; }
+      .bi-file-row { grid-template-columns: 1fr; gap: 10px; }
+      .bi-file-biz, .bi-file-action { justify-content: flex-start; }
+      .bi-history-record-grid { grid-template-columns: 1fr; }
       .bi-modal.bi-modal-lg.bi-modal-detail {
         max-width: calc(100vw - 16px);
         min-height: min(440px, calc(100vh - 24px));
@@ -1716,48 +1928,41 @@
           <p class="entry-desc">上传采购需求文件，AI 提取品类、规格与预算，推荐商品与供应商并发起竞价 / 询价。</p>
         </div>
       </div>
-      <div class="entry-head-actions">
-        <button class="entry-btn primary bid-primary" type="button" onclick="document.getElementById('planBidAssistantFile').click()">
-          <i class="fa-solid fa-cloud-arrow-up"></i> 上传采购需求文件
-        </button>
-      </div>
     </div>
 
-    <div class="bi-history-panel">
-      <div class="bi-history-head">
-        <span class="bi-history-head-title">历史竞价 / 询价记录</span>
-        <div class="bi-history-toolbar">
-          <div class="bi-history-filters" role="group" aria-label="筛选采购形式">
-            <button type="button" class="bi-filter active" data-filter="all" onclick="planBidSetFilter('all')">全部</button>
-            <button type="button" class="bi-filter" data-filter="bidding" onclick="planBidSetFilter('bidding')">竞价</button>
-            <button type="button" class="bi-filter" data-filter="inquiry" onclick="planBidSetFilter('inquiry')">询价</button>
+    <div class="bi-assistant-layout">
+      <div class="bi-upload-pane" role="button" tabindex="0"
+        onclick="document.getElementById('planBidAssistantFile').click()"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('planBidAssistantFile').click();}">
+        <div class="bi-upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <h4 class="bi-upload-title">上传采购文件</h4>
+        <p class="bi-upload-desc">支持 Excel、PDF 格式。上传后 AI 将自动拆分采购项、匹配平台商品，并推荐供应商发起竞价/询价。</p>
+        <p class="bi-upload-hint">建议包含商品名称、规格型号、数量及限价要求</p>
+      </div>
+
+      <div class="bi-recent-pane">
+        <div class="bi-recent-head">
+          <div class="bi-recent-head-top">
+            <span class="bi-recent-title">最近文件</span>
+            <button class="entry-btn primary bid-primary" type="button" onclick="document.getElementById('planBidAssistantFile').click()">
+              <i class="fa-solid fa-cloud-arrow-up"></i> 上传采购清单 / 需求文件
+            </button>
           </div>
-          <span class="bi-history-head-meta">演示数据</span>
+          <div class="bi-history-toolbar">
+            <div class="bi-history-filters" role="group" aria-label="筛选采购形式">
+              <button type="button" class="bi-filter active" data-filter="all" onclick="planBidSetFilter('all')">全部</button>
+              <button type="button" class="bi-filter" data-filter="direct" onclick="planBidSetFilter('direct')">直接采购</button>
+              <button type="button" class="bi-filter" data-filter="bidding" onclick="planBidSetFilter('bidding')">竞价采购</button>
+              <button type="button" class="bi-filter" data-filter="inquiry" onclick="planBidSetFilter('inquiry')">询价采购</button>
+            </div>
+            <span class="bi-history-head-meta">演示数据</span>
+          </div>
         </div>
-      </div>
-      <div class="bi-history-wrap" id="planBidHistoryWrap">
-        <table class="bi-history-table" aria-label="历史竞价与询价记录">
-          <thead>
-            <tr>
-              <th scope="col">编号</th>
-              <th scope="col">竞/询价文件</th>
-              <th scope="col">采购形式</th>
-              <th scope="col">参与供应商</th>
-              <th scope="col">报价截止时间</th>
-              <th scope="col">预算上限（元）</th>
-              <th scope="col">最小降价幅度（元）</th>
-              <th scope="col">当前状态</th>
-              <th scope="col">当前报价</th>
-              <th scope="col">报价供应商</th>
-              <th scope="col">操作</th>
-            </tr>
-          </thead>
-          <tbody id="planBidHistoryBody"></tbody>
-        </table>
-      </div>
-      <div class="bi-history-empty hidden" id="planBidHistoryEmpty">
-        <i class="fa-regular fa-folder-open"></i>
-        暂无符合条件的记录，请上传采购需求文件发起第一单
+        <div class="bi-file-list" id="planBidFileList"></div>
+        <div class="bi-history-empty hidden" id="planBidHistoryEmpty">
+          <i class="fa-regular fa-folder-open"></i>
+          暂无符合条件的记录，请上传采购需求文件发起第一单
+        </div>
       </div>
     </div>
   </div>
@@ -1886,6 +2091,34 @@
     <div class="bi-modal-foot">
       <button type="button" class="bi-modal-btn" onclick="planBidCloseModal('biModalStop')">取消</button>
       <button type="button" class="bi-modal-btn danger" id="biModalStopOk">确认停止</button>
+    </div>
+  </div>
+</div>
+
+<div class="bi-modal-overlay" id="biModalProgressDemo" role="dialog" aria-modal="true" aria-labelledby="biModalProgressDemoTitle" onclick="if(event.target===this)planBidCloseModal('biModalProgressDemo')">
+  <div class="bi-modal" onclick="event.stopPropagation()">
+    <div class="bi-modal-head">
+      <h4 id="biModalProgressDemoTitle" class="bi-modal-title-proto">原型演示弹窗</h4>
+      <button type="button" class="bi-modal-x" onclick="planBidCloseModal('biModalProgressDemo')" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="bi-modal-body">
+      <p style="margin:0;font-size:14px;color:#334155;line-height:1.75;">点击【查看进度】按钮后，跳转到采购方后台对应的模块并打开</p>
+    </div>
+    <div class="bi-modal-foot">
+      <button type="button" class="bi-modal-btn primary" onclick="planBidCloseModal('biModalProgressDemo')">知道了</button>
+    </div>
+  </div>
+</div>
+
+<div class="bi-modal-overlay" id="biModalHistoryRecord" role="dialog" aria-modal="true" aria-labelledby="biModalHistoryRecordTitle" onclick="if(event.target===this)planBidCloseModal('biModalHistoryRecord')">
+  <div class="bi-modal bi-modal-lg" onclick="event.stopPropagation()">
+    <div class="bi-modal-head">
+      <h4 id="biModalHistoryRecordTitle">历史记录</h4>
+      <button type="button" class="bi-modal-x" onclick="planBidCloseModal('biModalHistoryRecord')" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="bi-modal-body" id="biModalHistoryRecordBody"></div>
+    <div class="bi-modal-foot">
+      <button type="button" class="bi-modal-btn" onclick="planBidCloseModal('biModalHistoryRecord')">关闭</button>
     </div>
   </div>
 </div>

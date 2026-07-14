@@ -480,17 +480,6 @@
 <body>
   <main class="admin-content">
     <div class="page-inner">
-      <div class="page-hero">
-        <div class="page-hero-icon">
-          <span class="icon-menu-mgmt icon-menu-mgmt--lg" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M3 4.25A1.25 1.25 0 0 1 4.25 3h5.5A1.25 1.25 0 0 1 11 4.25V6.5H3V4.25zm10.5 0A1.25 1.25 0 0 1 14.75 3h5.5A1.25 1.25 0 0 1 21.5 4.25V6.5H13.5V4.25zM3 10.25A1.25 1.25 0 0 1 4.25 9h4.25A1.25 1.25 0 0 1 9.5 10.25v2.25H3v-2.25zm8.5 0a1.25 1.25 0 0 1 1.25-1.25h4.25A1.25 1.25 0 0 1 17.25 10.25v2.25H11.5v-2.25zM3 16.25A1.25 1.25 0 0 1 4.25 15h5.75A1.25 1.25 0 0 1 11.25 16.25v2.25H3v-2.25zm9.5 0a1.25 1.25 0 0 1 1.25-1.25h5.75A1.25 1.25 0 0 1 19.5 16.25v2.25H12.5v-2.25z"/><path stroke="currentColor" stroke-width="1.75" stroke-linecap="round" d="M7.375 6.5v3.75M7.375 12.5v3.75"/></svg></span>
-        </div>
-        <div>
-          <div class="text-sm text-slate-500 mb-1">管理后台 / <span class="text-slate-800 font-medium">菜单管理</span></div>
-          <h1>菜单管理</h1>
-          <p>维护运营商后台导航菜单结构；支持目录与菜单配置，不含页面内按钮权限配置。</p>
-        </div>
-      </div>
-
       <div class="layout">
         <!-- 菜单列表树 -->
         <div class="panel">
@@ -708,7 +697,7 @@
       buyerUser: { id: 'buyerUser', name: '用户管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_user', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '采购商管理', icon: 'mdi:account-cog', sort: 2 },
       buyerRole: { id: 'buyerRole', name: '角色管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_role', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '采购商管理', icon: 'mdi:shield-account', sort: 3 },
       buyerDept: { id: 'buyerDept', name: '部门管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_system_dept', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '采购商管理', icon: 'mdi:office-building', sort: 4 },
-      productAudit: { id: 'productAudit', name: '商品上架审核', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_product_audit_list', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:package-variant', sort: 5 },
+      productAudit: { id: 'productAudit', name: '商品管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_product_audit_list', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:package-variant', sort: 5 },
       news: { id: 'news', name: '新闻资讯管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_news_list', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:newspaper', sort: 6 },
       law: { id: 'law', name: '采购法规管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_law_list', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:scale-balance', sort: 7 },
       notice: { id: 'notice', name: '平台公告管理', type: 'menu', typeLabel: '菜单', status: 'normal', statusLabel: '正常', route: 'admin_notice', external: 'no', externalLabel: '否', visible: 'show', visibleLabel: '显示', parentName: '根目录', icon: 'mdi:bullhorn', sort: 8 },
@@ -741,7 +730,7 @@
           { id: 'buyerRole', label: '角色管理', type: 'menu' },
           { id: 'buyerDept', label: '部门管理', type: 'menu' }
         ]},
-        { id: 'productAudit', label: '商品上架审核', type: 'menu' },
+        { id: 'productAudit', label: '商品管理', type: 'menu' },
         { id: 'news', label: '新闻资讯管理', type: 'menu' },
         { id: 'law', label: '采购法规管理', type: 'menu' },
         { id: 'notice', label: '平台公告管理', type: 'menu' },

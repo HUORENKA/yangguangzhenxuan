@@ -64,6 +64,7 @@
       .ai-audit-dash-status.low{background:#e0f2fe;color:#0369a1}
       .ai-audit-dash-status.mid{background:#fef3c7;color:#b45309}
       .ai-audit-dash-status.high{background:#fee2e2;color:#b91c1c}
+      .ai-audit-dash-status.ref{background:#f1f5f9;color:#64748b}
       .ai-audit-dash-card-label{font-size:12px;font-weight:700;color:#64748b;margin-bottom:6px}
       .ai-audit-dash-card-text{font-size:12px;color:#475569;line-height:1.75}
       .ai-audit-dash-ref{font-size:11px;color:#94a3b8;margin-top:8px}
@@ -262,6 +263,20 @@
       </div>`;
   }
 
+  function renderDimBadge(dim) {
+    if (dim.displayOnly) {
+      return '<span class="ai-audit-dash-status ref">仅展示</span>';
+    }
+    return `<span class="ai-audit-dash-status ${dim.level}">${statusLabel(dim.level)}</span>`;
+  }
+
+  function renderDimRefNote(dim) {
+    if (dim.displayOnly) {
+      return '<div class="ai-audit-dash-ref">仅展示参考，不参与五维雷达图与入驻阻断判定</div>';
+    }
+    return '';
+  }
+
   function renderResultSection(evaluation) {
     ensureDashboardStyles();
     const ev = evaluation || lastEvaluation;
@@ -285,7 +300,7 @@
             `).join('')}
           </div>
           <div class="ai-audit-dash-radar">
-            <canvas id="aiAuditRadar" width="320" height="320" aria-label="六维合作风险雷达图"></canvas>
+            <canvas id="aiAuditRadar" width="320" height="320" aria-label="五维合作风险雷达图"></canvas>
             <div class="ai-audit-dash-ratio">
               <div class="num">${passCount}/${total}</div>
               <div class="lbl">通过项 / 检测总数</div>
@@ -301,15 +316,11 @@
                   <span class="ai-audit-dash-card-icon" style="background:${dim.color}"><i class="fas ${dim.icon}"></i></span>
                   ${escHtml(dim.name)}
                 </div>
-                ${dim.showBadge === false
-                  ? ''
-                  : `<span class="ai-audit-dash-status ${dim.level}">${statusLabel(dim.level)}</span>`}
+                ${renderDimBadge(dim)}
               </div>
               <div class="ai-audit-dash-card-label">数据摘要</div>
               <div class="ai-audit-dash-card-text">${dim.lines.map(l => escHtml(l)).join('<br>')}</div>
-              ${dim.inRadar === false
-                ? '<div class="ai-audit-dash-ref">仅展示参考，不参与六维图与入驻阻断判定</div>'
-                : (dim.refOnly ? '<div class="ai-audit-dash-ref">仅展示参考，不参与入驻阻断判定</div>' : '')}
+              ${renderDimRefNote(dim)}
             </div>
           `).join('')}
         </div>
@@ -354,7 +365,7 @@
     setInlineLoading(true, '正在查询企查查企业风险数据…', 18);
 
     const t1 = window.setTimeout(() => {
-      setInlineLoading(true, '正在按六维规则核验合作风险…', 55);
+      setInlineLoading(true, '正在按五维规则核验合作风险…', 55);
     }, 450);
     auditTimers.push(t1);
 
@@ -421,7 +432,7 @@
   function openAssistant() {
     showDialog({
       title: '提示',
-      message: '当前 AI 资质审核已切换为企查查合作风险排查。请查看下方六维分析结果；资质文件由运营人工核验。',
+      message: '当前 AI 资质审核已切换为企查查合作风险排查。请查看下方五维分析结果；资质文件由运营人工核验。',
       type: 'info',
       confirmText: '知道了',
     });

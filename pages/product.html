@@ -1927,6 +1927,48 @@
       min-height: 184px;
     }
 
+    .portrait-card[data-portrait-card="supplier"] {
+      grid-column: 1 / -1;
+      min-height: auto;
+    }
+
+    .portrait-supplier-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .portrait-supplier-chip {
+      text-align: center;
+      padding: 12px 8px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+    }
+
+    .portrait-supplier-chip-label {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .portrait-supplier-chip-value {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .portrait-supplier-chip-value.safe {
+      color: #059669;
+    }
+
+    .portrait-supplier-chip-value.risk {
+      color: #dc2626;
+    }
+
     .portrait-section.generated .portrait-left,
     .portrait-section.generated .portrait-card {
       animation: portraitReveal 0.5s ease both;
@@ -1942,6 +1984,10 @@
 
     .portrait-section.generated .portrait-card:nth-child(4) {
       animation-delay: 0.24s;
+    }
+
+    .portrait-section.generated .portrait-card:nth-child(5) {
+      animation-delay: 0.32s;
     }
 
     @keyframes portraitReveal {
@@ -1970,6 +2016,14 @@
       margin-top: 12px;
       display: grid;
       gap: 8px;
+    }
+
+    .portrait-card-list--cols2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .portrait-card-item--full {
+      grid-column: 1 / -1;
     }
 
     .portrait-card-item {
@@ -4138,6 +4192,10 @@
         min-width: 108px;
       }
 
+      .portrait-supplier-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .network-season-table th:first-child,
       .network-season-table td:first-child {
         width: 120px;
@@ -4331,8 +4389,8 @@
                 <div class="portrait-entry-title">生成 AI 商品画像，或直接进入比质比价分析</div>
                 <div class="portrait-entry-desc">系统可基于商品信息、合规资料、平台建议采购价格区间和最近一次价格变动生成当前商品画像；也可以直接选择同品同规、相近品规商品进入整体比质比价分析。</div>
                 <div class="portrait-entry-meta">
-                  <span><i class="fa-solid fa-check"></i>六维画像评分</span>
-                  <span><i class="fa-solid fa-check"></i>商品安全与价格分析</span>
+                  <span><i class="fa-solid fa-check"></i>五维画像评分</span>
+                  <span><i class="fa-solid fa-check"></i>价格与资料分析</span>
                   <span><i class="fa-solid fa-check"></i>同品同规优先比质比价</span>
                 </div>
               </div>
@@ -4429,7 +4487,7 @@
             <i class="fa-solid fa-wand-magic-sparkles"></i>
             <span id="portraitLoadingTitle">AI 正在生成商品画像</span>
           </div>
-          <div class="portrait-loading-desc" id="portraitLoadingDesc">正在汇总商品信息、合规资料、价格区间与近期波动数据，并生成六维画像与分析结论。</div>
+          <div class="portrait-loading-desc" id="portraitLoadingDesc">正在汇总商品价格、资料完整度、供应商风险与历史成交数据，并生成五维画像与分析结论。</div>
           <div class="portrait-loading-dots"><span></span><span></span><span></span></div>
           <div class="portrait-loading-tasks">
             <div class="portrait-loading-task" id="portraitTask0"><i class="fa-solid fa-database"></i>数据汇聚</div>
@@ -4465,6 +4523,10 @@
                   <div class="skeleton-block skeleton-line"></div>
                   <div class="skeleton-block skeleton-line sm"></div>
                 </div>
+                <div class="skeleton-card" style="grid-column:1/-1;">
+                  <div class="skeleton-block skeleton-line"></div>
+                  <div class="skeleton-block skeleton-line sm"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -4473,39 +4535,45 @@
         <div class="portrait-left portrait-ready">
           <div class="portrait-summary" id="portraitSummary"></div>
           <div class="portrait-canvas-wrap">
-            <canvas id="portraitRadar" width="280" height="240" aria-label="AI商品画像六维雷达图"></canvas>
+            <canvas id="portraitRadar" width="280" height="240" aria-label="AI商品画像五维雷达图"></canvas>
           </div>
           <div class="portrait-score-box">
             <div class="portrait-score-label">综合画像评分</div>
             <div class="portrait-score-value" id="portraitScore"></div>
-            <div class="portrait-score-note">六维指标：价格竞争力 / 售后保障 / 资质合规 / 供应商合规 / 物流时效 / 甄选推荐</div>
+            <div class="portrait-score-note">五维指标：价格合理性 / 价格稳定性 / 历史成交 / 供应商评估 / 资料完整度</div>
           </div>
         </div>
 
         <div class="portrait-right portrait-ready">
           <div class="portrait-card-grid">
-            <div class="portrait-card">
-              <div class="portrait-card-title"><i class="fa-regular fa-rectangle-list text-blue-600"></i>商品信息登记完整性</div>
-              <div class="portrait-card-conclusion" id="infoConclusion"></div>
-              <div class="portrait-card-list" id="infoList"></div>
-            </div>
-
-            <div class="portrait-card">
-              <div class="portrait-card-title"><i class="fa-solid fa-shield-halved text-emerald-600"></i>商品安全</div>
-              <div class="portrait-card-conclusion" id="safetyConclusion"></div>
-              <div class="portrait-card-list" id="safetyList"></div>
-            </div>
-
-            <div class="portrait-card">
+            <div class="portrait-card" data-portrait-card="priceReason">
               <div class="portrait-card-title"><i class="fa-solid fa-scale-balanced text-amber-600"></i>价格合理性</div>
-              <div class="portrait-card-conclusion" id="priceConclusion"></div>
-              <div class="portrait-card-list" id="priceList"></div>
+              <div class="portrait-card-conclusion" id="priceReasonConclusion"></div>
+              <div class="portrait-card-list" id="priceReasonList"></div>
             </div>
 
-            <div class="portrait-card">
-              <div class="portrait-card-title"><i class="fa-solid fa-arrow-trend-up text-violet-600"></i>价格波动</div>
-              <div class="portrait-card-conclusion" id="trendConclusion"></div>
-              <div class="portrait-card-list" id="trendList"></div>
+            <div class="portrait-card" data-portrait-card="priceStable">
+              <div class="portrait-card-title"><i class="fa-solid fa-chart-line text-violet-600"></i>价格稳定性</div>
+              <div class="portrait-card-conclusion" id="priceStableConclusion"></div>
+              <div class="portrait-card-list" id="priceStableList"></div>
+            </div>
+
+            <div class="portrait-card" data-portrait-card="infoComplete">
+              <div class="portrait-card-title"><i class="fa-regular fa-rectangle-list text-blue-600"></i>资料完整度</div>
+              <div class="portrait-card-conclusion" id="infoCompleteConclusion"></div>
+              <div class="portrait-card-list portrait-card-list--cols2" id="infoCompleteList"></div>
+            </div>
+
+            <div class="portrait-card" data-portrait-card="historyDeal">
+              <div class="portrait-card-title"><i class="fa-solid fa-clock-rotate-left text-sky-600"></i>历史成交</div>
+              <div class="portrait-card-conclusion" id="historyDealConclusion"></div>
+              <div class="portrait-card-list portrait-card-list--cols2" id="historyDealList"></div>
+            </div>
+
+            <div class="portrait-card" data-portrait-card="supplier">
+              <div class="portrait-card-title"><i class="fa-solid fa-building-circle-check text-emerald-600"></i>供应商评估</div>
+              <div class="portrait-card-conclusion" id="supplierConclusion"></div>
+              <div class="portrait-supplier-row" id="supplierRiskRow"></div>
             </div>
           </div>
         </div>
@@ -5051,7 +5119,15 @@
         region: '全国可配送，偏远地区以实际运费为准',
         code: 'GC-A4-20260416-001',
         tags: ['预算匹配', '时效匹配', '合规优先', '本地区可配送'],
-        portraitScores: [92, 85, 88, 86, 90, 87],
+        recentSold: 186,
+        lastDealDate: '2026-06-02',
+        supplierRisks: {
+          businessStatus: '无风险',
+          judicial: '无风险',
+          adminPenalty: '无风险',
+          tax: '无风险',
+          operation: '无风险'
+        },
         detailCompleteness: 90,
         specCompleteness: 90,
         productionInfo: '已登记',
@@ -5105,7 +5181,15 @@
         region: '华东次日达，全国重点城市可送达',
         code: 'GC-PEN-20260416-008',
         tags: ['性价比高', '常购耗材', '供应稳定'],
-        portraitScores: [88, 84, 82, 85, 86, 83],
+        recentSold: 312,
+        lastDealDate: '2026-06-03',
+        supplierRisks: {
+          businessStatus: '无风险',
+          judicial: '无风险',
+          adminPenalty: '无风险',
+          tax: '无风险',
+          operation: '无风险'
+        },
         detailCompleteness: 92,
         specCompleteness: 91,
         productionInfo: '已登记',
@@ -5159,7 +5243,15 @@
         region: '全国联保，上门安装区域覆盖重点城市',
         code: 'GC-PRN-20260416-015',
         tags: ['设备类采购', '高频复购品牌', '售后保障强'],
-        portraitScores: [86, 91, 89, 92, 82, 88],
+        recentSold: 28,
+        lastDealDate: '2026-05-18',
+        supplierRisks: {
+          businessStatus: '无风险',
+          judicial: '有风险',
+          adminPenalty: '无风险',
+          tax: '无风险',
+          operation: '无风险'
+        },
         detailCompleteness: 94,
         specCompleteness: 96,
         productionInfo: '已登记',
@@ -5214,6 +5306,177 @@
       return total % productPool.length;
     }
 
+    const PORTRAIT_RADAR_LABELS = ['价格合理性', '价格稳定性', '历史成交', '供应商评估', '资料完整度'];
+
+    const SUPPLIER_RISK_LABELS = {
+      businessStatus: '工商存续',
+      judicial: '司法风险',
+      adminPenalty: '行政处罚',
+      tax: '税务风险',
+      operation: '经营合规'
+    };
+
+    function clampScore(value) {
+      return Math.max(0, Math.min(100, Math.round(value)));
+    }
+
+    function parseRank(rankText) {
+      const rank = parseInt(String(rankText).split('/')[0], 10);
+      return Number.isNaN(rank) ? 99 : rank;
+    }
+
+    function daysSince(dateText) {
+      if (!dateText) return 999;
+      const target = new Date(dateText);
+      if (Number.isNaN(target.getTime())) return 999;
+      const today = new Date('2026-06-04T00:00:00');
+      return Math.max(0, Math.floor((today - target) / 86400000));
+    }
+
+    function hasMainImage(product) {
+      return Array.isArray(product.images) && product.images.length >= 1;
+    }
+
+    function hasSubImages(product) {
+      return Array.isArray(product.images) && product.images.length >= 2;
+    }
+
+    function hasSpecParams(product) {
+      return Array.isArray(product.params) && product.params.length > 0;
+    }
+
+    function hasProductIntro(product) {
+      return typeof product.intro === 'string' && product.intro.trim().length > 0;
+    }
+
+    function completeLabel(pass) {
+      return pass ? '完整' : '缺失';
+    }
+
+    function scorePriceReason(product) {
+      if (product.price > product.ceiling) {
+        const overPct = ((product.price - product.ceiling) / product.ceiling) * 100;
+        return clampScore(50 - overPct);
+      }
+      const range = product.ceiling - product.floor;
+      const positionScore = range <= 0 ? 80 : ((product.ceiling - product.price) / range) * 100;
+      const rank = parseRank(product.rank);
+      const rankScore = rank <= 2 ? 92 : rank <= 4 ? 78 : 65;
+      return clampScore(positionScore * 0.55 + rankScore * 0.45);
+    }
+
+    function scorePriceStable(product) {
+      const change = product.priceChange || {};
+      if (change.direction === '降价') return clampScore(72 + (change.percent || 0) * 6);
+      if (change.direction === '加价') return clampScore(72 - (change.percent || 0) * 8);
+      return 80;
+    }
+
+    function scoreInfoComplete(product) {
+      let score = 0;
+      if (hasMainImage(product)) score += 25;
+      if (hasSubImages(product)) score += 25;
+      if (hasSpecParams(product)) score += 25;
+      if (hasProductIntro(product)) score += 25;
+      return score;
+    }
+
+    function scoreSupplier(product) {
+      const risks = product.supplierRisks || {};
+      const riskCount = Object.keys(SUPPLIER_RISK_LABELS)
+        .filter(key => risks[key] === '有风险').length;
+      return clampScore(100 - riskCount * 20);
+    }
+
+    function scoreHistoryDeal(product) {
+      const sold = Number(product.sold || 0);
+      const recentSold = Number(product.recentSold || 0);
+      const soldScore = sold >= 3000 ? 90 : sold >= 1000 ? 78 : sold >= 500 ? 65 : 50;
+      const recentScore = recentSold >= 100 ? 90 : recentSold >= 30 ? 75 : recentSold >= 10 ? 60 : 45;
+      const elapsedDays = daysSince(product.lastDealDate);
+      const timeScore = elapsedDays <= 7 ? 90 : elapsedDays <= 30 ? 75 : elapsedDays <= 90 ? 60 : 45;
+      return clampScore(soldScore * 0.5 + recentScore * 0.35 + timeScore * 0.15);
+    }
+
+    function buildInfoCompleteMetrics(product) {
+      return [
+        { label: '主图', value: completeLabel(hasMainImage(product)), tone: hasMainImage(product) ? 'positive' : 'negative' },
+        { label: '副图', value: completeLabel(hasSubImages(product)), tone: hasSubImages(product) ? 'positive' : 'negative' },
+        { label: '规格参数', value: completeLabel(hasSpecParams(product)), tone: hasSpecParams(product) ? 'positive' : 'negative' },
+        { label: '商品简介', value: completeLabel(hasProductIntro(product)), tone: hasProductIntro(product) ? 'positive' : 'negative' }
+      ];
+    }
+
+    function buildSupplierRiskItems(product) {
+      const risks = product.supplierRisks || {};
+      return Object.keys(SUPPLIER_RISK_LABELS).map(key => {
+        const result = risks[key] === '有风险' ? '有风险' : '无风险';
+        return {
+          key,
+          label: SUPPLIER_RISK_LABELS[key],
+          result,
+          tone: result === '无风险' ? 'safe' : 'risk'
+        };
+      });
+    }
+
+    function computePortraitDimensions(product) {
+      const infoMetrics = buildInfoCompleteMetrics(product);
+      const infoPassed = infoMetrics.filter(item => item.value === '完整').length;
+      const supplierItems = buildSupplierRiskItems(product);
+      const supplierRiskCount = supplierItems.filter(item => item.result === '有风险').length;
+
+      const dimensions = [
+        {
+          key: 'priceReason',
+          label: '价格合理性',
+          score: scorePriceReason(product),
+          conclusion: product.price <= product.ceiling
+            ? `当前价格位于平台建议采购区间内，低于最高限价 ${product.ceilingGapPct}%，在同品同规商品中排名第 ${parseRank(product.rank)} 位。`
+            : `当前价格已高于平台建议采购上限，建议继续比价或重新议价后再纳入采购候选。`
+        },
+        {
+          key: 'priceStable',
+          label: '价格稳定性',
+          score: scorePriceStable(product),
+          conclusion: `最近一次调价发生于 ${product.priceChange.date}，${product.priceChange.direction === '降价' ? '价格下调' : '价格上调'} ${product.priceChange.percent}%，可作为短期采购节奏参考。`
+        },
+        {
+          key: 'historyDeal',
+          label: '历史成交',
+          score: scoreHistoryDeal(product),
+          conclusion: `累计成交 ${product.sold} ${product.unit}，近 30 天成交 ${product.recentSold || 0} ${product.unit}，最近成交于 ${product.lastDealDate || '—'}。`
+        },
+        {
+          key: 'supplier',
+          label: '供应商评估',
+          score: scoreSupplier(product),
+          conclusion: supplierRiskCount
+            ? `供应商 ${product.supplier} 存在 ${supplierRiskCount} 项风险信号，建议采购前进一步核验。`
+            : `供应商 ${product.supplier} 五项合规筛查均为无风险，可正常纳入采购评估。`
+        },
+        {
+          key: 'infoComplete',
+          label: '资料完整度',
+          score: scoreInfoComplete(product),
+          conclusion: infoPassed === 4
+            ? '商品主图、副图、规格参数与商品简介均已登记，资料完整度较高。'
+            : `商品资料登记完成 ${infoPassed}/4 项，建议补充缺失内容后再做最终采购判断。`
+        }
+      ];
+
+      const portraitScores = PORTRAIT_RADAR_LABELS.map(label => {
+        const matched = dimensions.find(item => item.label === label);
+        return matched ? matched.score : 0;
+      });
+
+      return {
+        dimensions,
+        portraitScores,
+        portraitScore: clampScore(avg(portraitScores))
+      };
+    }
+
     function buildCurrentProduct() {
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id') || 'prod_demo_001';
@@ -5226,19 +5489,15 @@
       base.rank = base.price <= base.ceiling * 0.92 ? '2/8' : '4/8';
       base.decision = base.price <= base.ceiling ? '建议优先采购' : '建议继续比价';
       base.aiSummary = `当前商品报价 ${base.price.toFixed(2)} 元/${base.unit}，低于建议采购价格上限 ${base.ceiling.toFixed(2)} 元/${base.unit}，在同类商品中价格处于较优区间。供应商综合评分 ${base.supplierScore.toFixed(1)}，交付稳定性较高，适合政企集采场景直接纳入候选。`;
-      base.decisionSummary = `AI 综合判断该商品在“价格、履约、合规资料完整度”三个维度表现较优。若你的需求偏向 ${base.tags[0]} 与 ${base.tags[1] || '稳定履约'}，该商品可作为优先采购项；如需进一步压价，可在同品同规商品中继续比较交付时效与售后能力。`;
-      base.portraitScore = Math.round(avg(base.portraitScores || [85, 85, 85, 85, 85, 85]));
-      base.evaluationStatus = base.evaluations && base.evaluations.length
-        ? `已有 ${base.evaluations.length} 条商品评价`
-        : '暂无商品评价';
-      base.portraitSummary = `AI 结论：当前商品画像评分 ${base.portraitScore} 分，${base.price <= base.ceiling ? '价格处于平台建议采购区间内' : '价格接近建议上限'}，资料登记${base.detailCompleteness >= 90 ? '较完整' : '存在缺口'}，可作为采购候选重点关注。`;
+      base.decisionSummary = `AI 综合判断该商品在“价格、资料完整度、供应商评估、历史成交”四个方向表现较优。若你的需求偏向 ${base.tags[0]} 与 ${base.tags[1] || '稳定履约'}，该商品可作为优先采购项；如需进一步压价，可在同品同规商品中继续比较价格稳定性。`;
+      const portrait = computePortraitDimensions(base);
+      base.portraitDimensions = portrait.dimensions;
+      base.portraitScores = portrait.portraitScores;
+      base.portraitScore = portrait.portraitScore;
+      base.infoCompleteMetrics = buildInfoCompleteMetrics(base);
+      base.supplierRiskItems = buildSupplierRiskItems(base);
+      base.portraitSummary = `AI 结论：当前商品画像评分 ${base.portraitScore} 分，${base.price <= base.ceiling ? '价格处于平台建议采购区间内' : '价格接近或高于建议上限'}，资料完整度 ${scoreInfoComplete(base)}/100，可作为采购候选重点关注。`;
       base.portraitRisk = buildPortraitRisk(base);
-      base.infoConclusion = base.evaluations && base.evaluations.length
-        ? '商品基础信息与规格字段较完整，可支持采购人员进行快速判断。'
-        : '商品基础信息已基本登记，但缺少商品评价作为补充参考。';
-      base.safetyConclusion = buildSafetyConclusion(base);
-      base.priceConclusion = `当前价格位于平台建议采购上下限之间，低于最高限价 ${base.ceilingGapPct}% ，在同品同规商品中具备一定价格竞争力。`;
-      base.trendConclusion = `最近一次调价发生于 ${base.priceChange.date}，${base.priceChange.direction === '降价' ? '价格下调' : '价格上调'} ${base.priceChange.percent}% ，当前波动信息可作为短期采购参考。`;
       base.compare = {
         same: buildCompareRows(base, 'same'),
         similar: buildCompareRows(base, 'similar')
@@ -5251,32 +5510,20 @@
     }
 
     function buildPortraitRisk(base) {
-      if (base.inspectionReport.status === '无') {
-        return '风险提示：当前商品未登记质检报告，请在下单前确认供应商补充相关安全资料。';
+      const supplierRiskCount = (base.supplierRiskItems || []).filter(item => item.result === '有风险').length;
+      if (supplierRiskCount) {
+        return `风险提示：供应商评估存在 ${supplierRiskCount} 项风险信号，建议采购前进一步核验工商及司法信息。`;
       }
-      if (base.inspectionReport.status === '即将到期') {
-        return `风险提示：质检报告将于 ${base.inspectionReport.expiry} 到期，建议下单前确认最新有效版本。`;
+      if (scoreInfoComplete(base) < 75) {
+        return '风险提示：商品资料完整度不足，建议补充主图、副图、规格参数或商品简介后再做最终判断。';
       }
-      if (!base.evaluations || !base.evaluations.length) {
-        return '风险提示：暂无商品评价，建议结合供应商履约评分综合判断。';
+      if (base.price > base.ceiling) {
+        return '风险提示：当前报价高于平台建议采购上限，建议继续比价或重新议价。';
       }
       if (base.priceChange.direction === '加价') {
         return `风险提示：最近一次价格上调发生于 ${base.priceChange.date}，建议同步关注后续报价变化。`;
       }
-      return '风险提示：当前未发现明显高风险项，建议结合采购预算与交付时效综合判断。';
-    }
-
-    function buildSafetyConclusion(base) {
-      if (base.inspectionReport.status === '无') {
-        return '商品生产信息已登记，但质检报告缺失，需补充安全资料后再做最终判断。';
-      }
-      if (base.inspectionReport.status === '即将到期') {
-        return '商品安全资料已上传，但质检报告临近到期，建议同步核验有效性。';
-      }
-      if (base.inspectionReport.status === '已过期') {
-        return '商品安全资料存在过期项，建议优先要求供应商更新后再下单。';
-      }
-      return '商品生产信息和质检报告状态正常，安全资料登记情况较稳定。';
+      return '风险提示：当前未发现明显高风险项，建议结合采购预算与历史成交情况综合判断。';
     }
 
     function buildCompareRows(base, type) {
@@ -5465,11 +5712,11 @@
         },
         {
           title: '正在执行 AI 多维分析',
-          desc: '正在生成六维画像，并分析商品完整性、安全资料、价格合理性和价格波动。',
+          desc: '正在生成五维画像，并分析价格合理性、价格稳定性、资料完整度、供应商评估与历史成交。',
         },
         {
           title: '正在生成画像结论',
-          desc: '正在组织一句话结论、综合评分、雷达图和四类分析卡片。',
+          desc: '正在组织一句话结论、综合评分、雷达图和五类分析卡片。',
         }
       ];
       let index = 0;
@@ -5814,37 +6061,47 @@
     }
 
     function renderPortrait() {
+      const dimensionMap = Object.fromEntries(
+        (currentProduct.portraitDimensions || []).map(item => [item.key, item])
+      );
+
       document.getElementById('portraitSummary').textContent = currentProduct.portraitSummary;
       document.getElementById('portraitScore').textContent = '0';
 
-      document.getElementById('infoConclusion').textContent = currentProduct.infoConclusion;
-      document.getElementById('infoList').innerHTML = [
-        renderMetricItem('商品详情完整度', `${currentProduct.detailCompleteness}%`, 'positive'),
-        renderMetricItem('商品规格完整度', `${currentProduct.specCompleteness}%`, 'positive'),
-        renderMetricItem('商品评价', currentProduct.evaluationStatus, currentProduct.evaluationStatus.includes('暂无') ? 'negative' : 'positive')
-      ].join('');
-
-      document.getElementById('safetyConclusion').textContent = currentProduct.safetyConclusion;
-      document.getElementById('safetyList').innerHTML = [
-        renderMetricItem('生产信息', currentProduct.productionInfo, currentProduct.productionInfo === '已登记' ? 'positive' : 'negative'),
-        renderMetricItem('质检报告', currentProduct.inspectionReport.status, currentProduct.inspectionReport.status === '有效' ? 'positive' : 'negative'),
-        renderMetricItem('到期情况', currentProduct.inspectionReport.expiry, currentProduct.inspectionReport.status === '有效' ? 'positive' : 'negative')
-      ].join('');
-
-      document.getElementById('priceConclusion').textContent = currentProduct.priceConclusion;
-      document.getElementById('priceList').innerHTML = [
-        renderMetricItem('参照口径', '平台建议采购上下限；同品同规当前有效报价', 'neutral'),
+      document.getElementById('priceReasonConclusion').textContent = dimensionMap.priceReason?.conclusion || '';
+      document.getElementById('priceReasonList').innerHTML = [
+        renderMetricItem('当前单价', `¥${currentProduct.price.toFixed(2)}/${currentProduct.unit}`, 'neutral'),
         renderMetricItem('低于最高限价', `${currentProduct.ceilingGapPct}%`, 'positive'),
-        renderMetricItem('高于最低限价', `${currentProduct.floorGapPct}%`, 'positive'),
-        renderMetricItem('价格排行', currentProduct.rank, parseRank(currentProduct.rank) <= 3 ? 'positive' : 'negative')
+        renderMetricItem('同品同规排名', currentProduct.rank, parseRank(currentProduct.rank) <= 3 ? 'positive' : 'negative')
       ].join('');
 
-      document.getElementById('trendConclusion').textContent = currentProduct.trendConclusion;
-      document.getElementById('trendList').innerHTML = [
+      document.getElementById('priceStableConclusion').textContent = dimensionMap.priceStable?.conclusion || '';
+      document.getElementById('priceStableList').innerHTML = [
         renderMetricItem('最近一次调价时间', currentProduct.priceChange.date, 'neutral'),
         renderMetricItem('调价方向', currentProduct.priceChange.direction, currentProduct.priceChange.direction === '降价' ? 'positive' : 'negative'),
         renderMetricItem('调价幅度', `${currentProduct.priceChange.percent}%`, currentProduct.priceChange.direction === '降价' ? 'positive' : 'negative')
       ].join('');
+
+      document.getElementById('infoCompleteConclusion').textContent = dimensionMap.infoComplete?.conclusion || '';
+      document.getElementById('infoCompleteList').innerHTML = (currentProduct.infoCompleteMetrics || [])
+        .map(item => renderMetricItem(item.label, item.value, item.tone))
+        .join('');
+
+      document.getElementById('historyDealConclusion').textContent = dimensionMap.historyDeal?.conclusion || '';
+      document.getElementById('historyDealList').innerHTML = [
+        renderMetricItem('累计成交', `${currentProduct.sold} ${currentProduct.unit}`, 'positive'),
+        renderMetricItem('近30天成交', `${currentProduct.recentSold || 0} ${currentProduct.unit}`, 'positive'),
+        renderMetricItem('最近成交日期', currentProduct.lastDealDate || '—', 'neutral', true)
+      ].join('');
+
+      document.getElementById('supplierConclusion').textContent = dimensionMap.supplier?.conclusion || '';
+      document.getElementById('supplierRiskRow').innerHTML = (currentProduct.supplierRiskItems || [])
+        .map(item => `
+          <div class="portrait-supplier-chip">
+            <div class="portrait-supplier-chip-label">${item.label}</div>
+            <div class="portrait-supplier-chip-value ${item.tone}">${item.result}</div>
+          </div>
+        `).join('');
 
       drawPortraitRadar(document.getElementById('portraitRadar'), currentProduct.portraitScores);
       animatePortraitScore(currentProduct.portraitScore);
@@ -5864,22 +6121,18 @@
       requestAnimationFrame(tick);
     }
 
-    function renderMetricItem(label, value, tone) {
+    function renderMetricItem(label, value, tone, fullWidth) {
       const toneClass = tone === 'positive'
         ? 'metric-positive'
         : tone === 'negative'
           ? 'metric-negative'
           : 'metric-neutral';
-      return `<div class="portrait-card-item">${label}：<strong class="${toneClass}">${value}</strong></div>`;
-    }
-
-    function parseRank(rankText) {
-      const rank = parseInt(String(rankText).split('/')[0], 10);
-      return Number.isNaN(rank) ? 99 : rank;
+      const fullClass = fullWidth ? ' portrait-card-item--full' : '';
+      return `<div class="portrait-card-item${fullClass}">${label}：<strong class="${toneClass}">${value}</strong></div>`;
     }
 
     function drawPortraitRadar(canvas, values) {
-      const labels = ['价格竞争力', '售后保障', '资质合规', '供应商合规', '物流时效', '甄选推荐'];
+      const labels = PORTRAIT_RADAR_LABELS;
       const ctx = canvas.getContext('2d');
       const width = canvas.width;
       const height = canvas.height;
@@ -5953,7 +6206,7 @@
         const metrics = ctx.measureText(text);
         let drawX = x - metrics.width / 2;
         if (index === 1 || index === 2) drawX = x;
-        if (index === 4 || index === 5) drawX = x - metrics.width;
+        if (index === 3 || index === 4) drawX = x - metrics.width;
         ctx.fillText(text, drawX, y);
       });
     }

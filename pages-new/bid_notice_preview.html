@@ -118,9 +118,28 @@
       font-size: 15px;
       line-height: 1.85;
       color: #334155;
-      white-space: pre-wrap;
       word-break: break-word;
     }
+    .notice-card-body.plain { white-space: pre-wrap; }
+    .notice-card-body .notice-field-dynamic { color: #dc2626; font-weight: 700; }
+    .notice-card-body .notice-field-fixed { color: #0f172a; font-weight: 700; }
+    .notice-card-body .notice-sec-title { font-weight: 800; margin: 14px 0 8px; color: #0f172a; }
+    .notice-card-body p { margin: 0 0 12px; }
+    .notice-card-body ol,
+    .notice-card-body ul { margin: 0 0 12px; padding-left: 22px; }
+    .notice-card-body table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 8px 0 12px;
+    }
+    .notice-card-body th,
+    .notice-card-body td {
+      border: 1px solid #e2e8f0;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    .notice-card-body th { background: #f8fafc; color: #64748b; }
     .notice-action-bar {
       padding: 18px 24px 22px;
       border-top: 1px solid #eef2f7;
@@ -370,8 +389,25 @@
     if (subHeading) subHeading.textContent = '保存并发布前预览效果';
   }
 
+  function noticeHasBody(notice) {
+    if (!notice || !notice.body) return false;
+    if (notice.bodyFormat === 'html' || /<span class="notice-field-dynamic"/.test(notice.body)) {
+      var tmp = document.createElement('div');
+      tmp.innerHTML = notice.body;
+      return !!(tmp.textContent || '').trim();
+    }
+    return !!String(notice.body).trim();
+  }
+
+  function renderNoticeBody(notice) {
+    if (notice.bodyFormat === 'html' || /<[a-z][\s\S]*>/i.test(notice.body)) {
+      return '<div class="notice-card-body">' + notice.body + '</div>';
+    }
+    return '<div class="notice-card-body plain">' + esc(notice.body) + '</div>';
+  }
+
   var card = document.getElementById('noticeCard');
-  if (!notice || !notice.title || !notice.body) {
+  if (!notice || !notice.title || !noticeHasBody(notice)) {
     card.innerHTML = '<div class="empty-box">暂无公告数据，请返回编辑页填写公告后点击「预览」。</div>';
     return;
   }
@@ -393,7 +429,7 @@
     + (notice.fileName ? '<span><i class="fa-regular fa-file-lines"></i> ' + esc(notice.fileName) + '</span>' : '')
     + (notice.deadline ? '<span><i class="fa-solid fa-hourglass-half"></i> 截止 ' + esc(notice.deadline) + '</span>' : '')
     + '</div></div>'
-    + '<div class="notice-card-body">' + esc(notice.body) + '</div>'
+    + renderNoticeBody(notice)
     + '<div class="notice-action-bar">'
     + '<div class="notice-action-tip">' + esc(actionTip) + '</div>'
     + '<div class="notice-action-btns">'

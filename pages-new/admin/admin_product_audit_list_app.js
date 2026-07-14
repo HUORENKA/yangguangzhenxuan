@@ -1,7 +1,7 @@
 /**
- * 商品审核列表 · 原型逻辑
- * 上架状态卡片：全部 / 待审核 / 已驳回 / 已下架 / 已上架（默认展示「全部」）；
- * 待审核：通过、驳回（变更状态）；已上架：下架；已下架：上架；
+ * 商品列表（全量商品管理）· 原型逻辑
+ * auditExempt=true：运营后台直传，免审直接上架，不展示 AI / 审核类型
+ * 上架状态卡片：全部 / 待审核 / 已驳回 / 已下架 / 已上架（默认「全部」）
  */
 'use strict';
 
@@ -533,6 +533,51 @@ window.auditApprove = function auditApprove(rowId) {
     row.detailImages = [...(a.detailImages || [])];
     row.listStatus = row.shelfSnapshot === 'offline' ? 'offline' : 'online';
     row.auditStatusLabel = row.listStatus === 'online' ? '已上架' : '已下架';
+
+    if (row.linkedProductId) {
+      const linked = auditQueue.find(x => x.id === row.linkedProductId);
+      if (linked && isAuditExempt(linked)) {
+        linked.name = a.name;
+        linked.price = a.price;
+        linked.unit = a.unit;
+        linked.cat1 = a.cat1;
+        linked.cat2 = a.cat2;
+        linked.cat3 = a.cat3;
+        linked.specs = { ...(a.specs || {}) };
+        linked.specLabels = [...(a.specLabels && a.specLabels.length ? a.specLabels : Object.keys(a.specs || {}))];
+        linked.warehouseStocks = normalizeWarehouseStocksFull(a.warehouseStocks);
+        linked.mainImage = a.mainImage || '';
+        linked.subImages = [...(a.subImages || [])];
+        linked.detailImages = [...(a.detailImages || [])];
+        linked.listStatus = row.shelfSnapshot === 'offline' ? 'offline' : 'online';
+        linked.auditStatusLabel = linked.listStatus === 'online' ? '已上架' : '已下架';
+      }
+
+      try {
+        const applied = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_APPLIED_MAP') || '{}');
+        const specText = Object.values(a.specs || {})
+          .filter(v => String(v).trim())
+          .join(' / ');
+        applied[row.linkedProductId] = {
+          name: a.name,
+          price: a.price,
+          unit: a.unit,
+          category: a.cat1,
+          spec: specText,
+          catPath: [a.cat1, a.cat2, a.cat3],
+          specs: { ...(a.specs || {}) },
+          warehouseStocks: { ...normalizeWarehouseStocksFull(a.warehouseStocks) },
+          mainImage: a.mainImage || '',
+          subImages: [...(a.subImages || [])],
+          detailImages: [...(a.detailImages || [])],
+          status: row.shelfSnapshot === 'offline' ? 'offline' : 'published'
+        };
+        sessionStorage.setItem('PRODUCT_CHANGE_APPLIED_MAP', JSON.stringify(applied));
+      } catch {
+        /* ignore */
+      }
+    }
+
     row.auditKind = undefined;
     row.beforeSnapshot = null;
     row.afterSnapshot = null;
@@ -777,11 +822,55 @@ const baseAuditMocks = [
     aiKind: 'pass',
     aiRiskCount: 0,
     aiCheckedAt: '2026-05-09 14:20'
+  },
+  {
+    id: 'ADM-DIRECT-INK',
+    auditExempt: true,
+    listStatus: 'online',
+    sku: 'SKU-GC-INK-BK500',
+    specLabels: ['颜色', '容量', '适用机型', '包装规格'],
+    name: '【运营直传】原装黑色墨盒 BK-500',
+    price: 89,
+    unit: '个',
+    cat1: '办公耗材',
+    cat2: '打印耗材',
+    cat3: '墨盒',
+    specs: { 颜色: '黑色', 容量: '标准容量', 适用机型: 'CM480 系列', 包装规格: '单支装' },
+    warehouseStocks: { 华东一号仓: 500, 华北物流中心: 320, 华南保税仓: 180, 西南协同仓: 90, 华中中心仓: 210 },
+    mainImage: 'https://picsum.photos/seed/guocai-adm-ink/480/480',
+    subImages: [],
+    detailImages: [],
+    supplierName: '国采平台自营供应链',
+    submittedAt: '2026-05-14 09:30'
+  },
+  {
+    id: 'ADM-DIRECT-CABLE',
+    auditExempt: true,
+    listStatus: 'offline',
+    sku: 'SKU-GC-CBL-HDMI2',
+    specLabels: ['线材类型', '长度', '接口版本', '屏蔽工艺'],
+    name: '【运营直传】HDMI 2.1 高清连接线 2米',
+    price: 45,
+    unit: '根',
+    cat1: '办公设备',
+    cat2: '外设配件',
+    cat3: '线缆转接',
+    specs: { 线材类型: 'HDMI', 长度: '2m', 接口版本: 'HDMI 2.1', 屏蔽工艺: '多层屏蔽' },
+    warehouseStocks: { 华东一号仓: 0, 华北物流中心: 150, 华南保税仓: 80, 西南协同仓: 40, 华中中心仓: 60 },
+    mainImage: 'https://picsum.photos/seed/guocai-adm-hdmi/480/480',
+    subImages: [],
+    detailImages: [],
+    supplierName: '智联网络设备（上海）有限公司',
+    submittedAt: '2026-05-13 16:20'
   }
 ];
 
 /** @type {typeof baseAuditMocks} */
 let auditQueue = [...baseAuditMocks];
+
+function isAuditExempt(row) {
+  return row && row.auditExempt === true;
+}
 
 /** 【上架审核层】校验项（与供应商侧、商品标签体系一致） */
 const LISTING_AUDIT_ITEMS = [
@@ -873,6 +962,9 @@ function aiComplianceTagHtml(row) {
 }
 
 function aiTagCell(row) {
+  if (isAuditExempt(row)) {
+    return '<span class="text-xs text-slate-400">—</span>';
+  }
   if (row.aiKind == null && !row.aiCheckItems) {
     return '<span class="text-xs text-slate-400">—</span>';
   }
@@ -934,23 +1026,54 @@ window.openAdminAiAuditResult = function openAdminAiAuditResult(rowId) {
 };
 
 function aiResultBtnHtml(row) {
+  if (isAuditExempt(row)) return '';
   if (row.aiKind == null && !row.aiCheckItems) return '';
   const idEsc = escapeAttr(row.id);
   return `<button type="button" class="btn-audit btn-audit-primary" onclick="openAdminAiAuditResult('${idEsc}')"><i class="fas fa-shield-halved"></i>AI审核结果</button>`;
 }
 
-function listStatusCellHtml(row) {
+function getShelfStatusKey(row) {
+  if (row.listStatus === 'online') return 'online';
+  if (row.listStatus === 'offline') return 'offline';
+  if (row.listStatus === 'pending' && row.auditKind === 'CHANGE_INFO' && row.shelfSnapshot) {
+    return row.shelfSnapshot === 'offline' ? 'offline' : 'online';
+  }
+  if (row.listStatus === 'pending' || row.listStatus === 'rejected') return 'unshelved';
+  return 'none';
+}
+
+function shelfStatusCellHtml(row) {
+  if (isAuditExempt(row) && (row.listStatus === 'pending' || row.listStatus === 'rejected')) {
+    return '<span class="text-gray-500">—</span>';
+  }
+  const cfg = {
+    online: { label: '已上架', cls: 'text-green-600 font-medium' },
+    offline: { label: '已下架', cls: 'text-slate-600 font-medium' },
+    unshelved: { label: '未上架', cls: 'text-gray-500 font-medium' },
+    none: { label: '—', cls: 'text-gray-500' }
+  };
+  const u = cfg[getShelfStatusKey(row)] || cfg.none;
+  return `<span class="${u.cls}">${escapeHtml(u.label)}</span>`;
+}
+
+function auditStatusCellHtml(row) {
+  if (isAuditExempt(row)) {
+    return '<span class="text-gray-500">—</span>';
+  }
   const cfg = {
     pending: { label: '待审核', cls: 'text-[#1890FF] font-medium' },
     rejected: { label: '已驳回', cls: 'text-red-600 font-medium' },
-    offline: { label: '已下架', cls: 'text-slate-600 font-medium' },
-    online: { label: '已上架', cls: 'text-green-600 font-medium' }
+    online: { label: '已通过', cls: 'text-green-700 font-medium' },
+    offline: { label: '已通过', cls: 'text-green-700 font-medium' }
   };
   const u = cfg[row.listStatus] || { label: '—', cls: 'text-gray-500' };
   return `<span class="${u.cls}">${escapeHtml(u.label)}</span>`;
 }
 
 function auditKindCellHtml(row) {
+  if (isAuditExempt(row)) {
+    return '<span class="text-xs text-slate-400">—</span>';
+  }
   if (row.auditKind === 'CHANGE_INFO') {
     return `<span class="mini-tag bg-amber-50 text-amber-900 border border-amber-200"><i class="fas fa-code-branch"></i> 信息变更</span>`;
   }
@@ -961,11 +1084,21 @@ function rowActionsHtml(r) {
   const idEsc = escapeAttr(r.id);
   const aiBtn = aiResultBtnHtml(r);
   const useChangeDetailPage =
-    r.auditKind === 'CHANGE_INFO' && r.beforeSnapshot && r.afterSnapshot;
+    !isAuditExempt(r) && r.auditKind === 'CHANGE_INFO' && r.beforeSnapshot && r.afterSnapshot;
   const detail = useChangeDetailPage
     ? `<button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openChangeAuditDetailPage('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`
     : `<button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openAuditDetailModal('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`;
   const preview = `<button type="button" class="btn-audit bg-slate-50 text-gray-700 border border-gray-200 hover:bg-slate-100" onclick="openListingPreview('${idEsc}')"><i class="fas fa-camera"></i>预览</button>`;
+
+  if (isAuditExempt(r)) {
+    if (r.listStatus === 'online') {
+      return `${detail}${preview}<button type="button" class="btn-audit border border-amber-200 bg-amber-50 text-amber-950 hover:bg-amber-100" onclick="auditSetOffline('${idEsc}')"><i class="fas fa-arrow-down"></i>下架</button>`;
+    }
+    if (r.listStatus === 'offline') {
+      return `${detail}${preview}<button type="button" class="btn-audit btn-audit-pass" onclick="auditSetOnline('${idEsc}')"><i class="fas fa-arrow-up"></i>上架</button>`;
+    }
+    return `${detail}${preview}`;
+  }
 
   if (r.listStatus === 'pending') {
     return `
@@ -1023,6 +1156,12 @@ function getFilteredRows() {
 
   if (activeShelfTab !== 'all') rows = rows.filter(r => r.listStatus === activeShelfTab);
 
+  const statusEl = document.getElementById('auditFilterListStatus');
+  const statusFilter = statusEl && statusEl.value ? statusEl.value.trim() : '';
+  if (activeShelfTab === 'all' && statusFilter) {
+    rows = rows.filter(r => r.listStatus === statusFilter);
+  }
+
   const skuNameEl = document.getElementById('auditFilterNameSku');
   const key = skuNameEl && skuNameEl.value ? skuNameEl.value.trim() : '';
   if (key) {
@@ -1053,8 +1192,8 @@ function getFilteredRows() {
 
   const kindEl = document.getElementById('auditFilterAuditKind');
   const kind = kindEl && kindEl.value ? kindEl.value.trim() : '';
-  if (kind === 'CHANGE_INFO') rows = rows.filter(r => r.auditKind === 'CHANGE_INFO');
-  else if (kind === 'NEW_LISTING') rows = rows.filter(r => r.auditKind !== 'CHANGE_INFO');
+  if (kind === 'CHANGE_INFO') rows = rows.filter(r => !isAuditExempt(r) && r.auditKind === 'CHANGE_INFO');
+  else if (kind === 'NEW_LISTING') rows = rows.filter(r => !isAuditExempt(r) && r.auditKind !== 'CHANGE_INFO');
 
   const startEl = document.getElementById('auditShelvedStart');
   const endEl = document.getElementById('auditShelvedEnd');
@@ -1086,6 +1225,8 @@ function resetFilters() {
   });
   const kind = document.getElementById('auditFilterAuditKind');
   if (kind) kind.selectedIndex = 0;
+  const listStatus = document.getElementById('auditFilterListStatus');
+  if (listStatus) listStatus.selectedIndex = 0;
   if (typeof window.resetThreeLevelCategoryFilter === 'function') {
     window.resetThreeLevelCategoryFilter({
       cat1: 'auditFilterCat1',
@@ -1104,7 +1245,7 @@ function renderAuditProductTable() {
   if (!rows.length) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="11" class="text-center py-14 text-gray-500 text-sm">
+        <td colspan="12" class="text-center py-14 text-gray-500 text-sm">
           暂无符合条件的数据。<br/><span class="text-xs text-gray-400 mt-2 inline-block">可点击「重置」清空筛选。</span>
         </td>
       </tr>`;
@@ -1130,13 +1271,45 @@ function renderAuditProductTable() {
           <td class="text-gray-600 whitespace-nowrap">${escapeHtml(r.submittedAt)}</td>
           <td>${auditKindCellHtml(r)}</td>
           <td>${aiTagCell(r)}</td>
-          <td>${listStatusCellHtml(r)}</td>
+          <td>${shelfStatusCellHtml(r)}</td>
+          <td>${auditStatusCellHtml(r)}</td>
           <td class="text-right">
             <div class="flex flex-wrap justify-end gap-2">${rowActionsHtml(r)}</div>
           </td>
         </tr>`;
     })
     .join('');
+}
+
+function bindAuditFilterPanel() {
+  const panel = document.getElementById('auditFilterPanel');
+  const toggleBtn = document.getElementById('auditFilterToggleBtn');
+  const toggleText = document.getElementById('auditFilterToggleText');
+  if (!panel || !toggleBtn) return;
+
+  const applyCollapsed = collapsed => {
+    panel.classList.toggle('is-collapsed', collapsed);
+    toggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    if (toggleText) toggleText.textContent = collapsed ? '展开更多' : '收起更多';
+  };
+
+  let collapsed = false;
+  try {
+    collapsed = sessionStorage.getItem('AUDIT_FILTER_COLLAPSED') === '1';
+  } catch {
+    /* ignore */
+  }
+  applyCollapsed(collapsed);
+
+  toggleBtn.addEventListener('click', () => {
+    collapsed = !collapsed;
+    applyCollapsed(collapsed);
+    try {
+      sessionStorage.setItem('AUDIT_FILTER_COLLAPSED', collapsed ? '1' : '0');
+    } catch {
+      /* ignore */
+    }
+  });
 }
 
 function bindAuditModals() {
@@ -1198,11 +1371,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   bindAuditModals();
+  bindAuditFilterPanel();
 
   renderShelfTabs();
   renderAuditProductTable();
 
   document.getElementById('auditSearchBtn')?.addEventListener('click', renderAuditProductTable);
+  document.getElementById('auditFilterListStatus')?.addEventListener('change', renderAuditProductTable);
 
   document.getElementById('auditResetFiltersBtn')?.addEventListener('click', () => {
     resetFilters();

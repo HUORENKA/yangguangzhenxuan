@@ -105,7 +105,7 @@ window.TagAdmin = (function () {
     'p-model': { code: 'SPEC_MODEL', valueType: '文本', method: '系统直取', source: 'ggxh', note: '从商品字段 ggxh 直取。', ruleConfig: '字段 ggxh 直取' },
     'p-pack': { code: 'SPEC_PACK', valueType: '文本', method: '系统映射', source: '包装规格', note: '从商品包装规格字段直取。', ruleConfig: '包装规格字段直取' },
     'p-scene-use': {
-      code: 'SCENE_USE', valueType: '枚举', method: 'AI 抽取+规则校验', source: '标题+简介+参数',
+      code: 'SCENE_USE', valueType: '枚举', multiEnum: true, method: 'AI 抽取+规则校验', source: '标题+简介+参数',
       note: '从商品图文语义匹配适用场景枚举，1～5 条。',
       ruleConfig: '语义匹配场景枚举；confidence≥0.6；evidence 非空；1～5 条',
       enums: [
@@ -117,7 +117,7 @@ window.TagAdmin = (function () {
       ]
     },
     'p-scene-obj': {
-      code: 'SCENE_OBJ', valueType: '枚举', method: 'AI 抽取', source: '简介+参数', note: '适用对象枚举。',
+      code: 'SCENE_OBJ', valueType: '枚举', multiEnum: true, method: 'AI 抽取', source: '简介+参数', note: '适用对象枚举。',
       ruleConfig: 'AI 抽取适用对象；枚举合法性校验',
       enums: [
         { code: 'OBJ_GOV', name: '机关单位', sort: 1 },
@@ -162,8 +162,11 @@ window.TagAdmin = (function () {
       supplier: '浙江得力办公用品有限公司', status: '自动打标完成', reviewCount: 0, taggedAt: '2026-06-14 10:22',
       tags: [
         { tagId: 'p-brand', path: '类目与规格 > 规格信息 > 品牌', value: '得力', method: '系统直取', status: '自动打标完成', editable: false },
-        { tagId: 'p-scene-use', path: '场景与需求 > 适用场景', value: '复印打印、日常办公', method: 'AI 抽取+规则校验', status: '自动打标完成', editable: true, confidence: 0.91 },
-        { tagId: 'p-complete', path: '商品信息审核 > 内容质量 > 资料完整度', value: '高', method: '规则汇总', status: '自动打标完成', editable: false }
+        { tagId: 'p-scene-use', path: '场景与需求 > 适用场景', value: '复印打印、日常办公', method: 'AI 抽取+规则校验', status: '自动打标完成', editable: true, confidence: 0.91, evidence: '标题：得力A4复印纸70g 5包装；简介：适用于复印、打印及日常办公场景。' },
+        { tagId: 'p-title', path: '商品信息审核 > 内容质量 > 标题规范', value: '是', method: 'AI+规则', status: '自动打标完成', editable: true, confidence: 0.88, evidence: '标题 42 字，无外链与敏感词，与类目一致。' },
+        { tagId: 'p-complete', path: '商品信息审核 > 内容质量 > 资料完整度', value: '高', method: '规则汇总', status: '自动打标完成', editable: false },
+        { tagId: 'p-scene-buy', path: '场景与需求 > 采购属性', value: '整箱采购', method: 'AI+规则', status: '自动打标完成', editable: true, confidence: 0.85, evidence: '简介含「5包装」「批量供应」等采购友好描述。' },
+        { tagId: 'p-cat-accurate', path: '商品信息审核 > 类目与品目 > 类目归属准确', value: '是', method: 'AI+规则', status: '自动打标完成', editable: true, confidence: 0.93, evidence: '主图与参数均指向复印纸类目。' }
       ]
     },
     {
@@ -233,6 +236,394 @@ window.TagAdmin = (function () {
     if (processIntent === 'maintain') return '人工修改';
     if (tag.status === '人工复核' || tag.status === '自动打标失败') return '人工复核';
     return '人工修改';
+  }
+
+  function splitTagValues(value) {
+    return String(value || '').split(/[,，、]/).map(function (s) { return s.trim(); }).filter(function (s) { return s && s !== '—'; });
+  }
+
+  function joinTagValues(values) {
+    return values.filter(Boolean).join('、');
+  }
+
+  function isEnumTag(tagId) {
+    var meta = tagMeta[tagId];
+    return meta && meta.valueType === '枚举';
+  }
+
+  function getTagSourceLabel(tag) {
+    var meta = tagMeta[tag.tagId];
+    return (meta && meta.source) || tag.source || '—';
+  }
+
+  function getTagEvidence(tag) {
+    if (tag.evidence) return tag.evidence;
+    var meta = tagMeta[tag.tagId];
+    if (meta && meta.method && meta.method.indexOf('AI') >= 0) return '（原型）依据「' + getTagSourceLabel(tag) + '」字段由 AI 抽取，暂无结构化证据片段。';
+    if (meta && meta.source) return '（原型）依据「' + meta.source + '」字段直取/规则计算。';
+    return '暂无打标证据记录';
+  }
+
+  function collectLeafTagOptions(tree) {
+    var items = [];
+    function walk(nodes, chain) {
+      nodes.forEach(function (n) {
+        var pathChain = chain.concat(n.name);
+        if (n.leaf) items.push({ id: n.id, name: n.name, path: pathChain.join(' > '), l1: chain[0] || n.name, l2: chain[1] || (n.level === 2 ? n.name : ''), level: n.level });
+        if (n.children && n.children.length) walk(n.children, pathChain);
+      });
+    }
+    walk(tree, []);
+    return items;
+  }
+
+  function buildTagFromMeta(tagId, path, value) {
+    var meta = tagMeta[tagId] || {};
+    return {
+      tagId: tagId,
+      path: path,
+      value: value,
+      method: meta.method || '人工维护',
+      status: '自动打标完成',
+      editable: !isManualBlocked(meta.method || ''),
+      confidence: null,
+      evidence: '',
+      _isNew: true,
+      _originalValue: '—'
+    };
+  }
+
+  function getTagValueTypeLabel(tagId) {
+    var meta = tagMeta[tagId];
+    return (meta && meta.valueType) || '文本';
+  }
+
+  function renderTagValueTypeCell(tagId) {
+    var vt = getTagValueTypeLabel(tagId);
+    if (vt !== '枚举') {
+      return '<span class="value-type-tag">' + vt + '</span>';
+    }
+    var sub = isEnumMulti(tagId) ? '多选' : '单选';
+    var subCls = isEnumMulti(tagId) ? 'value-type-sub-multi' : 'value-type-sub-single';
+    return '<span class="value-type-tag value-type-enum">' + vt + '<span class="value-type-sub ' + subCls + '">' + sub + '</span></span>';
+  }
+
+  function isEnumMulti(tagId) {
+    var meta = tagMeta[tagId];
+    return !!(meta && meta.multiEnum);
+  }
+
+  function getEnumOptions(tagId) {
+    var meta = tagMeta[tagId];
+    return (meta && meta.enums) ? meta.enums : [];
+  }
+
+  function renderYesNoSelect(tag, idx) {
+    var opts = ['是', '否'];
+    var html = '<select class="form-input tag-value-input tag-value-select" data-idx="' + idx + '">';
+    opts.forEach(function (o) {
+      html += '<option value="' + o + '"' + (tag.value === o ? ' selected' : '') + '>' + o + '</option>';
+    });
+    html += '</select>';
+    return html;
+  }
+
+  function renderLevelSelect(tag, idx) {
+    var opts = ['高', '中', '低'];
+    var html = '<select class="form-input tag-value-input tag-value-select" data-idx="' + idx + '">';
+    opts.forEach(function (o) {
+      html += '<option value="' + o + '"' + (tag.value === o ? ' selected' : '') + '>' + o + '</option>';
+    });
+    html += '</select>';
+    return html;
+  }
+
+  function renderEnumSingleSelect(tag, idx) {
+    var enums = getEnumOptions(tag.tagId);
+    var html = '<select class="form-input tag-value-input tag-value-select" data-idx="' + idx + '">';
+    html += '<option value="">请选择</option>';
+    enums.forEach(function (e) {
+      html += '<option value="' + e.name + '"' + (tag.value === e.name ? ' selected' : '') + '>' + e.name + '</option>';
+    });
+    html += '</select>';
+    return html;
+  }
+
+  function renderEnumMultiSelect(tag, idx) {
+    var enums = getEnumOptions(tag.tagId);
+    var selected = splitTagValues(tag.value);
+    var displayText = selected.length ? joinTagValues(selected) : '';
+    var html = '<div class="tag-enum-multiselect" data-idx="' + idx + '">';
+    html += '<button type="button" class="tag-enum-trigger" data-idx="' + idx + '">';
+    html += '<span class="tag-enum-trigger-text">' + (displayText || '<span class="text-muted">请选择</span>') + '</span>';
+    html += '<i class="fas fa-chevron-down"></i></button>';
+    html += '<div class="tag-enum-panel" hidden>';
+    enums.forEach(function (e) {
+      var checked = selected.indexOf(e.name) >= 0 ? ' checked' : '';
+      html += '<label class="tag-enum-option"><input type="checkbox" value="' + e.name + '"' + checked + '><span>' + e.name + '</span></label>';
+    });
+    html += '</div>';
+    html += '<input type="hidden" class="tag-value-input" data-idx="' + idx + '" value="' + joinTagValues(selected).replace(/"/g, '&quot;') + '">';
+    html += '</div>';
+    return html;
+  }
+
+  function renderEntitySummaryTable(data, mode) {
+    var html = '<div class="entity-summary-wrap"><table class="data-table entity-summary-table"><thead><tr>';
+    html += '<th>打标状态</th><th>待复核项</th><th>最近打标</th><th>操作</th></tr></thead><tbody><tr>';
+    html += '<td id="entityOverallStatus">' + renderEntityStatus(data.status, data.reviewCount || 0) + '</td>';
+    html += '<td><strong id="entityReviewCount">' + (data.reviewCount || 0) + '</strong></td>';
+    html += '<td>' + data.taggedAt + '</td><td>';
+    if (mode === 'process') {
+      html += '<button type="button" class="btn btn-sm btn-outline" id="btnRetag"><i class="fas fa-rotate"></i> 重新打标</button>';
+    } else {
+      html += '<span class="text-muted">—</span>';
+    }
+    html += '</td></tr></tbody></table></div>';
+    return html;
+  }
+
+  function renderTagValueCell(tag, idx, mode) {
+    var enumTag = isEnumTag(tag.tagId);
+    var values = enumTag ? splitTagValues(tag.value) : [];
+    var vt = getTagValueTypeLabel(tag.tagId);
+    if (mode === 'process' && tag.editable && !tag._markedDelete) {
+      if (enumTag) {
+        return isEnumMulti(tag.tagId) ? renderEnumMultiSelect(tag, idx) : renderEnumSingleSelect(tag, idx);
+      }
+      if (vt === '是/否') return renderYesNoSelect(tag, idx);
+      if (vt === '高/中/低') return renderLevelSelect(tag, idx);
+      return '<input type="text" class="form-input tag-value-input" data-idx="' + idx + '" value="' + String(tag.value).replace(/"/g, '&quot;') + '">';
+    }
+    if (enumTag && values.length > 1) {
+      return '<div class="tag-value-chips readonly">' + values.map(function (v) { return '<span class="tag-value-chip">' + v + '</span>'; }).join('') + '</div>';
+    }
+    return tag.value;
+  }
+
+  function renderEntityTagTableHtml(data, mode) {
+    var colSpan = 6;
+    var html = '<div class="entity-tag-table-wrap"><div class="entity-section-title"><i class="fas fa-table-list"></i> 打标情况</div>';
+    html += '<div class="table-wrap"><table class="data-table entity-tag-table"><thead><tr>';
+    html += '<th>标签路径</th><th class="w-20">标签值类型</th><th>标签值</th><th>打标方式</th><th>打标状态</th><th class="w-32">操作</th></tr></thead><tbody>';
+    data.tags.forEach(function (t, idx) {
+      if (t._markedDelete) return;
+      var rowClass = (mode === 'process' && (t.status === '人工复核' || t.status === '自动打标失败') ? ' entity-tag-row-pending' : '') + (t._isNew ? ' entity-tag-row-new' : '');
+      html += '<tr class="entity-tag-row' + rowClass + '" data-idx="' + idx + '">';
+      html += '<td class="tag-path-cell">' + t.path + (t._isNew ? ' <span class="tag tag-warn tag-mini">待添加</span>' : '') + '</td>';
+      html += '<td>' + renderTagValueTypeCell(t.tagId) + '</td>';
+      html += '<td class="tag-value-cell">' + renderTagValueCell(t, idx, mode) + '</td>';
+      html += '<td>' + t.method + '</td>';
+      html += '<td><span class="tag ' + statusTagClass(t.status) + ' tag-status-cell">' + t.status + '</span></td>';
+      html += '<td class="entity-tag-ops">';
+      html += '<button type="button" class="tag-source-btn tag-toggle-source" data-idx="' + idx + '" data-expanded="0"><i class="fas fa-circle-info"></i><span>查看出处</span></button>';
+      if (mode === 'process' && t.editable) {
+        html += '<button type="button" class="tag-delete-btn" data-idx="' + idx + '"><i class="fas fa-trash-can"></i><span>删除</span></button>';
+      }
+      html += '</td></tr>';
+      html += '<tr class="tag-source-expand" id="tagSourceRow' + idx + '" hidden><td colspan="' + colSpan + '">';
+      html += '<table class="data-table tag-source-inner-table"><tbody>';
+      html += '<tr><th class="w-28">标签来源</th><td>' + getTagSourceLabel(t) + '</td></tr>';
+      html += '<tr><th>打标证据</th><td class="tag-source-evidence-text">' + getTagEvidence(t) + '</td></tr>';
+      html += '</tbody></table></td></tr>';
+    });
+    html += '</tbody></table></div></div>';
+    if (mode === 'process') {
+      html += '<div class="entity-tag-toolbar"><button type="button" class="btn btn-sm btn-outline" id="btnAddEntityTag"><i class="fas fa-plus"></i> 新增标签</button></div>';
+      html += '<div class="add-tag-submodal" id="addTagSubModal" hidden>';
+      html += '<div class="add-tag-submodal-box"><div class="add-tag-submodal-head">新增标签<button type="button" class="link-btn" id="btnCloseAddTag">关闭</button></div>';
+      html += '<div class="form-grid form-grid-compact"><div class="form-item"><label>一级标签</label><select class="form-input" id="addTagL1"></select></div>';
+      html += '<div class="form-item"><label>二级标签</label><select class="form-input" id="addTagL2"></select></div>';
+      html += '<div class="form-item"><label>三级标签</label><select class="form-input" id="addTagL3"></select></div>';
+      html += '<div class="form-item form-full"><label>标签值</label><input type="text" class="form-input" id="addTagValue" placeholder="按标签值类型填写"></div></div>';
+      html += '<div class="add-tag-submodal-foot"><button type="button" class="btn btn-outline btn-sm" id="btnCancelAddTag">取消</button>';
+      html += '<button type="button" class="btn btn-primary btn-sm" id="btnConfirmAddTag">添加</button></div></div></div>';
+      html += '<div class="log-hint"><i class="fas fa-clock-rotate-left"></i> 支持增删标签、枚举多值下拉复选；确认后写入<strong>标签维护日志</strong>（新增/删除记为人工修改）。</div>';
+    }
+    return html;
+  }
+
+  function pushChangeLog(type, data, tagPath, before, after, changeType) {
+    changeLogs.unshift({
+      id: 'log' + Date.now() + Math.random(),
+      targetType: type === 'product' ? '商品' : '供应商',
+      entityId: data.id,
+      entityName: data.name,
+      tagPath: tagPath,
+      changeType: changeType,
+      before: before,
+      after: after,
+      operator: changeType === '自动达标' ? '系统' : '张三',
+      time: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-')
+    });
+  }
+
+  function refreshEntityReviewStats(data) {
+    data.reviewCount = data.tags.filter(function (t) {
+      return !t._markedDelete && (t.status === '人工复核' || t.status === '自动打标失败');
+    }).length;
+    data.status = data.reviewCount > 0 ? '人工复核' : '自动打标完成';
+  }
+
+  function bindEntityTagTableEvents(data, mode) {
+    document.querySelectorAll('.tag-toggle-source').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var row = document.getElementById('tagSourceRow' + btn.dataset.idx);
+        if (!row) return;
+        var willOpen = row.hidden;
+        document.querySelectorAll('.tag-source-expand').forEach(function (r) { r.hidden = true; });
+        document.querySelectorAll('.tag-toggle-source').forEach(function (b) {
+          b.dataset.expanded = '0';
+          b.classList.remove('is-expanded');
+          var span = b.querySelector('span');
+          if (span) span.textContent = '查看出处';
+        });
+        if (willOpen) {
+          row.hidden = false;
+          btn.dataset.expanded = '1';
+          btn.classList.add('is-expanded');
+          var label = btn.querySelector('span');
+          if (label) label.textContent = '收起出处';
+        }
+      });
+    });
+    if (mode !== 'process') return;
+
+    document.querySelectorAll('.tag-delete-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = +btn.dataset.idx;
+        var tag = data.tags[idx];
+        if (!tag || !tag.editable) return;
+        if (!confirm('确定删除标签「' + tag.path + '」？')) return;
+        tag._markedDelete = true;
+        openEntityModal(entityModalState.type, entityModalState.id, entityModalState.onUpdate, 'process');
+      });
+    });
+
+    document.querySelectorAll('.tag-enum-trigger').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var wrap = btn.closest('.tag-enum-multiselect');
+        if (!wrap) return;
+        var panel = wrap.querySelector('.tag-enum-panel');
+        var willOpen = panel && panel.hidden;
+        document.querySelectorAll('.tag-enum-panel').forEach(function (p) { p.hidden = true; });
+        document.querySelectorAll('.tag-enum-trigger').forEach(function (t) { t.classList.remove('is-open'); });
+        if (willOpen && panel) {
+          panel.hidden = false;
+          btn.classList.add('is-open');
+        }
+      });
+    });
+
+    document.querySelectorAll('.tag-enum-multiselect input[type="checkbox"]').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        var wrap = cb.closest('.tag-enum-multiselect');
+        if (!wrap) return;
+        var idx = +wrap.dataset.idx;
+        var checked = [];
+        wrap.querySelectorAll('input[type="checkbox"]:checked').forEach(function (c) { checked.push(c.value); });
+        var joined = joinTagValues(checked);
+        var hidden = wrap.querySelector('.tag-value-input');
+        var triggerText = wrap.querySelector('.tag-enum-trigger-text');
+        if (hidden) hidden.value = joined;
+        if (triggerText) triggerText.innerHTML = joined ? joined : '<span class="text-muted">请选择</span>';
+        if (data.tags[idx]) data.tags[idx].value = joined || '—';
+      });
+    });
+
+    document.querySelectorAll('.tag-enum-panel').forEach(function (panel) {
+      panel.addEventListener('click', function (e) { e.stopPropagation(); });
+    });
+
+    if (!bindEntityTagTableEvents._enumCloseBound) {
+      bindEntityTagTableEvents._enumCloseBound = true;
+      document.addEventListener('click', function () {
+        document.querySelectorAll('.tag-enum-panel').forEach(function (p) { p.hidden = true; });
+        document.querySelectorAll('.tag-enum-trigger').forEach(function (t) { t.classList.remove('is-open'); });
+      });
+    }
+
+    var libTree = tagTrees[entityModalState.type === 'product' ? 'product' : 'supplier'] || [];
+    var leafOptions = collectLeafTagOptions(libTree);
+    var existingIds = data.tags.filter(function (t) { return !t._markedDelete; }).map(function (t) { return t.tagId; });
+
+    function fillAddTagL2(l1Id) {
+      var l2 = document.getElementById('addTagL2');
+      var l3 = document.getElementById('addTagL3');
+      if (!l2 || !l3) return;
+      l2.innerHTML = '<option value="">请选择</option>';
+      l3.innerHTML = '<option value="">请选择</option>';
+      var l1Node = findNode(libTree, l1Id);
+      if (!l1Node || !l1Node.children) return;
+      l1Node.children.forEach(function (c) {
+        l2.innerHTML += '<option value="' + c.id + '">' + c.name + '</option>';
+      });
+    }
+
+    function fillAddTagL3(l2Id) {
+      var l3 = document.getElementById('addTagL3');
+      if (!l3) return;
+      l3.innerHTML = '<option value="">请选择</option>';
+      var l2Node = findNode(libTree, l2Id);
+      if (!l2Node) return;
+      if (l2Node.leaf) {
+        l3.innerHTML += '<option value="' + l2Node.id + '" selected>' + l2Node.name + '</option>';
+        return;
+      }
+      (l2Node.children || []).forEach(function (c) {
+        if (c.leaf) l3.innerHTML += '<option value="' + c.id + '">' + c.name + '</option>';
+      });
+    }
+
+    function openAddTagModal() {
+      var sub = document.getElementById('addTagSubModal');
+      if (!sub) return;
+      var l1Sel = document.getElementById('addTagL1');
+      l1Sel.innerHTML = '<option value="">请选择</option>';
+      libTree.forEach(function (n) {
+        l1Sel.innerHTML += '<option value="' + n.id + '">' + n.name + '</option>';
+      });
+      fillAddTagL2('');
+      document.getElementById('addTagValue').value = '';
+      sub.hidden = false;
+    }
+
+    function closeAddTagModal() {
+      var sub = document.getElementById('addTagSubModal');
+      if (sub) sub.hidden = true;
+    }
+
+    var btnAdd = document.getElementById('btnAddEntityTag');
+    if (btnAdd) btnAdd.addEventListener('click', openAddTagModal);
+    var btnCloseAdd = document.getElementById('btnCloseAddTag');
+    var btnCancelAdd = document.getElementById('btnCancelAddTag');
+    if (btnCloseAdd) btnCloseAdd.addEventListener('click', closeAddTagModal);
+    if (btnCancelAdd) btnCancelAdd.addEventListener('click', closeAddTagModal);
+
+    var l1Sel = document.getElementById('addTagL1');
+    var l2Sel = document.getElementById('addTagL2');
+    if (l1Sel) l1Sel.addEventListener('change', function () { fillAddTagL2(l1Sel.value); fillAddTagL3(''); });
+    if (l2Sel) l2Sel.addEventListener('change', function () { fillAddTagL3(l2Sel.value); });
+
+    var btnConfirmAdd = document.getElementById('btnConfirmAddTag');
+    if (btnConfirmAdd) {
+      btnConfirmAdd.addEventListener('click', function () {
+        var tagId = (document.getElementById('addTagL3') || {}).value;
+        var val = (document.getElementById('addTagValue') || {}).value.trim();
+        if (!tagId) { alert('请选择标签'); return; }
+        if (!val) { alert('请填写标签值'); return; }
+        if (existingIds.indexOf(tagId) >= 0) { alert('该标签已存在，请勿重复添加'); return; }
+        var leaf = leafOptions.find(function (x) { return x.id === tagId; });
+        var check = validateTagValue(tagId, val);
+        if (!check.ok) { alert(check.msg); return; }
+        data.tags.push(buildTagFromMeta(tagId, leaf ? leaf.path : tagId, val));
+        closeAddTagModal();
+        openEntityModal(entityModalState.type, entityModalState.id, entityModalState.onUpdate, 'process');
+      });
+    }
+
+    $('#btnRetag') && $('#btnRetag').addEventListener('click', function () { alert('已触发重新打标任务（原型演示）'); });
   }
 
   function $(sel, root) { return (root || document).querySelector(sel); }
@@ -423,41 +814,15 @@ window.TagAdmin = (function () {
     var title = $('#entityModalTitle');
     var body = $('#entityModalBody');
     title.textContent = (type === 'product' ? '商品标签详情 · ' : '供应商标签详情 · ') + data.name;
-    var html = '<div class="entity-meta">';
-    html += '<span>打标状态：<span id="entityOverallStatus">' + renderEntityStatus(data.status, data.reviewCount || 0) + '</span></span>';
-    html += '<span>待复核项：<strong id="entityReviewCount">' + (data.reviewCount || 0) + '</strong></span>';
-    html += '<span>最近打标：' + data.taggedAt + '</span>';
-    if (mode === 'process') {
-      html += '<button type="button" class="btn btn-sm btn-outline" id="btnRetag"><i class="fas fa-rotate"></i> 重新打标</button>';
-    }
-    html += '</div>';
-    html += '<div class="table-wrap mt-3"><table class="data-table entity-tag-table"><thead><tr><th>标签路径</th><th>标签值</th><th>打标方式</th><th>打标状态</th><th>置信度</th></tr></thead><tbody>';
-    data.tags.forEach(function (t, idx) {
-      var rowClass = mode === 'process' && (t.status === '人工复核' || t.status === '自动打标失败') ? ' entity-tag-row-pending' : '';
-      html += '<tr class="' + rowClass.trim() + '" data-idx="' + idx + '"><td>' + t.path + '</td><td>';
-      if (mode === 'process' && t.editable) {
-        html += '<input type="text" class="form-input tag-value-input" data-idx="' + idx + '" value="' + String(t.value).replace(/"/g, '&quot;') + '" style="min-width:160px">';
-      } else {
-        html += t.value;
-        if (mode === 'process' && !t.editable) {
-          html += '<span class="text-muted text-xs block">系统直取不可改</span>';
-        }
-      }
-      html += '</td><td>' + t.method + '</td>';
-      html += '<td><span class="tag ' + statusTagClass(t.status) + ' tag-status-cell">' + t.status + '</span></td>';
-      html += '<td>' + (t.confidence != null ? t.confidence : '—') + '</td></tr>';
-    });
-    html += '</tbody></table></div>';
-    if (mode === 'process') {
-      html += '<div class="log-hint"><i class="fas fa-clock-rotate-left"></i> 修改后请点击<strong>确认复核/修改</strong>，系统将校验标签值是否符合配置要求，并写入标签维护日志。</div>';
-    }
+    var html = renderEntitySummaryTable(data, mode);
+    html += renderEntityTagTableHtml(data, mode);
     body.innerHTML = html;
     if (mode === 'process') {
       data.tags.forEach(function (t) {
-        if (t.editable) t._originalValue = t.value;
+        if (t.editable && !t._markedDelete) t._originalValue = t.value;
       });
-      $('#btnRetag') && $('#btnRetag').addEventListener('click', function () { alert('已触发重新打标任务（原型演示）'); });
     }
+    bindEntityTagTableEvents(data, mode);
     syncEntityModalFooter(mode);
     overlay.hidden = false;
   }
@@ -473,54 +838,51 @@ window.TagAdmin = (function () {
     if (!type || !id) return;
     var data = getEntityList(type).find(function (x) { return x.id === id; });
     if (!data) return;
-    var inputs = document.querySelectorAll('.tag-value-input');
     var errors = [];
     var changes = [];
-    inputs.forEach(function (inp) {
-      var idx = +inp.dataset.idx;
-      var tag = data.tags[idx];
-      var newVal = inp.value.trim();
+
+    data.tags.forEach(function (tag, idx) {
+      if (tag._markedDelete) {
+        changes.push({ action: 'delete', tag: tag, oldVal: tag._originalValue != null ? tag._originalValue : tag.value, newVal: '—' });
+        return;
+      }
+      var inp = document.querySelector('.tag-value-input[data-idx="' + idx + '"]');
+      var newVal = inp ? inp.value.trim() : tag.value;
       var oldVal = tag._originalValue != null ? tag._originalValue : tag.value;
+      if (!tag.editable && !tag._isNew) return;
       if (newVal === oldVal) return;
       var check = validateTagValue(tag.tagId, newVal);
       if (!check.ok) {
         errors.push('「' + tag.path + '」：' + check.msg);
-        inp.classList.add('input-error');
+        if (inp) inp.classList.add('input-error');
       } else {
-        inp.classList.remove('input-error');
-        changes.push({ tag: tag, oldVal: oldVal, newVal: newVal });
+        if (inp) inp.classList.remove('input-error');
+        changes.push({ action: tag._isNew ? 'add' : 'update', tag: tag, oldVal: oldVal, newVal: newVal });
       }
     });
+
     if (errors.length) {
       alert('校验未通过：\n\n' + errors.join('\n'));
       return;
     }
     if (!changes.length) {
-      alert('未检测到标签值变更');
+      alert('未检测到标签变更');
       return;
     }
+
     changes.forEach(function (c) {
-      changeLogs.unshift({
-        id: 'log' + Date.now() + Math.random(),
-        targetType: type === 'product' ? '商品' : '供应商',
-        entityId: data.id,
-        entityName: data.name,
-        tagPath: c.tag.path,
-        changeType: resolveLogChangeType(c.tag, entityModalState.processIntent),
-        before: c.oldVal,
-        after: c.newVal,
-        operator: '张三',
-        time: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-')
-      });
+      var logType = c.action === 'add' || c.action === 'delete' ? '人工修改' : resolveLogChangeType(c.tag, entityModalState.processIntent);
+      pushChangeLog(type, data, c.tag.path, c.oldVal, c.newVal, logType);
+      if (c.action === 'delete') return;
       c.tag.value = c.newVal;
       c.tag.status = '自动打标完成';
       c.tag._originalValue = c.newVal;
+      delete c.tag._isNew;
     });
-    data.reviewCount = data.tags.filter(function (t) {
-      return t.status === '人工复核' || t.status === '自动打标失败';
-    }).length;
-    data.status = data.reviewCount > 0 ? '人工复核' : '自动打标完成';
-    alert('已确认复核/修改，共更新 ' + changes.length + ' 项标签');
+
+    data.tags = data.tags.filter(function (t) { return !t._markedDelete; });
+    refreshEntityReviewStats(data);
+    alert('已确认复核/修改，共处理 ' + changes.length + ' 项标签变更');
     openEntityModal(type, id, entityModalState.onUpdate, entityModalState.mode);
     if (entityModalState.onUpdate) entityModalState.onUpdate();
   }

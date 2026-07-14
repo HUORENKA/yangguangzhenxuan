@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>商品审核列表 | 管理后台</title>
+  <title>商品列表 | 管理后台</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../../assets/custom.css">
@@ -407,26 +407,178 @@
       color: #c2410c;
       margin-bottom: 6px;
     }
+
+    /* 筛选面板：两行布局 + 收起展开 */
+    .audit-filter-panel {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      border: 1px solid #f0f0f0;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .audit-filter-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 14px 18px;
+      border-bottom: 1px solid #f5f5f5;
+      background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
+    }
+    .audit-filter-head-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .audit-filter-head-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #262626;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .audit-filter-head-title i { color: #1890FF; font-size: 13px; }
+    .audit-filter-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid #e8e8e8;
+      background: #fff;
+      color: #595959;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .audit-filter-toggle-btn:hover {
+      border-color: #91d5ff;
+      color: #1890FF;
+      background: #f0f9ff;
+    }
+    .audit-filter-toggle-btn i {
+      transition: transform 0.2s ease;
+      font-size: 11px;
+    }
+    .audit-filter-panel.is-collapsed .audit-filter-toggle-btn i {
+      transform: rotate(180deg);
+    }
+    .audit-filter-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .audit-filter-body {
+      padding: 16px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .audit-filter-row {
+      display: grid;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      gap: 12px 14px;
+    }
+    @media (min-width: 640px) {
+      .audit-filter-row--primary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .audit-filter-row--advanced {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 1024px) {
+      .audit-filter-row--primary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .audit-filter-row--advanced {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+    .audit-filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .audit-filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #8c8c8c;
+      line-height: 1.2;
+    }
+    .audit-filter-control {
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #262626;
+      background: #fff;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .audit-filter-control:focus {
+      border-color: #1890FF;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.12);
+    }
+    .audit-filter-date-range {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .audit-filter-date-range .audit-filter-control {
+      flex: 1;
+      min-width: 0;
+    }
+    .audit-filter-date-sep {
+      color: #bfbfbf;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .audit-filter-advanced-wrap {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
+      opacity: 1;
+    }
+    .audit-filter-panel.is-collapsed .audit-filter-advanced-wrap {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      margin-top: -14px;
+      pointer-events: none;
+    }
+    .audit-filter-advanced-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+    .audit-filter-advanced-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #bfbfbf;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .audit-filter-advanced-divider::before,
+    .audit-filter-advanced-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #f0f0f0;
+    }
   </style>
 </head>
 <body>
   <main class="p-6 max-w-[1920px] mx-auto">
-    <!-- 页头 -->
-    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
-      <div class="flex items-start gap-4">
-        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-lg flex-shrink-0">
-          <i class="fas fa-cubes text-2xl"></i>
-        </div>
-        <div class="min-w-0 lg:max-w-[26rem]">
-          <h1 class="text-2xl font-bold text-gray-900 tracking-tight">商品审核列表</h1>
-          <p class="text-sm text-gray-500 mt-1 leading-relaxed">覆盖<strong>新建上架</strong>与<strong>信息变更</strong>两类审核：变更单在详情中以<strong>前后快照对比</strong>展示；字段与供应商「上架商品」对齐（类目路径、五仓分项库存等）。</p>
-        </div>
-      </div>
-      <div class="text-sm text-gray-400 lg:text-right lg:pt-2">
-        管理后台 / <span class="text-gray-700 font-medium">商品审核管理</span>
-      </div>
-    </div>
-
     <!-- 上架状态卡片（切换列表维度，默认「全部」） -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
       <button type="button" class="audit-tab-btn bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-blue-200 transition-colors audit-card-active" data-audit-tab="all" aria-pressed="true">
@@ -487,62 +639,82 @@
     </div>
 
     <!-- 筛选与导出 -->
-    <div class="bg-white rounded-xl shadow-sm p-4 mb-6 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-end">
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-8 gap-3 flex-1 min-w-0">
-        <div class="flex flex-col gap-1 min-w-0">
-          <label for="auditFilterNameSku" class="text-xs font-semibold text-gray-500">商品名称或 SKU</label>
-          <input type="text" id="auditFilterNameSku"
-            class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
-            placeholder="输入关键词">
+    <div class="audit-filter-panel" id="auditFilterPanel">
+      <div class="audit-filter-head">
+        <div class="audit-filter-head-left">
+          <span class="audit-filter-head-title"><i class="fas fa-filter"></i>筛选条件</span>
+          <button type="button" class="audit-filter-toggle-btn" id="auditFilterToggleBtn" aria-expanded="true" aria-controls="auditFilterAdvancedWrap">
+            <span id="auditFilterToggleText">收起更多</span>
+            <i class="fas fa-chevron-up"></i>
+          </button>
         </div>
-        <div class="flex flex-col gap-1 min-w-0">
-          <label for="auditFilterSupplier" class="text-xs font-semibold text-gray-500">供应商</label>
-          <input type="text" id="auditFilterSupplier"
-            class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full outline-none focus:border-[#1890FF] focus:ring-1 focus:ring-[#1890FF]"
-            placeholder="供应商名称关键字">
-        </div>
-        <div class="flex flex-col gap-1 min-w-0">
-          <label for="auditFilterCat1" class="text-xs font-semibold text-gray-500">一级类目</label>
-          <select id="auditFilterCat1"
-            class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 bg-white w-full outline-none focus:border-[#1890FF] min-w-0"></select>
-        </div>
-        <div class="flex flex-col gap-1 min-w-0">
-          <label for="auditFilterCat2" class="text-xs font-semibold text-gray-500">二级类目</label>
-          <select id="auditFilterCat2"
-            class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 bg-white w-full outline-none focus:border-[#1890FF] min-w-0"></select>
-        </div>
-        <div class="flex flex-col gap-1 min-w-0">
-          <label for="auditFilterCat3" class="text-xs font-semibold text-gray-500">三级类目</label>
-          <select id="auditFilterCat3"
-            class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 bg-white w-full outline-none focus:border-[#1890FF] min-w-0"></select>
-        </div>
-        <div class="flex flex-col gap-1 min-w-0">
-          <label for="auditFilterAuditKind" class="text-xs font-semibold text-gray-500">审核类型</label>
-          <select id="auditFilterAuditKind"
-            class="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white w-full outline-none focus:border-[#1890FF]">
-            <option value="">全部类型</option>
-            <option value="NEW_LISTING">新建上架</option>
-            <option value="CHANGE_INFO">信息变更</option>
-          </select>
-        </div>
-        <div class="flex flex-col gap-1 sm:col-span-2 xl:col-span-2 min-w-0">
-          <span class="text-xs font-semibold text-gray-500">上架时间</span>
-          <div class="flex items-center gap-2 flex-wrap">
-            <input type="date" id="auditShelvedStart"
-              class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 min-w-[9rem] flex-1 outline-none focus:border-[#1890FF]" />
-            <span class="text-gray-400 text-xs shrink-0">至</span>
-            <input type="date" id="auditShelvedEnd"
-              class="border border-gray-200 rounded-lg px-2 py-2 text-sm text-gray-700 min-w-[9rem] flex-1 outline-none focus:border-[#1890FF]" />
-          </div>
+        <div class="audit-filter-actions">
+          <button type="button" id="auditSearchBtn" class="px-5 py-2 rounded-lg text-sm font-semibold text-white bg-[#1890FF] hover:bg-[#096dd9] shadow-sm">查询</button>
+          <button type="button" id="auditResetFiltersBtn" class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200">重置</button>
+          <button type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm whitespace-nowrap">
+            <i class="fas fa-file-export"></i>
+            导出报表
+          </button>
         </div>
       </div>
-      <div class="flex gap-3 shrink-0">
-        <button type="button" id="auditSearchBtn" class="px-6 py-2 rounded-lg text-sm font-semibold text-white bg-[#1890FF] hover:bg-[#096dd9] shadow-sm">查询</button>
-        <button type="button" id="auditResetFiltersBtn" class="px-5 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200">重置</button>
-        <button type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm whitespace-nowrap">
-          <i class="fas fa-file-export"></i>
-          导出报表
-        </button>
+
+      <div class="audit-filter-body">
+        <div class="audit-filter-row audit-filter-row--primary">
+          <div class="audit-filter-field">
+            <label for="auditFilterNameSku" class="audit-filter-label">商品名称或 SKU</label>
+            <input type="text" id="auditFilterNameSku" class="audit-filter-control" placeholder="输入关键词">
+          </div>
+          <div class="audit-filter-field">
+            <label for="auditFilterSupplier" class="audit-filter-label">供应商</label>
+            <input type="text" id="auditFilterSupplier" class="audit-filter-control" placeholder="供应商名称关键字">
+          </div>
+          <div class="audit-filter-field">
+            <label for="auditFilterListStatus" class="audit-filter-label">当前状态</label>
+            <select id="auditFilterListStatus" class="audit-filter-control">
+              <option value="">全部状态</option>
+              <option value="pending">待审核</option>
+              <option value="rejected">已驳回</option>
+              <option value="online">已上架</option>
+              <option value="offline">已下架</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="audit-filter-advanced-wrap" id="auditFilterAdvancedWrap">
+          <div class="audit-filter-advanced-inner">
+            <div class="audit-filter-advanced-divider">更多筛选</div>
+            <div class="audit-filter-row audit-filter-row--advanced" style="margin-top: 14px;">
+              <div class="audit-filter-field">
+                <label for="auditFilterCat1" class="audit-filter-label">一级类目</label>
+                <select id="auditFilterCat1" class="audit-filter-control"></select>
+              </div>
+              <div class="audit-filter-field">
+                <label for="auditFilterCat2" class="audit-filter-label">二级类目</label>
+                <select id="auditFilterCat2" class="audit-filter-control"></select>
+              </div>
+              <div class="audit-filter-field">
+                <label for="auditFilterCat3" class="audit-filter-label">三级类目</label>
+                <select id="auditFilterCat3" class="audit-filter-control"></select>
+              </div>
+              <div class="audit-filter-field">
+                <label for="auditFilterAuditKind" class="audit-filter-label">审核类型</label>
+                <select id="auditFilterAuditKind" class="audit-filter-control">
+                  <option value="">全部类型</option>
+                  <option value="NEW_LISTING">新建上架</option>
+                  <option value="CHANGE_INFO">信息变更</option>
+                </select>
+              </div>
+              <div class="audit-filter-field">
+                <span class="audit-filter-label">上架/更新时间</span>
+                <div class="audit-filter-date-range">
+                  <input type="date" id="auditShelvedStart" class="audit-filter-control" />
+                  <span class="audit-filter-date-sep">至</span>
+                  <input type="date" id="auditShelvedEnd" class="audit-filter-control" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -560,13 +732,14 @@
             <th>上架时间</th>
             <th>审核类型</th>
             <th>AI 合规校验</th>
-            <th>当前状态</th>
+            <th>上架状态</th>
+            <th>审核状态</th>
             <th class="text-right min-w-[320px]">操作</th>
           </tr>
         </thead>
         <tbody id="auditTableBody">
           <tr>
-            <td colspan="11" class="text-center py-14 text-gray-400 text-sm">正在加载演示数据…</td>
+            <td colspan="12" class="text-center py-14 text-gray-400 text-sm">正在加载演示数据…</td>
           </tr>
         </tbody>
       </table>

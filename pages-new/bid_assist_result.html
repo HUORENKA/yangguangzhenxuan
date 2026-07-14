@@ -638,6 +638,101 @@
       margin-bottom: 6px;
     }
     .notice-edit-field label .req { color: #dc2626; }
+    .notice-edit-field-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .notice-edit-field-head label { margin-bottom: 0; }
+    .btn-notice-rule {
+      height: 28px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1px solid #fecaca;
+      background: #fff;
+      color: #dc2626;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .btn-notice-rule:hover { background: #fef2f2; border-color: #f87171; }
+    .notice-body-editor {
+      width: 100%;
+      min-height: 380px;
+      max-height: 520px;
+      overflow-y: auto;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.85;
+      color: #0f172a;
+      background: #fff;
+    }
+    .notice-body-editor:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+    }
+    .notice-body-editor:empty::before {
+      content: attr(data-placeholder);
+      color: #94a3b8;
+      pointer-events: none;
+    }
+    .notice-body-editor .notice-field-dynamic {
+      color: #dc2626;
+      font-weight: 700;
+    }
+    .notice-body-editor .notice-field-fixed {
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .notice-body-editor p { margin: 0 0 12px; }
+    .notice-body-editor .notice-sec-title {
+      font-weight: 800;
+      margin: 14px 0 8px;
+      color: #0f172a;
+    }
+    .notice-body-editor ol,
+    .notice-body-editor ul { margin: 0 0 12px; padding-left: 22px; }
+    .notice-body-editor li { margin-bottom: 6px; }
+    .notice-body-editor .notice-item-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 8px 0 12px;
+    }
+    .notice-body-editor .notice-item-table th,
+    .notice-body-editor .notice-item-table td {
+      border: 1px solid #e2e8f0;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    .notice-body-editor .notice-item-table th {
+      background: #f8fafc;
+      color: #64748b;
+      font-weight: 700;
+    }
+    .notice-rule-list { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.75; color: #334155; }
+    .notice-rule-list li { margin-bottom: 8px; }
+    .notice-rule-tag {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .notice-rule-tag.fixed { background: #f1f5f9; color: #334155; }
+    .notice-rule-tag.dynamic { background: #fef2f2; color: #dc2626; }
     .notice-edit-input,
     .notice-edit-select,
     .notice-edit-textarea {
@@ -651,7 +746,7 @@
       color: #0f172a;
     }
     .notice-edit-input:focus,
-    .notice-edit-textarea:focus {
+    .notice-body-editor:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
@@ -732,6 +827,11 @@
       gap: 6px;
     }
     .notice-doc-content { white-space: pre-wrap; }
+    .notice-doc-content .notice-field-dynamic { color: #dc2626; font-weight: 700; }
+    .notice-doc-content .notice-sec-title { font-weight: 800; margin: 14px 0 8px; }
+    .notice-doc-content p { margin: 0 0 12px; white-space: normal; }
+    .notice-doc-content ol,
+    .notice-doc-content ul { margin: 0 0 12px; padding-left: 22px; white-space: normal; }
     .notice-upload-name {
       margin-top: 10px;
       font-size: 12px;
@@ -1122,8 +1222,13 @@
                   <input type="text" id="noticeEditType" class="notice-edit-input" disabled>
                 </div>
                 <div class="notice-edit-field">
-                  <label for="noticeEditBody">正文 <span class="req">*</span></label>
-                  <textarea id="noticeEditBody" class="notice-edit-textarea" placeholder="请输入公告正文"></textarea>
+                  <div class="notice-edit-field-head">
+                    <label for="noticeEditBody">正文 <span class="req">*</span></label>
+                    <button type="button" class="btn-notice-rule" onclick="openNoticeGenerateRules()">
+                      <i class="fa-solid fa-circle-info"></i> 生成规则
+                    </button>
+                  </div>
+                  <div id="noticeEditBody" class="notice-body-editor" contenteditable="true" data-placeholder="请点击「AI生成」填充公告模板；黑色为固定条款，红色为需核对或系统自动填充的字段"></div>
                 </div>
                 <div class="notice-edit-actions">
                   <button type="button" class="btn-notice-secondary" onclick="previewNoticeEditForm()"><i class="fa-solid fa-eye"></i> 预览</button>
@@ -1147,6 +1252,19 @@
     <div class="bid-recipient-modal-list" id="bidRecipientModalList"></div>
     <div class="modal-foot">
       <button type="button" class="btn" onclick="closeBidRecipientModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="noticeRulesMask" onclick="if(event.target===this)closeNoticeGenerateRules()">
+  <div class="modal-box" style="max-width:640px" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 style="color:#dc2626">公告生成规则</h3>
+      <button type="button" class="modal-x" onclick="closeNoticeGenerateRules()" aria-label="关闭"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="noticeRulesBody"></div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-primary" onclick="closeNoticeGenerateRules()">知道了</button>
     </div>
   </div>
 </div>
@@ -1236,6 +1354,7 @@
     noticeTitle: '',
     noticeType: '',
     noticeBody: '',
+    noticeBodyFormat: '',
     noticeHtml: '',
     fromProduct: false,
     policyFile: '',
@@ -1245,6 +1364,15 @@
   var METHOD_LABELS = { direct: '直接采购', bidding: '竞价采购', inquiry: '询价采购' };
   var METHOD_BTN = { direct: '提交采购单', bidding: '发起竞价', inquiry: '发起询价' };
   var DIRECT_PURCHASE_LIMIT = 50000;
+  var BUYER_ENTERPRISE_NAME = '北京市某某局采购中心';
+
+  function getBuyerEnterpriseName() {
+    try {
+      var raw = sessionStorage.getItem('buyerEnterpriseName');
+      if (raw) return raw;
+    } catch (e) {}
+    return BUYER_ENTERPRISE_NAME;
+  }
 
   function calcMatchedAmount() {
     return state.lines.reduce(function (sum, L) {
@@ -1674,6 +1802,40 @@
     return d.toLocaleString('zh-CN', { hour12: false });
   }
 
+  function getNoticeBodyEl() {
+    return document.getElementById('noticeEditBody');
+  }
+
+  function getNoticeBodyPlain() {
+    var el = getNoticeBodyEl();
+    if (!el) return '';
+    return (el.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function getNoticeBodyHtml() {
+    var el = getNoticeBodyEl();
+    if (!el) return '';
+    if (!getNoticeBodyPlain()) return '';
+    return (el.innerHTML || '').trim();
+  }
+
+  function setNoticeBodyHtml(html) {
+    var el = getNoticeBodyEl();
+    if (el) el.innerHTML = html || '';
+  }
+
+  function noticeVar(text, tip) {
+    return '<span class="notice-field-dynamic" title="' + esc(tip || '请核对') + '">' + esc(String(text == null ? '' : text)) + '</span>';
+  }
+
+  function noticeFixed(text) {
+    return '<span class="notice-field-fixed" contenteditable="false">' + esc(String(text == null ? '' : text)) + '</span>';
+  }
+
+  function getProjectTitle() {
+    return (state.fileName || '本次采购项目').replace(/\.[^.]+$/, '');
+  }
+
   function getNoticeTypeLabel() {
     if (state.purchaseMethod === 'bidding') return '竞价公告';
     if (state.purchaseMethod === 'inquiry') return '询价公告';
@@ -1681,45 +1843,120 @@
   }
 
   function getDefaultNoticeTitle() {
-    var methodLabel = METHOD_LABELS[state.purchaseMethod] || '采购';
-    return '国采e购平台' + methodLabel + '公告——' + state.fileName;
+    var projectName = getProjectTitle();
+    if (state.purchaseMethod === 'bidding') return '关于「' + projectName + '」的竞价采购公告';
+    if (state.purchaseMethod === 'inquiry') return '关于「' + projectName + '」的询价采购公告';
+    return '关于「' + projectName + '」的直接采购公告';
+  }
+
+  function buildNoticeItemListHtml() {
+    var lines = state.lines.filter(function (L) { return L.matched && L.product; });
+    if (!lines.length) {
+      return '<p>主要采购品目详见采购需求文件《' + noticeVar(state.fileName, '采购需求文件') + '》。</p>';
+    }
+    var rows = lines.map(function (L, idx) {
+      var refPrice = L.product && L.product.maxPrice != null
+        ? '¥' + Number(L.product.maxPrice).toLocaleString('zh-CN') + '/' + L.unit
+        : '—';
+      return ''
+        + '<tr>'
+        + '<td>' + (idx + 1) + '</td>'
+        + '<td>' + noticeVar(L.name, '采购品目') + '</td>'
+        + '<td>' + noticeVar((L.spec || '—'), '规格型号') + '</td>'
+        + '<td>' + noticeVar(String(L.qty) + L.unit, '采购数量') + '</td>'
+        + '<td>' + noticeVar(refPrice, '平台参考价') + '</td>'
+        + '</tr>';
+    }).join('');
+    return ''
+      + '<table class="notice-item-table">'
+      + '<thead><tr><th>序号</th><th>品目名称</th><th>规格型号</th><th>数量</th><th>平台参考价</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody></table>';
+  }
+
+  function buildNoticeQuoteRulesHtml(method) {
+    var deadline = formatDeadlineDisplay(document.getElementById('deadlineInput').value);
+    var budgetVal = document.getElementById('budgetInput').value || state.budget;
+    var budgetText = budgetVal ? (Number(budgetVal).toLocaleString('zh-CN') + ' 元') : '不限制';
+    var bidStep = document.getElementById('bidStepInput').value || '500';
+    if (method === 'bidding') {
+      return ''
+        + '<ol>'
+        + '<li>报价截止时间：' + noticeVar(deadline, '规则配置·报价截止时间') + '。</li>'
+        + '<li>预算上限：' + noticeVar(budgetText, '规则配置·预算上限') + '；报价总金额不得超过预算上限。</li>'
+        + '<li>最小降价幅度：' + noticeVar(bidStep + ' 元', '规则配置·最小降价幅度') + '；供应商新一轮报价须至少低于当前有效最低价该金额，不允许并列最低价。</li>'
+        + '<li>各产品报价不得高于平台参考最高价；未关联参与竞价商品的需求行不得报价。</li>'
+        + '</ol>';
+    }
+    if (method === 'inquiry') {
+      return ''
+        + '<ol>'
+        + '<li>报价截止时间：' + noticeVar(deadline, '规则配置·报价截止时间') + '。</li>'
+        + '<li>预算上限：' + noticeVar(budgetText, '规则配置·预算上限') + '；报价总金额不得超过预算上限。</li>'
+        + '<li>询价期间不公示其他供应商报价；截止前可多次提交，以供应商最后一次有效报价为准。</li>'
+        + '<li>各产品报价不得高于平台参考最高价；未关联商品的需求行不得报价。</li>'
+        + '</ol>';
+    }
+    return ''
+      + '<ol>'
+      + '<li>本次采购金额为 ' + noticeVar(Number(calcMatchedAmount()).toLocaleString('zh-CN') + ' 元', '已匹配商品金额') + '，'
+      + '已超过直接采购限额 ' + noticeVar(Number(DIRECT_PURCHASE_LIMIT).toLocaleString('zh-CN') + ' 元', '直接采购限额') + '，须发布平台公告后执行采购。</li>'
+      + '<li>预算上限：' + noticeVar(budgetText, '规则配置·预算上限') + '。</li>'
+      + '</ol>';
+  }
+
+  function buildNoticeTemplateHtml() {
+    var method = state.purchaseMethod;
+    var methodLabel = METHOD_LABELS[method] || '采购';
+    var projectName = getProjectTitle();
+    var recipient = getBidSelectedRecipient();
+    var buyerName = getBuyerEnterpriseName();
+    var publishDate = new Date().toLocaleDateString('zh-CN');
+    var participateLabel = method === 'inquiry' ? '参与询价' : '参与竞价';
+
+    return ''
+      + '<p>各有关供应商：</p>'
+      + '<p>'
+      + noticeVar(buyerName, '采购方企业名称') + '根据采购管理工作需要，现就'
+      + noticeVar('「' + projectName + '」', '项目名称，取自采购需求文件') + '在国采e购平台发布'
+      + methodLabel + '公告。欢迎符合条件的供应商在报价截止时间前参与报价。'
+      + '</p>'
+      + '<p class="notice-sec-title">一、项目概况</p>'
+      + '<ol>'
+      + '<li>项目名称：' + noticeVar(projectName, '项目名称') + '</li>'
+      + '<li>采购需求文件：' + noticeVar(state.fileName, '采购需求文件') + '</li>'
+      + '<li>采购方式：' + noticeVar(methodLabel, '采购方式') + '</li>'
+      + '</ol>'
+      + '<p class="notice-sec-title">二、采购内容及技术要求</p>'
+      + '<p>采购清单根据需求文件及平台商品匹配结果生成，主要品目如下（详见平台采购需求明细）：</p>'
+      + buildNoticeItemListHtml()
+      + '<p class="notice-sec-title">三、报价规则</p>'
+      + buildNoticeQuoteRulesHtml(method)
+      + '<p class="notice-sec-title">四、供应商资格及参与方式</p>'
+      + '<ol>'
+      + '<li>供应商须为国采e购平台已注册认证供应商，具备相应供货及履约能力，报价材料真实、有效。</li>'
+      + '<li>符合条件的平台认证供应商，可在本公告页面点击【' + participateLabel + '】生成业务单后进入管理页报价。</li>'
+      + '</ol>'
+      + '<p class="notice-sec-title">五、其他事项</p>'
+      + '<ol>'
+      + '<li>本公告在国采e购平台发布，采购需求、报价明细及结果以平台记录为准。</li>'
+      + '<li>供应商应按要求提交报价，严禁串通报价、虚假报价等违法违规行为。</li>'
+      + '<li>本公告解释权归采购单位所有。</li>'
+      + '</ol>'
+      + '<p class="notice-sec-title">六、联系方式</p>'
+      + '<p>'
+      + '采购单位：' + noticeVar(buyerName, '采购方企业名称') + '<br>'
+      + '收货地址：' + noticeVar(recipient ? recipient.address : '—', '收货地址，取自已选收货地址') + '<br>'
+      + '联系人：' + noticeVar(recipient ? recipient.name : '—', '联系人，取自已选收货地址') + '<br>'
+      + '联系方式：' + noticeVar(recipient ? recipient.phone : '—', '联系方式，取自已选收货地址')
+      + '</p>'
+      + '<p style="margin-top:18px;text-align:right;">'
+      + noticeVar(buyerName, '采购方企业名称') + '<br>'
+      + noticeFixed(publishDate)
+      + '</p>';
   }
 
   function buildDefaultNoticeBody() {
-    var method = state.purchaseMethod;
-    var methodLabel = METHOD_LABELS[method] || '采购';
-    var deadline = document.getElementById('deadlineInput').value;
-    var budget = document.getElementById('budgetInput').value;
-    var matchedLines = state.lines.filter(function (L) { return L.matched; });
-    var itemLines = matchedLines.map(function (L, idx) {
-      return (idx + 1) + '. ' + L.name + '（' + L.qty + L.unit + '）';
-    }).join('\n');
-    var supplierNames = state.suppliers.map(function (S) { return S.name; }).join('、') || '平台认证供应商';
-    var amount = calcMatchedAmount();
-
-    if (method === 'direct') {
-      return ''
-        + '各有关供应商：\n\n'
-        + '根据采购需求文件《' + state.fileName + '》，现通过国采e购平台发起' + methodLabel + '。'
-        + '本次采购金额 ' + Number(amount).toLocaleString('zh-CN') + ' 元，已超过直接采购限额 '
-        + Number(DIRECT_PURCHASE_LIMIT).toLocaleString('zh-CN') + ' 元，现发布平台公告。\n\n'
-        + '一、采购方式：' + methodLabel + '\n'
-        + '二、采购金额：' + Number(amount).toLocaleString('zh-CN') + ' 元\n'
-        + (budget ? ('三、预算上限：' + Number(budget).toLocaleString('zh-CN') + ' 元\n') : '')
-        + '\n采购清单：\n' + (itemLines || '详见平台采购需求明细') + '\n\n'
-        + '请登录国采e购平台查看详情。';
-    }
-    return ''
-      + '各有关供应商：\n\n'
-      + '根据采购需求文件《' + state.fileName + '》，现通过国采e购平台发起' + methodLabel + '。'
-      + '欢迎符合条件的供应商在报价截止时间前参与报价。\n\n'
-      + '一、采购方式：' + methodLabel + '\n'
-      + '二、报价截止时间：' + formatDeadlineDisplay(deadline) + '\n'
-      + (budget ? ('三、预算上限：' + Number(budget).toLocaleString('zh-CN') + ' 元\n') : '')
-      + (method === 'bidding' ? ('四、最小降价幅度：' + (document.getElementById('bidStepInput').value || '500') + ' 元\n') : '')
-      + '\n采购清单：\n' + (itemLines || '详见平台采购需求明细') + '\n\n'
-      + '邀请供应商：' + supplierNames + '\n\n'
-      + '请登录国采e购供应商工作台查看详情并提交报价。';
+    return buildNoticeTemplateHtml();
   }
 
   function buildNoticeHtmlFromFields(title, typeLabel, body) {
@@ -1732,8 +1969,44 @@
       + '<div>发布时间：' + esc(now) + '</div>'
       + '<div>来源文件：' + esc(state.fileName) + '</div>'
       + '</div>'
-      + '<div class="notice-doc-content">' + esc(body) + '</div>';
+      + '<div class="notice-doc-content">' + (state.noticeBodyFormat === 'html' ? body : esc(body)) + '</div>';
   }
+
+  function renderNoticeGenerateRules() {
+    var body = document.getElementById('noticeRulesBody');
+    if (!body) return;
+    var method = state.purchaseMethod;
+    body.innerHTML = ''
+      + '<p style="margin:0 0 12px;font-size:13px;color:#64748b;line-height:1.7;">'
+      + '公告模板参照国有企业电子化采购平台常用格式生成。'
+      + '<span class="notice-rule-tag fixed">黑色</span>为固定条款；'
+      + '<span class="notice-rule-tag dynamic">红色</span>为系统字段映射或需人工补充核对的内容。'
+      + '</p>'
+      + '<ol class="notice-rule-list">'
+      + '<li><span class="notice-rule-tag dynamic">红色</span><strong>采购单位名称</strong>：取自当前登录采购方企业名称（' + esc(getBuyerEnterpriseName()) + '）。</li>'
+      + '<li><span class="notice-rule-tag dynamic">红色</span><strong>收货地址、联系人、联系方式</strong>：默认取自「选择收货地址」中的地址、收货人姓名及电话，展示于第六节联系方式。</li>'
+      + '<li><span class="notice-rule-tag dynamic">红色</span><strong>项目名称 / 采购需求文件</strong>：取自当前上传的采购需求文件《' + esc(state.fileName) + '》。</li>'
+      + '<li><span class="notice-rule-tag dynamic">红色</span><strong>采购方式</strong>：取自「选择采购方式」当前选项（' + esc(METHOD_LABELS[method] || '—') + '）。</li>'
+      + '<li><span class="notice-rule-tag dynamic">红色</span><strong>采购清单表格</strong>：根据「采购需求与平台匹配」中已匹配商品自动生成品目、规格、数量、平台参考价。</li>'
+      + (method !== 'direct'
+        ? '<li><span class="notice-rule-tag dynamic">红色</span><strong>报价截止时间、预算上限'
+          + (method === 'bidding' ? '、最小降价幅度' : '')
+          + '</strong>：取自规则配置区对应字段。</li>'
+        : '<li><span class="notice-rule-tag dynamic">红色</span><strong>采购金额、预算上限</strong>：取自已匹配商品金额及规则配置。</li>')
+      + '<li><span class="notice-rule-tag fixed">黑色</span><strong>公告发布日期</strong>：默认取当前日期，发布前不可修改。</li>'
+      + '<li><span class="notice-rule-tag fixed">黑色</span><strong>资格要求、参与方式说明、其他事项</strong>：平台固定模板条款，一般无需修改。</li>'
+      + '</ol>'
+      + '<p style="margin:12px 0 0;font-size:12px;color:#94a3b8;">提示：点击「AI生成」将按上述规则填充模板；红色字段可在正文编辑区修改，公告发布日期为黑色固定项不可编辑。</p>';
+  }
+
+  window.openNoticeGenerateRules = function () {
+    renderNoticeGenerateRules();
+    document.getElementById('noticeRulesMask').classList.add('open');
+  };
+
+  window.closeNoticeGenerateRules = function () {
+    document.getElementById('noticeRulesMask').classList.remove('open');
+  };
 
   function buildNoticeDocument() {
     var title = state.noticeTitle || getDefaultNoticeTitle();
@@ -1772,34 +2045,33 @@
 
   function readNoticeEditForm() {
     var titleEl = document.getElementById('noticeEditTitle');
-    var bodyEl = document.getElementById('noticeEditBody');
     return {
       title: (titleEl && titleEl.value || '').trim(),
       type: getNoticeTypeLabel(),
-      body: (bodyEl && bodyEl.value || '').trim()
+      body: getNoticeBodyHtml(),
+      bodyFormat: getNoticeBodyPlain() ? (state.noticeBodyFormat || 'html') : ''
     };
   }
 
   function resetNoticeEditFormBlank() {
     var titleEl = document.getElementById('noticeEditTitle');
     var typeEl = document.getElementById('noticeEditType');
-    var bodyEl = document.getElementById('noticeEditBody');
     if (titleEl) titleEl.value = '';
     if (typeEl) typeEl.value = getNoticeTypeLabel();
-    if (bodyEl) bodyEl.value = '';
+    setNoticeBodyHtml('');
+    state.noticeBodyFormat = '';
   }
 
   function syncNoticeEditForm() {
     var titleEl = document.getElementById('noticeEditTitle');
     var typeEl = document.getElementById('noticeEditType');
-    var bodyEl = document.getElementById('noticeEditBody');
     if (typeEl) typeEl.value = getNoticeTypeLabel();
     if (state.noticeReady) {
       if (titleEl) titleEl.value = state.noticeTitle || '';
-      if (bodyEl) bodyEl.value = state.noticeBody || '';
+      setNoticeBodyHtml(state.noticeBody || '');
     } else {
       if (titleEl) titleEl.value = '';
-      if (bodyEl) bodyEl.value = '';
+      setNoticeBodyHtml('');
     }
   }
 
@@ -1818,6 +2090,7 @@
         title: form.title,
         type: form.type,
         body: form.body,
+        bodyFormat: form.bodyFormat || 'html',
         fileName: state.fileName,
         mode: state.purchaseMethod,
         projectTitle: (state.fileName || '').replace(/\.[^.]+$/, ''),
@@ -1843,6 +2116,7 @@
     state.noticeTitle = form.title;
     state.noticeType = form.type;
     state.noticeBody = form.body;
+    state.noticeBodyFormat = form.bodyFormat || 'html';
     markNoticeSaved('edit');
   };
 
@@ -1867,13 +2141,13 @@
     state.noticeTitle = getDefaultNoticeTitle();
     state.noticeType = getNoticeTypeLabel();
     state.noticeBody = buildDefaultNoticeBody();
+    state.noticeBodyFormat = 'html';
     state.noticeReady = false;
     var titleEl = document.getElementById('noticeEditTitle');
     var typeEl = document.getElementById('noticeEditType');
-    var bodyEl = document.getElementById('noticeEditBody');
     if (titleEl) titleEl.value = state.noticeTitle;
     if (typeEl) typeEl.value = state.noticeType;
-    if (bodyEl) bodyEl.value = state.noticeBody;
+    setNoticeBodyHtml(state.noticeBody);
     setNoticeActionActive('generated');
     updateNoticeStatus('draft-generated');
   };
@@ -2081,6 +2355,7 @@
           title: state.noticeTitle,
           type: state.noticeType || (method === 'inquiry' ? '询价公告' : '竞价公告'),
           body: state.noticeBody,
+          bodyFormat: state.noticeBodyFormat || 'html',
           fileName: state.fileName,
           mode: method,
           projectTitle: (state.fileName || '').replace(/\.[^.]+$/, ''),

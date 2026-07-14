@@ -165,7 +165,7 @@
     <a href="admin_station.html" class="admin-menu-item"><i class="fas fa-sitemap"></i><span>分站管理</span></a>
     <a href="admin_supplier_manage.html" class="admin-menu-item"><i class="fas fa-store"></i><span>供应商管理</span></a>
     <a href="admin_buyer_manage.html" class="admin-menu-item active"><i class="fas fa-users"></i><span>采购商管理</span></a>
-    <a href="../../pages-new/admin/admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品上架审核</span></a>
+    <a href="../../pages-new/admin/admin_product_audit_list.html" class="admin-menu-item"><i class="fas fa-boxes-stacked"></i><span>商品管理</span></a>
     <a href="admin_notice.html" class="admin-menu-item"><i class="fas fa-bullhorn"></i><span>平台公告管理</span></a>
     <a href="admin_po.html" class="admin-menu-item"><i class="fas fa-file-invoice"></i><span>采购单管理</span></a>
     <a href="admin_orders.html" class="admin-menu-item"><i class="fas fa-shopping-bag"></i><span>订单管理</span></a>
@@ -176,31 +176,12 @@
 
 <div class="admin-content">
   <div class="max-w-[1680px] mx-auto p-5">
-    <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-5">
-      <div>
-        <div class="text-sm text-slate-500 mb-2">
-          <a href="admin_dashboard.html" class="hover:text-primary transition-colors">管理后台</a>
-          <span class="mx-2">/</span>
-          <a href="admin_buyer_manage.html" class="hover:text-primary transition-colors">采购商管理</a>
-          <span class="mx-2">/</span>
-          <span>采购商入驻</span>
-        </div>
-        <div class="flex items-start gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 text-white flex items-center justify-center shadow-lg">
-            <i class="fas fa-building-columns text-xl"></i>
-          </div>
-          <div>
-            <h1 class="text-3xl font-bold text-slate-900">采购商入驻</h1>
-            <p id="buyerEditHint" class="text-sm text-amber-700 mt-2 hidden"></p>
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-wrap gap-3">
-        <button type="button" class="action-btn action-btn-secondary" onclick="window.location.href=withAdminEmbed('admin_buyer_manage.html')">
-          <i class="fas fa-list"></i><span>返回列表</span>
-        </button>
-      </div>
+    <div class="flex flex-wrap justify-end gap-3 mb-5">
+      <button type="button" class="action-btn action-btn-secondary" onclick="window.location.href=withAdminEmbed('admin_buyer_manage.html')">
+        <i class="fas fa-list"></i><span>返回列表</span>
+      </button>
     </div>
+    <p id="buyerEditHint" class="text-sm text-amber-700 mt-2 hidden"></p>
 
     <div class="page-card p-5 mb-5">
       <div class="flex items-center gap-3 mb-5">

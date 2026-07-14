@@ -35,7 +35,7 @@
           { id: 'op_station', label: '分站管理' },
           { id: 'op_supplier', label: '供应商管理' },
           { id: 'op_buyer', label: '采购商管理' },
-          { id: 'op_product_audit', label: '商品上架审核' },
+          { id: 'op_product_audit', label: '商品管理' },
           { id: 'op_notice', label: '平台公告管理' },
           { id: 'op_po', label: '采购单管理' },
           { id: 'op_orders', label: '订单管理' },
