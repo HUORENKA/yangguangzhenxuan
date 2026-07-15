@@ -1399,7 +1399,7 @@
       box-shadow: none;
       border-radius: 0;
     }
-    .ai-msg.bot.ai-msg-rich:not(.ai-msg-finder):not(.ai-msg-compare):not(.ai-msg-cart):not(.ai-msg-contract):not(.ai-msg-fileparse):not(.ai-msg-budget):not(.ai-msg-plan):not(.ai-msg-plan-demo):not(.ai-msg-order):not(.ai-msg-order-report):not(.ai-msg-order-approver):not(.ai-msg-order-result) {
+    .ai-msg.bot.ai-msg-rich:not(.ai-msg-finder):not(.ai-msg-compare):not(.ai-msg-cart):not(.ai-msg-contract):not(.ai-msg-fileparse):not(.ai-msg-budget):not(.ai-msg-plan):not(.ai-msg-plan-demo):not(.ai-msg-order):not(.ai-msg-order-report):not(.ai-msg-order-approver):not(.ai-msg-order-result):not(.ai-msg-procure-guide) {
       max-width: min(76%, 520px);
       padding: 10px 14px;
       background: #fff;
@@ -2772,6 +2772,43 @@
       font-weight: 700;
       line-height: 1.45;
     }
+    .ai-procure-analysis-item .v.unspecified {
+      color: #dc2626;
+      font-weight: 700;
+    }
+    .ai-procure-analysis-body {
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(237, 233, 254, 0.9);
+    }
+    .ai-procure-analysis-extras {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #e9d5ff;
+    }
+    .ai-procure-analysis-extras:empty {
+      display: none;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    .ai-procure-analysis-extra-chip {
+      display: inline-flex;
+      align-items: center;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #faf5ff;
+      border: 1px solid #ddd6fe;
+      color: #6d28d9;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
     .ai-procure-reason {
       margin: 12px 16px 0;
       padding: 0 2px;
@@ -2788,6 +2825,117 @@
       padding-bottom: 16px;
       min-width: 0;
       overflow: hidden;
+    }
+    /* 采购猫 · 文字需求引导 */
+    .ai-procure-guide-summary {
+      margin: 0 0 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f0f9ff 0%, #eff6ff 100%);
+      border: 1px solid #dbeafe;
+    }
+    .ai-procure-guide-summary-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #1e40af;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ai-procure-guide-summary-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+    .ai-procure-guide-summary-list li {
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #334155;
+      padding-left: 0;
+    }
+    .ai-procure-guide-summary-list li strong {
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .ai-procure-guide-summary-list .muted {
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .ai-procure-guide-chips-wrap {
+      padding: 4px 2px 2px;
+    }
+    .ai-procure-guide-chips-label {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 8px;
+      line-height: 1.55;
+    }
+    .ai-procure-guide-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .ai-procure-guide-chip {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid #bfdbfe;
+      background: #fff;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+    .ai-procure-guide-chip:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      transform: translateY(-1px);
+    }
+    .ai-procure-guide-chip.ghost {
+      border-style: dashed;
+      color: #64748b;
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+    .ai-procure-guide-chip.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      border-color: transparent;
+      color: #fff;
+    }
+    .ai-goods-tag.line-ref {
+      left: auto;
+      right: 6px;
+      top: 6px;
+      max-width: calc(100% - 12px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(15, 23, 42, 0.72);
+      border-color: transparent;
+      color: #f8fafc;
+      font-size: 9px;
+    }
+    .ai-procure-refine-hint {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fffbeb;
+      border: 1px dashed #fcd34d;
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #92400e;
+    }
+    .ai-procure-refine-hint i {
+      margin-right: 4px;
+      color: #d97706;
+    }
+    .ai-msg.bot.ai-msg-rich.ai-msg-procure-guide {
+      align-self: flex-start;
+      max-width: min(92%, 640px);
+      width: auto;
     }
     /* 比质比价弹窗 */
     .ai-compare-overlay {
@@ -8268,6 +8416,17 @@
         ]
       },
       {
+        id: 'toner',
+        keywords: ['硒鼓', '墨盒', '碳粉', '墨粉', 'ce285'],
+        analysis: { category: '打印耗材 / 硒鼓墨盒', scale: '10–50 个', priceRange: '350–460 元 / 个' },
+        reason: '打印耗材需关注<strong>型号兼容与打印页数</strong>，推荐平台验真、有质检公示的兼容硒鼓，便于框架协议对账。',
+        products: [
+          { id: 'P20002', name: 'HP 85A 兼容硒鼓 CE285A', price: 420, unit: '个', score: '93%', supplier: '政采优选数码科技', floor: 380, ceiling: 460, img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=400&h=400&fit=crop' },
+          { id: 'P20021', name: '格之格 CE285A 兼容硒鼓', price: 385, unit: '个', score: '91%', supplier: '格之格办公旗舰店', floor: 350, ceiling: 430, img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=400&h=400&fit=crop' },
+          { id: 'P20022', name: '莱盛 LS-85A 兼容硒鼓', price: 398, unit: '个', score: '89%', supplier: '莱盛打印耗材馆', floor: 360, ceiling: 445, img: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?w=400&h=400&fit=crop' }
+        ]
+      },
+      {
         id: 'general',
         keywords: [],
         analysis: { category: '办公用品 / 通用耗材', scale: '按实际需求', priceRange: '待进一步确认' },
@@ -11588,7 +11747,14 @@
       ta.value = '';
       setTimeout(function() {
         if (_aiContractAnalysisActive && answerAiContractRiskQuestion(t)) return;
-        if (tryAiProcureRecommend(t)) return;
+        if (_aiProcureGuideSession && _aiProcureGuideSession.active) {
+          if (aiProcureGuideShouldRestart(t)) {
+            tryAiProcureGuideStart(t);
+            return;
+          }
+          if (aiProcureGuideHandleInput(t)) return;
+        }
+        if (tryAiProcureGuideStart(t)) return;
         appendAiChat('bot', '已收到您的问题。您可以描述具体采购需求（如品类、数量、预算），我将为您分析并推荐合规商品；也可咨询法规解读与流程指引。');
       }, 450);
     }
@@ -11641,6 +11807,402 @@
       var m = String(text || '').match(/(\d+)\s*(台|把|箱|套|份|盒|个|顶|只|张|包)/);
       if (!m) return null;
       return m[1] + m[2];
+    }
+
+    function parseAiProcureBudget(text) {
+      var s = String(text || '');
+      if (/不限|无预算|不知道|不清楚|跳过|暂不需要|未指定/.test(s)) return null;
+      var m = s.match(/(\d+(?:\.\d+)?)\s*(万|元)/);
+      if (m) return m[1] + m[2] + '以内';
+      return null;
+    }
+
+    var _aiProcureGuideSession = null;
+
+    function aiProcureGuideGetScenario(scenarioId) {
+      var i;
+      for (i = 0; i < _AI_PROCURE_SCENARIOS.length; i++) {
+        if (_AI_PROCURE_SCENARIOS[i].id === scenarioId) return _AI_PROCURE_SCENARIOS[i];
+      }
+      return _AI_PROCURE_SCENARIOS[_AI_PROCURE_SCENARIOS.length - 1];
+    }
+
+    function aiProcureGuideGetLine(session, lineId) {
+      var i;
+      for (i = 0; i < session.lines.length; i++) {
+        if (session.lines[i].id === lineId) return session.lines[i];
+      }
+      return null;
+    }
+
+    function aiProcureGuideLineShortName(line) {
+      if (!line) return '该需求';
+      var raw = String(line.rawText || '').trim();
+      if (raw.length <= 10) return raw;
+      if (line.category) {
+        var short = line.category.split('/')[0].trim();
+        if (short.length <= 12) return short;
+      }
+      return raw.slice(0, 10) + '…';
+    }
+
+    function aiProcureGuideLineLabel(line, idx) {
+      var raw = String(line.rawText || '').trim();
+      if (raw.length <= 8) return raw;
+      if (line.category) {
+        var short = line.category.split('/')[0].trim();
+        if (short.length <= 10) return short;
+      }
+      return '需求' + (idx + 1);
+    }
+
+    function buildAiProcureGuideLine(rawText, idx) {
+      var scenario = matchAiProcureScenario(rawText);
+      var budget = parseAiProcureBudget(rawText);
+      var ref = parseAiProcureRefinement(rawText);
+      return {
+        id: 'line-' + (idx + 1),
+        rawText: rawText,
+        category: scenario && scenario.analysis ? scenario.analysis.category : '待确认',
+        scenarioId: scenario ? scenario.id : 'general',
+        brand: ref.brand || null,
+        spec: ref.spec || null,
+        budget: budget || ref.budget || null,
+        extras: (ref.extras && ref.extras.length) ? ref.extras.slice() : []
+      };
+    }
+
+    function parseAiProcureGuideLines(text) {
+      var raw = String(text || '').trim();
+      if (!raw) return [];
+      raw = raw.replace(/^(我要|帮我|请|需要|想买|采购|购置|买|置办)+/g, '').trim();
+      var parts = raw.split(/\s*[+＋、；;,，]\s*|\s+和\s+|\s+以及\s+|\s+及\s+/).filter(function(p) {
+        return p && String(p).trim();
+      });
+      if (!parts.length) parts = [raw];
+      return parts.map(function(p, i) { return buildAiProcureGuideLine(String(p).trim(), i); });
+    }
+
+    function parseAiProcureRefinement(text) {
+      var out = { brand: null, spec: null, budget: null, extras: [], labels: [] };
+      var s = String(text || '').trim();
+      if (!s) return out;
+      var budget = parseAiProcureBudget(s);
+      if (budget) {
+        out.budget = budget;
+        out.labels.push('预算 ' + budget);
+      }
+      var brands = ['惠普', 'HP', '得力', '爱普生', '明基', '极米', '晨光', '格之格', '联想', 'FUJIFILM', '富士', '天章', '齐心', '永艺', '西昊', 'FUJI'];
+      var bi;
+      for (bi = 0; bi < brands.length; bi++) {
+        if (s.toLowerCase().indexOf(brands[bi].toLowerCase()) >= 0) {
+          out.brand = brands[bi];
+          out.labels.push('品牌 ' + brands[bi]);
+          break;
+        }
+      }
+      var specBits = [];
+      var specRes = [
+        /\bA[45]\b/i, /\d+g/i, /1080P|4K/i, /无线|双面|激光|兼容/i,
+        /HP\s*85A|CE285A|70g|80g/i
+      ];
+      specRes.forEach(function(re) {
+        var m = s.match(re);
+        if (m) specBits.push(m[0]);
+      });
+      if (specBits.length) {
+        out.spec = specBits.join(' ');
+        out.labels.push('规格 ' + out.spec);
+      }
+      var extraRes = [
+        /IP\d{2,}\s*防水/gi, /IP\d{2,}/gi, /防水防尘|防尘防水|防水等级/gi,
+        /静音|低噪|节能|环保|可降解|抗菌|防滑|耐磨|耐高温|耐腐蚀/gi
+      ];
+      extraRes.forEach(function(re) {
+        var m = s.match(re);
+        if (!m) return;
+        m.forEach(function(hit) {
+          var token = String(hit).replace(/\s+/g, '');
+          if (token && out.extras.indexOf(token) < 0) out.extras.push(token);
+        });
+      });
+      var knownParts = [out.budget, out.brand, out.spec].concat(out.extras).concat(specBits);
+      var looksKnown = knownParts.some(function(part) {
+        return part && s.indexOf(String(part).replace(/\s+/g, '')) >= 0;
+      });
+      if (!looksKnown && !/^(好的|收到|是的|可以|嗯|行)/.test(s) && s.length >= 2 && s.length <= 24) {
+        if (out.extras.indexOf(s) < 0) out.extras.push(s);
+      }
+      out.extras.forEach(function(e) {
+        if (out.labels.indexOf(e) < 0) out.labels.push(e);
+      });
+      return out;
+    }
+
+    function aiProcureGuidePushExtra(line, extra) {
+      if (!extra) return;
+      if (!line.extras) line.extras = [];
+      if (line.extras.indexOf(extra) < 0) line.extras.push(extra);
+    }
+
+    function aiProcureGuideCollectExtraChips(line) {
+      var chips = [];
+      if (line.spec) {
+        String(line.spec).split(/\s+/).forEach(function(sp) {
+          if (sp && chips.indexOf('规格 · ' + sp) < 0) chips.push('规格 · ' + sp);
+        });
+      }
+      (line.extras || []).forEach(function(e) {
+        if (e && chips.indexOf(e) < 0) chips.push(e);
+      });
+      return chips;
+    }
+
+    function aiProcureGuideMetricHtml(label, val) {
+      var vHtml = val
+        ? '<span class="v">' + escapeAiHtml(val) + '</span>'
+        : '<span class="v unspecified">未指定</span>';
+      return '<div class="ai-procure-analysis-item"><span class="k">' + label + '</span>' + vHtml + '</div>';
+    }
+
+    function renderAiProcureGuideLineAnalysisHtml(line, idx, multi) {
+      var category = line.category && line.category !== '待确认' ? line.category : null;
+      var brand = line.brand || null;
+      var priceRange = line.budget || null;
+      var chips = aiProcureGuideCollectExtraChips(line);
+      var chipsHtml = chips.map(function(c) {
+        return '<span class="ai-procure-analysis-extra-chip">' + escapeAiHtml(c) + '</span>';
+      }).join('');
+      var titleExtra = multi ? (' · ' + escapeAiHtml(aiProcureGuideLineLabel(line, idx))) : '';
+      return (
+        '<div class="ai-procure-analysis">' +
+        '<div class="ai-procure-analysis-label">采购需求分析' + titleExtra + '</div>' +
+        '<div class="ai-procure-analysis-body">' +
+        '<div class="ai-procure-analysis-grid">' +
+        aiProcureGuideMetricHtml('目标品类', category) +
+        aiProcureGuideMetricHtml('品牌', brand) +
+        aiProcureGuideMetricHtml('价位区间', priceRange) +
+        '</div>' +
+        (chipsHtml ? '<div class="ai-procure-analysis-extras">' + chipsHtml + '</div>' : '') +
+        '</div></div>'
+      );
+    }
+
+    function aiProcureGuideBudgetToMax(budget) {
+      if (!budget) return null;
+      var m = String(budget).match(/(\d+(?:\.\d+)?)\s*(万|元)/);
+      if (!m) return null;
+      var n = parseFloat(m[1]);
+      return m[2] === '万' ? n * 10000 : n;
+    }
+
+    function aiProcureGuideProductMatchesFilters(p, line) {
+      if (line.budget) {
+        var max = aiProcureGuideBudgetToMax(line.budget);
+        if (max && Number(p.price) > max) return false;
+      }
+      if (line.brand) {
+        if (String(p.name || '').toLowerCase().indexOf(String(line.brand).toLowerCase()) < 0) return false;
+      }
+      if (line.spec) {
+        var specs = String(line.spec).split(/\s+/);
+        var si;
+        for (si = 0; si < specs.length; si++) {
+          if (String(p.name || '').toLowerCase().indexOf(specs[si].toLowerCase()) < 0) return false;
+        }
+      }
+      return true;
+    }
+
+    function aiProcureGuideShouldRestart(text) {
+      var t = String(text || '').trim();
+      return /^(我要|帮我|请|需要)?(买|采购|购置|置办)/.test(t) && isAiProcureIntent(t);
+    }
+
+    function aiProcureGuideHandleInput(text) {
+      if (!_aiProcureGuideSession || !_aiProcureGuideSession.active) return false;
+      setTimeout(function() {
+        aiProcureGuideApplyRefinement(text);
+      }, 320);
+      return true;
+    }
+
+    function aiProcureGuideApplyRefinement(text) {
+      if (!_aiProcureGuideSession || !_aiProcureGuideSession.active) return;
+      var ref = parseAiProcureRefinement(text);
+      if (!ref.labels.length) {
+        appendAiChat('bot', '已收到。您可以继续补充品牌、规格或预算区间，我将据此重新筛选推荐商品。');
+        return;
+      }
+      _aiProcureGuideSession.lines.forEach(function(line) {
+        if (ref.budget) line.budget = ref.budget;
+        if (ref.brand) line.brand = ref.brand;
+        if (ref.spec) line.spec = line.spec ? (line.spec + ' ' + ref.spec) : ref.spec;
+        if (ref.extras && ref.extras.length) {
+          ref.extras.forEach(function(e) { aiProcureGuidePushExtra(line, e); });
+        }
+      });
+      if (!_aiProcureGuideSession.refinements) _aiProcureGuideSession.refinements = [];
+      _aiProcureGuideSession.refinements.push(ref);
+      var loader = appendAiLoading('正在根据您补充的条件重新筛选…');
+      setTimeout(function() {
+        removeAiLoading(loader);
+        aiProcureGuidePublishResult(true);
+      }, 680);
+    }
+
+    function renderAiProcureGuideSummaryHtml(lines) {
+      var multi = lines.length > 1;
+      return lines.map(function(line, idx) {
+        return renderAiProcureGuideLineAnalysisHtml(line, idx, multi);
+      }).join('');
+    }
+
+    function aiProcureGuideProductMatchesLine(item, line) {
+      var name = String(item.name || '').toLowerCase();
+      var raw = String(line.rawText || '').toLowerCase();
+      var scenario = aiProcureGuideGetScenario(line.scenarioId);
+      var k;
+      if (scenario && scenario.keywords) {
+        for (k = 0; k < scenario.keywords.length; k++) {
+          if (name.indexOf(scenario.keywords[k].toLowerCase()) >= 0) return true;
+        }
+      }
+      if (raw && name.indexOf(raw.slice(0, 2)) >= 0) return true;
+      return false;
+    }
+
+    function collectAiProcureGuideProducts(line, needCount) {
+      needCount = needCount || 5;
+      var scenario = aiProcureGuideGetScenario(line.scenarioId);
+      var pool = (scenario && scenario.products) ? scenario.products.slice() : [];
+      var altKey = line.scenarioId === 'paper' ? 1 : (line.scenarioId === 'toner' ? 2 : null);
+      if (altKey && _AI_PLAN_DEMO_ALTERNATIVES[altKey]) {
+        _AI_PLAN_DEMO_ALTERNATIVES[altKey].forEach(function(p, i) {
+          pool.push({
+            id: line.scenarioId + '-alt-' + i,
+            name: p.name,
+            price: p.price,
+            unit: p.unit,
+            score: p.score,
+            supplier: p.supplier,
+            floor: p.floor,
+            ceiling: p.ceiling,
+            img: p.img
+          });
+        });
+      }
+      getAiCartDemoSeedItems().forEach(function(it) {
+        if (pool.length >= needCount * 2) return;
+        if (aiProcureGuideProductMatchesLine(it, line)) pool.push(it);
+      });
+      _AI_PROCURE_SCENARIOS.forEach(function(sc) {
+        if (pool.length >= needCount * 2) return;
+        if (sc.id === line.scenarioId || sc.id === 'general') {
+          (sc.products || []).forEach(function(p) { pool.push(p); });
+        }
+      });
+      var seen = {};
+      var out = [];
+      pool.forEach(function(p, i) {
+        var key = String(p.name || p.id || i);
+        if (seen[key]) return;
+        seen[key] = true;
+        out.push(p);
+      });
+      var filtered = out.filter(function(p) { return aiProcureGuideProductMatchesFilters(p, line); });
+      var rest = out.filter(function(p) { return filtered.indexOf(p) < 0; });
+      var merged = filtered.concat(rest);
+      while (merged.length < needCount && out.length) {
+        merged.push(out[merged.length % out.length]);
+      }
+      return merged.slice(0, needCount);
+    }
+
+    function renderAiProcureGuideGoodsCard(p, idx, lineLabel) {
+      var card = renderAiFinderGoodsCard(p, idx);
+      return card.replace(
+        '<div class="ai-goods-thumb">',
+        '<div class="ai-goods-thumb"><span class="ai-goods-tag line-ref">' + escapeAiHtml(lineLabel) + '</span>'
+      );
+    }
+
+    function renderAiProcureGuideResultHtml(session, isRefinement) {
+      var lines = session.lines || [];
+      var goodsParts = [];
+      var totalCount = 0;
+      var cardIdx = 0;
+      lines.forEach(function(line, li) {
+        var products = collectAiProcureGuideProducts(line, 5);
+        totalCount += products.length;
+        var label = aiProcureGuideLineLabel(line, li);
+        products.forEach(function(p) {
+          goodsParts.push(renderAiProcureGuideGoodsCard(p, cardIdx, label));
+          cardIdx++;
+        });
+      });
+      var scenario = aiProcureGuideGetScenario(lines[0] && lines[0].scenarioId);
+      var reason = isRefinement
+        ? '已根据您补充的<strong>品牌、规格、预算</strong>等条件重新排序筛选，优先展示更匹配的商品。'
+        : ((scenario && scenario.reason) ? scenario.reason : '已结合平台<strong>合规目录与历史成交</strong>，为您筛选高匹配商品供浏览比选。');
+      var badgeType = isRefinement ? '智能选品 · 已细化' : '智能选品';
+      var hintHtml = isRefinement ? '' : (
+        '<p class="ai-procure-refine-hint"><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> ' +
+        '您还可以继续补充<strong>品牌、规格、预算</strong>等信息，我将为您进一步筛选。</p>'
+      );
+      return (
+        '<div class="ai-procure-card">' +
+        '<div class="ai-procure-card-head">' +
+        '<span class="ai-procure-badge done"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> ' + (isRefinement ? '筛选已更新' : '需求分析完成') + '</span>' +
+        '<span class="ai-procure-badge type">' + badgeType + '</span>' +
+        '</div>' +
+        renderAiProcureGuideSummaryHtml(lines) +
+        '<p class="ai-procure-reason"><strong>推荐理由：</strong>' + reason + '</p>' +
+        hintHtml +
+        '<div class="ai-finder-goods-section">' +
+        '<div class="ai-finder-goods-head">' +
+        '<span class="ai-finder-goods-title">推荐商品</span>' +
+        '<span class="ai-finder-goods-count">共 ' + totalCount + ' 件 · 每条需求 5 款</span>' +
+        '</div>' +
+        '<div class="ai-finder-goods-scroll">' + goodsParts.join('') + '</div>' +
+        '</div>' +
+        '</div>'
+      );
+    }
+
+    function aiProcureGuidePublishResult(isRefinement) {
+      if (!_aiProcureGuideSession) return;
+      var session = _aiProcureGuideSession;
+      var html = renderAiProcureGuideResultHtml(session, !!isRefinement);
+      var lineCount = (session.lines || []).length;
+      var totalProducts = lineCount * 5;
+      var voiceText = isRefinement
+        ? '采购猫已根据您补充的条件重新筛选，共为您推荐' + totalProducts + '款商品，请查看下方结果。'
+        : buildAiCompanionVoiceText('procure', {
+          category: lineCount > 1 ? '多项采购需求' : ((session.lines[0] && session.lines[0].category) || '相关品类'),
+          scale: '按您的描述',
+          count: totalProducts
+        });
+      publishAiCompanionReply(voiceText, html, 'procure-guide');
+    }
+
+    function tryAiProcureGuideStart(query) {
+      if (!isAiProcureIntent(query)) return false;
+      var lines = parseAiProcureGuideLines(query);
+      if (!lines.length) return false;
+      _aiProcureGuideSession = {
+        active: true,
+        phase: 'refine',
+        lines: lines,
+        rawQuery: query,
+        refinements: []
+      };
+      var loader = appendAiLoading('正在匹配平台商品…');
+      setTimeout(function() {
+        removeAiLoading(loader);
+        aiProcureGuidePublishResult(false);
+      }, 620);
+      return true;
     }
 
     function buildAiProcureAnalysis(scenario, query) {

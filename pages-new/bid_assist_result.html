@@ -620,14 +620,31 @@
       padding-top: 16px;
       border-top: 1px solid #e8eef5;
     }
+    .notice-edit-inline-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
     .notice-edit-inline-title {
-      margin: 0 0 14px;
+      margin: 0;
       font-size: 14px;
       font-weight: 800;
       color: var(--text-main);
       display: inline-flex;
-      align-items: center;
-      gap: 7px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 4px 7px;
+      flex: 1;
+      min-width: 220px;
+      line-height: 1.5;
+    }
+    .notice-edit-inline-hint {
+      font-size: 12px;
+      font-weight: 500;
+      color: #64748b;
     }
     .notice-edit-form { display: flex; flex-direction: column; gap: 18px; }
     .notice-edit-field label {
@@ -1211,7 +1228,14 @@
               <span class="notice-status" id="noticeStatus"><i class="fa-regular fa-circle"></i> 尚未 AI 生成或编辑公告</span>
             </div>
             <div class="notice-edit-inline">
-              <h4 class="notice-edit-inline-title"><i class="fa-solid fa-pen-to-square"></i> 编辑公告</h4>
+              <div class="notice-edit-inline-head">
+                <h4 class="notice-edit-inline-title">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                  <span>编辑公告</span>
+                  <span class="notice-edit-inline-hint">（本公告将于竞价/询价业务正式发布后，同步发布至商城平台公告模块）</span>
+                </h4>
+                <button type="button" class="btn-notice-secondary" onclick="previewNoticeEditForm()"><i class="fa-solid fa-eye"></i> 预览</button>
+              </div>
               <div class="notice-edit-form">
                 <div class="notice-edit-field">
                   <label for="noticeEditTitle">公告标题 <span class="req">*</span></label>
@@ -1229,10 +1253,6 @@
                     </button>
                   </div>
                   <div id="noticeEditBody" class="notice-body-editor" contenteditable="true" data-placeholder="请点击「AI生成」填充公告模板；黑色为固定条款，红色为需核对或系统自动填充的字段"></div>
-                </div>
-                <div class="notice-edit-actions">
-                  <button type="button" class="btn-notice-secondary" onclick="previewNoticeEditForm()"><i class="fa-solid fa-eye"></i> 预览</button>
-                  <button type="button" class="btn-notice-primary" onclick="saveNoticeEditForm()"><i class="fa-solid fa-paper-plane"></i> 保存并发布</button>
                 </div>
               </div>
             </div>
@@ -1417,12 +1437,24 @@
   function validateNoticeRequired() {
     var mustPublish = state.purchaseMethod === 'direct' && isDirectOverLimit();
     if (!mustPublish && !state.publishNotice) return true;
-    if (!state.noticeReady) {
+    if (!syncNoticeFromEditForm()) {
       alert(mustPublish
         ? '采购金额已超过直接采购限额（' + fmtMoney(DIRECT_PURCHASE_LIMIT) + '），请先 AI 生成或编辑公告。'
         : '已选择发布平台公告，请先 AI 生成或编辑公告。');
       return false;
     }
+    return true;
+  }
+
+  function syncNoticeFromEditForm() {
+    var form = readNoticeEditForm();
+    if (!form.title || !form.body) return false;
+    state.noticeTitle = form.title;
+    state.noticeType = form.type;
+    state.noticeBody = form.body;
+    state.noticeBodyFormat = form.bodyFormat || 'html';
+    state.noticeReady = true;
+    state.noticeHtml = buildNoticeHtmlFromFields(state.noticeTitle, state.noticeType, state.noticeBody);
     return true;
   }
 
@@ -1748,7 +1780,7 @@
         + '<div class="supplier-avatar"><i class="fa-solid fa-store"></i></div>'
         + '<div class="supplier-card-body">'
         + '<div class="sup-name">' + esc(S.name) + '</div>'
-        + '<div class="sup-meta">' + esc(S.region) + ' · 可供应 ' + S.cover + ' 项需求</div>'
+        + '<div class="sup-meta">满足' + S.cover + '项采购需求</div>'
         + '</div></div>'
         + '<button type="button" class="sup-remove" onclick="removeSupplier(\'' + esc(S.id) + '\')" title="移出邀请列表" aria-label="移出 ' + esc(S.name) + '"><i class="fa-solid fa-xmark"></i></button>'
         + '</div>'
@@ -2025,10 +2057,10 @@
     if (!status) return;
     if (kind === 'ready-edit') {
       status.className = 'notice-status ready';
-      status.innerHTML = '<i class="fa-solid fa-circle-check"></i> 公告已编辑并保存';
+      status.innerHTML = '<i class="fa-solid fa-circle-check"></i> 公告已就绪，发起后将同步至商城平台公告';
     } else if (kind === 'draft-generated') {
       status.className = 'notice-status';
-      status.innerHTML = '<i class="fa-regular fa-circle"></i> 已生成草稿，请确认后保存并发布';
+      status.innerHTML = '<i class="fa-regular fa-circle"></i> 已生成公告草稿，可预览；发起后将同步至平台公告';
     } else {
       status.className = 'notice-status';
       status.innerHTML = '<i class="fa-regular fa-circle"></i> 尚未 AI 生成或编辑公告';
@@ -2103,23 +2135,6 @@
     window.open('bid_notice_preview.html', '_blank');
   };
 
-  window.saveNoticeEditForm = function () {
-    var form = readNoticeEditForm();
-    if (!form.title) {
-      alert('请填写公告标题');
-      return;
-    }
-    if (!form.body) {
-      alert('请填写公告正文');
-      return;
-    }
-    state.noticeTitle = form.title;
-    state.noticeType = form.type;
-    state.noticeBody = form.body;
-    state.noticeBodyFormat = form.bodyFormat || 'html';
-    markNoticeSaved('edit');
-  };
-
   window.setPublishNotice = function (yes) {
     state.publishNotice = yes;
     document.getElementById('noticeNo').classList.toggle('active', !yes);
@@ -2142,7 +2157,7 @@
     state.noticeType = getNoticeTypeLabel();
     state.noticeBody = buildDefaultNoticeBody();
     state.noticeBodyFormat = 'html';
-    state.noticeReady = false;
+    state.noticeReady = true;
     var titleEl = document.getElementById('noticeEditTitle');
     var typeEl = document.getElementById('noticeEditType');
     if (titleEl) titleEl.value = state.noticeTitle;
@@ -2161,7 +2176,7 @@
         + '<div class="supplier-pick-item ' + (disabled ? 'disabled' : '') + '" '
         + (disabled ? '' : 'onclick="addSupplier(\'' + P.id + '\')"') + '>'
         + '<div><div class="sup-name">' + esc(P.name) + '</div>'
-        + '<div class="sup-meta">' + esc(P.region) + ' · 可供应 ' + P.cover + ' 项需求</div></div>'
+        + '<div class="sup-meta">满足' + P.cover + '项采购需求</div></div>'
         + (disabled ? '<span style="font-size:12px;color:#94a3b8">已在列表</span>' : '<i class="fa-solid fa-plus" style="color:#16a34a"></i>')
         + '</div>';
     }).join('');
