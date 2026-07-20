@@ -263,58 +263,175 @@
       white-space: nowrap;
     }
     .five-dim-item-score strong { color: #ea580c; }
-    .price-range-track {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
+    .price-axis-panel { padding: 4px 0 0; }
+    .price-axis-track {
+      position: relative;
+      height: 118px;
+      margin: 8px 8px 0;
     }
-    .price-range-label {
+    .price-axis-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 54px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #dbeafe, #e2e8f0, #fee2e2);
+    }
+    .price-axis-band {
+      position: absolute;
+      top: 46px;
+      height: 20px;
+      border-radius: 999px;
+      transition: left 0.2s ease, width 0.2s ease, opacity 0.2s ease;
+      pointer-events: none;
+    }
+    .price-axis-band--ref {
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      z-index: 1;
+    }
+    .price-axis-band--active {
+      background: rgba(234, 88, 12, 0.16);
+      border: 1px solid rgba(234, 88, 12, 0.45);
+      z-index: 2;
+      opacity: 0;
+    }
+    .price-axis-marker {
+      position: absolute;
+      top: 38px;
+      transform: translateX(-50%);
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      z-index: 3;
+      outline: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .price-axis-marker:focus-visible .price-axis-dot {
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+    }
+    .price-axis-dot {
+      display: block;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid #fff;
+      background: var(--marker-color, #64748b);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .price-axis-marker:hover .price-axis-dot,
+    .price-axis-marker.is-active .price-axis-dot {
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.22);
+    }
+    .price-axis-marker.is-source .price-axis-dot {
+      background: #2563eb;
+      width: 18px;
+      height: 18px;
+    }
+    .price-axis-star {
+      margin-bottom: 2px;
+      color: #f59e0b;
+      font-size: 14px;
+      line-height: 1;
+      text-shadow: 0 1px 0 #fff;
+    }
+    .price-axis-price-label {
+      margin-top: 5px;
       font-size: 11px;
+      font-weight: 800;
+      color: #334155;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .price-axis-marker.is-source .price-axis-price-label { color: #1d4ed8; }
+    .price-axis-marker.is-active .price-axis-price-label { color: #ea580c; }
+    .price-axis-ticks {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 72px;
+      height: 44px;
+      pointer-events: none;
+    }
+    .price-axis-tick {
+      position: absolute;
+      top: 0;
+      transform: translateX(-50%);
+      text-align: center;
+      min-width: 0;
+    }
+    .price-axis-tick-mark {
+      display: block;
+      width: 1px;
+      height: 8px;
+      margin: 0 auto 4px;
+      background: #cbd5e1;
+    }
+    .price-axis-tick-label {
+      display: block;
+      font-size: 10px;
       color: #94a3b8;
       font-weight: 700;
       white-space: nowrap;
     }
-    .price-range-bar {
-      position: relative;
-      height: 10px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #dbeafe 0%, #dcfce7 50%, #fee2e2 100%);
-      overflow: visible;
-    }
-    .price-range-marker {
+    .price-axis-tooltip {
       position: absolute;
-      top: 50%;
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      border: 2px solid #fff;
-      background: #2563eb;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
-      transform: translate(-50%, -50%);
+      top: 0;
+      transform: translateX(-50%);
+      min-width: 180px;
+      max-width: 240px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+      z-index: 5;
+      text-align: left;
+      pointer-events: none;
     }
-    .five-dim-item.is-source .price-range-marker { background: #2563eb; }
-    .price-locate-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+    .price-axis-tooltip::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -6px;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border-right: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+      transform: translateX(-50%) rotate(45deg);
+    }
+    .price-axis-tooltip-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.45;
+      margin-bottom: 6px;
+    }
+    .price-axis-tooltip-row {
       font-size: 12px;
-      color: #475569;
+      color: #64748b;
+      line-height: 1.6;
     }
-    .price-tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
+    .price-axis-tooltip-row strong { color: #0f172a; }
+    .price-axis-tooltip-score {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #ea580c;
       font-weight: 800;
     }
-    .price-tag.tag-low { background: #dbeafe; color: #1d4ed8; }
-    .price-tag.tag-mid { background: #dcfce7; color: #15803d; }
-    .price-tag.tag-high { background: #fef3c7; color: #b45309; }
-    .price-tag.tag-over { background: #fee2e2; color: #b91c1c; }
+    .price-axis-hint {
+      margin: 12px 0 0;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
     .trend-chip {
       display: inline-flex;
       align-items: center;
@@ -901,32 +1018,166 @@
       });
     }
 
-    function getPricePositionInfo(product) {
-      var floor = Number(product.floor) || 0;
-      var ceiling = Number(product.ceiling) || Math.max(floor + 1, Number(product.price) || 0);
-      var price = Number(product.price) || 0;
-      var span = Math.max(ceiling - floor, 0.01);
-      var ratio = Math.max(0, Math.min(100, ((price - floor) / span) * 100));
-      var tag = '合理区间';
-      var tagClass = 'tag-mid';
-      if (price > ceiling) {
-        tag = '高于上限';
-        tagClass = 'tag-over';
-      } else if (ratio <= 35) {
-        tag = '偏低';
-        tagClass = 'tag-low';
-      } else if (ratio >= 78) {
-        tag = '偏高';
-        tagClass = 'tag-high';
-      }
+    function buildPriceAxisScale(products) {
+      var values = [];
+      products.forEach(function(product) {
+        values.push(Number(product.floor) || 0, Number(product.ceiling) || 0, Number(product.price) || 0);
+      });
+      var rawMin = Math.min.apply(null, values);
+      var rawMax = Math.max.apply(null, values);
+      var span = rawMax - rawMin || 1;
+      var pad = span * 0.08;
+      var min = Math.max(0, rawMin - pad);
+      var max = rawMax + pad;
+      var total = max - min || 1;
       return {
-        floor: floor,
-        ceiling: ceiling,
-        price: price,
-        ratio: ratio,
-        tag: tag,
-        tagClass: tagClass
+        min: min,
+        max: max,
+        toPercent: function(value) {
+          return Math.max(0, Math.min(100, ((Number(value) - min) / total) * 100));
+        }
       };
+    }
+
+    function formatAxisPrice(value) {
+      var num = Number(value) || 0;
+      return '¥' + num.toFixed(num % 1 ? 2 : 0);
+    }
+
+    function buildPriceAxisTicks(scale, tickCount) {
+      tickCount = tickCount || 5;
+      if (tickCount < 2) tickCount = 2;
+      var ticks = [];
+      for (var i = 0; i < tickCount; i++) {
+        var ratio = i / (tickCount - 1);
+        var value = scale.min + (scale.max - scale.min) * ratio;
+        ticks.push({
+          value: value,
+          percent: scale.toPercent(value)
+        });
+      }
+      return ticks;
+    }
+
+    function renderPriceAxisTicks(scale) {
+      return buildPriceAxisTicks(scale, 5).map(function(tick) {
+        return '<div class="price-axis-tick" style="left:' + tick.percent + '%">' +
+          '<span class="price-axis-tick-mark"></span>' +
+          '<span class="price-axis-tick-label">' + formatAxisPrice(tick.value) + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    function buildPriceBandStyle(scale, floor, ceiling) {
+      var left = scale.toPercent(floor);
+      var right = scale.toPercent(ceiling);
+      return {
+        left: left,
+        width: Math.max(0.8, right - left)
+      };
+    }
+
+    function buildPriceReasonTooltip(product) {
+      var score = getPortraitScore(product, 'priceReason');
+      var floor = Number(product.floor) || 0;
+      var ceiling = Number(product.ceiling) || 0;
+      var price = Number(product.price) || 0;
+      return '<div class="price-axis-tooltip-name">' +
+          escapeHtml(shortName(product.name, 22)) +
+          (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-star"></i>参照</span>' : '') +
+        '</div>' +
+        '<div class="price-axis-tooltip-row">平台建议区间 <strong>' + formatAxisPrice(floor) + ' - ' + formatAxisPrice(ceiling) + '</strong></div>' +
+        '<div class="price-axis-tooltip-row">现价 <strong>' + formatAxisPrice(price) + '</strong> / ' + escapeHtml(product.unit || '件') + '</div>' +
+        '<div class="price-axis-tooltip-score">价格合理性评分 ' + score + ' 分</div>';
+    }
+
+    function bindPriceReasonAxis(products) {
+      var panel = document.getElementById('priceReasonAxisPanel');
+      if (!panel || panel.dataset.bound === '1') return;
+      panel.dataset.bound = '1';
+
+      var refBand = document.getElementById('priceReasonRefBand');
+      var activeBand = document.getElementById('priceReasonActiveBand');
+      var tooltip = document.getElementById('priceReasonTooltip');
+      var markers = panel.querySelectorAll('.price-axis-marker');
+      if (!refBand || !activeBand || !tooltip) return;
+
+      var scale = buildPriceAxisScale(products);
+      var source = getSourceProduct(products);
+
+      function resetAxisState() {
+        markers.forEach(function(node) { node.classList.remove('is-active'); });
+        activeBand.style.opacity = '0';
+        activeBand.hidden = true;
+        refBand.style.opacity = '1';
+        tooltip.hidden = true;
+      }
+
+      function activateProduct(index) {
+        var product = products[index];
+        if (!product) return;
+        var band = buildPriceBandStyle(scale, product.floor, product.ceiling);
+        markers.forEach(function(node) {
+          node.classList.toggle('is-active', Number(node.getAttribute('data-index')) === index);
+        });
+        activeBand.style.left = band.left + '%';
+        activeBand.style.width = band.width + '%';
+        activeBand.hidden = false;
+        activeBand.style.opacity = '1';
+        refBand.style.opacity = product.isSource ? '1' : '0.22';
+        tooltip.innerHTML = buildPriceReasonTooltip(product);
+        tooltip.style.left = scale.toPercent(product.price) + '%';
+        tooltip.hidden = false;
+      }
+
+      markers.forEach(function(marker) {
+        marker.addEventListener('mouseenter', function() {
+          activateProduct(Number(marker.getAttribute('data-index')));
+        });
+        marker.addEventListener('mouseleave', resetAxisState);
+        marker.addEventListener('focus', function() {
+          activateProduct(Number(marker.getAttribute('data-index')));
+        });
+        marker.addEventListener('blur', resetAxisState);
+      });
+
+      resetAxisState();
+    }
+
+    function renderPriceReasonCompare(products) {
+      var scale = buildPriceAxisScale(products);
+      var source = getSourceProduct(products);
+      var refScore = getPortraitScore(source, 'priceReason');
+      var refBand = buildPriceBandStyle(scale, source.floor, source.ceiling);
+
+      var markers = products.map(function(product, index) {
+        var left = scale.toPercent(product.price);
+        var color = getSupplierColor(index);
+        return '<button type="button" class="price-axis-marker' + (product.isSource ? ' is-source' : '') + '" ' +
+          'style="left:' + left + '%;--marker-color:' + color + '" data-index="' + index + '" ' +
+          'aria-label="' + escapeHtml(product.name || '') + '">' +
+          (product.isSource ? '<span class="price-axis-star" title="参照商品">★</span>' : '') +
+          '<span class="price-axis-dot"></span>' +
+          '<span class="price-axis-price-label">' + formatAxisPrice(product.price) + '</span>' +
+        '</button>';
+      }).join('');
+
+      return '<div class="five-dim-block">' +
+        renderFiveDimHead('priceReason', refScore) +
+        '<div class="five-dim-body">' +
+          '<div class="price-axis-panel" id="priceReasonAxisPanel">' +
+            '<div class="price-axis-track">' +
+              '<div class="price-axis-tooltip" id="priceReasonTooltip" hidden></div>' +
+              '<div class="price-axis-band price-axis-band--ref" id="priceReasonRefBand" style="left:' + refBand.left + '%;width:' + refBand.width + '%"></div>' +
+              '<div class="price-axis-band price-axis-band--active" id="priceReasonActiveBand" hidden></div>' +
+              '<div class="price-axis-line"></div>' +
+              markers +
+              '<div class="price-axis-ticks">' + renderPriceAxisTicks(scale) + '</div>' +
+            '</div>' +
+            '<p class="price-axis-hint">横轴刻度为价格区间；圆点下方为各商品现价，默认高亮参照商品建议区间，移入圆点可查看详情与合理性评分。</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
     }
 
     function renderFiveDimHead(metaKey, score) {
@@ -944,31 +1195,6 @@
           (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照</span>' : '') +
         '</div>' +
         '<div class="five-dim-item-score"><strong>' + score + '</strong> 分</div>' +
-      '</div>';
-    }
-
-    function renderPriceReasonCompare(products) {
-      var items = products.map(function(product) {
-        var score = getPortraitScore(product, 'priceReason');
-        var info = getPricePositionInfo(product);
-        var priceText = '¥' + info.price.toFixed(info.price % 1 ? 2 : 0);
-        return '<div class="five-dim-item' + (product.isSource ? ' is-source' : '') + '">' +
-          renderFiveDimItemHead(product, score) +
-          '<div class="price-range-track">' +
-            '<span class="price-range-label">¥' + info.floor.toFixed(0) + '</span>' +
-            '<div class="price-range-bar"><span class="price-range-marker" style="left:' + info.ratio + '%"></span></div>' +
-            '<span class="price-range-label">¥' + info.ceiling.toFixed(0) + '</span>' +
-          '</div>' +
-          '<div class="price-locate-meta">' +
-            '<span>现价 ' + priceText + ' / ' + escapeHtml(product.unit || '件') + '</span>' +
-            '<span class="price-tag ' + info.tagClass + '">' + escapeHtml(info.tag) + '</span>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-      var refScore = getPortraitScore(getSourceProduct(products), 'priceReason');
-      return '<div class="five-dim-block">' +
-        renderFiveDimHead('priceReason', refScore) +
-        '<div class="five-dim-body"><div class="five-dim-grid five-dim-grid--cols">' + items + '</div></div>' +
       '</div>';
     }
 
@@ -1101,6 +1327,7 @@
         renderHistoryDealCompare(products) +
         renderUserReputationCompare(products) +
         renderSupplierDimBlock(products);
+      bindPriceReasonAxis(products);
       renderSupplierRadarCompare(products, 'portraitSupplierRadar');
     }
 
