@@ -2826,6 +2826,72 @@
       min-width: 0;
       overflow: hidden;
     }
+    .ai-procure-refine-options {
+      margin: 0 16px 16px;
+      padding: 14px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0;
+    }
+    .ai-procure-refine-options-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .ai-procure-refine-options-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .ai-procure-refine-options-tip {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+    .ai-procure-refine-options-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
+    .ai-procure-refine-option-card {
+      flex: 0 0 min(100%, 168px);
+      min-width: 148px;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #dbeafe;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .ai-procure-refine-option-card:hover {
+      border-color: #60a5fa;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.12);
+      transform: translateY(-1px);
+    }
+    .ai-procure-refine-option-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .ai-procure-refine-option-desc {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.55;
+    }
     /* 采购猫 · 文字需求引导 */
     .ai-procure-guide-summary {
       margin: 0 0 12px;
@@ -8439,6 +8505,50 @@
       }
     ];
 
+    /** 采购推荐 · 初步结果后的场景细化待选项（参考商城 AI 导购） */
+    var _AI_PROCURE_REFINE_OPTIONS = {
+      printer: [
+        { id: 'printer-economy', title: '经济单页打印', desc: '适合日常公文、表格等黑白单页打印，成本更低，满足基础办公需求。', keywords: ['联想', '小新'] },
+        { id: 'printer-mfp', title: '多功能一体机', desc: '集打印、复印、扫描于一体，适合需要多种文档处理能力的办公场景。', keywords: ['FUJIFILM', 'ApeosPort'] },
+        { id: 'printer-efficiency', title: '高效办公利器', desc: '高速度、双面打印，大容量纸盒，适合打印量大、追求效率的单位采购。', keywords: ['惠普', 'LaserJet', '双面'] }
+      ],
+      paper: [
+        { id: 'paper-standard', title: '标准办公用纸', desc: '满足日常打印复印，性价比高，适合常规办公消耗。', keywords: ['得力', '70g'] },
+        { id: 'paper-quality', title: '高品质白纸', desc: '白度更高、不卡纸，适合对外材料与归档文档。', keywords: ['天章', '80g'] },
+        { id: 'paper-bulk', title: '大批量采购', desc: '整箱装、单价更优，适合集中采购与框架协议执行。', keywords: ['齐心', '整箱'] }
+      ],
+      projector: [
+        { id: 'projector-basic', title: '入门会议投影', desc: '满足小型会议室基础演示，预算友好。', keywords: ['极米'] },
+        { id: 'projector-business', title: '商务高清会议', desc: '1080P 高清、多接口，适合常规会议室。', keywords: ['爱普生', '商务'] },
+        { id: 'projector-premium', title: '大型会议室', desc: '高亮度、长寿命，适合大会议室与多功能厅。', keywords: ['明基', '企业'] }
+      ],
+      toner: [
+        { id: 'toner-oem', title: '原装硒鼓', desc: '正品耗材，打印质量稳定，适合对品质要求高的单位。', keywords: ['HP', '85A'] },
+        { id: 'toner-compat', title: '兼容经济款', desc: '性价比高，满足日常办公打印需求。', keywords: ['格之格', '兼容'] },
+        { id: 'toner-volume', title: '大容量套装', desc: '页数更多、单页成本更低，适合用量较大的场景。', keywords: ['莱盛', '大容量'] }
+      ],
+      chair: [
+        { id: 'chair-basic', title: '基础办公椅', desc: '满足日常坐席需求，预算可控。', keywords: ['西昊'] },
+        { id: 'chair-ergo', title: '人体工学款', desc: '腰托可调、久坐更舒适，适合长时间办公。', keywords: ['得力', '腰托'] },
+        { id: 'chair-executive', title: '商务会议款', desc: '外观商务、支撑性更好，适合管理层与会议室。', keywords: ['永艺', '商务'] }
+      ],
+      safety: [
+        { id: 'safety-basic', title: '基础劳保配发', desc: '满足常规劳动防护要求，适合大批量配发。', keywords: ['安全帽', '手套'] },
+        { id: 'safety-pro', title: '专业防护升级', desc: '防护等级更高，适合特殊作业环境。', keywords: ['霍尼韦尔', 'KN95'] },
+        { id: 'safety-batch', title: '批量集采套餐', desc: '组合配发、便于对账，适合统一采购。', keywords: ['唐丰', '星宇'] }
+      ],
+      spring: [
+        { id: 'spring-staple', title: '米油组合慰问', desc: '经典米油组合，员工感知好、便于留痕。', keywords: ['中粮', '米油'] },
+        { id: 'spring-snack', title: '坚果礼盒', desc: '休闲食品礼盒，适合年轻员工群体。', keywords: ['三只松鼠'] },
+        { id: 'spring-local', title: '地方特产礼盒', desc: '地域特色、可追溯，适合差异化慰问。', keywords: ['特产'] }
+      ],
+      general: [
+        { id: 'general-value', title: '性价比优选', desc: '平台热销、价格透明，适合快速下单。', keywords: [] },
+        { id: 'general-balanced', title: '品质均衡', desc: '兼顾品牌与价格，适合大多数办公场景。', keywords: [] },
+        { id: 'general-premium', title: '高端配置', desc: '参数更高、体验更好，适合品质优先的采购。', keywords: [] }
+      ]
+    };
+
     function setAiCompanionDemoSession(demoKey) {
       try {
         sessionStorage.setItem('aiCompanionDemo', JSON.stringify({ demo: demoKey, ts: Date.now() }));
@@ -11945,15 +12055,94 @@
       if (line.extras.indexOf(extra) < 0) line.extras.push(extra);
     }
 
+    function aiProcureGuideGetRefineOptions(scenarioId) {
+      var opts = _AI_PROCURE_REFINE_OPTIONS[scenarioId];
+      if (opts && opts.length) return opts;
+      return _AI_PROCURE_REFINE_OPTIONS.general || [];
+    }
+
+    function aiProcureGuideFindRefineOption(scenarioId, optionId) {
+      var opts = aiProcureGuideGetRefineOptions(scenarioId);
+      var i;
+      for (i = 0; i < opts.length; i++) {
+        if (opts[i].id === optionId) return opts[i];
+      }
+      return null;
+    }
+
+    function aiProcureGuideRankByRefineOption(products, line) {
+      if (!line || !line.refineOptionId) return products;
+      var opt = aiProcureGuideFindRefineOption(line.scenarioId, line.refineOptionId);
+      if (!opt || !opt.keywords || !opt.keywords.length) return products;
+      var matched = [];
+      var rest = [];
+      products.forEach(function(p) {
+        var name = String(p.name || '');
+        var hit = false;
+        var ki;
+        for (ki = 0; ki < opt.keywords.length; ki++) {
+          if (name.indexOf(opt.keywords[ki]) >= 0) { hit = true; break; }
+        }
+        if (hit) matched.push(p); else rest.push(p);
+      });
+      return matched.concat(rest);
+    }
+
+    function renderAiProcureGuideRefineOptionsHtml(session) {
+      if (!session || session.refineOptionId) return '';
+      var line = session.lines && session.lines[0];
+      if (!line) return '';
+      var opts = aiProcureGuideGetRefineOptions(line.scenarioId);
+      if (!opts.length) return '';
+      var cards = opts.map(function(opt) {
+        return (
+          '<button type="button" class="ai-procure-refine-option-card" onclick="aiProcureGuidePickRefineOption(' +
+          JSON.stringify(opt.id) + ',' + JSON.stringify(opt.title) + ')">' +
+          '<div class="ai-procure-refine-option-title">' + escapeAiHtml(opt.title) + '</div>' +
+          '<div class="ai-procure-refine-option-desc">' + escapeAiHtml(opt.desc) + '</div>' +
+          '</button>'
+        );
+      }).join('');
+      return (
+        '<div class="ai-procure-refine-options">' +
+        '<div class="ai-procure-refine-options-head">' +
+        '<span class="ai-procure-refine-options-badge"><i class="fa-solid fa-robot" aria-hidden="true"></i> AI 导购</span>' +
+        '<span class="ai-procure-refine-options-tip">已给出初步匹配，请选择一个场景待选项，我将进一步为您推荐：</span>' +
+        '</div>' +
+        '<div class="ai-procure-refine-options-scroll">' + cards + '</div>' +
+        '</div>'
+      );
+    }
+
+    function aiProcureGuidePickRefineOption(optionId, title) {
+      if (!_aiProcureGuideSession || !_aiProcureGuideSession.active) return;
+      appendAiChat('user', title);
+      _aiProcureGuideSession.refineOptionId = optionId;
+      _aiProcureGuideSession.refineOptionTitle = title;
+      _aiProcureGuideSession.lines.forEach(function(line) {
+        line.refineOptionId = optionId;
+        line.refineOptionTitle = title;
+      });
+      var loader = appendAiLoading('正在根据所选场景进一步推荐…');
+      setTimeout(function() {
+        removeAiLoading(loader);
+        aiProcureGuidePublishOptionRefined(title);
+      }, 680);
+    }
+
     function aiProcureGuideCollectExtraChips(line) {
       var chips = [];
+      if (line.refineOptionTitle && chips.indexOf(line.refineOptionTitle) < 0) {
+        chips.push(line.refineOptionTitle);
+      }
       if (line.spec) {
         String(line.spec).split(/\s+/).forEach(function(sp) {
           if (sp && chips.indexOf('规格 · ' + sp) < 0) chips.push('规格 · ' + sp);
         });
       }
       (line.extras || []).forEach(function(e) {
-        if (e && chips.indexOf(e) < 0) chips.push(e);
+        if (!e || e.indexOf('场景 · ') === 0) return;
+        if (chips.indexOf(e) < 0) chips.push(e);
       });
       return chips;
     }
@@ -12047,7 +12236,7 @@
       var loader = appendAiLoading('正在根据您补充的条件重新筛选…');
       setTimeout(function() {
         removeAiLoading(loader);
-        aiProcureGuidePublishResult(true);
+        aiProcureGuidePublishResult('text-refined');
       }, 680);
     }
 
@@ -12116,6 +12305,7 @@
       while (merged.length < needCount && out.length) {
         merged.push(out[merged.length % out.length]);
       }
+      merged = aiProcureGuideRankByRefineOption(merged, line);
       return merged.slice(0, needCount);
     }
 
@@ -12127,7 +12317,10 @@
       );
     }
 
-    function renderAiProcureGuideResultHtml(session, isRefinement) {
+    function renderAiProcureGuideResultHtml(session, opts) {
+      if (typeof opts === 'boolean') opts = { variant: opts ? 'text-refined' : 'initial' };
+      opts = opts || {};
+      var variant = opts.variant || 'initial';
       var lines = session.lines || [];
       var goodsParts = [];
       var totalCount = 0;
@@ -12141,24 +12334,19 @@
           cardIdx++;
         });
       });
-      var scenario = aiProcureGuideGetScenario(lines[0] && lines[0].scenarioId);
-      var reason = isRefinement
-        ? '已根据您补充的<strong>品牌、规格、预算</strong>等条件重新排序筛选，优先展示更匹配的商品。'
-        : ((scenario && scenario.reason) ? scenario.reason : '已结合平台<strong>合规目录与历史成交</strong>，为您筛选高匹配商品供浏览比选。');
-      var badgeType = isRefinement ? '智能选品 · 已细化' : '智能选品';
-      var hintHtml = isRefinement ? '' : (
-        '<p class="ai-procure-refine-hint"><i class="fa-regular fa-lightbulb" aria-hidden="true"></i> ' +
-        '您还可以继续补充<strong>品牌、规格、预算</strong>等信息，我将为您进一步筛选。</p>'
-      );
+      var badgeDone = variant === 'option-refined' ? '场景推荐'
+        : (variant === 'text-refined' ? '筛选已更新' : '需求分析完成');
+      var badgeType = variant === 'initial' ? '智能选品' : '智能选品 · 已细化';
+      var refineOptionsHtml = (variant === 'initial' && !session.refineOptionId)
+        ? renderAiProcureGuideRefineOptionsHtml(session)
+        : '';
       return (
         '<div class="ai-procure-card">' +
         '<div class="ai-procure-card-head">' +
-        '<span class="ai-procure-badge done"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> ' + (isRefinement ? '筛选已更新' : '需求分析完成') + '</span>' +
+        '<span class="ai-procure-badge done"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> ' + badgeDone + '</span>' +
         '<span class="ai-procure-badge type">' + badgeType + '</span>' +
         '</div>' +
         renderAiProcureGuideSummaryHtml(lines) +
-        '<p class="ai-procure-reason"><strong>推荐理由：</strong>' + reason + '</p>' +
-        hintHtml +
         '<div class="ai-finder-goods-section">' +
         '<div class="ai-finder-goods-head">' +
         '<span class="ai-finder-goods-title">推荐商品</span>' +
@@ -12166,23 +12354,34 @@
         '</div>' +
         '<div class="ai-finder-goods-scroll">' + goodsParts.join('') + '</div>' +
         '</div>' +
+        refineOptionsHtml +
         '</div>'
       );
     }
 
-    function aiProcureGuidePublishResult(isRefinement) {
+    function aiProcureGuidePublishOptionRefined(optionTitle) {
       if (!_aiProcureGuideSession) return;
       var session = _aiProcureGuideSession;
-      var html = renderAiProcureGuideResultHtml(session, !!isRefinement);
+      var html = renderAiProcureGuideResultHtml(session, { variant: 'option-refined' });
+      var totalProducts = (session.lines || []).length * 5;
+      var voiceText = '采购猫已根据您选择的「' + optionTitle + '」场景，为您进一步推荐' + totalProducts + '款商品，请查看下方结果。';
+      publishAiCompanionReply(voiceText, html, 'procure-guide');
+    }
+
+    function aiProcureGuidePublishResult(variant) {
+      if (!_aiProcureGuideSession) return;
+      var session = _aiProcureGuideSession;
+      variant = variant || 'initial';
+      var html = renderAiProcureGuideResultHtml(session, { variant: variant });
       var lineCount = (session.lines || []).length;
       var totalProducts = lineCount * 5;
-      var voiceText = isRefinement
+      var voiceText = variant === 'text-refined'
         ? '采购猫已根据您补充的条件重新筛选，共为您推荐' + totalProducts + '款商品，请查看下方结果。'
         : buildAiCompanionVoiceText('procure', {
           category: lineCount > 1 ? '多项采购需求' : ((session.lines[0] && session.lines[0].category) || '相关品类'),
           scale: '按您的描述',
           count: totalProducts
-        });
+        }) + '您也可以从下方三个场景待选项中进一步细化。';
       publishAiCompanionReply(voiceText, html, 'procure-guide');
     }
 
@@ -12195,12 +12394,14 @@
         phase: 'refine',
         lines: lines,
         rawQuery: query,
-        refinements: []
+        refinements: [],
+        refineOptionId: null,
+        refineOptionTitle: null
       };
       var loader = appendAiLoading('正在匹配平台商品…');
       setTimeout(function() {
         removeAiLoading(loader);
-        aiProcureGuidePublishResult(false);
+        aiProcureGuidePublishResult('initial');
       }, 620);
       return true;
     }

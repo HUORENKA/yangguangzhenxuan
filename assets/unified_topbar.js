@@ -74,6 +74,7 @@
     if (path.endsWith("/smart_compare.html")) return "compare";
     if (path.endsWith("/search.html")) return "mall";
     if (path.endsWith("/product.html")) return "product";
+    if (path.endsWith("/compare_analysis.html")) return "compare_analysis";
     if (path.endsWith("/order_confirm.html")) return "order_confirm";
     if (path.endsWith("/store_detail.html")) return "mall";
     return "";
@@ -81,7 +82,7 @@
 
   function isSloganPage() {
     var key = getPageKey();
-    return key === "product" || key === "order_confirm";
+    return key === "product" || key === "compare_analysis" || key === "order_confirm";
   }
 
   function brandLogoHtml() {

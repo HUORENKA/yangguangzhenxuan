@@ -525,19 +525,14 @@ function initStoreDetailData(storeId) {
   storeDetailData.capabilityAnalysis = {
     overallScore: 92,
     grade: 'A+',
-    aiSummary: '该企业综合合同履约能力优秀，资质合规与信用评价均处于平台前列。办公用品质量稳定、价格竞争力较强，售后响应及时，适合纳入政企集采优选供应商名录。',
+    aiSummary: '该企业综合合同履约能力优秀，资质合规与物流履约均处于平台前列。办公用品质量稳定、价格竞争力较强，商家响应及时，适合纳入政企集采优选供应商名录。',
     dimensions: [
       { key: 'qualification', name: '资质合规', score: 96, icon: 'fa-shield-halved', color: '#2563eb', summary: '营业执照、行业许可、信用认证资料齐全，无重大违规记录。' },
       { key: 'fulfillment', name: '合同履约能力', score: 94, icon: 'fa-file-contract', color: '#059669', summary: '合同准时履约率 98.6%，大单履约经验丰富，物流覆盖全国重点区域。' },
       { key: 'quality', name: '商品质量', score: 91, icon: 'fa-medal', color: '#d97706', summary: '正品保障体系完善，退换货率低于行业均值，用户好评率 97.2%。' },
       { key: 'price', name: '价格竞争力', score: 88, icon: 'fa-tags', color: '#7c3aed', summary: '同类商品比价处于较优区间，批量采购议价空间合理。' },
-      { key: 'service', name: '售后服务', score: 90, icon: 'fa-headset', color: '#0891b2', summary: '7×12 小时客服响应，售后工单平均处理时长 4.2 小时。' },
-      { key: 'credit', name: '信用评价', score: 95, icon: 'fa-star', color: '#e11d48', summary: '平台信用分 950/1000，连续 3 年获「优质供应商」认证。' }
-    ],
-    highlights: [
-      '连续 12 个月零重大投诉',
-      '政采类目 TOP 5% 供应商',
-      '支持电子合同与区块链存证'
+      { key: 'service', name: '商家服务', score: 90, icon: 'fa-headset', color: '#0891b2', summary: '7×12 小时客服响应，售后工单平均处理时长 4.2 小时。' },
+      { key: 'credit', name: '物流服务', score: 95, icon: 'fa-truck', color: '#e11d48', summary: '全国物流网络覆盖，订单准时送达率 98.2%，大件配送与签收体验稳定。' }
     ],
     updatedAt: '2026-07-07'
   };

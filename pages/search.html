@@ -50,7 +50,7 @@
 
     .search-row {
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-columns: auto minmax(0, 1fr);
       grid-template-rows: auto auto;
       column-gap: 18px;
       row-gap: 12px;
@@ -90,111 +90,242 @@
       border: 1px solid rgba(226, 232, 240, 0.96);
       background: #fff;
       display: grid;
-      grid-template-columns: 92px minmax(0, 1fr) 96px;
+      grid-template-columns: 92px minmax(0, 1fr) auto 96px;
       align-items: center;
       overflow: hidden;
       box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
     }
 
-    .cat-assistant-btn {
-      grid-column: 3;
-      grid-row: 1;
+    .ai-search-toggle {
       display: inline-flex;
-      flex-direction: row;
       align-items: center;
       gap: 8px;
-      height: 48px;
-      padding: 0 16px 0 8px;
+      height: 100%;
+      padding: 0 12px 0 8px;
+      border: none;
+      border-left: 1px solid rgba(226, 232, 240, 0.96);
+      background: transparent;
+      cursor: pointer;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .ai-search-toggle:hover {
+      color: var(--brand-dark);
+      background: #f8fafc;
+    }
+
+    .ai-search-toggle.on {
+      color: var(--brand-dark);
+    }
+
+    .ai-toggle-switch {
+      width: 34px;
+      height: 18px;
       border-radius: 999px;
-      background: linear-gradient(180deg, #ffffff 0%, #f0f5ff 100%);
-      border: 1px solid rgba(47, 107, 255, 0.22);
-      box-shadow: 0 6px 16px rgba(47, 107, 255, 0.1);
-      text-decoration: none;
-      flex-shrink: 0;
-      align-self: center;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-    }
-
-    .cat-assistant-btn:hover {
-      transform: translateY(-1px);
-      border-color: rgba(47, 107, 255, 0.38);
-      box-shadow: 0 8px 20px rgba(47, 107, 255, 0.16);
-    }
-
-    .cat-mini {
+      background: #cbd5e1;
       position: relative;
-      width: 36px;
-      height: 36px;
       flex-shrink: 0;
+      transition: background 0.18s ease;
     }
 
-    .cat-mini-card {
+    .ai-toggle-switch::after {
+      content: "";
       position: absolute;
-      inset: 0;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
-      background: linear-gradient(180deg, #fff 0%, #eef4ff 100%);
-      border: 1px solid rgba(47, 107, 255, 0.12);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-      overflow: hidden;
-    }
-
-    .cat-mini-face {
-      position: absolute;
-      left: 50%;
-      top: 8px;
-      transform: translateX(-50%);
-      width: 24px;
-      height: 20px;
-      background: linear-gradient(180deg, #1f2937 0%, #0f172a 100%);
-      border-radius: 11px;
-    }
-
-    .cat-mini-ear {
-      position: absolute;
-      top: -5px;
-      width: 8px;
-      height: 8px;
-      background: #111827;
-      border-radius: 4px 6px 3px 6px;
-    }
-
-    .cat-mini-ear.left { left: 2px; transform: rotate(-28deg); }
-    .cat-mini-ear.right { right: 2px; transform: scaleX(-1) rotate(-28deg); }
-
-    .cat-mini-eye {
-      position: absolute;
-      top: 8px;
-      width: 3px;
-      height: 5px;
-      border-radius: 999px;
       background: #fff;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+      transition: transform 0.18s ease;
     }
 
-    .cat-mini-eye.left { left: 6px; }
-    .cat-mini-eye.right { right: 6px; }
-
-    .cat-mini-nose {
-      position: absolute;
-      left: 50%;
-      top: 11px;
-      transform: translateX(-50%);
-      width: 4px;
-      height: 3px;
-      border-radius: 6px;
-      background: #fb7185;
+    .ai-search-toggle.on .ai-toggle-switch {
+      background: var(--brand);
     }
 
-    .cat-mini-body {
-      display: none;
+    .ai-search-toggle.on .ai-toggle-switch::after {
+      transform: translateX(16px);
     }
 
-    .cat-assistant-label {
+    .ai-guide-panel {
+      margin-top: 12px;
+      padding: 18px 20px 16px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .ai-guide-intro {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 16px;
+      color: #334155;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.7;
+    }
+
+    .ai-guide-intro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(47, 107, 255, 0.12);
+      color: var(--brand-dark);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .ai-guide-columns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .ai-guide-card {
+      text-align: left;
+      padding: 14px 14px 12px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #fafbfc;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .ai-guide-card:hover {
+      border-color: rgba(47, 107, 255, 0.35);
+      background: #f5f8ff;
+    }
+
+    .ai-guide-card.active {
+      border-color: var(--brand);
+      background: #f0f5ff;
+      box-shadow: 0 0 0 1px rgba(47, 107, 255, 0.15);
+    }
+
+    .ai-guide-card-title {
       font-size: 15px;
       font-weight: 800;
-      color: var(--brand);
-      line-height: 1;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .ai-guide-card-desc {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      line-height: 1.65;
+    }
+
+    .ai-intent-tabs {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .ai-intent-tab {
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .ai-intent-tab:hover {
+      border-color: rgba(47, 107, 255, 0.35);
+      color: var(--brand-dark);
+    }
+
+    .ai-intent-tab.active {
+      border-color: var(--brand);
+      background: var(--brand);
+      color: #fff;
+    }
+
+    .ai-procure-box {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #e2e8f0;
+    }
+
+    .ai-procure-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    .ai-procure-row {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .ai-procure-input {
+      flex: 1;
+      min-width: 0;
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid #dbeafe;
+      background: #f8fbff;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+      outline: none;
+    }
+
+    .ai-procure-input:focus {
+      border-color: var(--brand);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.12);
+    }
+
+    .ai-procure-btn {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
       white-space: nowrap;
-      letter-spacing: 0.2px;
+    }
+
+    .ai-procure-btn:hover {
+      opacity: 0.9;
+    }
+
+    .ai-procure-tip {
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      line-height: 1.5;
     }
 
     .search-type {
@@ -1199,8 +1330,8 @@
 
     @media (max-width: 900px) {
       .search-row {
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: auto auto auto;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
         width: min(100%, calc(100% - 32px));
       }
       .eshop-brand {
@@ -1213,11 +1344,13 @@
         grid-row: 2;
       }
       .search-bar {
-        grid-template-columns: 84px minmax(0, 1fr) 88px;
+        grid-template-columns: 84px minmax(0, 1fr) auto 88px;
       }
-      .cat-assistant-btn {
-        grid-column: 2;
-        grid-row: 2;
+      .ai-search-toggle span:last-child {
+        display: none;
+      }
+      .ai-guide-columns {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -1260,6 +1393,10 @@
             <div class="search-input-wrap" id="searchInputWrap">
               <input id="searchInput" class="search-input" placeholder="请输入商品名称、品牌或类目" autocomplete="off">
             </div>
+            <button type="button" class="ai-search-toggle" id="aiSearchToggle" aria-pressed="false" title="开启后展示 AI 助选导购与场景 Tab">
+              <span class="ai-toggle-switch" aria-hidden="true"></span>
+              <span>AI 助选</span>
+            </button>
             <button id="searchBtn" class="search-btn" type="button">搜索</button>
           </div>
           <div class="search-dropdown" id="searchDropdown" hidden>
@@ -1276,20 +1413,6 @@
             </div>
           </div>
         </div>
-        <a class="cat-assistant-btn" href="../pages-new/ai_assistant.html" title="猫助手 · AI 智能采购">
-          <span class="cat-mini" aria-hidden="true">
-            <span class="cat-mini-card">
-              <span class="cat-mini-face">
-                <span class="cat-mini-ear left"></span>
-                <span class="cat-mini-ear right"></span>
-                <span class="cat-mini-eye left"></span>
-                <span class="cat-mini-eye right"></span>
-                <span class="cat-mini-nose"></span>
-              </span>
-            </span>
-          </span>
-          <span class="cat-assistant-label">猫助手</span>
-        </a>
       </div>
     </section>
   </div>
@@ -1303,6 +1426,42 @@
 
     <div class="ai-suggest-row" id="aiSuggestRow" hidden>
       <span class="ai-suggest-label">智能推荐：</span>
+    </div>
+
+    <section class="ai-guide-panel" id="aiGuidePanel" hidden>
+      <div class="ai-guide-intro">
+        <span class="ai-guide-intro-badge"><i class="fa-solid fa-wand-magic-sparkles"></i>AI导购</span>
+        <span>你好，让我帮你找打印机。选购打印机的关键，是看你的核心使用场景。</span>
+      </div>
+      <div class="ai-guide-columns" id="aiGuideColumns">
+        <button type="button" class="ai-guide-card" data-intent="economy">
+          <div class="ai-guide-card-title">经济单页打印</div>
+          <div class="ai-guide-card-desc">适合日常公文、表格等黑白单页打印，成本更低，满足基础办公需求。</div>
+        </button>
+        <button type="button" class="ai-guide-card" data-intent="aio">
+          <div class="ai-guide-card-title">多功能一体机</div>
+          <div class="ai-guide-card-desc">集打印、复印、扫描于一体，适合需要多种文档处理能力的办公场景。</div>
+        </button>
+        <button type="button" class="ai-guide-card" data-intent="office">
+          <div class="ai-guide-card-title">高效办公利器</div>
+          <div class="ai-guide-card-desc">高速度、双面打印、大容量纸盒，适合打印量大、追求效率的单位采购。</div>
+        </button>
+      </div>
+      <div class="ai-procure-box">
+        <div class="ai-procure-label">描述采购需求（将自动解析为 Chip）</div>
+        <div class="ai-procure-row">
+          <input type="text" id="aiProcureInput" class="ai-procure-input" placeholder="如：激光打印机 预算3000以内 支持双面打印 要惠普品牌" autocomplete="off">
+          <button type="button" class="ai-procure-btn" id="aiProcureParseBtn">解析需求</button>
+        </div>
+        <div class="ai-procure-tip">支持自然语言描述，解析后可继续叠加 Tab 场景与筛选条件</div>
+      </div>
+    </section>
+
+    <div class="ai-intent-tabs" id="aiIntentTabs" hidden>
+      <button type="button" class="ai-intent-tab active" data-intent="all">全部</button>
+      <button type="button" class="ai-intent-tab" data-intent="economy">经济单页打印</button>
+      <button type="button" class="ai-intent-tab" data-intent="aio">多功能一体机</button>
+      <button type="button" class="ai-intent-tab" data-intent="office">高效办公利器</button>
     </div>
 
     <div class="search-chip-bar" id="searchChipBar" hidden>
@@ -1531,6 +1690,7 @@
         deliveryCity: '广州市',
         deliveryTime: '72小时内发货',
         tags: ['热门商品', '设备类采购'],
+        sceneIntent: ['office'],
         hotScore: 87,
         prefScore: 84,
         supplierScore: 4.9,
@@ -1541,6 +1701,99 @@
         inspectionReport: { status: '即将到期', expiry: '2026-05-12' },
         priceChange: { date: '2026-04-02', direction: '降价', percent: 4.6 },
         image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-009',
+        name: '经济型黑白激光打印机 A4单页打印 家用办公入门机',
+        brand: '奔图',
+        categoryL1: '办公物资',
+        categoryL2: '办公设备',
+        categoryL3: '打印设备',
+        category: '办公设备',
+        unit: '台',
+        supplier: '奔图政采专营店',
+        price: 699,
+        floor: 620,
+        ceiling: 780,
+        sold: 1860,
+        stock: 240,
+        deliveryArea: '广东省',
+        deliveryCity: '深圳市',
+        deliveryTime: '48小时内发货',
+        tags: ['性价之选', '低价优先'],
+        sceneIntent: ['economy'],
+        hotScore: 90,
+        prefScore: 88,
+        supplierScore: 4.7,
+        descScore: 4.6,
+        deliveryScore: 4.8,
+        serviceScore: 4.7,
+        goodRate: '98.5%',
+        inspectionReport: { status: '有效', expiry: '2026-11-20' },
+        priceChange: { date: '2026-04-08', direction: '降价', percent: 3.2 },
+        image: 'https://images.unsplash.com/photo-1612815154858-60aa4c59eaa6?w=900&h=900&fit=crop&sat=-20'
+      },
+      {
+        id: 'GC-010',
+        name: '彩色喷墨多功能一体机 打印复印扫描 WiFi无线',
+        brand: '爱普生',
+        categoryL1: '办公物资',
+        categoryL2: '办公设备',
+        categoryL3: '打印设备',
+        category: '办公设备',
+        unit: '台',
+        supplier: '爱普生官方政企店',
+        price: 1299,
+        floor: 1150,
+        ceiling: 1450,
+        sold: 980,
+        stock: 156,
+        deliveryArea: '广东省',
+        deliveryCity: '广州市',
+        deliveryTime: '48小时内发货',
+        tags: ['品质甄选', '多功能'],
+        sceneIntent: ['aio'],
+        hotScore: 91,
+        prefScore: 89,
+        supplierScore: 4.8,
+        descScore: 4.7,
+        deliveryScore: 4.8,
+        serviceScore: 4.8,
+        goodRate: '98.9%',
+        inspectionReport: { status: '有效', expiry: '2026-10-08' },
+        priceChange: { date: '2026-04-07', direction: '降价', percent: 2.1 },
+        image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=900&h=900&fit=crop'
+      },
+      {
+        id: 'GC-011',
+        name: '高速激光多功能一体机 双面打印 网络共享办公机',
+        brand: '兄弟',
+        categoryL1: '办公物资',
+        categoryL2: '办公设备',
+        categoryL3: '打印设备',
+        category: '办公设备',
+        unit: '台',
+        supplier: '兄弟办公设备专营',
+        price: 3299,
+        floor: 2980,
+        ceiling: 3580,
+        sold: 412,
+        stock: 68,
+        deliveryArea: '广东省',
+        deliveryCity: '佛山市',
+        deliveryTime: '72小时内发货',
+        tags: ['设备类采购', '高效办公'],
+        sceneIntent: ['aio', 'office'],
+        hotScore: 85,
+        prefScore: 86,
+        supplierScore: 4.8,
+        descScore: 4.8,
+        deliveryScore: 4.7,
+        serviceScore: 4.8,
+        goodRate: '99.0%',
+        inspectionReport: { status: '有效', expiry: '2026-12-01' },
+        priceChange: { date: '2026-04-04', direction: '降价', percent: 1.5 },
+        image: 'https://images.unsplash.com/photo-1587831990711-23ca6441447b?w=900&h=900&fit=crop'
       },
       {
         id: 'GC-005',
@@ -1694,6 +1947,14 @@
 
     const PAGE_SIZE = 24;
     const HISTORY_KEY = 'gc_search_history_v1';
+    const AI_SEARCH_KEY = 'gc_ai_search_on_v1';
+
+    const AI_INTENT_META = {
+      all: { label: '全部' },
+      economy: { label: '经济单页打印' },
+      aio: { label: '多功能一体机' },
+      office: { label: '高效办公利器' }
+    };
 
     const state = {
       query: '',
@@ -1710,7 +1971,9 @@
       activeSuggestIndex: -1,
       queryChips: [],
       queryKeywordSegments: [],
-      priceChipLabel: ''
+      priceChipLabel: '',
+      aiSearchOn: localStorage.getItem(AI_SEARCH_KEY) === '1',
+      aiIntent: 'all'
     };
 
     let dropdownItems = [];
@@ -1818,8 +2081,9 @@
     function shouldParseToChips(text) {
       const value = String(text || '').trim();
       if (!value || !isProductMode()) return false;
+      if (state.aiSearchOn && value.length >= 4) return true;
       if (value.length >= 8 && /[\s,，、和与及]/.test(value)) return true;
-      return /(\d+\s*元\s*(以内|以下|内))|(打印纸|复印纸|a4|办公椅|会议|打印机|电脑|中性笔|笔|晨光|得力|齐心)/i.test(value);
+      return /(\d+\s*元\s*(以内|以下|内|左右)?)|预算\s*\d+|(\d+\s*左右)|(打印纸|复印纸|a4|办公椅|会议|打印机|电脑|中性笔|笔|晨光|得力|齐心|惠普|爱普生|奔图|兄弟)/i.test(value);
     }
 
     const KEYWORD_STOP_WORDS = new Set([
@@ -1890,16 +2154,31 @@
       const lower = text.toLowerCase();
       let cleaned = text;
 
-      const priceCap = lower.match(/(\d+(?:\.\d+)?)\s*元\s*(以内|以下|内)/);
-      if (priceCap) {
-        const cap = parseFloat(priceCap[1]);
+      const priceCap = lower.match(/(\d+(?:\.\d+)?)\s*元\s*(以内|以下|内|左右)?/);
+      const budgetMatch = lower.match(/预算\s*(\d+(?:\.\d+)?)\s*(元|左右|以内|以下|内)?/);
+      const aroundMatch = lower.match(/(\d+(?:\.\d+)?)\s*左右/);
+
+      function applyPriceCap(cap) {
         parsed.priceChipLabel = `≤${cap}元`;
         if (cap <= 50) parsed.priceRange = '0-50';
         else if (cap <= 500) parsed.priceRange = '50-500';
         else if (cap <= 3000) parsed.priceRange = '500-3000';
         else parsed.priceRange = '3000+';
-        cleaned = cleaned.replace(priceCap[0], ' ');
       }
+
+      if (priceCap) {
+        applyPriceCap(parseFloat(priceCap[1]));
+        cleaned = cleaned.replace(priceCap[0], ' ');
+      } else if (budgetMatch) {
+        applyPriceCap(parseFloat(budgetMatch[1]));
+        cleaned = cleaned.replace(budgetMatch[0], ' ');
+      } else if (aroundMatch) {
+        applyPriceCap(parseFloat(aroundMatch[1]));
+        cleaned = cleaned.replace(aroundMatch[0], ' ');
+      }
+
+      const featureMatch = text.match(/双面打印|无线打印|彩色|喷墨|激光|A3|A4|家用|办公/gi);
+      if (featureMatch) parsed.keywordHints.push(...featureMatch);
 
       const paperMatch = text.match(/A4打印纸|A4复印纸|A4纸|复印纸|打印纸/gi);
       if (/打印纸|复印纸|a4纸|a4/.test(lower)) {
@@ -1945,7 +2224,11 @@
         cleaned = cleaned.replace(/笔/g, ' ');
       }
 
-      const brandHit = [...new Set(PRODUCTS.map(item => item.brand))].find(brand => lower.includes(brand.toLowerCase()));
+      const brandHit = [...new Set(PRODUCTS.map(item => item.brand))].find(brand => {
+        const aliases = { 惠普: ['惠普', 'hp'], 爱普生: ['爱普生', 'epson'], 兄弟: ['兄弟', 'brother'] };
+        const list = aliases[brand] || [brand];
+        return list.some(alias => lower.includes(alias.toLowerCase()));
+      });
       if (brandHit) {
         parsed.brand = brandHit;
         cleaned = cleaned.replace(new RegExp(brandHit, 'gi'), ' ');
@@ -1967,7 +2250,22 @@
     function shouldSplitIntoChips(parsed, rawText, force) {
       if (hasStructuredParse(parsed)) return true;
       if (parsed.keywordSegments.length > 1) return true;
-      return !!force && String(rawText || '').trim().length >= 8;
+      if (state.aiSearchOn && parsed.keywordSegments.length >= 1) return true;
+      return !!force && String(rawText || '').trim().length >= 6;
+    }
+
+    function inferIntentFromText(text) {
+      const lower = String(text || '').toLowerCase();
+      if (/一体机|复印|扫描|多功能/.test(lower)) return 'aio';
+      if (/经济|入门|便宜|单页|家用/.test(lower)) return 'economy';
+      if (/高速|双面|办公|高效|大量|利器/.test(lower)) return 'office';
+      return null;
+    }
+
+    function applyAiIntentFromText(text) {
+      if (!state.aiSearchOn) return;
+      const intent = inferIntentFromText(text);
+      if (intent) state.aiIntent = intent;
     }
 
     function applyParsedQuery(parsed) {
@@ -2124,13 +2422,43 @@
       if (!force && !shouldParseToChips(text)) return false;
 
       const parsed = parseQueryInput(text);
-      if (!shouldSplitIntoChips(parsed, text, force)) return false;
+      if (!shouldSplitIntoChips(parsed, text, force || state.aiSearchOn)) return false;
 
       applyParsedQuery(parsed);
+      applyAiIntentFromText(text);
       rebuildQueryChipsFromState();
       $('searchInput').value = '';
+      if ($('aiProcureInput')) $('aiProcureInput').value = '';
       renderQueryChips();
       return true;
+    }
+
+    function parseProcureRequirement(rawText) {
+      const text = String(rawText || '').trim();
+      if (!text || !isProductMode() || !state.aiSearchOn) return false;
+
+      if (tryParseInputToChips(text, true)) {
+        state.rawQuery = buildSearchDisplayText();
+        if (state.rawQuery) saveSearchHistory(state.rawQuery);
+        render(true);
+        scrollToChipBar();
+        return true;
+      }
+
+      setQueryFromRawText(text);
+      rebuildQueryChipsFromState();
+      state.rawQuery = buildSearchDisplayText();
+      if (state.rawQuery) saveSearchHistory(state.rawQuery);
+      render(true);
+      scrollToChipBar();
+      return true;
+    }
+
+    function scrollToChipBar() {
+      const bar = $('searchChipBar');
+      if (!bar || bar.hidden) return;
+      const top = bar.getBoundingClientRect().top + window.scrollY - 12;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
     }
 
     function setQueryFromRawText(rawText) {
@@ -2207,9 +2535,70 @@
     function updateSearchPlaceholder() {
       const input = $('searchInput');
       if (!input) return;
-      input.placeholder = isProductMode()
-        ? '请输入商品名称、品牌或类目'
-        : '请输入店铺名称，如“晨光政采供应站”';
+      if (!isProductMode()) {
+        input.placeholder = '请输入店铺名称，如“晨光政采供应站”';
+        return;
+      }
+      input.placeholder = state.aiSearchOn
+        ? '请描述采购需求，如：激光打印机 预算3000以内 支持双面'
+        : '请输入商品名称、品牌或类目';
+    }
+
+    function updateAiSearchToggleUI() {
+      const btn = $('aiSearchToggle');
+      if (!btn) return;
+      btn.classList.toggle('on', state.aiSearchOn);
+      btn.setAttribute('aria-pressed', state.aiSearchOn ? 'true' : 'false');
+      btn.hidden = !isProductMode();
+    }
+
+    function setAiSearchOn(on) {
+      state.aiSearchOn = !!on;
+      localStorage.setItem(AI_SEARCH_KEY, state.aiSearchOn ? '1' : '0');
+      if (!state.aiSearchOn) state.aiIntent = 'all';
+      updateSearchPlaceholder();
+      updateAiGuideUI();
+      updateAiSearchToggleUI();
+    }
+
+    function setAiIntent(intent) {
+      state.aiIntent = AI_INTENT_META[intent] ? intent : 'all';
+      state.page = 1;
+      updateAiGuideUI();
+      render(true);
+    }
+
+    function updateAiGuideUI() {
+      const show = isProductMode() && state.aiSearchOn;
+      const panel = $('aiGuidePanel');
+      const tabs = $('aiIntentTabs');
+      if (panel) panel.hidden = !show;
+      if (tabs) tabs.hidden = !show;
+      if (!show) return;
+
+      document.querySelectorAll('.ai-guide-card').forEach(card => {
+        card.classList.toggle('active', state.aiIntent !== 'all' && card.dataset.intent === state.aiIntent);
+      });
+      document.querySelectorAll('.ai-intent-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.intent === state.aiIntent);
+      });
+    }
+
+    function applyAiIntentFilter(list) {
+      if (!state.aiSearchOn || state.aiIntent === 'all') return list;
+      return list.filter(item => {
+        const scenes = item.sceneIntent || [];
+        if (scenes.includes(state.aiIntent)) return true;
+        const name = String(item.name || '');
+        if (state.aiIntent === 'aio') return /一体机|复印|扫描/.test(name);
+        if (state.aiIntent === 'economy') {
+          return item.categoryL3 === '打印设备' && item.price <= 1000;
+        }
+        if (state.aiIntent === 'office') {
+          return item.categoryL3 === '打印设备' && item.price >= 2000;
+        }
+        return false;
+      });
     }
 
     function updateSearchModeUI() {
@@ -2219,6 +2608,8 @@
       $('aiExplainBar').hidden = true;
       $('aiSuggestRow').hidden = true;
       $('searchCorrectTip').hidden = true;
+      updateAiSearchToggleUI();
+      updateAiGuideUI();
       if (!isProductMode()) {
         clearQueryChips();
         renderQueryChips();
@@ -2281,6 +2672,8 @@
       if (state.priceRange !== '全部') params.set('priceRange', state.priceRange);
       if (state.sort !== 'comprehensive') params.set('sort', state.sort);
       if (state.page > 1) params.set('page', String(state.page));
+      if (state.aiSearchOn) params.set('ai', '1');
+      if (state.aiSearchOn && state.aiIntent !== 'all') params.set('intent', state.aiIntent);
       const query = params.toString();
       const nextUrl = query ? `${window.location.pathname}?${query}` : window.location.pathname;
       window.history.replaceState(null, '', nextUrl);
@@ -2301,6 +2694,13 @@
       if (params.get('brand')) state.brand = params.get('brand');
       if (params.get('sort')) state.sort = params.get('sort');
       if (params.get('page')) state.page = Math.max(1, parseInt(params.get('page'), 10) || 1);
+      if (params.get('ai') === '1') state.aiSearchOn = true;
+      if (params.get('ai') === '0') state.aiSearchOn = false;
+      if (params.get('intent') && AI_INTENT_META[params.get('intent')]) {
+        state.aiIntent = params.get('intent');
+        if (state.aiIntent !== 'all') state.aiSearchOn = true;
+      }
+      localStorage.setItem(AI_SEARCH_KEY, state.aiSearchOn ? '1' : '0');
 
       const keyword = (params.get('keyword') || params.get('q') || '').trim();
       if (keyword) {
@@ -2319,6 +2719,7 @@
       result = result.filter(item => productMatchesCategory(item));
       if (state.brand !== '全部') result = result.filter(item => item.brand === state.brand);
       result = result.filter(item => matchPriceRange(item, state.priceRange));
+      result = applyAiIntentFilter(result);
       return sortResults(result);
     }
 
@@ -2828,6 +3229,10 @@
         if (raw) {
           if (!tryParseInputToChips(raw, true)) {
             setQueryFromRawText(raw);
+            if (state.aiSearchOn) {
+              rebuildQueryChipsFromState();
+              $('searchInput').value = '';
+            }
           }
         } else if (!state.queryChips.length) {
           state.query = '';
@@ -2876,8 +3281,30 @@
         $('searchInput').value = '';
         state.query = '';
         state.rawQuery = '';
+        state.aiIntent = 'all';
         updateSearchModeUI();
         render(true);
+      });
+
+      $('aiSearchToggle').addEventListener('click', event => {
+        event.stopPropagation();
+        setAiSearchOn(!state.aiSearchOn);
+        render(true);
+      });
+
+      document.querySelectorAll('.ai-guide-card').forEach(card => {
+        card.addEventListener('click', () => {
+          if (!state.aiSearchOn) return;
+          const intent = card.dataset.intent;
+          setAiIntent(state.aiIntent === intent ? 'all' : intent);
+        });
+      });
+
+      document.querySelectorAll('.ai-intent-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          if (!state.aiSearchOn) return;
+          setAiIntent(tab.dataset.intent);
+        });
       });
 
       $('searchInput').addEventListener('focus', () => showSearchDropdown());
@@ -2889,7 +3316,18 @@
         if (shouldParseToChips(text)) {
           parseDebounceTimer = setTimeout(() => {
             if (tryParseInputToChips(text, false)) render(true);
-          }, 450);
+          }, state.aiSearchOn ? 350 : 450);
+        }
+      });
+
+      $('aiProcureParseBtn').addEventListener('click', () => {
+        parseProcureRequirement($('aiProcureInput').value);
+      });
+
+      $('aiProcureInput').addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          parseProcureRequirement($('aiProcureInput').value);
         }
       });
 

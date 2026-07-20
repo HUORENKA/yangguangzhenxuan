@@ -17,8 +17,8 @@
     { key: 'fulfillment', name: '合同履约能力', score: 94, icon: 'fa-file-contract', color: '#059669', summary: '合同准时履约率 98.6%，大单履约经验丰富，物流覆盖全国重点区域。' },
     { key: 'quality', name: '商品质量', score: 91, icon: 'fa-medal', color: '#d97706', summary: '正品保障体系完善，退换货率低于行业均值，用户好评率 97.2%。' },
     { key: 'price', name: '价格竞争力', score: 88, icon: 'fa-tags', color: '#7c3aed', summary: '同类商品比价处于较优区间，批量采购议价空间合理。' },
-    { key: 'service', name: '售后服务', score: 90, icon: 'fa-headset', color: '#0891b2', summary: '7×12 小时客服响应，售后工单平均处理时长 4.2 小时。' },
-    { key: 'credit', name: '信用评价', score: 95, icon: 'fa-star', color: '#e11d48', summary: '平台信用分 950/1000，连续 3 年获「优质供应商」认证。' }
+    { key: 'service', name: '商家服务', score: 90, icon: 'fa-headset', color: '#0891b2', summary: '7×12 小时客服响应，售后工单平均处理时长 4.2 小时。' },
+    { key: 'credit', name: '物流服务', score: 95, icon: 'fa-truck', color: '#e11d48', summary: '全国物流网络覆盖，订单准时送达率 98.2%，大件配送与签收体验稳定。' }
   ];
 
   function getDefaultAnalysis(options) {
@@ -28,13 +28,8 @@
     return {
       overallScore: base.overallScore,
       grade: base.grade,
-      aiSummary: options.aiSummary || '该企业综合合同履约能力优秀，资质合规与信用评价均处于平台前列。商品质量稳定、价格竞争力较强，售后响应及时，适合纳入政企集采优选供应商名录。',
+      aiSummary: options.aiSummary || '该企业综合合同履约能力优秀，资质合规与物流履约均处于平台前列。商品质量稳定、价格竞争力较强，商家响应及时，适合纳入政企集采优选供应商名录。',
       dimensions: DEFAULT_DIMENSIONS.map(function (d) { return Object.assign({}, d); }),
-      highlights: options.highlights || [
-        '连续 12 个月零重大投诉',
-        '政采类目 TOP 5% 供应商',
-        '支持电子合同与区块链存证'
-      ],
       updatedAt: options.updatedAt || '2026-07-07'
     };
   }
@@ -154,12 +149,10 @@
       + '            <div class="capability-ai-summary-top">'
       + '              <div class="capability-ai-summary-left">'
       + '                <div class="capability-ai-summary-head"><i class="fas fa-robot"></i><span>AI 分析结论</span></div>'
-      + '                <div class="capability-highlights" id="capabilityHighlights"></div>'
       + '              </div>'
       + '              <div class="capability-score-badge">'
       + '                <div class="capability-score-value" id="capabilityOverallScore">--</div>'
       + '                <div class="capability-score-label">综合评分</div>'
-      + '                <span class="capability-grade" id="capabilityGrade">--</span>'
       + '              </div>'
       + '            </div>'
       + '            <p id="capabilityAiSummary"></p>'
@@ -266,7 +259,6 @@
     var info = data.storeInfo || {};
     document.getElementById('capabilityModalSubtitle').textContent = '基于 AI 多维度评估 · ' + (data.name || '');
     document.getElementById('capabilityOverallScore').textContent = analysis.overallScore || '--';
-    document.getElementById('capabilityGrade').textContent = analysis.grade || '--';
     document.getElementById('capabilityAiSummary').textContent = analysis.aiSummary || '暂无分析数据';
     document.getElementById('capabilityUpdated').textContent = analysis.updatedAt ? '数据更新于 ' + analysis.updatedAt : '';
     document.getElementById('storeInfoCompanyName').textContent = license.companyName || info.companyName || data.name || '-';
@@ -276,9 +268,6 @@
     document.getElementById('storeInfoCompanyAddress').textContent = license.companyAddress || '-';
     document.getElementById('storeLicenseImage').src = license.licenseImage || '';
     document.getElementById('storeCertImage').src = license.certImage || '';
-    document.getElementById('capabilityHighlights').innerHTML = (analysis.highlights || []).map(function (h) {
-      return '<span class="capability-highlight-chip"><i class="fas fa-check-circle" style="margin-right:4px"></i>' + h + '</span>';
-    }).join('');
     document.getElementById('capabilityDimensions').innerHTML = (analysis.dimensions || []).map(function (dim) {
       return ''
         + '<div class="capability-dim-card">'
@@ -344,7 +333,7 @@
   function buildFromSupplier(s, assetBase) {
     assetBase = assetBase || '../../assets/';
     var aiSummaryMap = {
-      pass: '该企业综合合同履约能力优秀，资质合规与信用评价均处于平台前列，适合纳入政企集采优选供应商名录。',
+      pass: '该企业综合合同履约能力优秀，资质合规与物流履约均处于平台前列，适合纳入政企集采优选供应商名录。',
       warn: '该企业整体能力良好，但部分资质文件需关注整改项，建议结合人工复核后纳入采购候选。',
       fail: '该企业存在关键资质或信用风险项，建议暂缓合作并启动专项复核流程。',
       none: '企业资质尚在审核中，暂无法输出完整能力评估，请待 AI 审核完成后再次分析。'

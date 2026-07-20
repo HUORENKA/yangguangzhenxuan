@@ -3,69 +3,531 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>比质比价分析 | 国采e购</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <title>比质比价 | 国采e购</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../assets/custom.css">
   <style>
     :root {
-      --primary: #E2231A;
-      --text-main: #111827;
+      --brand: #2f6bff;
+      --brand-dark: #1d4ed8;
+      --mall-red: #E2231A;
+      --primary: var(--brand);
+      --primary-dark: var(--brand-dark);
+      --text-main: #0f172a;
       --text-sub: #64748b;
-      --border: #e5e7eb;
-      --bg: #f5f7fb;
+      --border: rgba(148, 163, 184, 0.18);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
+      padding-bottom: 40px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-      background: var(--bg);
+      background: #fff;
       color: var(--text-main);
     }
-    .topbar {
-      position: sticky; top: 0; z-index: 100;
-      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-      color: #fff;
-      box-shadow: 0 2px 12px rgba(220, 38, 38, 0.2);
+    a { color: inherit; text-decoration: none; }
+
+    .page-wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 20px 20px 40px;
     }
-    .topbar-inner {
-      max-width: 1200px; margin: 0 auto; padding: 14px 20px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    }
-    .page-wrap { max-width: 1200px; margin: 0 auto; padding: 20px 20px 48px; }
     .card {
-      background: #fff; border: 1px solid var(--border); border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
     }
-    .hero { padding: 22px 24px; background: linear-gradient(135deg, #fff7f7 0%, #ffffff 100%); }
-    .hero-title { font-size: 24px; font-weight: 800; line-height: 1.35; }
-    .hero-sub { margin-top: 8px; color: var(--text-sub); font-size: 14px; line-height: 1.75; }
-    .hero-tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
-    .hero-tag {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
-      background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;
+    .section {
+      margin-bottom: 16px;
+      overflow: hidden;
     }
-    .section { margin-top: 16px; padding: 20px 22px; }
+    .section-head {
+      padding: 18px 20px 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+    }
     .section-title {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px;
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
     }
-    .section-title i { color: var(--primary); font-size: 13px; }
-    .price-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .price-table th, .price-table td {
-      padding: 12px; border-bottom: 1px solid #f1f5f9; text-align: left; vertical-align: middle;
+    .section-desc {
+      margin: 4px 0 0;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-sub);
     }
-    .price-table th { background: #f8fafc; color: #64748b; font-weight: 700; font-size: 12px; }
-    .rank-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      min-width: 30px; height: 24px; padding: 0 8px; border-radius: 8px;
-      font-weight: 800; font-size: 12px;
+    .section-body {
+      padding: 0;
     }
-    .rank-badge.r1 { background: #fef3c7; color: #b45309; }
-    .rank-badge.r2 { background: #f1f5f9; color: #475569; }
-    .rank-badge.r3 { background: #fff7ed; color: #c2410c; }
-    .price-val { font-weight: 800; color: var(--primary); }
+    .section-body--charts {
+      padding: 16px 20px 20px;
+    }
+
+    .table-outer { overflow: auto; }
+    .spec-table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .spec-table th,
+    .spec-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .spec-table thead th {
+      background: #f8fafc;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+    .spec-table tbody tr:hover td { background: #fafcff; }
+    .spec-table tbody tr.spec-ai-panel-row:hover td { background: #f8fafc; }
+    .spec-table tbody tr:last-child td { border-bottom: none; }
+    .spec-label-cell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .spec-label-text { flex: 1; min-width: 0; }
+    .spec-ai-btn {
+      flex-shrink: 0;
+      min-width: 32px;
+      padding: 2px 8px;
+      border: none;
+      border-radius: 4px;
+      background: var(--mall-red);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      line-height: 1.5;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .spec-ai-btn:hover { background: #c41e17; }
+    .spec-ai-btn.is-open {
+      box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.22);
+    }
+    .spec-ai-panel-row td {
+      padding: 0;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    .spec-ai-panel {
+      padding: 14px 16px 16px;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #334155;
+    }
+    .spec-ai-panel-section + .spec-ai-panel-section { margin-top: 12px; }
+    .spec-ai-panel-title {
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .spec-row-label,
+    .spec-table thead .spec-row-label {
+      min-width: 150px;
+      font-weight: 800;
+      color: #6b7280;
+      background: #fafafa;
+      border-right: 1px solid #f1f5f9;
+    }
+    .spec-ref-col { background: #eff6ff; }
+    .spec-table thead .spec-ref-col {
+      background: #eff6ff;
+      color: #1e40af;
+    }
+    .spec-diff {
+      background: #fffbeb;
+      color: #92400e;
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px #fde68a;
+    }
+    .product-col-head {
+      min-width: 160px;
+    }
+    .product-col-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.45;
+    }
+    .product-col-meta {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .ref-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .dim-block { margin-top: 0; }
+    .five-dim-block {
+      padding: 18px 0;
+      border-bottom: 1px solid #eef2f7;
+    }
+    .five-dim-block:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .five-dim-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .five-dim-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .five-dim-title i { color: var(--primary); font-size: 14px; }
+    .five-dim-score {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .five-dim-score strong {
+      font-size: 18px;
+      color: #ea580c;
+      font-weight: 800;
+      margin-left: 4px;
+    }
+    .five-dim-body {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px 16px;
+      background: #fafbfc;
+    }
+    .five-dim-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .five-dim-grid--cols {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .five-dim-item {
+      padding: 12px 14px;
+      border: 1px solid #e8edf3;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .five-dim-item.is-source {
+      border-color: #bfdbfe;
+      background: #f8fbff;
+    }
+    .five-dim-item-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .five-dim-item-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.45;
+    }
+    .five-dim-item-score {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .five-dim-item-score strong { color: #ea580c; }
+    .price-range-track {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .price-range-label {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .price-range-bar {
+      position: relative;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #dbeafe 0%, #dcfce7 50%, #fee2e2 100%);
+      overflow: visible;
+    }
+    .price-range-marker {
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid #fff;
+      background: #2563eb;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+      transform: translate(-50%, -50%);
+    }
+    .five-dim-item.is-source .price-range-marker { background: #2563eb; }
+    .price-locate-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      color: #475569;
+    }
+    .price-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .price-tag.tag-low { background: #dbeafe; color: #1d4ed8; }
+    .price-tag.tag-mid { background: #dcfce7; color: #15803d; }
+    .price-tag.tag-high { background: #fef3c7; color: #b45309; }
+    .price-tag.tag-over { background: #fee2e2; color: #b91c1c; }
+    .trend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .trend-chip.down { background: #dcfce7; color: #15803d; }
+    .trend-chip.up { background: #fee2e2; color: #b91c1c; }
+    .trend-chip.flat { background: #f1f5f9; color: #64748b; }
+    .trend-meta {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+    .deal-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .deal-rank-badge.rank-1 { background: #fef3c7; color: #b45309; }
+    .deal-rank-badge.rank-2 { background: #e2e8f0; color: #475569; }
+    .deal-rank-badge.rank-3 { background: #ffedd5; color: #c2410c; }
+    .deal-stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .deal-stat-row strong { color: #0f172a; }
+    .reputation-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .reputation-metric {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #f8fafc;
+      text-align: center;
+    }
+    .reputation-metric-label {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .reputation-metric-value {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .reputation-metric.positive .reputation-metric-value { color: #15803d; }
+    .reputation-metric.negative .reputation-metric-value { color: #b91c1c; }
+    .five-dim-supplier .supplier-radar-layout { margin-top: 0; }
+    .five-dim-supplier .supplier-radar-wrap { min-height: 340px; }
+    .supplier-radar-layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .supplier-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .supplier-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, opacity 0.2s;
+    }
+    .supplier-list-item:hover {
+      border-color: #bfdbfe;
+      background: #f8fbff;
+    }
+    .supplier-list-item.is-selected {
+      border-color: #2563eb;
+      background: #eff6ff;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+    .supplier-list-item:not(.is-selected) {
+      opacity: 0.72;
+    }
+    .supplier-list-item.is-average {
+      border-style: dashed;
+      background: #f8fafc;
+    }
+    .supplier-list-item.is-average.is-selected {
+      background: #f1f5f9;
+      border-color: #64748b;
+      box-shadow: 0 0 0 2px rgba(100, 116, 139, 0.12);
+    }
+    .supplier-list-check {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      border-radius: 5px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: transparent;
+      font-size: 10px;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .supplier-list-item.is-selected .supplier-list-check {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #fff;
+    }
+    .supplier-list-item.is-average.is-selected .supplier-list-check {
+      background: #64748b;
+      border-color: #64748b;
+    }
+    .supplier-list-dot {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      margin-top: 4px;
+      border-radius: 999px;
+    }
+    .supplier-list-main { flex: 1; min-width: 0; }
+    .supplier-list-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .supplier-list-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.45;
+    }
+    .supplier-list-total {
+      flex-shrink: 0;
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .supplier-list-total strong {
+      font-size: 15px;
+      color: #ea580c;
+      font-weight: 800;
+    }
+    .supplier-list-product {
+      margin-top: 3px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.45;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .supplier-list-item .ref-badge { margin-top: 6px; }
+    .supplier-radar-wrap {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 8px 8px;
+      background: #fafbfc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 380px;
+      position: relative;
+    }
+    .supplier-radar-empty {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+      line-height: 1.7;
+    }
+    .supplier-radar-wrap.is-empty .supplier-radar-empty { display: flex; }
+    .supplier-radar-wrap.is-empty canvas { visibility: hidden; }
+    .supplier-radar-wrap canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+    .supplier-radar-hint {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
     .detail-btn {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 6px 12px; border-radius: 8px; border: 1px solid #dbeafe;
@@ -73,343 +535,968 @@
       cursor: pointer; text-decoration: none;
     }
     .detail-btn:hover { background: #dbeafe; }
-    .brand-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-    .brand-card {
-      display: flex; align-items: center; gap: 12px;
-      padding: 14px; border: 1px solid #e2e8f0; border-radius: 14px; background: #fafbfc;
-    }
-    .brand-avatar {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: linear-gradient(135deg, #fee2e2, #fecaca);
-      color: var(--primary); font-size: 15px; font-weight: 800;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .brand-name { font-size: 14px; font-weight: 800; color: #0f172a; }
-    .brand-sup { font-size: 11px; color: #94a3b8; margin-top: 3px; }
-    .rate-list { display: grid; gap: 12px; }
-    .rate-row {
-      display: grid; grid-template-columns: minmax(0, 1fr) minmax(100px, 160px) 52px;
-      align-items: center; gap: 12px; font-size: 13px;
-    }
-    .rate-label {
-      font-weight: 700; color: #334155;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .rate-bar { height: 10px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
-    .rate-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #f97316, #ef4444); }
-    .rate-val { font-weight: 800; color: #ea580c; text-align: right; }
-    .radar-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-    .radar-card {
-      border: 1px solid #ebeef5; border-radius: 16px; padding: 14px 10px 16px;
-      background: #fafbfc; text-align: center;
-    }
-    .radar-sup {
-      font-size: 12px; font-weight: 800; color: #334155; margin-bottom: 6px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .radar-card canvas { display: block; margin: 0 auto; }
-    .recommend-banner {
-      margin-top: 16px; padding: 16px 18px; border-radius: 14px;
-      border: 1px solid #bbf7d0; background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
-    }
-    .recommend-banner-title { font-size: 16px; font-weight: 800; color: #166534; }
-    .recommend-banner-reason { margin-top: 8px; font-size: 14px; line-height: 1.75; color: #166534; }
     .empty-state { padding: 48px 20px; text-align: center; color: #94a3b8; font-size: 14px; line-height: 1.8; }
     @media (max-width: 860px) {
-      .brand-grid, .radar-grid { grid-template-columns: 1fr; }
-      .rate-row { grid-template-columns: 1fr; gap: 6px; }
+      .supplier-radar-layout { grid-template-columns: 1fr; }
+      .reputation-metrics { grid-template-columns: 1fr; }
     }
   </style>
   <script src="../assets/mode_switcher.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="font-extrabold text-lg"><i class="fa-solid fa-scale-balanced mr-2"></i>国采e购 · 比质比价分析</div>
-      <button class="bg-white/15 hover:bg-white/20 transition rounded-full px-4 py-2 text-sm font-bold" type="button" onclick="window.history.back()">
-        <i class="fa-solid fa-arrow-left mr-1"></i>返回
-      </button>
-    </div>
-  </header>
+  <header class="topbar"></header>
 
   <main class="page-wrap" id="pageMain">
-    <section class="card hero" id="analysisHero">
-      <div class="hero-title">比质比价 · 同品同规分析</div>
-      <div class="hero-sub" id="heroSub">正在加载分析数据…</div>
-      <div class="hero-tags" id="heroTags"></div>
-      <div class="recommend-banner" id="recommendBanner" style="display:none">
-        <div class="recommend-banner-title" id="recommendTitle"></div>
-        <div class="recommend-banner-reason" id="recommendReason"></div>
+    <section class="card section" id="specSection">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">基础规格对比</h2>
+          <p class="section-desc">以进入比质比价时的源商品为参照，参数或交易信息与参照不一致的单元格将高亮显示；规格指标旁可点击 AI 查看对比分析。</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="table-outer">
+          <table class="spec-table" id="specTable"></table>
+        </div>
       </div>
     </section>
 
-    <section class="card section" id="priceSection">
-      <div class="section-title"><i class="fa-solid fa-caret-right"></i> 比质比价商品</div>
-      <div style="overflow:auto">
-        <table class="price-table">
-          <thead>
-            <tr>
-              <th>排名</th><th>商品名称</th><th>品牌</th><th>供应商</th><th>报价</th><th>平台建议区间</th><th>操作</th>
-            </tr>
-          </thead>
-          <tbody id="priceTableBody"></tbody>
-        </table>
+    <section class="card section" id="portraitSection">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">商品五维对比</h2>
+          <p class="section-desc">五个维度采用差异化展示方式，各维度均标注 AI 画像综合分（0–100）；第五维「供应商对比」展示所属供应商六维能力雷达。</p>
+        </div>
       </div>
-    </section>
-
-    <section class="card section" id="rateSection">
-      <div class="section-title"><i class="fa-solid fa-caret-right"></i> 好评率对比</div>
-      <div class="rate-list" id="rateList"></div>
-    </section>
-
-    <section class="card section" id="radarSection">
-      <div class="section-title"><i class="fa-solid fa-caret-right"></i> 供应商分析</div>
-      <div class="radar-grid" id="radarGrid"></div>
+      <div class="section-body section-body--charts">
+        <div id="portraitCompare"></div>
+      </div>
     </section>
   </main>
 
   <script>
-    var RADAR_LABELS = ['售后服务', '信用认证', '交付能力', '履约评价', '图文一致', '价格合理'];
+    var PORTRAIT_DIM_META = {
+      priceReason: { label: '价格合理性', icon: 'fa-scale-balanced' },
+      priceStable: { label: '价格稳定性', icon: 'fa-chart-line' },
+      historyDeal: { label: '历史成交', icon: 'fa-clock-rotate-left' },
+      userReputation: { label: '用户口碑', icon: 'fa-star' },
+      supplier: { label: '供应商对比', icon: 'fa-building-circle-check' }
+    };
+
+    var SUPPLIER_DIM_KEYS = [
+      { key: 'qualification', label: '资质合规', icon: 'fa-shield-halved' },
+      { key: 'fulfillment', label: '合同履约能力', icon: 'fa-file-contract' },
+      { key: 'quality', label: '商品质量', icon: 'fa-medal' },
+      { key: 'price', label: '价格竞争力', icon: 'fa-tags' },
+      { key: 'service', label: '商家服务', icon: 'fa-headset' },
+      { key: 'credit', label: '物流服务', icon: 'fa-truck' }
+    ];
+
+    var SUPPLIER_RADAR_COLORS = ['#2563eb', '#E2231A', '#10b981', '#f97316', '#8b5cf6', '#0891b2', '#db2777'];
+    var SUPPLIER_MOCK_SCORE_MATRIX = [
+      [98, 95, 93, 90, 92, 96],
+      [72, 68, 81, 88, 65, 70],
+      [58, 86, 62, 55, 78, 52],
+      [84, 50, 74, 82, 60, 58],
+      [45, 72, 48, 68, 55, 42]
+    ];
+
     var comparePayload = null;
+    var supplierRadarEntries = [];
+    var supplierSelectedIds = [];
+    var activeSpecAiKey = null;
+
+    var SPEC_PARAM_ATTR_HINTS = {
+      '品牌': '品牌体现产品质量稳定性、售后保障及合规供应能力，政企采购需关注是否在平台合格供应商名录内。',
+      '型号': '型号是识别同品同规的核心标识，型号不一致通常意味着配置或代际存在差异。',
+      '规格': '规格决定商品是否满足实际用量与使用场景，是同品同规比对的关键依据。',
+      '颜色': '颜色影响使用场景适配性，批量采购时需与现有办公用品色系或标识规范保持一致。',
+      '包装方式': '包装方式关系到仓储、分发及领用效率，整箱/盒装适合不同采购批量。',
+      '双面打印': '双面打印能力影响纸张利用率与办公成本，批复印印场景尤为关键。',
+      '适用场景': '适用场景描述商品最佳使用边界，可据此判断是否匹配本部门实际需求。',
+      '供货周期': '供货周期影响补货响应速度，常备现货更适合高频消耗品，滚动补货需关注安全库存。',
+      '笔尖类型': '笔尖类型影响书写手感与适用场景，子弹头适合日常办公，针管头更适合精细书写。',
+      '网络打印': '网络打印支持有线/无线接入，便于多人共享与远程输出，是办公设备选型的重要能力。',
+      '支持纸张尺寸': '纸张尺寸范围决定设备兼容性，需覆盖日常使用的纸型规格。'
+    };
 
     function escapeHtml(s) {
       var d = document.createElement('div');
-      d.textContent = s;
+      d.textContent = s == null ? '' : String(s);
       return d.innerHTML;
     }
 
-    function drawRadar(canvas, radar, legend) {
-      var values = [
-        radar.afterSales, radar.credit, radar.delivery,
-        radar.fulfillment, radar.consistency, radar.priceReason
-      ];
+    function clampScore(value) {
+      return Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
+    }
+
+    function shortName(name, max) {
+      var text = String(name || '');
+      return text.length > (max || 18) ? text.slice(0, max || 18) + '…' : text;
+    }
+
+    function getSourceProduct(products) {
+      return products.find(function(p) { return p.isSource; }) || products[0];
+    }
+
+    function buildSpecRows(products, source) {
+      var paramKeys = [];
+      (source.params || []).forEach(function(item) {
+        if (item[0] && paramKeys.indexOf(item[0]) === -1) paramKeys.push(item[0]);
+      });
+      products.forEach(function(product) {
+        (product.params || []).forEach(function(item) {
+          if (item[0] && paramKeys.indexOf(item[0]) === -1) paramKeys.push(item[0]);
+        });
+      });
+
+      var rows = paramKeys.map(function(key) {
+        return {
+          label: key,
+          type: 'param',
+          values: products.map(function(product) {
+            var matched = (product.params || []).find(function(item) { return item[0] === key; });
+            return matched ? matched[1] : '—';
+          })
+        };
+      });
+
+      rows.push({
+        label: '单价',
+        type: 'trade',
+        values: products.map(function(product) {
+          return '¥' + Number(product.price || 0).toFixed(Number(product.price || 0) % 1 ? 2 : 0) + ' / ' + (product.unit || '件');
+        })
+      });
+      rows.push({
+        label: '平台建议区间',
+        type: 'trade',
+        values: products.map(function(product) {
+          return '¥' + Number(product.floor || 0).toFixed(0) + ' - ¥' + Number(product.ceiling || 0).toFixed(0);
+        })
+      });
+      rows.push({
+        label: '供应商',
+        type: 'trade',
+        values: products.map(function(product) { return product.supplier || '—'; })
+      });
+      rows.push({
+        label: '操作',
+        type: 'action',
+        values: products.map(function(product) {
+          return product.id
+            ? '<a class="detail-btn" href="../pages/product.html?id=' + encodeURIComponent(product.id) + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> 查看详情</a>'
+            : '—';
+        })
+      });
+      return rows;
+    }
+
+    function valuesAreUniform(values) {
+      if (!values.length) return true;
+      var first = String(values[0]);
+      return values.every(function(value) { return String(value) === first; });
+    }
+
+    function inferParamValueComment(label, value, allValues, product, productIndex) {
+      var text = String(value || '—');
+      var valLower = text.toLowerCase();
+      if (valuesAreUniform(allValues)) {
+        return '参数值为「' + text + '」，与其他候选一致。';
+      }
+      if (/支持|具备|含|有/.test(text) && !/不支持|不含|无/.test(text)) {
+        return '标注为「' + text + '」，在该项能力上表述明确，配置相对完整。';
+      }
+      if (/不支持|不含|无/.test(text)) {
+        return '标注为「' + text + '」，在该项能力上相对偏弱，需确认是否影响实际使用。';
+      }
+      if (label.indexOf('周期') !== -1 || label.indexOf('供货') !== -1) {
+        if (/现货|24|48|当日|常备/.test(text)) {
+          return '供货表述为「' + text + '」，响应速度较快，适合紧急补货。';
+        }
+        return '供货表述为「' + text + '」，建议结合安全库存与采购频次评估。';
+      }
+      if (label.indexOf('规格') !== -1 || label.indexOf('尺寸') !== -1 || label.indexOf('克重') !== -1) {
+        return '规格取值为「' + text + '」，请核对是否与现有使用标准一致。';
+      }
+      var others = allValues.filter(function(v, i) { return i !== productIndex; }).map(String);
+      var uniqueOthers = others.filter(function(v, i, arr) { return arr.indexOf(v) === i; });
+      if (uniqueOthers.indexOf(text) === -1) {
+        return '参数值「' + text + '」与其他候选不同，是本项主要差异点之一。';
+      }
+      return '参数值为「' + text + '」，与部分候选一致，可结合价格与供应商能力综合判断。';
+    }
+
+    function buildSpecAiProsCons(row, products) {
+      var values = row.values;
+      if (valuesAreUniform(values)) {
+        return '各参与对比商品在该指标上取值一致（均为「' + escapeHtml(String(values[0])) + '」），本项不构成差异化选型因素。';
+      }
+      return products.map(function(product, index) {
+        var prefix = product.isSource ? '参照商品·' : '';
+        var comment = inferParamValueComment(row.label, values[index], values, product, index);
+        return (index + 1) + '. ' + prefix + shortName(product.name, 20) + '：' + comment;
+      }).join('<br>');
+    }
+
+    function buildSpecAiSuggestion(row, products) {
+      var values = row.values;
+      var label = row.label;
+      if (valuesAreUniform(values)) {
+        return '本项参数无差异，可继续从价格、供应商能力、历史成交等维度综合决策。';
+      }
+      var sourceIndex = Math.max(0, products.findIndex(function(item) { return item.isSource; }));
+      var suggestions = [];
+      products.forEach(function(product, index) {
+        if (index === sourceIndex) return;
+        if (String(values[index]) === String(values[sourceIndex])) return;
+        var val = values[index];
+        if (/不支持|不含|无/.test(String(val))) return;
+        suggestions.push('若更看重「' + escapeHtml(label) + '」取值为「' + escapeHtml(String(val)) + '」，可关注「' + escapeHtml(shortName(product.name, 18)) + '」。');
+      });
+      if (!suggestions.length) {
+        suggestions.push('候选商品在该指标上存在差异，建议以参照商品「' + escapeHtml(shortName(products[sourceIndex].name, 18)) + '」的参数为基准，优先选择匹配度更高的选项。');
+      }
+      suggestions.push('如需保持与参照商品一致，请优先选择该指标取值相同或接近的候选。');
+      return suggestions.slice(0, 4).join('<br>');
+    }
+
+    function buildSpecAiAnalysisHtml(row, products) {
+      var attr = SPEC_PARAM_ATTR_HINTS[row.label] ||
+        ('「' + escapeHtml(row.label) + '」是商品关键参数之一，直接影响选型匹配度与使用效果，建议结合部门实际场景综合判断。');
+      return '<div class="spec-ai-panel-section">' +
+          '<div class="spec-ai-panel-title">【商品属性】</div>' +
+          '<div>' + attr + '</div>' +
+        '</div>' +
+        '<div class="spec-ai-panel-section">' +
+          '<div class="spec-ai-panel-title">【属性优劣】</div>' +
+          '<div>' + buildSpecAiProsCons(row, products) + '</div>' +
+        '</div>' +
+        '<div class="spec-ai-panel-section">' +
+          '<div class="spec-ai-panel-title">【适用建议】</div>' +
+          '<div>' + buildSpecAiSuggestion(row, products) + '</div>' +
+        '</div>';
+    }
+
+    function closeAllSpecAiPanels() {
+      document.querySelectorAll('.spec-ai-panel-row').forEach(function(row) {
+        row.hidden = true;
+      });
+      document.querySelectorAll('.spec-ai-btn').forEach(function(btn) {
+        btn.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+      });
+      activeSpecAiKey = null;
+    }
+
+    function toggleSpecAiPanel(rowKey, btn, row, products) {
+      var panel = document.getElementById(rowKey + '-panel');
+      var content = document.getElementById(rowKey + '-content');
+      if (!panel || !content) return;
+      if (activeSpecAiKey === rowKey) {
+        closeAllSpecAiPanels();
+        return;
+      }
+      closeAllSpecAiPanels();
+      content.innerHTML = buildSpecAiAnalysisHtml(row, products);
+      panel.hidden = false;
+      btn.classList.add('is-open');
+      btn.setAttribute('aria-expanded', 'true');
+      activeSpecAiKey = rowKey;
+    }
+
+    function bindSpecAiHandlers(products, rows) {
+      var table = document.getElementById('specTable');
+      if (!table || table.dataset.aiBound === '1') return;
+      table.dataset.aiBound = '1';
+      table.addEventListener('click', function(event) {
+        var btn = event.target.closest('.spec-ai-btn');
+        if (!btn) return;
+        event.preventDefault();
+        event.stopPropagation();
+        var rowKey = btn.getAttribute('data-spec-key');
+        if (!rowKey) return;
+        var rowIndex = Number(rowKey.replace('spec-row-', ''));
+        if (Number.isNaN(rowIndex) || !rows[rowIndex]) return;
+        toggleSpecAiPanel(rowKey, btn, rows[rowIndex], products);
+      });
+    }
+
+    function renderSpecTable(products, source) {
+      var rows = buildSpecRows(products, source);
+      var head = '<thead><tr><th class="spec-row-label">对比项</th>';
+      products.forEach(function(product) {
+        head += '<th class="product-col-head' + (product.isSource ? ' spec-ref-col' : '') + '" scope="col">' +
+          '<div class="product-col-name">' + escapeHtml(shortName(product.name, 22)) + '</div>' +
+          '<div class="product-col-meta">' + escapeHtml(product.supplier || '') + '</div>' +
+          (product.isSource ? '<span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照商品</span>' : '') +
+          '</th>';
+      });
+      head += '</tr></thead>';
+
+      var body = '<tbody>';
+      var sourceIndex = Math.max(0, products.findIndex(function(item) { return item.isSource; }));
+      closeAllSpecAiPanels();
+      rows.forEach(function(row, rowIndex) {
+        var rowKey = 'spec-row-' + rowIndex;
+        var canAi = row.type === 'param';
+        var labelHtml = canAi
+          ? '<div class="spec-label-cell">' +
+              '<span class="spec-label-text">' + escapeHtml(row.label) + '</span>' +
+              '<button type="button" class="spec-ai-btn" data-spec-key="' + rowKey + '" aria-expanded="false" title="AI分析">AI</button>' +
+            '</div>'
+          : escapeHtml(row.label);
+
+        body += '<tr class="spec-data-row" data-spec-key="' + rowKey + '">';
+        body += '<td class="spec-row-label">' + labelHtml + '</td>';
+        var sourceValue = row.values[sourceIndex];
+        row.values.forEach(function(value, index) {
+          var product = products[index];
+          var isDiff = row.type === 'param' && String(value) !== String(sourceValue) && !product.isSource;
+          var cls = product.isSource ? 'spec-ref-col' : '';
+          if (isDiff) cls += ' spec-diff';
+          if (row.type === 'action') {
+            body += '<td class="' + cls + '">' + value + '</td>';
+          } else {
+            body += '<td class="' + cls + '">' + escapeHtml(value) + '</td>';
+          }
+        });
+        body += '</tr>';
+
+        if (canAi) {
+          body += '<tr class="spec-ai-panel-row" id="' + rowKey + '-panel" hidden>' +
+            '<td colspan="' + (products.length + 1) + '">' +
+              '<div class="spec-ai-panel" id="' + rowKey + '-content"></div>' +
+            '</td>' +
+          '</tr>';
+        }
+      });
+      body += '</tbody>';
+      var table = document.getElementById('specTable');
+      table.removeAttribute('data-ai-bound');
+      table.innerHTML = head + body;
+      bindSpecAiHandlers(products, rows);
+    }
+
+    function getPortraitScore(product, key) {
+      return clampScore((product.portrait || {})[key] || 0);
+    }
+
+    function enrichProductTradeInsight(products) {
+      products.forEach(function(product, index) {
+        if (product.tradeInsight) return;
+        product.tradeInsight = {
+          priceChange: {
+            date: '2026-04-0' + ((index % 4) + 2),
+            direction: index % 3 === 0 ? '加价' : '降价',
+            percent: +(1.5 + index * 0.9).toFixed(1)
+          },
+          sold: Math.max(200, 5200 - index * 980),
+          recentSold: Math.max(12, 280 - index * 55),
+          lastDealDate: '2026-05-' + String(Math.max(10, 20 - index * 2)).padStart(2, '0'),
+          goodRate: (97.5 - index * 1.1).toFixed(1) + '%',
+          validEvalCount: Math.max(10, 120 - index * 20),
+          returnRate: +(1.0 + index * 0.35).toFixed(1)
+        };
+      });
+    }
+
+    function getPricePositionInfo(product) {
+      var floor = Number(product.floor) || 0;
+      var ceiling = Number(product.ceiling) || Math.max(floor + 1, Number(product.price) || 0);
+      var price = Number(product.price) || 0;
+      var span = Math.max(ceiling - floor, 0.01);
+      var ratio = Math.max(0, Math.min(100, ((price - floor) / span) * 100));
+      var tag = '合理区间';
+      var tagClass = 'tag-mid';
+      if (price > ceiling) {
+        tag = '高于上限';
+        tagClass = 'tag-over';
+      } else if (ratio <= 35) {
+        tag = '偏低';
+        tagClass = 'tag-low';
+      } else if (ratio >= 78) {
+        tag = '偏高';
+        tagClass = 'tag-high';
+      }
+      return {
+        floor: floor,
+        ceiling: ceiling,
+        price: price,
+        ratio: ratio,
+        tag: tag,
+        tagClass: tagClass
+      };
+    }
+
+    function renderFiveDimHead(metaKey, score) {
+      var meta = PORTRAIT_DIM_META[metaKey];
+      return '<div class="five-dim-head">' +
+        '<div class="five-dim-title"><i class="fa-solid ' + meta.icon + '"></i>' + escapeHtml(meta.label) + '</div>' +
+        '<div class="five-dim-score">综合分<strong>' + score + '</strong></div>' +
+      '</div>';
+    }
+
+    function renderFiveDimItemHead(product, score) {
+      return '<div class="five-dim-item-head">' +
+        '<div class="five-dim-item-name" title="' + escapeHtml(product.name || '') + '">' +
+          escapeHtml(shortName(product.name, 18)) +
+          (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照</span>' : '') +
+        '</div>' +
+        '<div class="five-dim-item-score"><strong>' + score + '</strong> 分</div>' +
+      '</div>';
+    }
+
+    function renderPriceReasonCompare(products) {
+      var items = products.map(function(product) {
+        var score = getPortraitScore(product, 'priceReason');
+        var info = getPricePositionInfo(product);
+        var priceText = '¥' + info.price.toFixed(info.price % 1 ? 2 : 0);
+        return '<div class="five-dim-item' + (product.isSource ? ' is-source' : '') + '">' +
+          renderFiveDimItemHead(product, score) +
+          '<div class="price-range-track">' +
+            '<span class="price-range-label">¥' + info.floor.toFixed(0) + '</span>' +
+            '<div class="price-range-bar"><span class="price-range-marker" style="left:' + info.ratio + '%"></span></div>' +
+            '<span class="price-range-label">¥' + info.ceiling.toFixed(0) + '</span>' +
+          '</div>' +
+          '<div class="price-locate-meta">' +
+            '<span>现价 ' + priceText + ' / ' + escapeHtml(product.unit || '件') + '</span>' +
+            '<span class="price-tag ' + info.tagClass + '">' + escapeHtml(info.tag) + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      var refScore = getPortraitScore(getSourceProduct(products), 'priceReason');
+      return '<div class="five-dim-block">' +
+        renderFiveDimHead('priceReason', refScore) +
+        '<div class="five-dim-body"><div class="five-dim-grid five-dim-grid--cols">' + items + '</div></div>' +
+      '</div>';
+    }
+
+    function renderPriceStableCompare(products) {
+      var items = products.map(function(product) {
+        var score = getPortraitScore(product, 'priceStable');
+        var change = (product.tradeInsight && product.tradeInsight.priceChange) || {};
+        var direction = change.direction || '平稳';
+        var chipClass = direction === '降价' ? 'down' : (direction === '加价' ? 'up' : 'flat');
+        var icon = direction === '降价' ? 'fa-arrow-trend-down' : (direction === '加价' ? 'fa-arrow-trend-up' : 'fa-minus');
+        var summary = direction === '降价'
+          ? '近期下调，采购成本压力相对更小'
+          : (direction === '加价' ? '近期上调，需关注后续报价波动' : '近期价格平稳，波动风险较低');
+        return '<div class="five-dim-item' + (product.isSource ? ' is-source' : '') + '">' +
+          renderFiveDimItemHead(product, score) +
+          '<span class="trend-chip ' + chipClass + '"><i class="fa-solid ' + icon + '"></i>' + escapeHtml(direction) +
+            (change.percent ? ' ' + change.percent + '%' : '') +
+          '</span>' +
+          '<div class="trend-meta">最近调价：' + escapeHtml(change.date || '—') + ' · ' + escapeHtml(summary) + '</div>' +
+        '</div>';
+      }).join('');
+      var refScore = getPortraitScore(getSourceProduct(products), 'priceStable');
+      return '<div class="five-dim-block">' +
+        renderFiveDimHead('priceStable', refScore) +
+        '<div class="five-dim-body"><div class="five-dim-grid five-dim-grid--cols">' + items + '</div></div>' +
+      '</div>';
+    }
+
+    function renderHistoryDealCompare(products) {
+      var ranked = products.map(function(product, index) {
+        return {
+          product: product,
+          sold: Number((product.tradeInsight && product.tradeInsight.sold) || 0),
+          index: index
+        };
+      }).sort(function(a, b) { return b.sold - a.sold; });
+      var rankMap = {};
+      ranked.forEach(function(item, rankIndex) {
+        rankMap[item.index] = rankIndex + 1;
+      });
+      var items = products.map(function(product, index) {
+        var score = getPortraitScore(product, 'historyDeal');
+        var insight = product.tradeInsight || {};
+        var rank = rankMap[index];
+        var rankClass = rank <= 3 ? (' rank-' + rank) : '';
+        return '<div class="five-dim-item' + (product.isSource ? ' is-source' : '') + '">' +
+          '<div class="five-dim-item-head">' +
+            '<div class="five-dim-item-name" title="' + escapeHtml(product.name || '') + '">' +
+              '<span class="deal-rank-badge' + rankClass + '">' + rank + '</span> ' +
+              escapeHtml(shortName(product.name, 16)) +
+              (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照</span>' : '') +
+            '</div>' +
+            '<div class="five-dim-item-score"><strong>' + score + '</strong> 分</div>' +
+          '</div>' +
+          '<div class="deal-stat-row">' +
+            '<span>累计成交 <strong>' + Number(insight.sold || 0) + '</strong> ' + escapeHtml(product.unit || '件') + '</span>' +
+            '<span>近30天 <strong>' + Number(insight.recentSold || 0) + '</strong></span>' +
+            '<span>最近成交 <strong>' + escapeHtml(insight.lastDealDate || '—') + '</strong></span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      var refScore = getPortraitScore(getSourceProduct(products), 'historyDeal');
+      return '<div class="five-dim-block">' +
+        renderFiveDimHead('historyDeal', refScore) +
+        '<div class="five-dim-body"><div class="five-dim-grid">' + items + '</div></div>' +
+      '</div>';
+    }
+
+    function getReputationTone(type, value) {
+      if (type === 'goodRate') {
+        var pct = parseFloat(String(value).replace('%', '')) || 0;
+        return pct >= 97 ? 'positive' : (pct < 95 ? 'negative' : '');
+      }
+      if (type === 'validEvalCount') {
+        return value >= 50 ? 'positive' : (value < 15 ? 'negative' : '');
+      }
+      if (type === 'returnRate') {
+        return value <= 1.5 ? 'positive' : (value > 2.5 ? 'negative' : '');
+      }
+      return '';
+    }
+
+    function renderUserReputationCompare(products) {
+      var items = products.map(function(product) {
+        var score = getPortraitScore(product, 'userReputation');
+        var insight = product.tradeInsight || {};
+        var goodRate = insight.goodRate || '—';
+        var validEvalCount = Number(insight.validEvalCount || 0);
+        var returnRate = Number(insight.returnRate || 0);
+        return '<div class="five-dim-item' + (product.isSource ? ' is-source' : '') + '">' +
+          renderFiveDimItemHead(product, score) +
+          '<div class="reputation-metrics">' +
+            '<div class="reputation-metric ' + getReputationTone('goodRate', goodRate) + '">' +
+              '<div class="reputation-metric-label">好评率</div>' +
+              '<div class="reputation-metric-value">' + escapeHtml(String(goodRate)) + '</div>' +
+            '</div>' +
+            '<div class="reputation-metric ' + getReputationTone('validEvalCount', validEvalCount) + '">' +
+              '<div class="reputation-metric-label">有效评价</div>' +
+              '<div class="reputation-metric-value">' + validEvalCount + ' 条</div>' +
+            '</div>' +
+            '<div class="reputation-metric ' + getReputationTone('returnRate', returnRate) + '">' +
+              '<div class="reputation-metric-label">退货率</div>' +
+              '<div class="reputation-metric-value">' + returnRate.toFixed(1) + '%</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      var refScore = getPortraitScore(getSourceProduct(products), 'userReputation');
+      return '<div class="five-dim-block">' +
+        renderFiveDimHead('userReputation', refScore) +
+        '<div class="five-dim-body"><div class="five-dim-grid five-dim-grid--cols">' + items + '</div></div>' +
+      '</div>';
+    }
+
+    function renderSupplierDimBlock(products) {
+      var refScore = getPortraitScore(getSourceProduct(products), 'supplier');
+      return '<div class="five-dim-block five-dim-supplier">' +
+        renderFiveDimHead('supplier', refScore) +
+        '<div class="five-dim-body" style="padding:0;border:none;background:transparent">' +
+          '<div id="portraitSupplierRadar"></div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function renderPortraitCompare(products) {
+      enrichProductTradeInsight(products);
+      document.getElementById('portraitCompare').innerHTML =
+        renderPriceReasonCompare(products) +
+        renderPriceStableCompare(products) +
+        renderHistoryDealCompare(products) +
+        renderUserReputationCompare(products) +
+        renderSupplierDimBlock(products);
+      renderSupplierRadarCompare(products, 'portraitSupplierRadar');
+    }
+
+    function getSupplierColor(index) {
+      return SUPPLIER_RADAR_COLORS[index % SUPPLIER_RADAR_COLORS.length];
+    }
+
+    function getSupplierScores(product) {
+      return SUPPLIER_DIM_KEYS.map(function(dim) {
+        var matched = (product.supplierDims || []).find(function(item) { return item.key === dim.key; });
+        return clampScore(matched ? matched.score : 0);
+      });
+    }
+
+    function avgSixDimScore(scores) {
+      if (!scores.length) return 0;
+      var sum = scores.reduce(function(total, score) { return total + score; }, 0);
+      return clampScore(sum / scores.length);
+    }
+
+    function buildAverageScores(products) {
+      if (!products.length) return SUPPLIER_DIM_KEYS.map(function() { return 0; });
+      return SUPPLIER_DIM_KEYS.map(function(dim, dimIndex) {
+        var total = products.reduce(function(sum, product) {
+          return sum + getSupplierScores(product)[dimIndex];
+        }, 0);
+        return clampScore(total / products.length);
+      });
+    }
+
+    function buildSupplierRadarEntries(products) {
+      var averageScores = buildAverageScores(products);
+      var averageEntry = {
+        id: 'average',
+        type: 'average',
+        name: '平均分',
+        subtitle: '各候选供应商六维均值',
+        color: '#64748b',
+        scores: averageScores,
+        avgScore: avgSixDimScore(averageScores),
+        isSource: false
+      };
+      var productEntries = products.map(function(product, index) {
+        var scores = getSupplierScores(product);
+        return {
+          id: 'product-' + index,
+          type: 'product',
+          productIndex: index,
+          name: product.supplier || '未知供应商',
+          subtitle: product.name || '',
+          color: getSupplierColor(index),
+          scores: scores,
+          avgScore: avgSixDimScore(scores),
+          isSource: !!product.isSource
+        };
+      });
+      return [averageEntry].concat(productEntries);
+    }
+
+    function getDefaultSupplierSelectedIds(entries) {
+      var ids = ['average'];
+      var sourceEntry = entries.find(function(entry) { return entry.isSource; });
+      if (sourceEntry) ids.push(sourceEntry.id);
+      return ids;
+    }
+
+    function hexToRgba(hex, alpha) {
+      var value = String(hex || '#2563eb').replace('#', '');
+      if (value.length === 3) {
+        value = value.split('').map(function(ch) { return ch + ch; }).join('');
+      }
+      var num = parseInt(value, 16);
+      var r = (num >> 16) & 255;
+      var g = (num >> 8) & 255;
+      var b = num & 255;
+      return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+    }
+
+    function drawSupplierRadar(canvas, entries, selectedIds) {
+      if (!canvas) return;
       var ctx = canvas.getContext('2d');
       var width = canvas.width;
       var height = canvas.height;
       var centerX = width / 2;
-      var centerY = height / 2 + 8;
-      var radius = 72;
-      var total = RADAR_LABELS.length;
-      var angleOf = function(i) { return -Math.PI / 2 + (i * Math.PI * 2 / total); };
+      var centerY = height / 2 + 6;
+      var radius = Math.min(width, height) * 0.28;
+      var labels = SUPPLIER_DIM_KEYS.map(function(dim) { return dim.label; });
+      var total = labels.length;
+      var angleOf = function(index) {
+        return -Math.PI / 2 + (index * Math.PI * 2 / total);
+      };
+      var activeEntries = entries.filter(function(entry) {
+        return selectedIds.indexOf(entry.id) !== -1;
+      });
 
       ctx.clearRect(0, 0, width, height);
 
-      for (var level = 1; level <= 5; level++) {
-        var lr = radius * (level / 5);
+      for (var level = 1; level <= 4; level++) {
+        var levelRadius = radius * (level / 4);
         ctx.beginPath();
         for (var i = 0; i < total; i++) {
-          var a = angleOf(i);
-          var x = centerX + Math.cos(a) * lr;
-          var y = centerY + Math.sin(a) * lr;
+          var angle = angleOf(i);
+          var x = centerX + Math.cos(angle) * levelRadius;
+          var y = centerY + Math.sin(angle) * levelRadius;
           ctx[i ? 'lineTo' : 'moveTo'](x, y);
         }
         ctx.closePath();
-        ctx.strokeStyle = level === 5 ? '#cbd5e1' : '#e8edf3';
+        ctx.strokeStyle = level === 4 ? '#d1d5db' : '#e5e7eb';
         ctx.lineWidth = 1;
         ctx.stroke();
       }
 
-      for (var j = 0; j < total; j++) {
-        var ang = angleOf(j);
+      for (var axis = 0; axis < total; axis++) {
+        var axisAngle = angleOf(axis);
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
-        ctx.lineTo(centerX + Math.cos(ang) * radius, centerY + Math.sin(ang) * radius);
-        ctx.strokeStyle = '#e8edf3';
+        ctx.lineTo(centerX + Math.cos(axisAngle) * radius, centerY + Math.sin(axisAngle) * radius);
+        ctx.strokeStyle = '#e5e7eb';
+        ctx.lineWidth = 1;
         ctx.stroke();
       }
 
-      ctx.beginPath();
-      values.forEach(function(v, idx) {
-        var ratio = Math.max(0, Math.min(100, v)) / 100;
-        var a = angleOf(idx);
-        var px = centerX + Math.cos(a) * radius * ratio;
-        var py = centerY + Math.sin(a) * radius * ratio;
-        ctx[idx ? 'lineTo' : 'moveTo'](px, py);
-      });
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(226, 35, 26, 0.18)';
-      ctx.fill();
-      ctx.strokeStyle = '#E2231A';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      activeEntries.forEach(function(entry) {
+        var values = entry.scores;
+        var color = entry.color;
+        var isAverage = entry.type === 'average';
 
-      values.forEach(function(v, idx) {
-        var ratio = Math.max(0, Math.min(100, v)) / 100;
-        var a = angleOf(idx);
-        var px = centerX + Math.cos(a) * radius * ratio;
-        var py = centerY + Math.sin(a) * radius * ratio;
         ctx.beginPath();
-        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = '#E2231A';
+        values.forEach(function(value, index) {
+          var ratio = value / 100;
+          var pointAngle = angleOf(index);
+          var x = centerX + Math.cos(pointAngle) * radius * ratio;
+          var y = centerY + Math.sin(pointAngle) * radius * ratio;
+          ctx[index ? 'lineTo' : 'moveTo'](x, y);
+        });
+        ctx.closePath();
+        ctx.fillStyle = hexToRgba(color, isAverage ? 0.12 : 0.18);
         ctx.fill();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = isAverage ? 2 : 2.5;
+        if (isAverage) ctx.setLineDash([6, 4]); else ctx.setLineDash([]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        values.forEach(function(value, index) {
+          var ratio = value / 100;
+          var pointAngle = angleOf(index);
+          var x = centerX + Math.cos(pointAngle) * radius * ratio;
+          var y = centerY + Math.sin(pointAngle) * radius * ratio;
+          ctx.beginPath();
+          ctx.arc(x, y, isAverage ? 3 : 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        });
       });
 
-      ctx.font = '11px "Microsoft YaHei", sans-serif';
+      ctx.font = '12px "Microsoft YaHei", sans-serif';
       ctx.fillStyle = '#475569';
-      RADAR_LABELS.forEach(function(label, idx) {
-        var a = angleOf(idx);
-        var lr = radius + 22;
-        var lx = centerX + Math.cos(a) * lr;
-        var ly = centerY + Math.sin(a) * lr;
-        var metrics = ctx.measureText(label);
-        var drawX = lx - metrics.width / 2;
-        if (idx === 1 || idx === 2) drawX = lx;
-        if (idx === 4 || idx === 5) drawX = lx - metrics.width;
-        ctx.fillText(label, drawX, ly + 4);
+      labels.forEach(function(label, index) {
+        var labelAngle = angleOf(index);
+        var labelRadius = radius + 30;
+        var x = centerX + Math.cos(labelAngle) * labelRadius;
+        var y = centerY + Math.sin(labelAngle) * labelRadius;
+        var text = label;
+        var metrics = ctx.measureText(text);
+        var drawX = x - metrics.width / 2;
+        if (index === 1 || index === 2) drawX = x;
+        if (index === 3 || index === 4) drawX = x - metrics.width;
+        ctx.fillText(text, drawX, y + 4);
       });
+    }
 
-      if (legend) {
-        ctx.fillStyle = '#E2231A';
-        ctx.fillRect(12, 10, 12, 8);
-        ctx.fillStyle = '#64748b';
-        ctx.font = '12px "Microsoft YaHei", sans-serif';
-        ctx.fillText(legend, 28, 18);
+    function renderSupplierListItem(entry, isSelected) {
+      var extraClass = entry.type === 'average' ? ' is-average' : '';
+      return '<button type="button" class="supplier-list-item' + extraClass + (isSelected ? ' is-selected' : '') + '" data-id="' + escapeHtml(entry.id) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
+        '<span class="supplier-list-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>' +
+        '<span class="supplier-list-dot" style="background:' + entry.color + '"></span>' +
+        '<div class="supplier-list-main">' +
+          '<div class="supplier-list-name-row">' +
+            '<span class="supplier-list-name">' + escapeHtml(entry.name) + '</span>' +
+            '<span class="supplier-list-total">六维均分 <strong>' + entry.avgScore + '</strong></span>' +
+          '</div>' +
+          '<div class="supplier-list-product" title="' + escapeHtml(entry.subtitle || '') + '">' + escapeHtml(shortName(entry.subtitle, 24)) + '</div>' +
+          (entry.isSource ? '<span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照商品</span>' : '') +
+        '</div>' +
+      '</button>';
+    }
+
+    function refreshSupplierRadarView() {
+      var canvas = document.getElementById('supplierRadarCanvas');
+      var wrap = document.querySelector('.supplier-radar-wrap');
+      if (!canvas || !wrap) return;
+      var hasSelection = supplierSelectedIds.length > 0;
+      wrap.classList.toggle('is-empty', !hasSelection);
+      if (hasSelection) {
+        drawSupplierRadar(canvas, supplierRadarEntries, supplierSelectedIds);
+      } else {
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     }
 
-    function buildRecommendReason(products) {
-      if (!products.length) return '';
-      var best = products[0];
-      return '在 ' + products.length + ' 款同品同规候选中，<strong>' + escapeHtml(best.supplier) + '</strong> 的 '
-        + escapeHtml(best.name) + ' 价格排名第 1（¥' + best.price.toFixed(best.price % 1 ? 2 : 0) + '），'
-        + '好评率 ' + best.goodRate + '%，综合供应商雷达评分表现较优，建议优先采购。';
+    function renderSupplierRadarCompare(products, containerId) {
+      containerId = containerId || 'portraitSupplierRadar';
+      supplierRadarEntries = buildSupplierRadarEntries(products);
+      supplierSelectedIds = getDefaultSupplierSelectedIds(supplierRadarEntries);
+
+      var listHtml = supplierRadarEntries.map(function(entry) {
+        return renderSupplierListItem(entry, supplierSelectedIds.indexOf(entry.id) !== -1);
+      }).join('');
+
+      document.getElementById(containerId).innerHTML =
+        '<div class="supplier-radar-layout">' +
+          '<div class="supplier-list" id="supplierList" role="group" aria-label="供应商对比模块">' + listHtml + '</div>' +
+          '<div>' +
+            '<div class="supplier-radar-wrap">' +
+              '<canvas id="supplierRadarCanvas" width="560" height="420" aria-label="供应商六维叠加雷达图"></canvas>' +
+              '<div class="supplier-radar-empty">请至少勾选一个模块以展示六维雷达图</div>' +
+            '</div>' +
+            '<p class="supplier-radar-hint">点击左侧模块可勾选/取消；默认展示平均分与参照商品，支持多选叠加对比。六维均分为 0–100 分。</p>' +
+          '</div>' +
+        '</div>';
+
+      refreshSupplierRadarView();
+
+      var listEl = document.getElementById('supplierList');
+      if (!listEl || listEl.dataset.bound === '1') return;
+      listEl.dataset.bound = '1';
+      listEl.addEventListener('click', function(event) {
+        var item = event.target.closest('.supplier-list-item');
+        if (!item) return;
+        var id = item.getAttribute('data-id');
+        if (!id) return;
+        var selectedIndex = supplierSelectedIds.indexOf(id);
+        if (selectedIndex === -1) {
+          supplierSelectedIds.push(id);
+        } else {
+          supplierSelectedIds.splice(selectedIndex, 1);
+        }
+        document.querySelectorAll('.supplier-list-item').forEach(function(node) {
+          var nodeId = node.getAttribute('data-id');
+          var isSelected = supplierSelectedIds.indexOf(nodeId) !== -1;
+          node.classList.toggle('is-selected', isSelected);
+          node.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+        });
+        refreshSupplierRadarView();
+      });
     }
 
     function renderComparePage() {
       var products = comparePayload.products || [];
       if (!products.length) {
-        document.getElementById('pageMain').innerHTML = '<section class="card"><div class="empty-state">未找到比质比价分析数据，请从商品卡片点击「比质比价」进入。</div></section>';
+        document.getElementById('pageMain').innerHTML = '<section class="card section"><div class="empty-state">未找到比质比价分析数据，请从商品详情勾选候选商品后进入。</div></section>';
         return;
       }
 
-      document.getElementById('heroSub').innerHTML = '参照规格：<strong>' + escapeHtml(comparePayload.specLabel || '同品同规') + '</strong>，系统已自动匹配同品同规商品并完成多维度对比分析。';
-      document.getElementById('heroTags').innerHTML = [
-        '<span class="hero-tag"><i class="fa-solid fa-clone"></i> 同品同规</span>',
-        '<span class="hero-tag"><i class="fa-solid fa-box"></i> ' + products.length + ' 款候选</span>',
-        '<span class="hero-tag"><i class="fa-solid fa-clock"></i> ' + new Date(comparePayload.generatedAt || Date.now()).toLocaleString('zh-CN') + '</span>'
-      ].join('');
+      var source = getSourceProduct(products);
+      spreadSupplierDimsIfFlat(products);
+      renderSpecTable(products, source);
+      renderPortraitCompare(products);
+    }
 
-      var best = products[0];
-      document.getElementById('recommendBanner').style.display = 'block';
-      document.getElementById('recommendTitle').textContent = '推荐优选：' + best.supplier + ' · ' + best.brand;
-      document.getElementById('recommendReason').innerHTML = buildRecommendReason(products);
-
-      document.getElementById('priceTableBody').innerHTML = products.map(function(p) {
-        var rankCls = p.priceRank === 1 ? 'r1' : (p.priceRank === 2 ? 'r2' : 'r3');
-        var sourceNote = p.isSource ? ' <span style="color:#94a3b8;font-weight:600">（当前）</span>' : '';
-        return '<tr>' +
-          '<td><span class="rank-badge ' + rankCls + '">' + p.priceRank + '</span></td>' +
-          '<td><div style="font-weight:700">' + escapeHtml(p.name) + sourceNote + '</div></td>' +
-          '<td>' + escapeHtml(p.brand) + '</td>' +
-          '<td>' + escapeHtml(p.supplier) + '</td>' +
-          '<td><span class="price-val">¥' + p.price.toFixed(p.price % 1 ? 2 : 0) + '</span> / ' + escapeHtml(p.unit || '件') + '</td>' +
-          '<td>¥' + (p.floor || 0).toFixed(0) + ' - ¥' + (p.ceiling || 0).toFixed(0) + '</td>' +
-          '<td><a class="detail-btn" href="../pages/product.html?id=' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> 查看详情</a></td>' +
-          '</tr>';
-      }).join('');
-
-      document.getElementById('rateList').innerHTML = products.map(function(p) {
-        return '<div class="rate-row">' +
-          '<span class="rate-label" title="' + escapeHtml(p.name) + '">' + escapeHtml(p.name) + '</span>' +
-          '<div class="rate-bar"><div class="rate-fill" style="width:' + p.goodRate + '%"></div></div>' +
-          '<span class="rate-val">' + p.goodRate + '%</span></div>';
-      }).join('');
-
-      document.getElementById('radarGrid').innerHTML = products.map(function(p, i) {
-        return '<div class="radar-card">' +
-          '<div class="radar-sup">' + escapeHtml(p.supplier) + '</div>' +
-          '<canvas class="radar-canvas" data-idx="' + i + '" width="220" height="200" aria-label="' + escapeHtml(p.supplier) + ' 供应商雷达图"></canvas>' +
-          '<a class="detail-btn" style="margin-top:10px" href="../pages/product.html?id=' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> 查看详情</a>' +
-          '</div>';
-      }).join('');
-
-      document.querySelectorAll('.radar-canvas').forEach(function(canvas) {
-        var idx = parseInt(canvas.getAttribute('data-idx'), 10);
-        var item = products[idx];
-        if (item && item.radar) drawRadar(canvas, item.radar, item.brand);
+    function defaultSupplierDims(index) {
+      var profile = SUPPLIER_MOCK_SCORE_MATRIX[index % SUPPLIER_MOCK_SCORE_MATRIX.length];
+      return SUPPLIER_DIM_KEYS.map(function(dim, dimIndex) {
+        return {
+          key: dim.key,
+          name: dim.label,
+          score: clampScore(profile[dimIndex])
+        };
       });
     }
 
-    function convertLegacyPayload(legacy) {
-      var same = (legacy.selectedRows && legacy.selectedRows.same) || [];
+    function spreadSupplierDimsIfFlat(products) {
+      if (!products.length) return;
+      var avgs = products.map(function(product) {
+        return avgSixDimScore(getSupplierScores(product));
+      });
+      var maxAvg = Math.max.apply(null, avgs);
+      var minAvg = Math.min.apply(null, avgs);
+      if (maxAvg - minAvg <= 8) {
+        products.forEach(function(product, index) {
+          product.supplierDims = defaultSupplierDims(index);
+        });
+      }
+    }
+
+    function legacyToProducts(legacy) {
       var source = legacy.sourceProduct || {};
-      var pool = [{
+      var rows = (legacy.selectedRows && legacy.selectedRows[legacy.compareType || 'same']) ||
+        (legacy.selectedRows && legacy.selectedRows.same) || [];
+      var compareType = legacy.compareType || 'same';
+      var sourceEntry = {
         id: source.id,
-        name: source.name || source.productName,
+        name: source.name,
+        supplier: source.supplier,
         price: source.price,
         unit: '件',
-        supplier: source.supplier,
         floor: source.floor,
         ceiling: source.ceiling,
-        score: (source.qualityScore || 90) + '%',
+        params: source.params || [],
+        portrait: {
+          priceReason: source.priceScore || 82,
+          priceStable: 78,
+          historyDeal: 86,
+          userReputation: source.qualityScore || 88,
+          supplier: 90
+        },
+        supplierDims: defaultSupplierDims(0),
+        tradeInsight: {
+          priceChange: { date: '2026-04-06', direction: '降价', percent: 2.1 },
+          sold: 5670,
+          recentSold: 312,
+          lastDealDate: '2026-06-03',
+          goodRate: '97.9%',
+          validEvalCount: 128,
+          returnRate: 1.2
+        },
         isSource: true
-      }].concat(same.map(function(r) {
+      };
+      var candidates = rows.filter(function(row) { return !row.isCurrent; }).map(function(row, index) {
         return {
-          id: r.id,
-          name: r.productName || r.name,
-          price: r.price,
+          id: row.id,
+          name: row.productName || row.name,
+          supplier: row.supplier,
+          price: row.price,
           unit: '件',
-          supplier: r.supplier,
-          floor: r.floor,
-          ceiling: r.ceiling,
-          score: (r.qualityScore || 88) + '%'
+          floor: row.floor,
+          ceiling: row.ceiling,
+          params: sourceEntry.params,
+          portrait: {
+            priceReason: row.priceScore || 80,
+            priceStable: row.priceChangeDirection === '降价' ? 82 : 68,
+            historyDeal: clampScore(84 - index * 5),
+            userReputation: row.qualityScore || 75,
+            supplier: clampScore(88 - index * 3)
+          },
+          supplierDims: defaultSupplierDims(index + 1),
+          tradeInsight: {
+            priceChange: {
+              date: row.priceChangeDate || ('2026-04-0' + (index + 2)),
+              direction: row.priceChangeDirection || '降价',
+              percent: row.priceChangePercent || +(1.8 + index * 0.8).toFixed(1)
+            },
+            sold: Math.max(200, 5200 - (index + 1) * 980),
+            recentSold: Math.max(12, 280 - (index + 1) * 55),
+            lastDealDate: '2026-05-' + String(Math.max(10, 20 - index * 2)).padStart(2, '0'),
+            goodRate: (97.5 - (index + 1) * 1.1).toFixed(1) + '%',
+            validEvalCount: Math.max(10, 120 - (index + 1) * 20),
+            returnRate: +(1.0 + (index + 1) * 0.35).toFixed(1)
+          },
+          isSource: false
         };
-      }));
-
-      return pool.map(function(p, idx) {
-        var scoreNum = parseInt(String(p.score), 10) || (90 - idx * 2);
-        var brandMatch = String(p.name || '').match(/^([\u4e00-\u9fa5A-Za-z&·]+)/);
-        return Object.assign({}, p, {
-          brand: brandMatch ? brandMatch[1] : '通用品牌',
-          goodRate: +(scoreNum + idx * 0.3).toFixed(1),
-          radar: {
-            afterSales: Math.min(98, scoreNum - 1 + idx),
-            credit: Math.min(98, scoreNum + 2 - idx),
-            delivery: Math.min(98, scoreNum - 3 + idx * 2),
-            fulfillment: Math.min(98, scoreNum - idx),
-            consistency: Math.min(98, scoreNum - 2),
-            priceReason: Math.min(98, 100 - idx * 4)
-          }
-        });
       });
+      return [sourceEntry].concat(candidates);
+    }
+
+    function normalizePayload(raw) {
+      if (raw.products && raw.products.length) {
+        if (!raw.products.some(function(p) { return p.isSource; })) {
+          raw.products[0].isSource = true;
+        }
+        return raw;
+      }
+      if (raw.sourceProduct || raw.selectedRows) {
+        return {
+          compareType: raw.compareType || 'same',
+          compareTypeLabel: raw.compareType === 'similar' ? '相近品规' : '同品同规',
+          sourceId: raw.sourceProduct && raw.sourceProduct.id,
+          specLabel: raw.sourceProduct && raw.sourceProduct.name,
+          generatedAt: raw.generatedAt || new Date().toISOString(),
+          products: legacyToProducts(raw)
+        };
+      }
+      return raw;
     }
 
     function bootstrap() {
       var raw = sessionStorage.getItem('aiComparePayload');
-      if (raw) {
-        comparePayload = JSON.parse(raw);
-      } else {
-        var legacyRaw = sessionStorage.getItem('compareAnalysisPayload');
-        if (legacyRaw) {
-          var legacy = JSON.parse(legacyRaw);
-          var products = convertLegacyPayload(legacy);
-          products.sort(function(a, b) { return a.price - b.price; });
-          products.forEach(function(p, i) {
-            p.priceRank = i + 1;
-          });
-          comparePayload = {
-            specLabel: '同品同规',
-            compareType: 'same',
-            generatedAt: legacy.generatedAt || new Date().toISOString(),
-            products: products
-          };
-        }
-      }
-
-      if (!comparePayload || !comparePayload.products || !comparePayload.products.length) {
-        document.getElementById('pageMain').innerHTML = '<section class="card"><div class="empty-state">未找到比质比价分析数据，请从商品卡片点击「比质比价」进入。</div></section>';
+      if (!raw) {
+        document.getElementById('pageMain').innerHTML = '<section class="card section"><div class="empty-state">未找到比质比价分析数据，请从商品详情勾选候选商品后进入。</div></section>';
         return;
       }
-
-      if (!comparePayload.products[0].priceRank) {
-        comparePayload.products.sort(function(a, b) { return a.price - b.price; });
-        comparePayload.products.forEach(function(p, i) { p.priceRank = i + 1; });
+      comparePayload = normalizePayload(JSON.parse(raw));
+      if (!comparePayload.products || !comparePayload.products.length) {
+        document.getElementById('pageMain').innerHTML = '<section class="card section"><div class="empty-state">未找到比质比价分析数据，请从商品详情勾选候选商品后进入。</div></section>';
+        return;
       }
-
       renderComparePage();
     }
 
     document.addEventListener('DOMContentLoaded', bootstrap);
   </script>
+  <script src="../assets/unified_topbar.js"></script>
 </body>
 </html>

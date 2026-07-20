@@ -771,12 +771,10 @@
                     <i class="fas fa-robot"></i>
                     <span>AI 分析结论</span>
                   </div>
-                  <div class="capability-highlights" id="capabilityHighlights"></div>
                 </div>
                 <div class="capability-score-badge">
                   <div class="capability-score-value" id="capabilityOverallScore">--</div>
                   <div class="capability-score-label">综合评分</div>
-                  <span class="capability-grade" id="capabilityGrade">--</span>
                 </div>
               </div>
               <p id="capabilityAiSummary"></p>
@@ -920,15 +918,9 @@
       document.getElementById('capabilityModalSubtitle').textContent = 
         '基于 AI 多维度评估 · ' + (storeData.name || '得力办公用品专卖店');
       document.getElementById('capabilityOverallScore').textContent = analysis.overallScore || '--';
-      document.getElementById('capabilityGrade').textContent = analysis.grade || '--';
       document.getElementById('capabilityAiSummary').textContent = analysis.aiSummary || '暂无分析数据';
       document.getElementById('capabilityUpdated').textContent = 
         analysis.updatedAt ? '数据更新于 ' + analysis.updatedAt : '';
-      
-      const highlightsEl = document.getElementById('capabilityHighlights');
-      highlightsEl.innerHTML = (analysis.highlights || []).map(h => 
-        '<span class="capability-highlight-chip"><i class="fas fa-check-circle mr-1"></i>' + h + '</span>'
-      ).join('');
       
       const dimsEl = document.getElementById('capabilityDimensions');
       dimsEl.innerHTML = dimensions.map(dim => `
