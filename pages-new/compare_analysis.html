@@ -165,6 +165,28 @@
       color: #0f172a;
       line-height: 1.45;
     }
+    .product-col-head-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .product-color-dot {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      margin-top: 3px;
+      border-radius: 999px;
+      border: 1px solid #fff;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06);
+    }
+    .stability-list-dot,
+    .supplier-list-dot {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      margin-top: 4px;
+      border-radius: 999px;
+    }
     .product-col-meta {
       margin-top: 4px;
       font-size: 11px;
@@ -266,21 +288,22 @@
     .price-axis-panel { padding: 4px 0 0; }
     .price-axis-track {
       position: relative;
-      height: 118px;
+      height: 228px;
       margin: 8px 8px 0;
+      padding-top: 108px;
     }
     .price-axis-line {
       position: absolute;
       left: 0;
       right: 0;
-      top: 54px;
+      top: 162px;
       height: 4px;
       border-radius: 999px;
       background: linear-gradient(90deg, #dbeafe, #e2e8f0, #fee2e2);
     }
     .price-axis-band {
       position: absolute;
-      top: 46px;
+      top: 154px;
       height: 20px;
       border-radius: 999px;
       transition: left 0.2s ease, width 0.2s ease, opacity 0.2s ease;
@@ -299,7 +322,7 @@
     }
     .price-axis-marker {
       position: absolute;
-      top: 38px;
+      top: 146px;
       transform: translateX(-50%);
       padding: 0;
       border: none;
@@ -311,8 +334,10 @@
       flex-direction: column;
       align-items: center;
     }
-    .price-axis-marker:focus-visible .price-axis-dot {
+    .price-axis-marker:focus-visible .price-axis-dot,
+    .price-axis-marker:focus-visible .price-axis-star {
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+      border-radius: 999px;
     }
     .price-axis-dot {
       display: block;
@@ -329,17 +354,20 @@
       transform: scale(1.15);
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.22);
     }
-    .price-axis-marker.is-source .price-axis-dot {
-      background: #2563eb;
-      width: 18px;
-      height: 18px;
-    }
     .price-axis-star {
-      margin-bottom: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       color: #f59e0b;
-      font-size: 14px;
+      font-size: 22px;
       line-height: 1;
-      text-shadow: 0 1px 0 #fff;
+      filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.15));
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .price-axis-marker.is-source:hover .price-axis-star,
+    .price-axis-marker.is-source.is-active .price-axis-star {
+      transform: scale(1.12);
+      filter: drop-shadow(0 4px 8px rgba(245, 158, 11, 0.35));
     }
     .price-axis-price-label {
       margin-top: 5px;
@@ -349,13 +377,13 @@
       white-space: nowrap;
       line-height: 1.2;
     }
-    .price-axis-marker.is-source .price-axis-price-label { color: #1d4ed8; }
+    .price-axis-marker.is-source .price-axis-price-label { color: var(--marker-color, #1d4ed8); }
     .price-axis-marker.is-active .price-axis-price-label { color: #ea580c; }
     .price-axis-ticks {
       position: absolute;
       left: 0;
       right: 0;
-      top: 72px;
+      top: 180px;
       height: 44px;
       pointer-events: none;
     }
@@ -383,6 +411,7 @@
     .price-axis-tooltip {
       position: absolute;
       top: 0;
+      left: 0;
       transform: translateX(-50%);
       min-width: 180px;
       max-width: 240px;
@@ -391,9 +420,10 @@
       border: 1px solid #e2e8f0;
       background: #fff;
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-      z-index: 5;
+      z-index: 6;
       text-align: left;
       pointer-events: none;
+      white-space: normal;
     }
     .price-axis-tooltip::after {
       content: '';
@@ -408,12 +438,16 @@
       transform: translateX(-50%) rotate(45deg);
     }
     .price-axis-tooltip-name {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
       font-size: 13px;
       font-weight: 800;
       color: #0f172a;
       line-height: 1.45;
       margin-bottom: 6px;
     }
+    .price-axis-tooltip-name-text { flex: 1; min-width: 0; }
     .price-axis-tooltip-row {
       font-size: 12px;
       color: #64748b;
@@ -449,6 +483,183 @@
       font-size: 12px;
       color: #64748b;
       line-height: 1.6;
+    }
+    .stability-chart-layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .stability-product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stability-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, opacity 0.2s;
+    }
+    .stability-list-item:hover { border-color: #bfdbfe; background: #f8fbff; }
+    .stability-list-item.is-selected {
+      border-color: #2563eb;
+      background: #eff6ff;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+    .stability-list-item:not(.is-selected) { opacity: 0.72; }
+    .stability-list-check {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      border-radius: 5px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: transparent;
+      font-size: 10px;
+    }
+    .stability-list-item.is-selected .stability-list-check {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #fff;
+    }
+    .stability-list-main { flex: 1; min-width: 0; }
+    .stability-list-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.45;
+    }
+    .stability-list-score {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #64748b;
+    }
+    .stability-list-score strong { color: #ea580c; }
+    .stability-chart-panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 10px 10px;
+      background: #fafbfc;
+      position: relative;
+    }
+    .stability-chart-panel svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .stability-tooltip {
+      position: absolute;
+      z-index: 6;
+      min-width: 200px;
+      max-width: 280px;
+      pointer-events: none;
+    }
+    .stability-tooltip-card {
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+    }
+    .stability-tooltip-card + .stability-tooltip-card { margin-top: 8px; }
+    .stability-tooltip-name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.45;
+      margin-bottom: 4px;
+    }
+    .stability-tooltip-dot {
+      flex-shrink: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid #fff;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+    }
+    .stability-tooltip-row {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.55;
+    }
+    .stability-tooltip-row strong { color: #0f172a; }
+    .stability-tooltip-change.up { color: #b91c1c; font-weight: 700; }
+    .stability-tooltip-change.down { color: #15803d; font-weight: 700; }
+    .stability-tooltip-change.flat { color: #64748b; font-weight: 700; }
+    .stability-chart-hint {
+      margin: 10px 4px 0;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .stability-chart-empty {
+      padding: 48px 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .deal-chart-layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .deal-chart-panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 10px 10px;
+      background: #fafbfc;
+      position: relative;
+    }
+    .deal-chart-panel svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .deal-chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 10px 4px 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .deal-chart-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .deal-chart-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+    .deal-chart-hint {
+      margin: 8px 4px 0;
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .deal-chart-empty {
+      padding: 48px 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
     }
     .deal-rank-badge {
       display: inline-flex;
@@ -498,6 +709,77 @@
     }
     .reputation-metric.positive .reputation-metric-value { color: #15803d; }
     .reputation-metric.negative .reputation-metric-value { color: #b91c1c; }
+    .reputation-table-wrap { overflow: auto; }
+    .reputation-table {
+      width: 100%;
+      min-width: 560px;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .reputation-table th,
+    .reputation-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .reputation-table thead th {
+      background: #f8fafc;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+    .reputation-table tbody tr:hover td { background: #fafcff; }
+    .reputation-table tbody tr.is-source td { background: #f8fbff; }
+    .reputation-table tbody tr:last-child td { border-bottom: none; }
+    .reputation-product-name {
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.45;
+    }
+    .reputation-product-cell {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .reputation-product-meta {
+      margin-top: 3px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .reputation-sort-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      color: inherit;
+    }
+    .reputation-sort-btn:hover { color: #2563eb; }
+    .reputation-sort-btn.is-active { color: #2563eb; }
+    .reputation-sort-icons {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0;
+      line-height: 0.85;
+      font-size: 9px;
+      color: #cbd5e1;
+    }
+    .reputation-sort-btn.is-active .reputation-sort-icons { color: #93c5fd; }
+    .reputation-sort-icons i.is-active { color: #2563eb; }
+    .reputation-cell-positive { color: #15803d; font-weight: 700; }
+    .reputation-cell-negative { color: #b91c1c; font-weight: 700; }
+    .reputation-score-cell {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ea580c;
+    }
     .five-dim-supplier .supplier-radar-layout { margin-top: 0; }
     .five-dim-supplier .supplier-radar-wrap { min-height: 340px; }
     .supplier-radar-layout {
@@ -568,13 +850,6 @@
     .supplier-list-item.is-average.is-selected .supplier-list-check {
       background: #64748b;
       border-color: #64748b;
-    }
-    .supplier-list-dot {
-      flex-shrink: 0;
-      width: 12px;
-      height: 12px;
-      margin-top: 4px;
-      border-radius: 999px;
     }
     .supplier-list-main { flex: 1; min-width: 0; }
     .supplier-list-name-row {
@@ -655,6 +930,8 @@
     .empty-state { padding: 48px 20px; text-align: center; color: #94a3b8; font-size: 14px; line-height: 1.8; }
     @media (max-width: 860px) {
       .supplier-radar-layout { grid-template-columns: 1fr; }
+      .stability-chart-layout { grid-template-columns: 1fr; }
+      .deal-chart-layout { grid-template-columns: 1fr; }
       .reputation-metrics { grid-template-columns: 1fr; }
     }
   </style>
@@ -691,6 +968,7 @@
     </section>
   </main>
 
+  <script src="../assets/compare_payload_bridge.js"></script>
   <script>
     var PORTRAIT_DIM_META = {
       priceReason: { label: '价格合理性', icon: 'fa-scale-balanced' },
@@ -721,7 +999,24 @@
     var comparePayload = null;
     var supplierRadarEntries = [];
     var supplierSelectedIds = [];
+    var stabilitySelectedIndices = [];
+    var dealSelectedIndices = [];
+    var reputationSortKey = '';
+    var reputationSortDir = 'desc';
+    var reputationTableProducts = [];
     var activeSpecAiKey = null;
+
+    var STABILITY_CHART = {
+      width: 640,
+      height: 300,
+      pad: { top: 30, right: 96, bottom: 44, left: 54 }
+    };
+
+    var DEAL_CHART = {
+      width: 640,
+      height: 300,
+      pad: { top: 24, right: 24, bottom: 78, left: 58 }
+    };
 
     var SPEC_PARAM_ATTR_HINTS = {
       '品牌': '品牌体现产品质量稳定性、售后保障及合规供应能力，政企采购需关注是否在平台合格供应商名录内。',
@@ -736,6 +1031,15 @@
       '网络打印': '网络打印支持有线/无线接入，便于多人共享与远程输出，是办公设备选型的重要能力。',
       '支持纸张尺寸': '纸张尺寸范围决定设备兼容性，需覆盖日常使用的纸型规格。'
     };
+
+    function getProductColor(index) {
+      return SUPPLIER_RADAR_COLORS[index % SUPPLIER_RADAR_COLORS.length];
+    }
+
+    function renderProductColorDot(index, extraClass) {
+      var cls = 'product-color-dot' + (extraClass ? ' ' + extraClass : '');
+      return '<span class="' + cls + '" style="background:' + getProductColor(index) + '" aria-hidden="true"></span>';
+    }
 
     function escapeHtml(s) {
       var d = document.createElement('div');
@@ -942,11 +1246,16 @@
     function renderSpecTable(products, source) {
       var rows = buildSpecRows(products, source);
       var head = '<thead><tr><th class="spec-row-label">对比项</th>';
-      products.forEach(function(product) {
+      products.forEach(function(product, index) {
         head += '<th class="product-col-head' + (product.isSource ? ' spec-ref-col' : '') + '" scope="col">' +
-          '<div class="product-col-name">' + escapeHtml(shortName(product.name, 22)) + '</div>' +
-          '<div class="product-col-meta">' + escapeHtml(product.supplier || '') + '</div>' +
-          (product.isSource ? '<span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照商品</span>' : '') +
+          '<div class="product-col-head-inner">' +
+            renderProductColorDot(index) +
+            '<div>' +
+              '<div class="product-col-name">' + escapeHtml(shortName(product.name, 22)) + '</div>' +
+              '<div class="product-col-meta">' + escapeHtml(product.supplier || '') + '</div>' +
+              (product.isSource ? '<span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照商品</span>' : '') +
+            '</div>' +
+          '</div>' +
           '</th>';
       });
       head += '</tr></thead>';
@@ -1077,18 +1386,45 @@
       };
     }
 
-    function buildPriceReasonTooltip(product) {
+    function buildPriceReasonTooltip(product, productIndex) {
       var score = getPortraitScore(product, 'priceReason');
       var floor = Number(product.floor) || 0;
       var ceiling = Number(product.ceiling) || 0;
       var price = Number(product.price) || 0;
       return '<div class="price-axis-tooltip-name">' +
-          escapeHtml(shortName(product.name, 22)) +
-          (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-star"></i>参照</span>' : '') +
+          renderProductColorDot(productIndex) +
+          '<div class="price-axis-tooltip-name-text">' +
+            escapeHtml(shortName(product.name, 22)) +
+            (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-star"></i>参照</span>' : '') +
+          '</div>' +
         '</div>' +
         '<div class="price-axis-tooltip-row">平台建议区间 <strong>' + formatAxisPrice(floor) + ' - ' + formatAxisPrice(ceiling) + '</strong></div>' +
         '<div class="price-axis-tooltip-row">现价 <strong>' + formatAxisPrice(price) + '</strong> / ' + escapeHtml(product.unit || '件') + '</div>' +
         '<div class="price-axis-tooltip-score">价格合理性评分 ' + score + ' 分</div>';
+    }
+
+    function positionPriceAxisTooltip(marker, tooltip) {
+      var track = marker.closest('.price-axis-track');
+      if (!track || !tooltip) return;
+      var anchor = marker.querySelector('.price-axis-star') || marker.querySelector('.price-axis-dot');
+      if (!anchor) return;
+
+      tooltip.hidden = false;
+      tooltip.style.visibility = 'hidden';
+
+      var trackRect = track.getBoundingClientRect();
+      var anchorRect = anchor.getBoundingClientRect();
+      var centerX = anchorRect.left + anchorRect.width / 2 - trackRect.left;
+      var anchorTop = anchorRect.top - trackRect.top;
+      var gap = 10;
+      var tipHeight = tooltip.offsetHeight;
+      var top = Math.max(8, anchorTop - tipHeight - gap);
+      var tipWidth = tooltip.offsetWidth;
+      var clampedX = Math.max(tipWidth / 2 + 6, Math.min(trackRect.width - tipWidth / 2 - 6, centerX));
+
+      tooltip.style.left = clampedX + 'px';
+      tooltip.style.top = top + 'px';
+      tooltip.style.visibility = 'visible';
     }
 
     function bindPriceReasonAxis(products) {
@@ -1111,11 +1447,13 @@
         activeBand.hidden = true;
         refBand.style.opacity = '1';
         tooltip.hidden = true;
+        tooltip.style.visibility = 'hidden';
       }
 
       function activateProduct(index) {
         var product = products[index];
-        if (!product) return;
+        var marker = markers[index];
+        if (!product || !marker) return;
         var band = buildPriceBandStyle(scale, product.floor, product.ceiling);
         markers.forEach(function(node) {
           node.classList.toggle('is-active', Number(node.getAttribute('data-index')) === index);
@@ -1125,9 +1463,8 @@
         activeBand.hidden = false;
         activeBand.style.opacity = '1';
         refBand.style.opacity = product.isSource ? '1' : '0.22';
-        tooltip.innerHTML = buildPriceReasonTooltip(product);
-        tooltip.style.left = scale.toPercent(product.price) + '%';
-        tooltip.hidden = false;
+        tooltip.innerHTML = buildPriceReasonTooltip(product, index);
+        positionPriceAxisTooltip(marker, tooltip);
       }
 
       markers.forEach(function(marker) {
@@ -1152,11 +1489,13 @@
 
       var markers = products.map(function(product, index) {
         var left = scale.toPercent(product.price);
-        var color = getSupplierColor(index);
+        var color = getProductColor(index);
         return '<button type="button" class="price-axis-marker' + (product.isSource ? ' is-source' : '') + '" ' +
           'style="left:' + left + '%;--marker-color:' + color + '" data-index="' + index + '" ' +
           'aria-label="' + escapeHtml(product.name || '') + '">' +
-          (product.isSource ? '<span class="price-axis-star" title="参照商品">★</span>' : '') +
+          (product.isSource
+            ? '<span class="price-axis-star" title="参照商品"><i class="fa-solid fa-star"></i></span>'
+            : '') +
           '<span class="price-axis-dot"></span>' +
           '<span class="price-axis-price-label">' + formatAxisPrice(product.price) + '</span>' +
         '</button>';
@@ -1174,7 +1513,7 @@
               markers +
               '<div class="price-axis-ticks">' + renderPriceAxisTicks(scale) + '</div>' +
             '</div>' +
-            '<p class="price-axis-hint">横轴刻度为价格区间；圆点下方为各商品现价，默认高亮参照商品建议区间，移入圆点可查看详情与合理性评分。</p>' +
+            '<p class="price-axis-hint">横轴刻度为价格区间；圆点颜色与全页商品标识一致，参照商品另以 ★ 标记。各候选商品拥有独立平台建议区间，默认高亮参照商品区间；移入标记可查看详情与合理性评分。</p>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -1199,68 +1538,489 @@
     }
 
     function renderPriceStableCompare(products) {
-      var items = products.map(function(product) {
-        var score = getPortraitScore(product, 'priceStable');
-        var change = (product.tradeInsight && product.tradeInsight.priceChange) || {};
-        var direction = change.direction || '平稳';
-        var chipClass = direction === '降价' ? 'down' : (direction === '加价' ? 'up' : 'flat');
-        var icon = direction === '降价' ? 'fa-arrow-trend-down' : (direction === '加价' ? 'fa-arrow-trend-up' : 'fa-minus');
-        var summary = direction === '降价'
-          ? '近期下调，采购成本压力相对更小'
-          : (direction === '加价' ? '近期上调，需关注后续报价波动' : '近期价格平稳，波动风险较低');
-        return '<div class="five-dim-item' + (product.isSource ? ' is-source' : '') + '">' +
-          renderFiveDimItemHead(product, score) +
-          '<span class="trend-chip ' + chipClass + '"><i class="fa-solid ' + icon + '"></i>' + escapeHtml(direction) +
-            (change.percent ? ' ' + change.percent + '%' : '') +
-          '</span>' +
-          '<div class="trend-meta">最近调价：' + escapeHtml(change.date || '—') + ' · ' + escapeHtml(summary) + '</div>' +
-        '</div>';
-      }).join('');
+      enrichPriceHistory(products);
+      stabilitySelectedIndices = products.map(function(_, index) { return index; });
       var refScore = getPortraitScore(getSourceProduct(products), 'priceStable');
+
+      var listHtml = products.map(function(product, index) {
+        var score = getPortraitScore(product, 'priceStable');
+        var selected = stabilitySelectedIndices.indexOf(index) !== -1;
+        return '<button type="button" class="stability-list-item' + (selected ? ' is-selected' : '') + '" data-index="' + index + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+          '<span class="stability-list-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>' +
+          renderProductColorDot(index, 'stability-list-dot') +
+          '<div class="stability-list-main">' +
+            '<div class="stability-list-name">' + escapeHtml(shortName(product.name, 20)) +
+              (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照</span>' : '') +
+            '</div>' +
+            '<div class="stability-list-score">稳定性评分 <strong>' + score + '</strong> 分</div>' +
+          '</div>' +
+        '</button>';
+      }).join('');
+
       return '<div class="five-dim-block">' +
         renderFiveDimHead('priceStable', refScore) +
-        '<div class="five-dim-body"><div class="five-dim-grid five-dim-grid--cols">' + items + '</div></div>' +
+        '<div class="five-dim-body">' +
+          '<div class="stability-chart-layout">' +
+            '<div class="stability-product-list" id="stabilityProductList" role="group" aria-label="价格稳定性对比商品">' + listHtml + '</div>' +
+            '<div class="stability-chart-panel" id="priceStableChartPanel">' +
+              '<svg id="priceStableSvg" viewBox="0 0 ' + STABILITY_CHART.width + ' ' + STABILITY_CHART.height + '" aria-label="价格稳定性走势对比图"></svg>' +
+              '<div class="stability-tooltip" id="priceStableTooltip" hidden></div>' +
+              '<p class="stability-chart-hint">纵轴为相对各自初始价的百分比（起点 100%）；线段上涨为红、下降为绿。移入月份查看较上月变化，最右端标注当前百分比与评分。</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
       '</div>';
     }
 
-    function renderHistoryDealCompare(products) {
-      var ranked = products.map(function(product, index) {
-        return {
-          product: product,
-          sold: Number((product.tradeInsight && product.tradeInsight.sold) || 0),
-          index: index
-        };
-      }).sort(function(a, b) { return b.sold - a.sold; });
-      var rankMap = {};
-      ranked.forEach(function(item, rankIndex) {
-        rankMap[item.index] = rankIndex + 1;
+    function buildLast12MonthLabels() {
+      var now = comparePayload && comparePayload.generatedAt
+        ? new Date(comparePayload.generatedAt)
+        : new Date();
+      var labels = [];
+      for (var i = 11; i >= 0; i--) {
+        var date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        var key = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+        labels.push({
+          key: key,
+          label: (date.getMonth() + 1) + '月'
+        });
+      }
+      return labels;
+    }
+
+    function enrichPriceHistory(products) {
+      products.forEach(function(product, index) {
+        if (product.priceHistory && product.priceHistory.points && product.priceHistory.points.length === 12) return;
+        product.priceHistory = buildPriceHistory(product, index);
       });
-      var items = products.map(function(product, index) {
-        var score = getPortraitScore(product, 'historyDeal');
-        var insight = product.tradeInsight || {};
-        var rank = rankMap[index];
-        var rankClass = rank <= 3 ? (' rank-' + rank) : '';
-        return '<div class="five-dim-item' + (product.isSource ? ' is-source' : '') + '">' +
-          '<div class="five-dim-item-head">' +
-            '<div class="five-dim-item-name" title="' + escapeHtml(product.name || '') + '">' +
-              '<span class="deal-rank-badge' + rankClass + '">' + rank + '</span> ' +
-              escapeHtml(shortName(product.name, 16)) +
-              (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照</span>' : '') +
-            '</div>' +
-            '<div class="five-dim-item-score"><strong>' + score + '</strong> 分</div>' +
-          '</div>' +
-          '<div class="deal-stat-row">' +
-            '<span>累计成交 <strong>' + Number(insight.sold || 0) + '</strong> ' + escapeHtml(product.unit || '件') + '</span>' +
-            '<span>近30天 <strong>' + Number(insight.recentSold || 0) + '</strong></span>' +
-            '<span>最近成交 <strong>' + escapeHtml(insight.lastDealDate || '—') + '</strong></span>' +
-          '</div>' +
+    }
+
+    function buildPriceHistory(product, index) {
+      var labels = buildLast12MonthLabels();
+      var currentPrice = Number(product.price) || 24.9;
+      var monthCount = labels.length;
+      var prices = new Array(monthCount);
+      prices[monthCount - 1] = currentPrice;
+
+      for (var i = monthCount - 2; i >= 0; i--) {
+        var wave = Math.sin((index + 1) * 1.7 + i * 0.85) * 0.018;
+        var bias = (index % 2 === 0 ? -1 : 1) * 0.004;
+        var step = wave + bias + ((i % 3) - 1) * 0.003;
+        prices[i] = Math.max(0.01, prices[i + 1] * (1 - step));
+      }
+
+      var initialPrice = prices[0];
+      var points = labels.map(function(label, i) {
+        var price = +prices[i].toFixed(2);
+        var pct = +(price / initialPrice * 100).toFixed(1);
+        var prevPrice = i > 0 ? prices[i - 1] : price;
+        var changeFromPrev = i === 0 ? 0 : +((price - prevPrice) / prevPrice * 100).toFixed(1);
+        var direction = i === 0 ? 'flat' : (price > prevPrice ? 'up' : (price < prevPrice ? 'down' : 'flat'));
+        return {
+          monthKey: label.key,
+          monthLabel: label.label,
+          price: price,
+          pct: pct,
+          changeFromPrev: changeFromPrev,
+          direction: direction
+        };
+      });
+
+      return {
+        initialPrice: +initialPrice.toFixed(2),
+        points: points
+      };
+    }
+
+    function getStabilitySegmentColor(direction) {
+      if (direction === 'up') return '#ef4444';
+      if (direction === 'down') return '#16a34a';
+      return '#94a3b8';
+    }
+
+    function getStabilityYDomain(products, indices) {
+      var values = [100];
+      indices.forEach(function(index) {
+        var history = products[index].priceHistory;
+        if (!history) return;
+        history.points.forEach(function(point) {
+          values.push(point.pct);
+        });
+      });
+      var min = Math.min.apply(null, values);
+      var max = Math.max.apply(null, values);
+      var pad = Math.max(2, (max - min) * 0.12);
+      return {
+        min: Math.floor((min - pad) * 10) / 10,
+        max: Math.ceil((max + pad) * 10) / 10
+      };
+    }
+
+    function stabilityX(step, totalSteps, plot) {
+      if (totalSteps <= 1) return plot.x;
+      return plot.x + (plot.w * step / (totalSteps - 1));
+    }
+
+    function stabilityY(pct, domain, plot) {
+      var span = domain.max - domain.min || 1;
+      return plot.y + plot.h - ((pct - domain.min) / span) * plot.h;
+    }
+
+    function drawPriceStableChart(products) {
+      var svg = document.getElementById('priceStableSvg');
+      var panel = document.getElementById('priceStableChartPanel');
+      if (!svg || !panel) return;
+
+      var indices = stabilitySelectedIndices.slice();
+      if (!indices.length) {
+        svg.innerHTML = '';
+        var empty = document.createElement('div');
+        empty.className = 'stability-chart-empty';
+        empty.textContent = '请至少勾选一个商品以展示价格稳定性走势';
+        panel.querySelector('.stability-chart-empty') && panel.querySelector('.stability-chart-empty').remove();
+        svg.insertAdjacentElement('afterend', empty);
+        return;
+      }
+      var oldEmpty = panel.querySelector('.stability-chart-empty');
+      if (oldEmpty) oldEmpty.remove();
+
+      var cfg = STABILITY_CHART;
+      var plot = {
+        x: cfg.pad.left,
+        y: cfg.pad.top,
+        w: cfg.width - cfg.pad.left - cfg.pad.right,
+        h: cfg.height - cfg.pad.top - cfg.pad.bottom
+      };
+      var domain = getStabilityYDomain(products, indices);
+      var monthCount = 12;
+      var parts = [];
+
+      parts.push('<rect x="0" y="0" width="' + cfg.width + '" height="' + cfg.height + '" fill="#fafbfc"/>');
+
+      for (var g = 0; g <= 4; g++) {
+        var pctTick = domain.min + (domain.max - domain.min) * (g / 4);
+        var y = stabilityY(pctTick, domain, plot);
+        parts.push('<line x1="' + plot.x + '" y1="' + y + '" x2="' + (plot.x + plot.w) + '" y2="' + y + '" stroke="#eef2f7" stroke-width="1"/>');
+        parts.push('<text x="' + (plot.x - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-size="11" fill="#94a3b8">' + pctTick.toFixed(0) + '%</text>');
+      }
+
+      var y100 = stabilityY(100, domain, plot);
+      if (100 >= domain.min && 100 <= domain.max) {
+        parts.push('<line x1="' + plot.x + '" y1="' + y100 + '" x2="' + (plot.x + plot.w) + '" y2="' + y100 + '" stroke="#bfdbfe" stroke-width="1.5" stroke-dasharray="5 4"/>');
+      }
+
+      var firstHistory = products[indices[0]].priceHistory;
+      firstHistory.points.forEach(function(point, monthIndex) {
+        var x = stabilityX(monthIndex, monthCount, plot);
+        parts.push('<text x="' + x + '" y="' + (cfg.height - 14) + '" text-anchor="middle" font-size="11" fill="#94a3b8">' + escapeHtml(point.monthLabel) + '</text>');
+      });
+
+      indices.forEach(function(productIndex) {
+        var product = products[productIndex];
+        var history = product.priceHistory;
+        var color = getSupplierColor(productIndex);
+        var score = getPortraitScore(product, 'priceStable');
+
+        history.points.forEach(function(point, monthIndex) {
+          if (monthIndex === 0) return;
+          var prev = history.points[monthIndex - 1];
+          var x1 = stabilityX(monthIndex - 1, monthCount, plot);
+          var y1 = stabilityY(prev.pct, domain, plot);
+          var x2 = stabilityX(monthIndex, monthCount, plot);
+          var y2 = stabilityY(point.pct, domain, plot);
+          var segDir = point.price > prev.price ? 'up' : (point.price < prev.price ? 'down' : 'flat');
+          parts.push('<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + getStabilitySegmentColor(segDir) + '" stroke-width="2.2" stroke-linecap="round"/>');
+        });
+
+        history.points.forEach(function(point, monthIndex) {
+          var x = stabilityX(monthIndex, monthCount, plot);
+          var y = stabilityY(point.pct, domain, plot);
+          parts.push('<circle cx="' + x + '" cy="' + y + '" r="4" fill="#fff" stroke="' + color + '" stroke-width="2"/>');
+        });
+
+        var last = history.points[history.points.length - 1];
+        var lastX = stabilityX(monthCount - 1, monthCount, plot);
+        var lastY = stabilityY(last.pct, domain, plot);
+        parts.push('<text x="' + (lastX + 10) + '" y="' + lastY + '" dominant-baseline="middle" font-size="11" font-weight="700" fill="' + color + '">' +
+          last.pct + '% · ' + score + '分</text>');
+      });
+
+      var hitWidth = plot.w / monthCount;
+      for (var m = 0; m < monthCount; m++) {
+        var hx = plot.x + hitWidth * m;
+        parts.push('<rect class="stability-month-hit" data-month="' + m + '" x="' + hx + '" y="' + plot.y + '" width="' + hitWidth + '" height="' + plot.h + '" fill="transparent" style="cursor:pointer"/>');
+      }
+
+      svg.innerHTML = parts.join('');
+      bindPriceStableChartInteractions(products, plot, domain, monthCount);
+    }
+
+    function buildStabilityTooltipCard(product, productIndex, monthIndex, showColorDot) {
+      var point = product.priceHistory.points[monthIndex];
+      var changeClass = point.direction === 'up' ? 'up' : (point.direction === 'down' ? 'down' : 'flat');
+      var changeText = monthIndex === 0
+        ? '基准月（100%）'
+        : ('较上月 ' + (point.changeFromPrev > 0 ? '+' : '') + point.changeFromPrev + '%');
+      var dotHtml = showColorDot
+        ? '<span class="stability-tooltip-dot" style="background:' + getSupplierColor(productIndex) + '"></span>'
+        : '';
+      return '<div class="stability-tooltip-name">' + dotHtml + escapeHtml(shortName(product.name, 20)) + '</div>' +
+        '<div class="stability-tooltip-row">价格 <strong>' + formatAxisPrice(point.price) + '</strong></div>' +
+        '<div class="stability-tooltip-row">相对初始价 <strong>' + point.pct + '%</strong></div>' +
+        '<div class="stability-tooltip-row stability-tooltip-change ' + changeClass + '">' + changeText + '</div>';
+    }
+
+    function buildStabilityTooltipHtml(products, indices, monthIndex) {
+      if (indices.length <= 1) {
+        var singleIndex = indices[0];
+        var singleProduct = products[singleIndex];
+        return '<div class="stability-tooltip-card">' +
+          buildStabilityTooltipCard(singleProduct, singleIndex, monthIndex, false) +
+        '</div>';
+      }
+      return indices.map(function(productIndex) {
+        var product = products[productIndex];
+        return '<div class="stability-tooltip-card">' +
+          buildStabilityTooltipCard(product, productIndex, monthIndex, true) +
         '</div>';
       }).join('');
+    }
+
+    function bindPriceStableChartInteractions(products, plot, domain, monthCount) {
+      var svg = document.getElementById('priceStableSvg');
+      var panel = document.getElementById('priceStableChartPanel');
+      var tooltip = document.getElementById('priceStableTooltip');
+      if (!svg || !panel || !tooltip) return;
+
+      svg.querySelectorAll('.stability-month-hit').forEach(function(hit) {
+        hit.addEventListener('mouseenter', function() {
+          var monthIndex = Number(hit.getAttribute('data-month'));
+          if (Number.isNaN(monthIndex)) return;
+          var indices = stabilitySelectedIndices.slice();
+          if (!indices.length) return;
+          tooltip.innerHTML = buildStabilityTooltipHtml(products, indices, monthIndex);
+          tooltip.hidden = false;
+          tooltip.style.visibility = 'hidden';
+          var hitWidth = plot.w / monthCount;
+          var centerX = plot.x + hitWidth * monthIndex + hitWidth / 2;
+          var svgRect = svg.getBoundingClientRect();
+          var scaleX = svgRect.width / STABILITY_CHART.width;
+          var tipWidth = tooltip.offsetWidth;
+          var left = (centerX * scaleX) - (tipWidth / 2);
+          left = Math.max(8, Math.min(svgRect.width - tipWidth - 8, left));
+          tooltip.style.left = left + 'px';
+          tooltip.style.top = '8px';
+          tooltip.style.visibility = 'visible';
+        });
+        hit.addEventListener('mouseleave', function() {
+          tooltip.hidden = true;
+        });
+      });
+    }
+
+    function bindStabilityProductList(products) {
+      var list = document.getElementById('stabilityProductList');
+      if (!list || list.dataset.bound === '1') return;
+      list.dataset.bound = '1';
+      list.addEventListener('click', function(event) {
+        var item = event.target.closest('.stability-list-item');
+        if (!item) return;
+        var index = Number(item.getAttribute('data-index'));
+        if (Number.isNaN(index)) return;
+        var pos = stabilitySelectedIndices.indexOf(index);
+        if (pos === -1) {
+          stabilitySelectedIndices.push(index);
+        } else {
+          stabilitySelectedIndices.splice(pos, 1);
+        }
+        list.querySelectorAll('.stability-list-item').forEach(function(node) {
+          var nodeIndex = Number(node.getAttribute('data-index'));
+          var selected = stabilitySelectedIndices.indexOf(nodeIndex) !== -1;
+          node.classList.toggle('is-selected', selected);
+          node.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+        drawPriceStableChart(products);
+      });
+    }
+
+    function initPriceStableChart(products) {
+      enrichPriceHistory(products);
+      drawPriceStableChart(products);
+      bindStabilityProductList(products);
+    }
+
+    function getDealDisplayOrder(products, indices) {
+      return indices.slice().sort(function(a, b) {
+        if (products[a].isSource) return -1;
+        if (products[b].isSource) return 1;
+        return a - b;
+      });
+    }
+
+    function renderHistoryDealCompare(products) {
+      enrichProductTradeInsight(products);
+      dealSelectedIndices = products.map(function(_, index) { return index; });
       var refScore = getPortraitScore(getSourceProduct(products), 'historyDeal');
+      var displayOrder = getDealDisplayOrder(products, dealSelectedIndices);
+
+      var listHtml = displayOrder.map(function(index) {
+        var product = products[index];
+        var score = getPortraitScore(product, 'historyDeal');
+        var selected = dealSelectedIndices.indexOf(index) !== -1;
+        var insight = product.tradeInsight || {};
+        return '<button type="button" class="stability-list-item' + (selected ? ' is-selected' : '') + '" data-index="' + index + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+          '<span class="stability-list-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>' +
+          renderProductColorDot(index, 'stability-list-dot') +
+          '<div class="stability-list-main">' +
+            '<div class="stability-list-name">' + escapeHtml(shortName(product.name, 20)) +
+              (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照</span>' : '') +
+            '</div>' +
+            '<div class="stability-list-score">累计 <strong>' + Number(insight.sold || 0) + '</strong> · 近30天 <strong>' + Number(insight.recentSold || 0) + '</strong></div>' +
+            '<div class="stability-list-score">历史成交评分 <strong>' + score + '</strong> 分</div>' +
+          '</div>' +
+        '</button>';
+      }).join('');
+
       return '<div class="five-dim-block">' +
         renderFiveDimHead('historyDeal', refScore) +
-        '<div class="five-dim-body"><div class="five-dim-grid">' + items + '</div></div>' +
+        '<div class="five-dim-body">' +
+          '<div class="deal-chart-layout">' +
+            '<div class="stability-product-list" id="dealProductList" role="group" aria-label="历史成交对比商品">' + listHtml + '</div>' +
+            '<div class="deal-chart-panel" id="historyDealChartPanel">' +
+              '<svg id="historyDealSvg" viewBox="0 0 ' + DEAL_CHART.width + ' ' + DEAL_CHART.height + '" aria-label="历史成交柱状对比图"></svg>' +
+              '<div class="deal-chart-legend">' +
+                '<span class="deal-chart-legend-item"><span class="deal-chart-legend-dot" style="background:#2563eb"></span>历史成交量</span>' +
+                '<span class="deal-chart-legend-item"><span class="deal-chart-legend-dot" style="background:#f97316"></span>近三十天成交</span>' +
+              '</div>' +
+              '<p class="deal-chart-hint">横轴为商品，纵轴为成交数量；每个商品并列展示累计成交与近 30 天成交，左侧可勾选/取消对比商品。</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
       '</div>';
+    }
+
+    function getDealYDomain(products, indices) {
+      var max = 0;
+      indices.forEach(function(index) {
+        var insight = products[index].tradeInsight || {};
+        max = Math.max(max, Number(insight.sold) || 0, Number(insight.recentSold) || 0);
+      });
+      if (max <= 0) return { min: 0, max: 10 };
+      var magnitude = Math.pow(10, Math.floor(Math.log10(max)));
+      var niceMax = Math.ceil(max / magnitude) * magnitude;
+      if (niceMax === max) niceMax += magnitude;
+      return { min: 0, max: niceMax };
+    }
+
+    function dealBarHeight(value, domain, plot) {
+      var span = domain.max - domain.min || 1;
+      return Math.max(0, ((Number(value) - domain.min) / span) * plot.h);
+    }
+
+    function drawHistoryDealChart(products) {
+      var svg = document.getElementById('historyDealSvg');
+      var panel = document.getElementById('historyDealChartPanel');
+      if (!svg || !panel) return;
+
+      var indices = getDealDisplayOrder(products, dealSelectedIndices);
+      panel.querySelector('.deal-chart-empty') && panel.querySelector('.deal-chart-empty').remove();
+
+      if (!indices.length) {
+        svg.innerHTML = '';
+        var empty = document.createElement('div');
+        empty.className = 'deal-chart-empty';
+        empty.textContent = '请至少勾选一个商品以展示历史成交对比';
+        svg.insertAdjacentElement('afterend', empty);
+        return;
+      }
+
+      var cfg = DEAL_CHART;
+      var plot = {
+        x: cfg.pad.left,
+        y: cfg.pad.top,
+        w: cfg.width - cfg.pad.left - cfg.pad.right,
+        h: cfg.height - cfg.pad.top - cfg.pad.bottom
+      };
+      var domain = getDealYDomain(products, indices);
+      var parts = [];
+      var groupCount = indices.length;
+      var groupWidth = plot.w / groupCount;
+      var barWidth = Math.min(24, Math.max(12, groupWidth / 4));
+      var barGap = 6;
+
+      parts.push('<rect x="0" y="0" width="' + cfg.width + '" height="' + cfg.height + '" fill="#fafbfc"/>');
+
+      for (var g = 0; g <= 4; g++) {
+        var tickVal = domain.min + (domain.max - domain.min) * (g / 4);
+        var y = plot.y + plot.h - (tickVal / domain.max) * plot.h;
+        parts.push('<line x1="' + plot.x + '" y1="' + y + '" x2="' + (plot.x + plot.w) + '" y2="' + y + '" stroke="#eef2f7" stroke-width="1"/>');
+        parts.push('<text x="' + (plot.x - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-size="11" fill="#94a3b8">' + Math.round(tickVal) + '</text>');
+      }
+
+      parts.push('<text x="' + (plot.x - 42) + '" y="' + (plot.y + plot.h / 2) + '" transform="rotate(-90 ' + (plot.x - 42) + ' ' + (plot.y + plot.h / 2) + ')" text-anchor="middle" font-size="11" fill="#94a3b8">成交数</text>');
+
+      indices.forEach(function(productIndex, groupIndex) {
+        var product = products[productIndex];
+        var insight = product.tradeInsight || {};
+        var sold = Number(insight.sold) || 0;
+        var recentSold = Number(insight.recentSold) || 0;
+        var groupCenter = plot.x + groupWidth * groupIndex + groupWidth / 2;
+        var totalX = groupCenter - barWidth / 2 - barGap / 2;
+        var recentX = groupCenter + barGap / 2;
+        var totalH = dealBarHeight(sold, domain, plot);
+        var recentH = dealBarHeight(recentSold, domain, plot);
+        var totalY = plot.y + plot.h - totalH;
+        var recentY = plot.y + plot.h - recentH;
+
+        parts.push('<rect x="' + totalX + '" y="' + totalY + '" width="' + barWidth + '" height="' + totalH + '" rx="4" fill="#2563eb" opacity="0.9"/>');
+        parts.push('<rect x="' + recentX + '" y="' + recentY + '" width="' + barWidth + '" height="' + recentH + '" rx="4" fill="#f97316" opacity="0.9"/>');
+
+        if (totalH > 16) {
+          parts.push('<text x="' + (totalX + barWidth / 2) + '" y="' + (totalY - 4) + '" text-anchor="middle" font-size="10" fill="#2563eb" font-weight="700">' + sold + '</text>');
+        }
+        if (recentH > 16) {
+          parts.push('<text x="' + (recentX + barWidth / 2) + '" y="' + (recentY - 4) + '" text-anchor="middle" font-size="10" fill="#ea580c" font-weight="700">' + recentSold + '</text>');
+        }
+
+        var nameColor = getSupplierColor(productIndex);
+        parts.push('<text x="' + groupCenter + '" y="' + (plot.y + plot.h + 16) + '" text-anchor="middle" font-size="11" fill="' + nameColor + '" font-weight="700">' + escapeHtml(shortName(product.name, 10)) + '</text>');
+        if (product.isSource) {
+          parts.push('<text x="' + groupCenter + '" y="' + (plot.y + plot.h + 30) + '" text-anchor="middle" font-size="10" fill="' + nameColor + '">参照</text>');
+        }
+      });
+
+      svg.innerHTML = parts.join('');
+    }
+
+    function bindDealProductList(products) {
+      var list = document.getElementById('dealProductList');
+      if (!list || list.dataset.bound === '1') return;
+      list.dataset.bound = '1';
+      list.addEventListener('click', function(event) {
+        var item = event.target.closest('.stability-list-item');
+        if (!item) return;
+        var index = Number(item.getAttribute('data-index'));
+        if (Number.isNaN(index)) return;
+        var pos = dealSelectedIndices.indexOf(index);
+        if (pos === -1) {
+          dealSelectedIndices.push(index);
+        } else {
+          dealSelectedIndices.splice(pos, 1);
+        }
+        list.querySelectorAll('.stability-list-item').forEach(function(node) {
+          var nodeIndex = Number(node.getAttribute('data-index'));
+          var selected = dealSelectedIndices.indexOf(nodeIndex) !== -1;
+          node.classList.toggle('is-selected', selected);
+          node.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+        drawHistoryDealChart(products);
+      });
+    }
+
+    function initHistoryDealChart(products) {
+      enrichProductTradeInsight(products);
+      drawHistoryDealChart(products);
+      bindDealProductList(products);
     }
 
     function getReputationTone(type, value) {
@@ -1277,35 +2037,164 @@
       return '';
     }
 
-    function renderUserReputationCompare(products) {
-      var items = products.map(function(product) {
-        var score = getPortraitScore(product, 'userReputation');
-        var insight = product.tradeInsight || {};
-        var goodRate = insight.goodRate || '—';
-        var validEvalCount = Number(insight.validEvalCount || 0);
-        var returnRate = Number(insight.returnRate || 0);
-        return '<div class="five-dim-item' + (product.isSource ? ' is-source' : '') + '">' +
-          renderFiveDimItemHead(product, score) +
-          '<div class="reputation-metrics">' +
-            '<div class="reputation-metric ' + getReputationTone('goodRate', goodRate) + '">' +
-              '<div class="reputation-metric-label">好评率</div>' +
-              '<div class="reputation-metric-value">' + escapeHtml(String(goodRate)) + '</div>' +
+    function parseGoodRatePct(goodRate) {
+      return parseFloat(String(goodRate || '').replace('%', '')) || 0;
+    }
+
+    function getReputationRowData(product, index) {
+      var insight = product.tradeInsight || {};
+      var goodRate = insight.goodRate || '—';
+      var validEvalCount = Number(insight.validEvalCount || 0);
+      var returnRate = Number(insight.returnRate || 0);
+      return {
+        product: product,
+        productIndex: index,
+        goodRate: goodRate,
+        goodRateNum: parseGoodRatePct(goodRate),
+        validEvalCount: validEvalCount,
+        returnRate: returnRate,
+        score: getPortraitScore(product, 'userReputation')
+      };
+    }
+
+    function getReputationCellClass(type, value) {
+      var tone = getReputationTone(type, value);
+      if (tone === 'positive') return 'reputation-cell-positive';
+      if (tone === 'negative') return 'reputation-cell-negative';
+      return '';
+    }
+
+    function sortReputationRows(rows, key, dir) {
+      if (!key) {
+        return rows.slice().sort(function(a, b) {
+          if (a.product.isSource) return -1;
+          if (b.product.isSource) return 1;
+          return 0;
+        });
+      }
+      var mul = dir === 'asc' ? 1 : -1;
+      return rows.slice().sort(function(a, b) {
+        var av;
+        var bv;
+        if (key === 'goodRate') {
+          av = a.goodRateNum;
+          bv = b.goodRateNum;
+        } else if (key === 'validEval') {
+          av = a.validEvalCount;
+          bv = b.validEvalCount;
+        } else if (key === 'returnRate') {
+          av = a.returnRate;
+          bv = b.returnRate;
+        } else {
+          av = a.score;
+          bv = b.score;
+        }
+        if (av === bv) return 0;
+        return (av > bv ? 1 : -1) * mul;
+      });
+    }
+
+    function renderReputationSortBtn(label, key) {
+      var isActive = reputationSortKey === key;
+      var ascActive = isActive && reputationSortDir === 'asc';
+      var descActive = isActive && reputationSortDir === 'desc';
+      return '<button type="button" class="reputation-sort-btn' + (isActive ? ' is-active' : '') + '" data-sort="' + key + '" aria-label="按' + label + '排序">' +
+        escapeHtml(label) +
+        '<span class="reputation-sort-icons" aria-hidden="true">' +
+          '<i class="fa-solid fa-sort-up' + (ascActive ? ' is-active' : '') + '"></i>' +
+          '<i class="fa-solid fa-sort-down' + (descActive ? ' is-active' : '') + '"></i>' +
+        '</span>' +
+      '</button>';
+    }
+
+    function renderReputationTableBody(products) {
+      var rows = sortReputationRows(
+        products.map(getReputationRowData),
+        reputationSortKey,
+        reputationSortDir
+      );
+      return rows.map(function(row) {
+        var product = row.product;
+        return '<tr class="' + (product.isSource ? 'is-source' : '') + '">' +
+          '<td>' +
+            '<div class="reputation-product-cell">' +
+              renderProductColorDot(row.productIndex) +
+              '<div>' +
+                '<div class="reputation-product-name">' + escapeHtml(shortName(product.name, 22)) +
+                  (product.isSource ? ' <span class="ref-badge"><i class="fa-solid fa-bookmark"></i>参照</span>' : '') +
+                '</div>' +
+                '<div class="reputation-product-meta">' + escapeHtml(product.supplier || '') + '</div>' +
+              '</div>' +
             '</div>' +
-            '<div class="reputation-metric ' + getReputationTone('validEvalCount', validEvalCount) + '">' +
-              '<div class="reputation-metric-label">有效评价</div>' +
-              '<div class="reputation-metric-value">' + validEvalCount + ' 条</div>' +
-            '</div>' +
-            '<div class="reputation-metric ' + getReputationTone('returnRate', returnRate) + '">' +
-              '<div class="reputation-metric-label">退货率</div>' +
-              '<div class="reputation-metric-value">' + returnRate.toFixed(1) + '%</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+          '</td>' +
+          '<td class="' + getReputationCellClass('goodRate', row.goodRate) + '">' + escapeHtml(String(row.goodRate)) + '</td>' +
+          '<td class="' + getReputationCellClass('validEvalCount', row.validEvalCount) + '">' + row.validEvalCount + ' 条</td>' +
+          '<td class="' + getReputationCellClass('returnRate', row.returnRate) + '">' + row.returnRate.toFixed(1) + '%</td>' +
+          '<td class="reputation-score-cell">' + row.score + '</td>' +
+        '</tr>';
       }).join('');
+    }
+
+    function updateReputationSortHeaders() {
+      document.querySelectorAll('#reputationTable .reputation-sort-btn').forEach(function(btn) {
+        var key = btn.getAttribute('data-sort');
+        var isActive = reputationSortKey === key;
+        btn.classList.toggle('is-active', isActive);
+        var icons = btn.querySelectorAll('.reputation-sort-icons i');
+        if (icons[0]) icons[0].classList.toggle('is-active', isActive && reputationSortDir === 'asc');
+        if (icons[1]) icons[1].classList.toggle('is-active', isActive && reputationSortDir === 'desc');
+      });
+    }
+
+    function refreshReputationTable() {
+      var tbody = document.getElementById('reputationTableBody');
+      if (!tbody || !reputationTableProducts.length) return;
+      tbody.innerHTML = renderReputationTableBody(reputationTableProducts);
+      updateReputationSortHeaders();
+    }
+
+    function bindReputationTable(products) {
+      reputationTableProducts = products;
+      var table = document.getElementById('reputationTable');
+      if (!table || table.dataset.bound === '1') return;
+      table.dataset.bound = '1';
+      table.addEventListener('click', function(event) {
+        var btn = event.target.closest('.reputation-sort-btn');
+        if (!btn) return;
+        var key = btn.getAttribute('data-sort');
+        if (!key) return;
+        if (reputationSortKey === key) {
+          reputationSortDir = reputationSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          reputationSortKey = key;
+          reputationSortDir = 'desc';
+        }
+        refreshReputationTable();
+      });
+      refreshReputationTable();
+    }
+
+    function renderUserReputationCompare(products) {
+      enrichProductTradeInsight(products);
+      reputationSortKey = '';
+      reputationSortDir = 'desc';
       var refScore = getPortraitScore(getSourceProduct(products), 'userReputation');
       return '<div class="five-dim-block">' +
         renderFiveDimHead('userReputation', refScore) +
-        '<div class="five-dim-body"><div class="five-dim-grid five-dim-grid--cols">' + items + '</div></div>' +
+        '<div class="five-dim-body">' +
+          '<div class="reputation-table-wrap">' +
+            '<table class="reputation-table" id="reputationTable">' +
+              '<thead><tr>' +
+                '<th scope="col">商品</th>' +
+                '<th scope="col">' + renderReputationSortBtn('好评率', 'goodRate') + '</th>' +
+                '<th scope="col">' + renderReputationSortBtn('有效评价', 'validEval') + '</th>' +
+                '<th scope="col">' + renderReputationSortBtn('退货率', 'returnRate') + '</th>' +
+                '<th scope="col">' + renderReputationSortBtn('综合评分', 'score') + '</th>' +
+              '</tr></thead>' +
+              '<tbody id="reputationTableBody"></tbody>' +
+            '</table>' +
+          '</div>' +
+        '</div>' +
       '</div>';
     }
 
@@ -1328,11 +2217,14 @@
         renderUserReputationCompare(products) +
         renderSupplierDimBlock(products);
       bindPriceReasonAxis(products);
+      initPriceStableChart(products);
+      initHistoryDealChart(products);
+      bindReputationTable(products);
       renderSupplierRadarCompare(products, 'portraitSupplierRadar');
     }
 
     function getSupplierColor(index) {
-      return SUPPLIER_RADAR_COLORS[index % SUPPLIER_RADAR_COLORS.length];
+      return getProductColor(index);
     }
 
     function getSupplierScores(product) {
@@ -1378,7 +2270,7 @@
           productIndex: index,
           name: product.supplier || '未知供应商',
           subtitle: product.name || '',
-          color: getSupplierColor(index),
+          color: getProductColor(index),
           scores: scores,
           avgScore: avgSixDimScore(scores),
           isSource: !!product.isSource
@@ -1505,9 +2397,12 @@
 
     function renderSupplierListItem(entry, isSelected) {
       var extraClass = entry.type === 'average' ? ' is-average' : '';
+      var dotHtml = entry.type === 'product' && entry.productIndex != null
+        ? renderProductColorDot(entry.productIndex, 'supplier-list-dot')
+        : '<span class="product-color-dot supplier-list-dot" style="background:' + entry.color + '" aria-hidden="true"></span>';
       return '<button type="button" class="supplier-list-item' + extraClass + (isSelected ? ' is-selected' : '') + '" data-id="' + escapeHtml(entry.id) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
         '<span class="supplier-list-check" aria-hidden="true"><i class="fa-solid fa-check"></i></span>' +
-        '<span class="supplier-list-dot" style="background:' + entry.color + '"></span>' +
+        dotHtml +
         '<div class="supplier-list-main">' +
           '<div class="supplier-list-name-row">' +
             '<span class="supplier-list-name">' + escapeHtml(entry.name) + '</span>' +
@@ -1709,12 +2604,13 @@
     }
 
     function bootstrap() {
-      var raw = sessionStorage.getItem('aiComparePayload');
-      if (!raw) {
+      var rawPayload = window.ComparePayloadBridge ? ComparePayloadBridge.load() : null;
+      if (!rawPayload) {
         document.getElementById('pageMain').innerHTML = '<section class="card section"><div class="empty-state">未找到比质比价分析数据，请从商品详情勾选候选商品后进入。</div></section>';
         return;
       }
-      comparePayload = normalizePayload(JSON.parse(raw));
+      comparePayload = normalizePayload(rawPayload);
+      if (window.ComparePayloadBridge) ComparePayloadBridge.clearHash();
       if (!comparePayload.products || !comparePayload.products.length) {
         document.getElementById('pageMain').innerHTML = '<section class="card section"><div class="empty-state">未找到比质比价分析数据，请从商品详情勾选候选商品后进入。</div></section>';
         return;

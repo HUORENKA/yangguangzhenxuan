@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>数据驾驶舱二 · 客户价值 | 国采e购</title>
+  <title>客户价值驾驶舱 | 国采e购</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   <style>
@@ -74,42 +74,77 @@
       opacity: 0.28;
     }
 
-    /* 导航 */
+    /* 右侧：上下屏圆点（仅客户价值驾驶舱双屏） */
     .side-nav {
       position: fixed;
-      right: 20px;
+      right: 22px;
       top: 50%;
       transform: translateY(-50%);
       z-index: 100;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
       align-items: center;
+      padding: 14px 10px;
+      border-radius: 999px;
+      background: rgba(4, 15, 30, 0.72);
+      border: 1px solid rgba(34, 211, 238, 0.28);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35), inset 0 0 16px rgba(34, 211, 238, 0.08);
+      backdrop-filter: blur(10px);
     }
     .nav-dot {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      border: 2px solid rgba(34, 211, 238, 0.5);
+      border: 2px solid rgba(34, 211, 238, 0.55);
       background: transparent;
       cursor: pointer;
       transition: all 0.35s ease;
+      padding: 0;
+    }
+    .nav-dot:hover {
+      border-color: #67e8f9;
+      box-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
     }
     .nav-dot.active {
       background: var(--cyan);
-      box-shadow: 0 0 16px rgba(34, 211, 238, 0.8);
-      transform: scale(1.25);
+      border-color: var(--cyan);
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.85);
+      transform: scale(1.2);
     }
-    .nav-link {
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--text-muted);
-      text-decoration: none;
+    .nav-dot-label {
       writing-mode: vertical-rl;
+      font-size: 10px;
+      color: var(--text-muted);
       letter-spacing: 2px;
-      transition: color 0.2s;
+      margin-top: 2px;
     }
-    .nav-link:hover { color: var(--cyan); }
+
+    /* 顶栏驾驶舱切换（与运营监控驾驶舱同位置：顶栏右侧） */
+    .cockpit-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #1a1205;
+      background: linear-gradient(135deg, #ffe98c, #f2a92f);
+      border: 1px solid rgba(255, 210, 74, 0.65);
+      box-shadow: 0 0 16px rgba(242, 169, 47, 0.35);
+      white-space: nowrap;
+      transition: filter 0.2s, box-shadow 0.2s;
+    }
+    .cockpit-switch i { font-size: 13px; }
+    .cockpit-switch:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 0 20px rgba(242, 169, 47, 0.5);
+      color: #1a1205;
+    }
 
     /* 顶栏 */
     .topbar {
@@ -170,7 +205,7 @@
     .topbar-meta {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 14px;
       font-size: 15px;
       color: var(--text-sub);
     }
@@ -735,11 +770,20 @@
       letter-spacing: 1px;
     }
 
-    /* 右侧上下分 */
+    /* 右侧上下分：合作模式略矮，漏斗略高，保证五级阶段完整可见 */
     .screen-2-right {
       display: grid;
-      grid-template-rows: 1fr 1fr;
+      grid-template-rows: minmax(160px, 0.9fr) minmax(240px, 1.2fr);
       gap: 22px;
+      min-height: 0;
+    }
+    .funnel-panel {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .funnel-panel .panel-body {
+      flex: 1;
       min-height: 0;
     }
 
@@ -793,49 +837,127 @@
     .mode-card:nth-child(3) .mode-stat .ms { color: var(--purple); }
     .mode-stat .ml { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
 
-    /* 合作成果趋势 */
-    .trend-body {
+    /* 接入转化漏斗 */
+    .funnel-body {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding: 14px 18px 16px !important;
+      gap: 10px;
+      padding: 12px 16px 14px !important;
       height: 100%;
+      min-height: 0;
+      overflow: hidden;
     }
-    .trend-summary {
+    .funnel-summary {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
       flex-shrink: 0;
     }
-    .trend-kpi {
-      padding: 12px 16px;
+    .funnel-kpi {
+      padding: 8px 10px;
       border-radius: 10px;
       background: rgba(0, 0, 0, 0.22);
       border: 1px solid rgba(255, 255, 255, 0.06);
+      min-width: 0;
     }
-    .trend-kpi .tk-label {
-      font-size: 13px;
+    .funnel-kpi .tk-label {
+      font-size: 11px;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .trend-kpi .tk-val {
-      font-size: 28px;
+    .funnel-kpi .tk-val {
+      font-size: 22px;
       font-weight: 800;
       font-variant-numeric: tabular-nums;
-      line-height: 1.1;
+      line-height: 1.15;
     }
-    .trend-kpi .tk-unit {
-      font-size: 14px;
+    .funnel-kpi .tk-unit {
+      font-size: 12px;
       color: var(--text-sub);
-      margin-left: 4px;
+      margin-left: 2px;
     }
-    .trend-kpi:nth-child(1) .tk-val { color: #67e8f9; }
-    .trend-kpi:nth-child(2) .tk-val { color: #fcd34d; }
-    .trend-kpi:nth-child(3) .tk-val { color: #c4b5fd; }
-    .trend-chart {
+    .funnel-kpi:nth-child(1) .tk-val { color: #67e8f9; }
+    .funnel-kpi:nth-child(2) .tk-val { color: #fcd34d; }
+    .funnel-kpi:nth-child(3) .tk-val { color: #c4b5fd; }
+    .funnel-stages {
       flex: 1;
       min-height: 0;
-      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+      overflow: hidden;
+    }
+    .funnel-row {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr) 64px;
+      align-items: center;
+      gap: 10px;
+      flex: 1 1 0;
+      min-height: 28px;
+      max-height: 40px;
+    }
+    .funnel-stage-name {
+      font-size: 12px;
+      color: var(--text-sub);
+      text-align: right;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .funnel-bar-wrap {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      min-width: 0;
+      height: 100%;
+    }
+    .funnel-bar {
+      height: 70%;
+      min-height: 22px;
+      max-height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 10px;
+      box-sizing: border-box;
+      font-size: 13px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: #e0f2fe;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(34, 211, 238, 0.28);
+      box-shadow: inset 0 0 16px rgba(34, 211, 238, 0.12);
+      transition: filter 0.25s;
+      min-width: 48px;
+      overflow: hidden;
+    }
+    .funnel-bar:hover { filter: brightness(1.12); }
+    .funnel-bar.s0 { background: linear-gradient(90deg, rgba(8, 145, 178, 0.85), rgba(34, 211, 238, 0.65)); }
+    .funnel-bar.s1 { background: linear-gradient(90deg, rgba(14, 116, 144, 0.8), rgba(34, 211, 238, 0.5)); }
+    .funnel-bar.s2 { background: linear-gradient(90deg, rgba(217, 119, 6, 0.55), rgba(251, 191, 36, 0.45)); border-color: rgba(251, 191, 36, 0.35); color: #fff7ed; }
+    .funnel-bar.s3 { background: linear-gradient(90deg, rgba(124, 58, 237, 0.55), rgba(167, 139, 250, 0.45)); border-color: rgba(167, 139, 250, 0.35); }
+    .funnel-bar.s4 { background: linear-gradient(90deg, rgba(5, 150, 105, 0.55), rgba(52, 211, 153, 0.45)); border-color: rgba(52, 211, 153, 0.35); color: #ecfdf5; }
+    .funnel-conv {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green);
+      font-variant-numeric: tabular-nums;
+      text-align: left;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .funnel-conv i { font-size: 9px; color: var(--cyan); opacity: 0.75; }
+    .funnel-conv.is-start {
+      color: var(--text-muted);
+      font-weight: 600;
     }
 
     /* 底部案例条 + 联系方式 */
@@ -945,7 +1067,9 @@
       .scale-grid { grid-template-columns: repeat(2, 1fr); }
       .scale-item .sv { font-size: 30px; }
       .mode-stat .ms { font-size: 28px; }
-      .trend-kpi .tk-val { font-size: 24px; }
+      .funnel-kpi .tk-val { font-size: 18px; }
+      .funnel-row { grid-template-columns: 64px 1fr 52px; gap: 6px; }
+      .funnel-stage-name { font-size: 11px; }
       .screen-2-footer { flex-direction: column; align-items: stretch; }
       .footer-contact { justify-content: center; height: 44px; }
       .sp-name { font-size: 16px; }
@@ -956,10 +1080,9 @@
 <body>
   <canvas id="particleCanvas"></canvas>
 
-  <nav class="side-nav" aria-label="屏间导航">
-    <button class="nav-dot active" data-screen="0" title="第一屏：价值与生态"></button>
-    <button class="nav-dot" data-screen="1" title="第二屏：合作与行动"></button>
-    <a href="admin_cockpit.html" class="nav-link" title="切换至数据驾驶舱一">驾驶舱一</a>
+  <nav class="side-nav" aria-label="上下屏切换">
+    <button type="button" class="nav-dot active" data-screen="0" title="上屏：价值总览" aria-label="切换到上屏"></button>
+    <button type="button" class="nav-dot" data-screen="1" title="下屏：合作共赢·生态接入" aria-label="切换到下屏"></button>
   </nav>
 
   <div class="viewport-stack" id="viewportStack">
@@ -970,11 +1093,15 @@
         <div class="brand">
           <div class="brand-icon"><i class="fas fa-gem"></i></div>
           <div>
-            <h1>国采E购 · 客户价值驾驶舱</h1>
-            <small>DATA COCKPIT II · CUSTOMER VALUE</small>
+            <h1>国采e购 · 客户价值驾驶舱</h1>
+            <small>CUSTOMER VALUE COCKPIT</small>
           </div>
         </div>
         <div class="topbar-meta">
+          <a href="admin_cockpit.html" class="cockpit-switch" title="切换至运营监控驾驶舱">
+            <i class="fas fa-right-left"></i>
+            <span>运营监控驾驶舱</span>
+          </a>
           <span class="live-dot">实时数据</span>
           <span class="clock" id="clock"></span>
         </div>
@@ -1021,6 +1148,10 @@
           </div>
         </div>
         <div class="topbar-meta">
+          <a href="admin_cockpit.html" class="cockpit-switch" title="切换至运营监控驾驶舱">
+            <i class="fas fa-right-left"></i>
+            <span>运营监控驾驶舱</span>
+          </a>
           <span class="live-dot">动态更新</span>
           <span class="clock" id="clock2"></span>
         </div>
@@ -1056,14 +1187,14 @@
               <div class="mode-cards" id="modeCards"></div>
             </div>
           </div>
-          <div class="panel-glass trend-panel">
+          <div class="panel-glass funnel-panel">
             <div class="panel-head">
-              <h3><i class="fas fa-chart-line"></i> 合作成果趋势</h3>
-              <span class="panel-sub">COOPERATION TREND</span>
+              <h3><i class="fas fa-filter"></i> 接入转化漏斗</h3>
+              <span class="panel-sub">ONBOARDING FUNNEL</span>
             </div>
-            <div class="panel-body trend-body">
-              <div class="trend-summary" id="trendSummary"></div>
-              <div class="trend-chart" id="trendChart"></div>
+            <div class="panel-body funnel-body">
+              <div class="funnel-summary" id="funnelSummary"></div>
+              <div class="funnel-stages" id="funnelStages"></div>
             </div>
           </div>
         </div>
@@ -1108,26 +1239,26 @@
           main: 98.2, unit: '%', label: '合规采购占比',
           ring: 98.2, trend: '+2.1%',
           subs: [
-            { lb: '风险拦截', val: 1286, suffix: '次', sync: 'risk-block' },
-            { lb: '报告覆盖率', val: 96.5, suffix: '%', sync: 'report-cover' }
+            { lb: '合规商品成交占比', val: 97.6, suffix: '%' },
+            { lb: '采购单位合规达标率', val: 91.2, suffix: '%' }
           ]
         },
         {
           theme: 'saving', icon: 'fa-coins', title: '降本',
-          main: 15.8, unit: '%', label: '平均节资率',
+          main: 15.8, unit: '%', label: '竞/询价节资率',
           ring: 79, trend: '+3.2%',
           subs: [
-            { lb: '累计节约', val: 14.6, suffix: '亿元', sync: 'total-save' },
+            { lb: '累计节约', val: 14.6, suffix: '亿元' },
             { lb: '竞价贡献', val: 42, suffix: '%' }
           ]
         },
         {
           theme: 'smart', icon: 'fa-brain', title: '智能',
-          main: 62, unit: '%', label: '采购流程提效率',
-          ring: 62, trend: '+8.5%',
+          main: 42.6, unit: '%', label: '智能助手使用率',
+          ring: 42.6, trend: '+8.5%',
           subs: [
-            { lb: 'AI 助手调用', val: 286000, suffix: '次', sync: 'ai-calls' },
-            { lb: '方案采纳率', val: 78.3, suffix: '%' }
+            { lb: 'AI 助手调用', val: 286000, suffix: '次' },
+            { lb: '方案采纳数', val: 12860, suffix: '次' }
           ]
         }
       ],
@@ -1138,17 +1269,17 @@
         { label: '采购品类', value: 343, unit: '类', angle: 45 },
         { label: '年度订单', value: 440, unit: '万+笔', angle: 90 },
         { label: '累计成交额', value: 95.6, unit: '亿元', angle: 135 },
-        { label: '寻源系统联动', value: 100, unit: '%', angle: 180 },
-        { label: '信用认证联动', value: 100, unit: '%', angle: -135 }
+        { label: '寻源系统对接商品', value: 68, unit: '%', angle: 180 },
+        { label: '平台自营商品', value: 32, unit: '%', angle: -135 }
       ],
       hubWings: {
         left: [
-          { label: '合规风险拦截', value: 1286, unit: '次', accent: 'cyan', sync: 'risk-block' },
-          { label: '合规报告覆盖', value: 96.5, unit: '%', accent: 'cyan', dec: 1, sync: 'report-cover' }
+          { label: '合同签约率', value: 96.8, unit: '%', accent: 'cyan', dec: 1 },
+          { label: '合规报告覆盖率', value: 97.1, unit: '%', accent: 'cyan', dec: 1 }
         ],
         right: [
-          { label: '累计节约金额', value: 14.6, unit: '亿元', accent: 'gold', dec: 1, sync: 'total-save' },
-          { label: 'AI 助手调用', value: 286000, unit: '次', accent: 'purple', sync: 'ai-calls' }
+          { label: '售后保障率', value: 98.5, unit: '%', accent: 'gold', dec: 1 },
+          { label: 'VIP 客户率', value: 28.4, unit: '%', accent: 'purple', dec: 1 }
         ]
       },
       scale: [
@@ -1171,16 +1302,18 @@
         { name: '京东企业购供应链', category: '综合 MRO', logo: '../../assets/suppliers/jd.png', theme: 'purple' },
         { name: '徐工机械零部件中心', category: '机械零部件', logo: '../../assets/suppliers/xcmg.png', theme: 'gold' }
       ],
-      trend: {
-        months: ['8月', '9月', '10月', '11月', '12月', '1月', '2月', '3月', '4月', '5月', '6月', '7月'],
-        clients: [82, 88, 92, 98, 105, 108, 112, 118, 122, 128, 135, 143],
-        gmv: [52.3, 55.1, 58.6, 62.4, 68.2, 71.5, 74.8, 78.2, 82.6, 86.4, 91.2, 95.6],
-        orders: [280, 305, 328, 352, 368, 385, 398, 412, 425, 438, 448, 456]
+      funnel: {
+        stages: [
+          { name: '合作意向', count: 320 },
+          { name: '合同签约', count: 268 },
+          { name: '开通上线', count: 241 },
+          { name: '完成首单', count: 198 },
+          { name: '持续活跃', count: 156 }
+        ]
       },
       modes: [
-        { icon: 'fa-door-open', name: '平台入驻', desc: '快速开通数字化采购，即开即用', stat: 128, statLabel: '已入驻客户', sync: 'clients' },
-        { icon: 'fa-server', name: '定制化部署', desc: '私有化/专属实例，深度适配企业需求', stat: 36, statLabel: '部署实例' },
-        { icon: 'fa-link', name: '生态合作', desc: '寻源询价、信用认证等生态伙伴对接', stat: 18, statLabel: '生态伙伴' }
+        { icon: 'fa-door-open', name: '入驻平台', desc: '标准 SaaS 开通，快速接入数字化采购能力，即开即用', stat: 98, statLabel: '已入驻客户' },
+        { icon: 'fa-network-wired', name: '生态化部署', desc: '与企业现有采购/ERP 体系对接，实现生态化集成部署', stat: 30, statLabel: '部署客户' }
       ],
       cases: [
         { org: '某中央企业集团', save: '18%', eff: '65%', tag: '办公物资集采' },
@@ -1540,144 +1673,53 @@
       `;
     }
 
-    /* ========== 合作成果趋势图 ========== */
-    function renderTrendSummary() {
-      const t = DATA.trend;
-      const last = t.months.length - 1;
-      document.getElementById('trendSummary').innerHTML = `
-        <div class="trend-kpi">
-          <div class="tk-label">累计入驻客户</div>
-          <div><span class="tk-val" data-val="${t.clients[last]}" data-dec="0" id="tkClients">0</span><span class="tk-unit">家</span></div>
+    /* ========== 接入转化漏斗 ========== */
+    function renderFunnel() {
+      const stages = DATA.funnel.stages;
+      const intent = stages[0].count;
+      const online = stages[2].count;
+      const active = stages[stages.length - 1].count;
+      const totalRate = ((active / intent) * 100).toFixed(1);
+      const maxCount = stages[0].count;
+
+      // 摘要区静态展示，不接入实时跳动，避免与漏斗阶段数字打架
+      document.getElementById('funnelSummary').innerHTML = `
+        <div class="funnel-kpi">
+          <div class="tk-label">意向客户</div>
+          <div><span class="tk-val">${intent.toLocaleString('zh-CN')}</span><span class="tk-unit">家</span></div>
         </div>
-        <div class="trend-kpi">
-          <div class="tk-label">累计成交额</div>
-          <div><span class="tk-val" data-val="${t.gmv[last]}" data-dec="1" id="tkGmv">0</span><span class="tk-unit">亿元</span></div>
+        <div class="funnel-kpi">
+          <div class="tk-label">上线客户</div>
+          <div><span class="tk-val">${online.toLocaleString('zh-CN')}</span><span class="tk-unit">家</span></div>
         </div>
-        <div class="trend-kpi">
-          <div class="tk-label">累计订单量</div>
-          <div><span class="tk-val" data-val="${t.orders[last]}" data-dec="0" id="tkOrders">0</span><span class="tk-unit">万笔</span></div>
+        <div class="funnel-kpi">
+          <div class="tk-label">意向→活跃</div>
+          <div><span class="tk-val">${totalRate}</span><span class="tk-unit">%</span></div>
         </div>
       `;
-      setTimeout(() => {
-        ['#tkClients', '#tkGmv', '#tkOrders'].forEach(sel => {
-          const el = document.querySelector(sel);
-          animateValue(el, +el.dataset.val, { decimals: +el.dataset.dec, duration: LIVE_CFG.initialCountDuration });
-          bindLiveMetricEl(el);
-        });
-      }, 600);
-    }
 
-    function initTrendChart() {
-      const chart = echarts.init(document.getElementById('trendChart'));
-      const t = DATA.trend;
-      const option = {
-        backgroundColor: 'transparent',
-        grid: { left: 48, right: 48, top: 36, bottom: 28 },
-        tooltip: {
-          trigger: 'axis',
-          backgroundColor: 'rgba(6,22,42,0.92)',
-          borderColor: 'rgba(34,211,238,0.3)',
-          textStyle: { color: '#e0f2fe', fontSize: 13 }
-        },
-        legend: {
-          top: 4,
-          right: 0,
-          itemWidth: 14,
-          itemHeight: 8,
-          textStyle: { color: '#7dd3fc', fontSize: 13 }
-        },
-        xAxis: {
-          type: 'category',
-          data: t.months,
-          boundaryGap: false,
-          axisLine: { lineStyle: { color: 'rgba(34,211,238,0.25)' } },
-          axisLabel: { color: '#64748b', fontSize: 12 },
-          axisTick: { show: false }
-        },
-        yAxis: [
-          {
-            type: 'value',
-            name: '客户/订单',
-            nameTextStyle: { color: '#64748b', fontSize: 11 },
-            splitLine: { lineStyle: { color: 'rgba(34,211,238,0.08)' } },
-            axisLabel: { color: '#64748b', fontSize: 11 }
-          },
-          {
-            type: 'value',
-            name: '亿元',
-            nameTextStyle: { color: '#64748b', fontSize: 11 },
-            splitLine: { show: false },
-            axisLabel: { color: '#64748b', fontSize: 11 }
-          }
-        ],
-        series: [
-          {
-            name: '入驻客户',
-            type: 'line',
-            smooth: true,
-            symbol: 'circle',
-            symbolSize: 6,
-            data: [...t.clients],
-            lineStyle: { width: 2.5, color: '#22d3ee' },
-            itemStyle: { color: '#22d3ee' },
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: 'rgba(34,211,238,0.35)' },
-                { offset: 1, color: 'rgba(34,211,238,0.02)' }
-              ])
-            }
-          },
-          {
-            name: '成交额',
-            type: 'line',
-            yAxisIndex: 1,
-            smooth: true,
-            symbol: 'circle',
-            symbolSize: 6,
-            data: [...t.gmv],
-            lineStyle: { width: 2.5, color: '#fbbf24' },
-            itemStyle: { color: '#fbbf24' },
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: 'rgba(251,191,36,0.28)' },
-                { offset: 1, color: 'rgba(251,191,36,0.02)' }
-              ])
-            }
-          },
-          {
-            name: '订单量',
-            type: 'line',
-            smooth: true,
-            symbol: 'circle',
-            symbolSize: 6,
-            data: [...t.orders],
-            lineStyle: { width: 2.5, color: '#a78bfa' },
-            itemStyle: { color: '#a78bfa' },
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: 'rgba(167,139,250,0.28)' },
-                { offset: 1, color: 'rgba(167,139,250,0.02)' }
-              ])
-            }
-          }
-        ]
-      };
-      chart.setOption(option);
-      window._trendChart = chart;
+      // 每行：阶段名 | 宽度递减条（内嵌数量） | 相对上一阶段转化率（首级显示「起点」）
+      const stagesHtml = stages.map((s, i) => {
+        const widthPct = Math.max(22, (s.count / maxCount) * 100);
+        let convHtml;
+        if (i === 0) {
+          convHtml = `<div class="funnel-conv is-start">起点</div>`;
+        } else {
+          const rate = ((s.count / stages[i - 1].count) * 100).toFixed(1);
+          convHtml = `<div class="funnel-conv"><i class="fas fa-arrow-down"></i>${rate}%</div>`;
+        }
+        return `
+          <div class="funnel-row">
+            <div class="funnel-stage-name" title="${s.name}">${s.name}</div>
+            <div class="funnel-bar-wrap">
+              <div class="funnel-bar s${i}" style="width:${widthPct}%">${s.count.toLocaleString('zh-CN')}</div>
+            </div>
+            ${convHtml}
+          </div>
+        `;
+      }).join('');
 
-      setInterval(() => {
-        const last = t.clients.length - 1;
-        t.clients[last] = Math.min(160, t.clients[last] + (Math.random() > 0.5 ? 1 : 0));
-        t.gmv[last] = Math.min(102, +(t.gmv[last] + Math.random() * 0.08).toFixed(1));
-        t.orders[last] = Math.min(480, t.orders[last] + (Math.random() > 0.6 ? 1 : 0));
-        chart.setOption({
-          series: [
-            { data: [...t.clients] },
-            { data: [...t.gmv] },
-            { data: [...t.orders] }
-          ]
-        });
-      }, LIVE_CFG.waveInterval * 1.5);
+      document.getElementById('funnelStages').innerHTML = stagesHtml;
     }
 
     /* ========== 第二屏：合作规模 + 供应商 ========== */
@@ -1818,8 +1860,7 @@
     initEcoMap();
     renderScale();
     renderModes();
-    renderTrendSummary();
-    initTrendChart();
+    renderFunnel();
     renderCases();
     initParticles();
     initNav();
@@ -1830,7 +1871,6 @@
     window.addEventListener('resize', () => {
       placeEcoNodes();
       if (window._ecoMapChart) window._ecoMapChart.resize();
-      if (window._trendChart) window._trendChart.resize();
     });
 
     /* 进入第二屏时触发一次快速滚动刷新 */
@@ -1840,7 +1880,6 @@
           liveMetrics
             .filter(m => m.el.closest('#screen2'))
             .forEach(rollLiveMetric);
-          if (window._trendChart) window._trendChart.resize();
         }
       });
     }, { threshold: 0.3 });

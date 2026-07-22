@@ -1023,11 +1023,28 @@
       left: 10px;
       padding: 3px 8px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid #fde2e0;
-      color: var(--mall-red);
       font-size: 11px;
       font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .product-tag--zhongzi {
+      background: rgba(37, 99, 235, 0.92);
+      border: 1px solid rgba(29, 78, 216, 0.35);
+      color: #fff;
+    }
+
+    .product-tag--platform {
+      background: rgba(220, 38, 38, 0.92);
+      border: 1px solid rgba(185, 28, 28, 0.35);
+      color: #fff;
+    }
+
+    .product-tag--zhongjian {
+      background: rgba(5, 150, 105, 0.92);
+      border: 1px solid rgba(4, 120, 87, 0.35);
+      color: #fff;
     }
 
     .product-body {
@@ -1562,6 +1579,7 @@
     </div>
   </div>
 
+  <script src="../assets/compare_payload_bridge.js"></script>
   <script src="../assets/unified_topbar.js"></script>
   <script>
     const CATEGORY_TREE = {
@@ -1579,6 +1597,12 @@
       { value: '500-3000', label: '500-3000元', min: 500, max: 3000 },
       { value: '3000+', label: '3000元以上', min: 3000, max: null }
     ];
+
+    const PRODUCT_SOURCE = {
+      zhongzi: { label: '中资认证', className: 'product-tag--zhongzi' },
+      platform: { label: '平台自营', className: 'product-tag--platform' },
+      zhongjian: { label: '中检认证', className: 'product-tag--zhongjian' }
+    };
 
     const PRODUCTS = [
       {
@@ -1599,7 +1623,7 @@
         deliveryArea: '广东省',
         deliveryCity: '广州市',
         deliveryTime: '72小时内发货',
-        tags: ['品质甄选', '政采适配'],
+        source: 'zhongzi',
         hotScore: 82,
         prefScore: 76,
         supplierScore: 4.8,
@@ -1629,7 +1653,7 @@
         deliveryArea: '广东省',
         deliveryCity: '深圳市',
         deliveryTime: '48小时内发货',
-        tags: ['热门商品', '高性能'],
+        source: 'zhongjian',
         hotScore: 93,
         prefScore: 88,
         supplierScore: 4.9,
@@ -1659,7 +1683,7 @@
         deliveryArea: '广东省',
         deliveryCity: '佛山市',
         deliveryTime: '24小时内发货',
-        tags: ['性价之选', '高时效'],
+        source: 'platform',
         hotScore: 95,
         prefScore: 91,
         supplierScore: 4.8,
@@ -1689,7 +1713,7 @@
         deliveryArea: '广东省',
         deliveryCity: '广州市',
         deliveryTime: '72小时内发货',
-        tags: ['热门商品', '设备类采购'],
+        source: 'zhongzi',
         sceneIntent: ['office'],
         hotScore: 87,
         prefScore: 84,
@@ -1720,7 +1744,7 @@
         deliveryArea: '广东省',
         deliveryCity: '深圳市',
         deliveryTime: '48小时内发货',
-        tags: ['性价之选', '低价优先'],
+        source: 'platform',
         sceneIntent: ['economy'],
         hotScore: 90,
         prefScore: 88,
@@ -1751,7 +1775,7 @@
         deliveryArea: '广东省',
         deliveryCity: '广州市',
         deliveryTime: '48小时内发货',
-        tags: ['品质甄选', '多功能'],
+        source: 'zhongjian',
         sceneIntent: ['aio'],
         hotScore: 91,
         prefScore: 89,
@@ -1782,7 +1806,7 @@
         deliveryArea: '广东省',
         deliveryCity: '佛山市',
         deliveryTime: '72小时内发货',
-        tags: ['设备类采购', '高效办公'],
+        source: 'zhongjian',
         sceneIntent: ['aio', 'office'],
         hotScore: 85,
         prefScore: 86,
@@ -1813,7 +1837,7 @@
         deliveryArea: '广东省',
         deliveryCity: '东莞市',
         deliveryTime: '24小时内发货',
-        tags: ['猜你喜欢', '高频复购'],
+        source: 'platform',
         hotScore: 98,
         prefScore: 96,
         supplierScore: 4.8,
@@ -1843,7 +1867,7 @@
         deliveryArea: '广东省',
         deliveryCity: '广州市',
         deliveryTime: '24小时内发货',
-        tags: ['性价之选', '低价优先'],
+        source: 'zhongjian',
         hotScore: 89,
         prefScore: 92,
         supplierScore: 4.7,
@@ -1873,7 +1897,7 @@
         deliveryArea: '广东省',
         deliveryCity: '深圳市',
         deliveryTime: '48小时内发货',
-        tags: ['最近采购', '合规齐全'],
+        source: 'zhongzi',
         hotScore: 80,
         prefScore: 78,
         supplierScore: 4.7,
@@ -1903,7 +1927,7 @@
         deliveryArea: '广东省',
         deliveryCity: '深圳市',
         deliveryTime: '72小时内发货',
-        tags: ['品质甄选', '会议设备'],
+        source: 'platform',
         hotScore: 76,
         prefScore: 81,
         supplierScore: 4.9,
@@ -2907,8 +2931,8 @@
       `).join('');
     }
 
-    function tagText(item) {
-      return item.tags[0] || item.category;
+    function getProductSourceMeta(item) {
+      return PRODUCT_SOURCE[item.source] || PRODUCT_SOURCE.zhongzi;
     }
 
     function renderCards(list, pageMeta) {
@@ -2928,11 +2952,12 @@
 
       grid.innerHTML = pageList.map(item => {
         const marker = Math.max(6, Math.min(94, ((item.price - item.floor) / (item.ceiling - item.floor)) * 100));
+        const sourceMeta = getProductSourceMeta(item);
         return `
           <article class="product-card" onclick="window.open('product.html?id=${item.id}', '_blank')">
             <div class="product-thumb">
               <img src="${item.image}" alt="${item.name}">
-              <span class="product-tag">${tagText(item)}</span>
+              <span class="product-tag ${sourceMeta.className}">${sourceMeta.label}</span>
             </div>
             <div class="product-body">
               <a class="product-name" href="product.html?id=${item.id}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${item.name}</a>
@@ -2967,6 +2992,20 @@
       return PRODUCTS.find(item => item.id === id);
     }
 
+    function buildCandidatePriceRange(price, base, index, type) {
+      const refSpan = Math.max(Number(base.ceiling) - Number(base.floor), Number(base.price) * 0.08, 1);
+      const spanScale = type === 'similar' ? 1.05 + index * 0.035 : 0.95 + index * 0.025;
+      const span = refSpan * spanScale;
+      const shift = (index - 1.5) * refSpan * 0.05;
+      let floor = +(price - span * 0.48 + shift).toFixed(2);
+      let ceiling = +(price + span * 0.52 - shift).toFixed(2);
+      floor = Math.max(0.01, floor);
+      if (ceiling <= floor) ceiling = +(floor + span * 0.6).toFixed(2);
+      if (price < floor) floor = +(price * 0.94).toFixed(2);
+      if (price > ceiling) ceiling = +(price * 1.06).toFixed(2);
+      return { floor, ceiling };
+    }
+
     function buildCompareRows(base, type) {
       const offsets = type === 'same' ? [-8, 0, 6, 12] : [-12, -4, 9, 15];
       const supplierNames = ['晨光政采店', '得力企业采购店', '华采办公旗舰店', '京采优选供应站'];
@@ -2985,6 +3024,10 @@
         const afterSalesScore = Math.max(69, 90 - index * 3 - (type === 'similar' ? 4 : 0));
         const fulfillmentScore = Math.max(70, 91 - index * 3 - (type === 'similar' ? 5 : 0));
         const totalScore = Math.round(avg([priceScore, riskScore, qualityScore, afterSalesScore, fulfillmentScore]));
+        const isReference = price === base.price;
+        const priceRange = isReference
+          ? { floor: base.floor, ceiling: base.ceiling }
+          : buildCandidatePriceRange(price, base, index, type);
         return {
           id: `${type}_${index}`,
           type,
@@ -2992,8 +3035,8 @@
           supplier: supplierNames[index],
           tag: supplierTags[index],
           price,
-          floor: base.floor,
-          ceiling: base.ceiling,
+          floor: priceRange.floor,
+          ceiling: priceRange.ceiling,
           delta,
           ratio,
           delivery: index % 2 === 0 ? '24小时内发货' : '48小时内发货',
@@ -3073,8 +3116,7 @@
       if (!product) return;
       const sameRows = buildCompareRows(product, 'same');
       const payload = buildAiComparePayloadFromRows(product, sameRows);
-      sessionStorage.setItem('aiComparePayload', JSON.stringify(payload));
-      window.open('../pages-new/compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
+      ComparePayloadBridge.open('../pages-new/compare_analysis.html', payload, 'from=ai');
     }
 
     function closeComparePicker() {
@@ -3164,9 +3206,8 @@
         generatedAt: new Date().toISOString()
       };
 
-      sessionStorage.setItem('compareAnalysisPayload', JSON.stringify(payload));
       closeComparePicker();
-      window.location.href = '../pages-new/compare_analysis.html';
+      ComparePayloadBridge.open('../pages-new/compare_analysis.html', payload);
     }
 
     function bindCompareTabs() {

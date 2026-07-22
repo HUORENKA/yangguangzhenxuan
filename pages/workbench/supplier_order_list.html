@@ -6,6 +6,7 @@
   <title>订单管理 | 供应商工作台</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/logistics-view.css">
   <style>
     body { background: #f5f7fa; color: #0f172a; font-family: system-ui, "Microsoft YaHei", sans-serif; }
     .page-wrap { max-width: 1660px; margin: 0 auto; padding: 16px 20px 32px; }
@@ -280,13 +281,14 @@
     </div>
   </div>
 
-  <!-- 查看物流 · 时间轴 -->
+  <!-- 查看物流 -->
   <div class="dlg-overlay" id="timelineDlg">
-    <div class="dlg" style="max-width:560px" onclick="event.stopPropagation()">
+    <div class="dlg logistics-dlg" onclick="event.stopPropagation()">
       <div class="dlg-hd">
-        <span>物流跟踪</span>
+        <span>查看物流</span>
         <button type="button" class="btn btn-sm" onclick="closeTimelineDlg()">&times;</button>
       </div>
+      <div id="timelinePager"></div>
       <div class="dlg-bd" id="timelineDlgBody"></div>
       <div class="dlg-ft">
         <button class="btn" type="button" onclick="closeTimelineDlg()">关闭</button>
@@ -294,47 +296,7 @@
     </div>
   </div>
 
-  <!-- 修改单号（行级） -->
-  <div class="dlg-overlay" id="modifyWaybillDlg">
-    <div class="dlg" style="max-width:520px" onclick="event.stopPropagation()">
-      <div class="dlg-hd">
-        <span>修改物流单号</span>
-        <button type="button" class="btn btn-sm" onclick="closeModifyWaybillDlg()">&times;</button>
-      </div>
-      <div class="dlg-bd">
-        <p class="text-sm mb-3" id="modifyWaybillSummary"></p>
-        <div class="upload-slip-row">
-          <input type="file" id="inpModifyLogisticsSlip" accept="image/*,.pdf" hidden>
-          <button type="button" class="btn btn-ghost-line" id="btnModifyUploadSlip"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>上传物流单</button>
-          <span class="text-xs text-slate-500">支持图片 / PDF，识别后自动填入运单号并校验</span>
-        </div>
-        <div class="upload-preview" id="modifyUploadSlipPreview"></div>
-        <div class="field">
-          <label>物流单号 <span style="color:#dc2626">*</span></label>
-          <div class="waybill-row">
-            <input type="text" class="ipt" id="modifyWaybillInput" placeholder="请输入新运单号，或上传物流单识别">
-            <button type="button" class="btn btn-ghost-line" id="btnModifyValidate">校验</button>
-          </div>
-          <div class="hint" id="modifyWaybillMsg"></div>
-        </div>
-        <div class="row2">
-          <div class="field">
-            <label>承运商（接口回填）</label>
-            <input class="ipt w-full" id="modifyCarrier" readonly>
-          </div>
-          <div class="field">
-            <label>发货时间（接口回填）</label>
-            <input class="ipt w-full" id="modifyShipTime" readonly>
-          </div>
-        </div>
-      </div>
-      <div class="dlg-ft">
-        <button class="btn" type="button" onclick="closeModifyWaybillDlg()">取消</button>
-        <button class="btn btn-primary" type="button" onclick="saveModifyWaybill()">保存</button>
-      </div>
-    </div>
-  </div>
-
+  <script src="../../assets/logistics-view.js"></script>
   <script>
     const TAB_KEYS = ['all','pending_ship','pending_receive','received','cancelled','return'];
     const TAB_LABEL = {
@@ -367,9 +329,8 @@
     let shipTargetLineId = null; // 行级登记入口：默认勾选该行，列表展示同订单全部待发商品
     let lastWaybillValidation = null;
 
-    /** 修改单号弹窗状态 */
-    let modifyCtx = null; // { orderId, lineId, shipmentId }
-    let modifyPending = null;
+    /** 查看物流弹窗状态 */
+    let timelineCtx = { orderId: null, shipmentIndex: 0, mapOpen: false };
 
     function seedOrders() {
       orders = [
@@ -380,13 +341,32 @@
           buyerName: '海淀区教育装备中心',
           buyerPhone: '13888889999',
           createdAt: '2026年04月26日-16:05:08',
-          status: 'pending_ship',
+          status: 'shipped',
           freight: 0,
           lines: [
-            { lineId: 'l-n1-a', name: '交换机 S1850-24P', spec: '品牌：新华三｜类目：千兆管理型｜端口：24口｜PoE：支持', skuCode: 'H3CS1850', unitPrice: 1299, qty: 5, shippedQty: 0 },
-            { lineId: 'l-n1-b', name: '千兆光模块 单模双纤', spec: '品牌：原厂｜接口：LC｜波长：1310nm', skuCode: 'SFP-GELX', unitPrice: 180, qty: 5, shippedQty: 0 }
+            { lineId: 'l-n1-a', name: '交换机 S1850-24P', spec: '品牌：新华三｜类目：千兆管理型｜端口：24口｜PoE：支持', skuCode: 'H3CS1850', unitPrice: 1299, qty: 5, shippedQty: 5 },
+            { lineId: 'l-n1-b', name: '千兆光模块 单模双纤', spec: '品牌：原厂｜接口：LC｜波长：1310nm', skuCode: 'SFP-GELX', unitPrice: 180, qty: 5, shippedQty: 5 }
           ],
-          shipments: []
+          shipments: [
+            {
+              shipmentId: 'sh-demo-a',
+              waybill: 'YT7629335544357',
+              carrier: '圆通速递',
+              shipTimeApi: '2026-06-26 19:20:40',
+              shipperName: '王明',
+              shipperPhone: '13800138001',
+              allocations: [{ lineId: 'l-n1-a', qty: 5 }]
+            },
+            {
+              shipmentId: 'sh-demo-b',
+              waybill: 'SF10260626003421',
+              carrier: '顺丰速运',
+              shipTimeApi: '2026-06-25 14:08:03',
+              shipperName: '李芳',
+              shipperPhone: '13900139002',
+              allocations: [{ lineId: 'l-n1-b', qty: 5 }]
+            }
+          ]
         },
         {
           id: 'ORD20260425003',
@@ -694,10 +674,6 @@
       if (canShipOrder(o) && rem > 0) {
         parts.push(`<button type="button" class="btn btn-primary btn-sm" data-action="ship-line" data-order="${escapeHtml(o.id)}" data-line="${escapeHtml(ln.lineId)}">登记发货</button>`);
       }
-      if (ln.shippedQty > 0 && getLineShipments(o, ln.lineId).length > 0) {
-        parts.push(`<button type="button" class="btn btn-ghost-line btn-sm" data-action="timeline" data-order="${escapeHtml(o.id)}" data-line="${escapeHtml(ln.lineId)}">查看物流</button>`);
-        parts.push(`<button type="button" class="btn btn-ghost-line btn-sm" data-action="modify-waybill-line" data-order="${escapeHtml(o.id)}" data-line="${escapeHtml(ln.lineId)}">修改单号</button>`);
-      }
       if (!parts.length) {
         if (o.status === 'return') return '<span class="text-xs text-slate-400">退货</span>';
         return '<span class="text-xs text-slate-400">—</span>';
@@ -728,19 +704,18 @@
       });
       document.querySelectorAll('[data-action="timeline"]').forEach(btn => {
         btn.addEventListener('click', () => {
-          openTimelineDlg(btn.getAttribute('data-order'), btn.getAttribute('data-line'));
-        });
-      });
-      document.querySelectorAll('[data-action="modify-waybill-line"]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          openModifyWaybillDlg(btn.getAttribute('data-order'), btn.getAttribute('data-line'));
+          openTimelineDlg(btn.getAttribute('data-order'));
         });
       });
     }
 
     function renderOneOrderCard(o) {
       const nLines = o.lines.length;
-      let detailLinks = `<button type="button" class="linklike">订单详情</button>`;
+      let detailLinks = `
+        <div class="logistics-order-detail-stack">
+          <button type="button" class="linklike">订单详情</button>
+          ${LogisticsView.renderOrderLogisticsButton(o.id, o.shipments.length, 'linklike')}
+        </div>`;
       let shipNote = '';
       if (o.shipments.length) {
         shipNote = `<div class="ship-count">已发 ${o.shipments.length} 批</div>`;
@@ -961,118 +936,58 @@
       renderOrderList();
     }
 
-    /** ---- 查看物流 · 时间轴 ---- */
-    function openTimelineDlg(orderId, lineId) {
+    /** ---- 查看物流 ---- */
+    function renderTimelineDlg() {
+      const o = orders.find(x => x.id === timelineCtx.orderId);
+      if (!o || !o.shipments.length) return;
+      const total = o.shipments.length;
+      const idx = Math.max(0, Math.min(timelineCtx.shipmentIndex, total - 1));
+      timelineCtx.shipmentIndex = idx;
+      const sh = o.shipments[idx];
+
+      document.getElementById('timelinePager').innerHTML = LogisticsView.renderPagerHtml(idx, total);
+      document.getElementById('timelineDlgBody').innerHTML = LogisticsView.renderModalBody(o, sh, {
+        lineImageUrl: lineImageUrl,
+        mapOpen: timelineCtx.mapOpen
+      });
+      bindTimelineDlgInteractions();
+    }
+
+    function bindTimelineDlgInteractions() {
+      const pager = document.getElementById('timelinePager');
+      const prev = pager.querySelector('[data-logistics-prev]');
+      const next = pager.querySelector('[data-logistics-next]');
+      if (prev) prev.onclick = () => { timelineCtx.shipmentIndex -= 1; timelineCtx.mapOpen = false; renderTimelineDlg(); };
+      if (next) next.onclick = () => { timelineCtx.shipmentIndex += 1; timelineCtx.mapOpen = false; renderTimelineDlg(); };
+
+      const mapToggle = document.querySelector('[data-logistics-map-toggle]');
+      const mapPanel = document.getElementById('logisticsStaticMapPanel');
+      if (mapToggle && mapPanel) {
+        mapToggle.onclick = () => {
+          timelineCtx.mapOpen = !timelineCtx.mapOpen;
+          mapPanel.classList.toggle('show', timelineCtx.mapOpen);
+        };
+      }
+    }
+
+    function openTimelineDlg(orderId, shipmentIndex) {
       const o = orders.find(x => x.id === orderId);
-      if (!o) return;
-      const ln = o.lines.find(l => l.lineId === lineId);
-      const shipments = getLineShipments(o, lineId);
-      if (!shipments.length) {
-        alert('该商品暂无物流信息');
+      if (!o || !o.shipments.length) {
+        alert('该订单暂无物流信息');
         return;
       }
-      const sh = shipments[shipments.length - 1];
-      const nodes = mockWaybillTimeline(sh.waybill, sh.carrier, sh.shipTimeApi);
-      const body = document.getElementById('timelineDlgBody');
-      body.innerHTML = `
-        <div class="timeline-head">
-          <div><strong>${escapeHtml(ln ? ln.name : '')}</strong></div>
-          <div class="text-sm text-slate-500 mt-1">订单 ${escapeHtml(orderId)}</div>
-          <div class="text-sm mt-2"><span class="text-slate-500">承运商：</span>${escapeHtml(sh.carrier)}</div>
-          <div class="text-sm"><span class="text-slate-500">运单号：</span><strong>${escapeHtml(sh.waybill)}</strong></div>
-          <div class="text-sm"><span class="text-slate-500">发货人：</span>${escapeHtml(sh.shipperName)} ${escapeHtml(sh.shipperPhone)}</div>
-        </div>
-        <div class="timeline-wrap">
-          ${nodes.map((n, i) => `
-            <div class="timeline-item">
-              <div class="timeline-time">${escapeHtml(n.time)}</div>
-              <div class="timeline-desc">${escapeHtml(n.desc)}</div>
-              ${n.loc ? `<div class="timeline-loc">${escapeHtml(n.loc)}</div>` : ''}
-            </div>
-          `).join('')}
-        </div>
-        ${shipments.length > 1 ? `<p class="text-xs text-slate-500 mt-3">该商品共 ${shipments.length} 批发货，当前展示最近一批物流轨迹。</p>` : ''}
-      `;
+      timelineCtx = {
+        orderId,
+        shipmentIndex: shipmentIndex || 0,
+        mapOpen: false
+      };
+      renderTimelineDlg();
       document.getElementById('timelineDlg').classList.add('show');
     }
 
     function closeTimelineDlg() {
+      timelineCtx = { orderId: null, shipmentIndex: 0, mapOpen: false };
       document.getElementById('timelineDlg').classList.remove('show');
-    }
-
-    /** ---- 修改单号（行级） ---- */
-    function openModifyWaybillDlg(orderId, lineId) {
-      const o = orders.find(x => x.id === orderId);
-      if (!o) return;
-      const sh = getLatestLineShipment(o, lineId);
-      if (!sh) {
-        alert('未找到该商品的发货批次');
-        return;
-      }
-      const ln = o.lines.find(l => l.lineId === lineId);
-      modifyCtx = { orderId, lineId, shipmentId: sh.shipmentId };
-      modifyPending = null;
-      document.getElementById('modifyWaybillSummary').innerHTML =
-        `<strong>${escapeHtml(ln ? ln.name : '')}</strong><br><span class="text-slate-500">当前运单：${escapeHtml(sh.waybill)} · ${escapeHtml(sh.carrier)}</span>`;
-      document.getElementById('modifyWaybillInput').value = sh.waybill;
-      document.getElementById('modifyCarrier').value = sh.carrier;
-      document.getElementById('modifyShipTime').value = sh.shipTimeApi;
-      document.getElementById('modifyWaybillMsg').textContent = '';
-      const modPreview = document.getElementById('modifyUploadSlipPreview');
-      modPreview.classList.remove('show');
-      modPreview.innerHTML = '';
-      const modFile = document.getElementById('inpModifyLogisticsSlip');
-      if (modFile) modFile.value = '';
-      document.getElementById('modifyWaybillDlg').classList.add('show');
-    }
-
-    function closeModifyWaybillDlg() {
-      modifyCtx = null;
-      modifyPending = null;
-      document.getElementById('modifyWaybillDlg').classList.remove('show');
-    }
-
-    function applyModifyOcrResult(ocr) {
-      document.getElementById('modifyWaybillInput').value = ocr.waybill || '';
-      runModifyValidate();
-    }
-
-    function runModifyValidate() {
-      if (!modifyCtx) return;
-      const w = document.getElementById('modifyWaybillInput').value.trim();
-      const res = mockWaybillLookup(w);
-      const msgEl = document.getElementById('modifyWaybillMsg');
-      if (!res.ok) {
-        modifyPending = null;
-        msgEl.innerHTML = `<span style="color:#b91c1c">${escapeHtml(res.msg)}</span>`;
-        return;
-      }
-      modifyPending = { carrier: res.carrier, shipTimeApi: res.shipTimeApi };
-      document.getElementById('modifyCarrier').value = res.carrier;
-      document.getElementById('modifyShipTime').value = res.shipTimeApi;
-      msgEl.innerHTML = '<span style="color:#047857">校验成功，承运商与时间已更新</span>';
-    }
-
-    function saveModifyWaybill() {
-      if (!modifyCtx || !modifyPending) {
-        alert('请先点击「校验」');
-        return;
-      }
-      const o = orders.find(x => x.id === modifyCtx.orderId);
-      if (!o) return;
-      const sh = o.shipments.find(x => x.shipmentId === modifyCtx.shipmentId);
-      if (!sh) return;
-      const w = document.getElementById('modifyWaybillInput').value.trim();
-      if (!w) {
-        alert('请填写物流单号');
-        return;
-      }
-      sh.waybill = w;
-      sh.carrier = modifyPending.carrier;
-      sh.shipTimeApi = modifyPending.shipTimeApi;
-      alert('物流单号已更新（示意）');
-      closeModifyWaybillDlg();
-      renderOrderList();
     }
 
     document.getElementById('btnSearch').addEventListener('click', () => {
@@ -1099,22 +1014,6 @@
         const ocr = mockOcrLogisticsSlip(file.name);
         preview.innerHTML = `<i class="fa-solid fa-check"></i> 已识别：<strong>${escapeHtml(file.name)}</strong> → 运单号、发货人信息已填入，并已触发校验`;
         applyOcrResult(ocr);
-      }, 600);
-    });
-    document.getElementById('btnModifyValidate').addEventListener('click', runModifyValidate);
-    document.getElementById('btnModifyUploadSlip').addEventListener('click', () => {
-      document.getElementById('inpModifyLogisticsSlip').click();
-    });
-    document.getElementById('inpModifyLogisticsSlip').addEventListener('change', (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const preview = document.getElementById('modifyUploadSlipPreview');
-      preview.classList.add('show');
-      preview.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在识别物流单…';
-      setTimeout(() => {
-        const ocr = mockOcrLogisticsSlip(file.name);
-        preview.innerHTML = `<i class="fa-solid fa-check"></i> 已识别：<strong>${escapeHtml(file.name)}</strong> → 运单号已填入，并已触发校验`;
-        applyModifyOcrResult(ocr);
       }, 600);
     });
 

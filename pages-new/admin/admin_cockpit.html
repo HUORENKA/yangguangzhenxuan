@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>数据驾驶舱一 · 运营监控 | 国采e购</title>
+  <title>运营监控驾驶舱 | 国采e购</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   <style>
@@ -95,6 +95,29 @@
       border-color: rgba(87, 230, 255, 0.9);
       box-shadow: inset 0 0 12px rgba(49, 212, 255, 0.24);
     }
+    .cockpit-switch {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 4px;
+      text-decoration: none !important;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #1a1205 !important;
+      background: linear-gradient(135deg, #ffe98c, #f2a92f) !important;
+      border: 1px solid rgba(255, 210, 74, 0.65) !important;
+      box-shadow: 0 0 16px rgba(242, 169, 47, 0.35);
+      margin-right: 2px;
+      white-space: nowrap;
+    }
+    .cockpit-switch i { font-size: 13px; }
+    .cockpit-switch:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 0 20px rgba(242, 169, 47, 0.5);
+    }
 
     .main {
       height: calc(100vh - 88px);
@@ -144,6 +167,39 @@
       border-radius: 2px;
       background: linear-gradient(180deg, #ffe27f, #f2a92f);
       box-shadow: 0 0 8px rgba(255, 210, 74, 0.45);
+    }
+    .panel-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 26px;
+    }
+    .panel-title-row .panel-title { flex: 1; min-width: 0; }
+    .period-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      z-index: 2;
+      position: relative;
+    }
+    .period-btn {
+      height: 24px;
+      min-width: 28px;
+      padding: 0 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      color: var(--c-text-sub);
+      border: 1px solid rgba(49, 212, 255, 0.28);
+      background: rgba(9, 34, 60, 0.85);
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .period-btn.active, .period-btn:hover {
+      color: #e8faff;
+      border-color: rgba(87, 230, 255, 0.9);
+      box-shadow: inset 0 0 10px rgba(49, 212, 255, 0.24);
     }
     .sub {
       font-size: 11px;
@@ -403,7 +459,10 @@
   <header class="header">
     <h1 class="title">国采e购 · 运营监控驾驶舱</h1>
     <div class="filters">
-      <a href="admin_cockpit_2.html" class="f-btn" style="text-decoration:none;display:inline-flex;align-items:center;color:inherit;" title="切换至客户价值驾驶舱">驾驶舱二</a>
+      <a href="admin_cockpit_2.html" class="cockpit-switch" title="切换至客户价值驾驶舱">
+        <i class="fas fa-right-left"></i>
+        <span>客户价值驾驶舱</span>
+      </a>
       <button class="f-btn active">累计</button>
       <button class="f-btn">本月</button>
       <button class="f-btn">本年</button>
@@ -420,11 +479,25 @@
   <main class="main">
     <aside class="col left">
       <section class="panel">
-        <h3 class="panel-title">近一年采购成交趋势</h3>
+        <div class="panel-title-row">
+          <h3 class="panel-title">采购成交趋势</h3>
+          <div class="period-toggle" data-target="deal">
+            <button type="button" class="period-btn active" data-period="month">月</button>
+            <button type="button" class="period-btn" data-period="quarter">季</button>
+            <button type="button" class="period-btn" data-period="year">年</button>
+          </div>
+        </div>
         <div id="chartDeal" class="chart"></div>
       </section>
       <section class="panel">
-        <h3 class="panel-title">近一年采购合规趋势</h3>
+        <div class="panel-title-row">
+          <h3 class="panel-title">采购合规趋势</h3>
+          <div class="period-toggle" data-target="compliant">
+            <button type="button" class="period-btn active" data-period="month">月</button>
+            <button type="button" class="period-btn" data-period="quarter">季</button>
+            <button type="button" class="period-btn" data-period="year">年</button>
+          </div>
+        </div>
         <div id="chartCompliant" class="chart"></div>
       </section>
       <section class="panel">
@@ -453,10 +526,10 @@
       </section>
 
       <section class="hub">
-        <h3 class="panel-title">阳光采购中心</h3>
+        <h3 class="panel-title">国采e购中心</h3>
         <div class="orbit-1"></div>
         <div class="orbit-2"></div>
-        <div class="hub-core">阳光<br>采购</div>
+        <div class="hub-core">国采<br>e购</div>
         <div class="hub-item p1" data-angle="-90"><div class="lb">累计成交订单</div><div class="vl" id="totalOrders"></div></div>
         <div class="hub-item p2" data-angle="-38"><div class="lb">累计成交金额</div><div class="vl" id="totalAmount"></div></div>
         <div class="hub-item p3" data-angle="13"><div class="lb">今日成交订单</div><div class="vl" id="todayOrders"></div></div>
@@ -705,6 +778,14 @@
       });
     }
     placeHubKpis();
+
+    document.querySelectorAll(".period-toggle").forEach(group => {
+      group.addEventListener("click", e => {
+        const btn = e.target.closest(".period-btn");
+        if (!btn || !group.contains(btn)) return;
+        group.querySelectorAll(".period-btn").forEach(b => b.classList.toggle("active", b === btn));
+      });
+    });
 
     window.addEventListener("resize", () => {
       chartDeal.resize();

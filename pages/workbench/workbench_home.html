@@ -237,6 +237,48 @@
       position: relative;
       height: 300px;
     }
+
+    /* 各状态平均停留时长 */
+    .status-dwell-block {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .status-dwell-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .status-dwell-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .status-dwell-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .status-dwell-item .dwell-name {
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dwell-item .dwell-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dwell-item .dwell-value {
+      font-weight: 700;
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+    }
     
     /* 自定义时间选择器内联样式 */
     .custom-date-inline {
@@ -1130,7 +1172,7 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
         <!-- 动销商品数 -->
         <div class="status-overview-card" onclick="window.location.href='../product/product_sales_report.html'">
           <div class="status-overview-left bg-red-50 text-red-600">
@@ -1155,6 +1197,18 @@
           <div class="status-overview-number text-blue-600 text-2xl">¥35.8万</div>
         </div>
 
+        <!-- 发货及时率 -->
+        <div class="status-overview-card" onclick="navigateTo('orders-list?status=shipping')">
+          <div class="status-overview-left bg-emerald-50 text-emerald-600">
+            <i class="fas fa-truck-fast"></i>
+          </div>
+          <div class="status-overview-content">
+            <div class="status-overview-label">发货及时率</div>
+            <div class="text-xs text-gray-400 mt-1">近30天履约</div>
+          </div>
+          <div class="status-overview-number text-emerald-600">96.8%</div>
+        </div>
+
         <!-- 低库存预警 -->
         <div class="status-overview-card" onclick="window.location.href='../product/product_sales_report.html'">
           <div class="status-overview-left bg-amber-50 text-amber-500">
@@ -1174,7 +1228,7 @@
           </div>
           <div class="status-overview-content">
             <div class="status-overview-label">滞销商品数</div>
-            <div class="text-xs text-gray-400 mt-1">>30天无销量</div>
+            <div class="text-xs text-gray-400 mt-1">>60天无动销</div>
           </div>
           <div class="status-overview-number text-slate-500">24</div>
         </div>
@@ -1252,8 +1306,31 @@
         </div>
         
         <!-- 饼状图容器 -->
-        <div class="chart-container">
+        <div class="chart-container" style="height:220px;">
           <canvas id="pieChart"></canvas>
+        </div>
+
+        <!-- 各状态平均停留时长 -->
+        <div class="status-dwell-block">
+          <div class="status-dwell-title">各状态平均停留时长</div>
+          <div class="status-dwell-list">
+            <div class="status-dwell-item">
+              <span class="dwell-name"><span class="dwell-dot" style="background:#a855f7;"></span>采购审核中</span>
+              <span class="dwell-value">1.2天</span>
+            </div>
+            <div class="status-dwell-item">
+              <span class="dwell-name"><span class="dwell-dot" style="background:#f97316;"></span>待发货</span>
+              <span class="dwell-value">2.5天</span>
+            </div>
+            <div class="status-dwell-item">
+              <span class="dwell-name"><span class="dwell-dot" style="background:#10b981;"></span>待收货</span>
+              <span class="dwell-value">3.1天</span>
+            </div>
+            <div class="status-dwell-item">
+              <span class="dwell-name"><span class="dwell-dot" style="background:#059669;"></span>收货完成</span>
+              <span class="dwell-value">0.8天</span>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -1353,7 +1430,7 @@
             <div class="todo-card-icon bg-orange-100 text-orange-600">
               <i class="fas fa-box-open"></i>
             </div>
-            <div class="todo-card-label">待退货</div>
+            <div class="todo-card-label">待退货处理</div>
           </div>
           <div class="todo-card-number text-orange-600" id="buyerTodo3">2</div>
         </div>

@@ -1046,16 +1046,51 @@
     .data-board-locked h3 { margin: 0 0 7px; font-size: 18px; font-weight: 800; color: #0f172a; }
     .data-board-locked p { margin: 0 0 20px; font-size: 14px; color: #64748b; }
     .data-board-unlocked { padding: 24px; }
-    .data-kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
+    .data-kpi-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
+    @media (max-width: 900px) {
+      .data-kpi-row { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 560px) {
+      .data-kpi-row { grid-template-columns: 1fr; }
+    }
     .data-kpi-card { background: rgba(252, 249, 244, 0.95); border-radius: 14px; padding: 16px; border: 1px solid rgba(218, 206, 192, 0.42); }
     .data-kpi-label { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 6px; }
     .data-kpi-value { font-size: 22px; font-weight: 800; color: #0f172a; }
     .data-kpi-value.orange { color: #ff6a00; }
     .data-kpi-value.green { color: #16a34a; }
+    .data-kpi-value.blue { color: #2563eb; }
+    .data-kpi-sub { font-size: 11px; color: #94a3b8; margin-top: 4px; }
     .data-kpi-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; margin-top: 4px; }
     .data-kpi-badge.up { background: #f0fdf4; color: #16a34a; }
     .data-kpi-badge.down { background: #fef2f2; color: #dc2626; }
     .data-divider { border: none; border-top: 1px solid #f1f5f9; margin: 4px 0 16px; }
+    /* 结构洞察 */
+    .data-struct-title { font-size: 13px; font-weight: 800; color: #475569; margin: 4px 0 12px; display: flex; align-items: center; gap: 6px; }
+    .data-struct-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-bottom: 16px; }
+    @media (max-width: 800px) {
+      .data-struct-grid { grid-template-columns: 1fr; }
+    }
+    .data-struct-card { background: #fff; border: 1px solid rgba(218, 206, 192, 0.5); border-radius: 14px; padding: 14px 16px; }
+    .data-struct-card h4 { margin: 0 0 12px; font-size: 13px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; }
+    .data-struct-card h4 i { color: #7c3aed; font-size: 12px; }
+    .amt-trend { display: flex; align-items: flex-end; gap: 6px; height: 88px; padding-top: 4px; }
+    .amt-trend-bar { flex: 1; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, #a78bfa, #7c3aed); min-height: 8px; position: relative; }
+    .amt-trend-bar span { position: absolute; left: 50%; bottom: -16px; transform: translateX(-50%); font-size: 9px; color: #94a3b8; white-space: nowrap; }
+    .amt-trend-wrap { padding-bottom: 18px; }
+    .rank-list-mini { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .rank-list-mini li { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .rank-list-mini .rk { width: 18px; height: 18px; border-radius: 6px; background: #f1f5f9; color: #64748b; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .rank-list-mini .rk.top { background: #ede9fe; color: #7c3aed; }
+    .rank-list-mini .name { flex: 1; color: #334155; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rank-list-mini .val { color: #0f172a; font-weight: 800; flex-shrink: 0; }
+    .rank-list-mini .bar-bg { flex: 1.2; height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden; min-width: 48px; }
+    .rank-list-mini .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #7c3aed, #a855f7); }
+    .status-health { display: flex; flex-direction: column; gap: 8px; }
+    .status-health-row { display: grid; grid-template-columns: 72px 1fr 40px; gap: 8px; align-items: center; font-size: 12px; }
+    .status-health-row .lb { color: #64748b; font-weight: 600; }
+    .status-health-row .pct { text-align: right; font-weight: 800; color: #0f172a; }
+    .status-health-track { height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
+    .status-health-fill { height: 100%; border-radius: 999px; }
     /* VIP 专属数据 — 锁定遮罩 */
     .vip-section-wrap { position: relative; }
     .vip-blurred { filter: blur(5px); pointer-events: none; user-select: none; opacity: 0.55; }
@@ -1091,6 +1126,19 @@
     .data-vip-card.risk-card { background: linear-gradient(135deg,#fdf2f8,#fce7f3); border-color: #fbcfe8; }
     .data-vip-card.risk-card .vip-label { color: #9d174d; }
     .data-vip-card.risk-card .vip-value { color: #831843; }
+    .vip-supplier-select {
+      font-size: 10px;
+      font-weight: 600;
+      color: #9d174d;
+      background: #fff;
+      border: 1px solid #fbcfe8;
+      border-radius: 6px;
+      padding: 2px 4px;
+      max-width: 118px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .vip-supplier-select:focus { outline: none; border-color: #db2777; }
     /* 服务组 */
     .data-vip-card.service-card { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border-color: #bae6fd; }
     .data-vip-card.service-card .vip-label { color: #0369a1; }
@@ -5784,7 +5832,7 @@
                 <span class="data-kpi-badge up"><i class="fa-solid fa-arrow-up" style="font-size:9px;"></i> 同比+8.7%</span>
               </div>
               <div class="data-kpi-card">
-                <div class="data-kpi-label">平均节资率</div>
+                <div class="data-kpi-label">竞/询价节资率</div>
                 <div class="data-kpi-value green">12.7%</div>
                 <span class="data-kpi-badge up"><i class="fa-solid fa-arrow-up" style="font-size:9px;"></i> 环比+0.3%</span>
               </div>
@@ -5793,7 +5841,137 @@
                 <div class="data-kpi-value green">96.3%</div>
                 <span class="data-kpi-badge down"><i class="fa-solid fa-arrow-down" style="font-size:9px;"></i> 环比-0.5%</span>
               </div>
+              <div class="data-kpi-card">
+                <div class="data-kpi-label">合规采购占比</div>
+                <div class="data-kpi-value blue">98.6%</div>
+                <span class="data-kpi-badge up"><i class="fa-solid fa-arrow-up" style="font-size:9px;"></i> 环比+0.4%</span>
+              </div>
+              <div class="data-kpi-card">
+                <div class="data-kpi-label">在途金额 / 在途订单</div>
+                <div class="data-kpi-value orange">¥1,286万</div>
+                <div class="data-kpi-sub">在途订单 <strong style="color:#0f172a;">328</strong> 笔 · 未完成收货</div>
+              </div>
             </div>
+
+            <div class="data-struct-title"><i class="fa-solid fa-diagram-project" style="color:#7c3aed;"></i> 结构洞察</div>
+            <div class="data-struct-grid">
+              <div class="data-struct-card">
+                <h4><i class="fa-solid fa-chart-column"></i> 采购金额趋势</h4>
+                <div class="amt-trend-wrap">
+                  <div class="amt-trend" aria-label="近6个月采购金额趋势">
+                    <div class="amt-trend-bar" style="height:42%;"><span>2月</span></div>
+                    <div class="amt-trend-bar" style="height:55%;"><span>3月</span></div>
+                    <div class="amt-trend-bar" style="height:48%;"><span>4月</span></div>
+                    <div class="amt-trend-bar" style="height:68%;"><span>5月</span></div>
+                    <div class="amt-trend-bar" style="height:76%;"><span>6月</span></div>
+                    <div class="amt-trend-bar" style="height:92%;"><span>7月</span></div>
+                  </div>
+                </div>
+                <div class="data-kpi-sub" style="margin-top:4px;">近6个月本单位采购金额 · 本月 ¥4,820万</div>
+              </div>
+              <div class="data-struct-card">
+                <h4><i class="fa-solid fa-layer-group"></i> 品类采购 TOP</h4>
+                <ul class="rank-list-mini">
+                  <li>
+                    <span class="rk top">1</span>
+                    <span class="name">办公用纸</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:100%"></span></span>
+                    <span class="val">¥860万</span>
+                  </li>
+                  <li>
+                    <span class="rk top">2</span>
+                    <span class="name">办公耗材</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:82%"></span></span>
+                    <span class="val">¥705万</span>
+                  </li>
+                  <li>
+                    <span class="rk top">3</span>
+                    <span class="name">电脑及配件</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:68%"></span></span>
+                    <span class="val">¥586万</span>
+                  </li>
+                  <li>
+                    <span class="rk">4</span>
+                    <span class="name">办公文具</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:52%"></span></span>
+                    <span class="val">¥448万</span>
+                  </li>
+                  <li>
+                    <span class="rk">5</span>
+                    <span class="name">办公电器</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:41%"></span></span>
+                    <span class="val">¥352万</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="data-struct-card">
+                <h4><i class="fa-solid fa-store"></i> 供应商成交 TOP</h4>
+                <ul class="rank-list-mini">
+                  <li>
+                    <span class="rk top">1</span>
+                    <span class="name">京东工业</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:100%;background:linear-gradient(90deg,#db2777,#f472b6);"></span></span>
+                    <span class="val">¥1,120万</span>
+                  </li>
+                  <li>
+                    <span class="rk top">2</span>
+                    <span class="name">联想企业购</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:74%;background:linear-gradient(90deg,#db2777,#f472b6);"></span></span>
+                    <span class="val">¥830万</span>
+                  </li>
+                  <li>
+                    <span class="rk top">3</span>
+                    <span class="name">中石化易派客</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:58%;background:linear-gradient(90deg,#db2777,#f472b6);"></span></span>
+                    <span class="val">¥650万</span>
+                  </li>
+                  <li>
+                    <span class="rk">4</span>
+                    <span class="name">中建物资</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:46%;background:linear-gradient(90deg,#db2777,#f472b6);"></span></span>
+                    <span class="val">¥512万</span>
+                  </li>
+                  <li>
+                    <span class="rk">5</span>
+                    <span class="name">华电物资</span>
+                    <span class="bar-bg"><span class="bar-fill" style="width:35%;background:linear-gradient(90deg,#db2777,#f472b6);"></span></span>
+                    <span class="val">¥390万</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="data-struct-card">
+                <h4><i class="fa-solid fa-heart-pulse"></i> 订单状态健康度</h4>
+                <div class="status-health">
+                  <div class="status-health-row">
+                    <span class="lb">采购审核中</span>
+                    <div class="status-health-track"><div class="status-health-fill" style="width:12%;background:#8b5cf6;"></div></div>
+                    <span class="pct">12%</span>
+                  </div>
+                  <div class="status-health-row">
+                    <span class="lb">待发货</span>
+                    <div class="status-health-track"><div class="status-health-fill" style="width:18%;background:#f97316;"></div></div>
+                    <span class="pct">18%</span>
+                  </div>
+                  <div class="status-health-row">
+                    <span class="lb">待收货</span>
+                    <div class="status-health-track"><div class="status-health-fill" style="width:22%;background:#0d9488;"></div></div>
+                    <span class="pct">22%</span>
+                  </div>
+                  <div class="status-health-row">
+                    <span class="lb">收货完成</span>
+                    <div class="status-health-track"><div class="status-health-fill" style="width:41%;background:#16a34a;"></div></div>
+                    <span class="pct">41%</span>
+                  </div>
+                  <div class="status-health-row">
+                    <span class="lb">退货中/取消</span>
+                    <div class="status-health-track"><div class="status-health-fill" style="width:7%;background:#94a3b8;"></div></div>
+                    <span class="pct">7%</span>
+                  </div>
+                </div>
+                <div class="data-kpi-sub" style="margin-top:10px;">组织视角近30天订单状态积压分布</div>
+              </div>
+            </div>
+
             <hr class="data-divider">
             <div class="data-vip-title"><i class="fa-solid fa-crown"></i> VIP 专属数据</div>
 
@@ -5805,7 +5983,7 @@
                 <div class="vip-locked-box">
                   <div class="vip-locked-icon">🔒</div>
                   <div class="vip-locked-title">开通 VIP 后解锁深度分析数据</div>
-                  <div class="vip-locked-desc">智能效能分析 · 供应链风险洞察 · 专属服务权益追踪<br>11 项深度指标，助力采购决策升级</div>
+                  <div class="vip-locked-desc">智能效能分析 · 供应链风险洞察 · 采购猫交互评估<br>9 项深度指标，助力采购决策升级</div>
                   <button class="vip-unlock-btn" onclick="unlockVip()">
                     <i class="fa-solid fa-crown"></i> 升级 VIP 服务
                   </button>
@@ -5818,7 +5996,7 @@
                 <!-- 第一组：采购智能效能 -->
                 <div class="vip-group">
                   <div class="vip-group-label"><i class="fa-solid fa-bolt" style="color:#7c3aed;"></i> 采购智能效能</div>
-                  <div class="data-vip-grid">
+                  <div class="data-vip-grid cols3">
                     <div class="data-vip-card">
                       <div class="vip-label">采购价格偏离指数</div>
                       <div class="vip-value" style="color:#16a34a;">-8.2%</div>
@@ -5826,22 +6004,24 @@
                       <span class="vip-badge up"><i class="fa-solid fa-arrow-down" style="font-size:9px;"></i> 优于行业基准</span>
                     </div>
                     <div class="data-vip-card">
-                      <div class="vip-label">AI 推荐命中转化率</div>
-                      <div class="vip-value">92.6%</div>
-                      <div class="vip-sub">AI推荐商品最终采购比率</div>
+                      <div class="vip-label">采购猫推荐效率</div>
+                      <div class="vip-value">36.8%</div>
+                      <div class="vip-sub">通过采购猫采购商品÷总采购商品</div>
                       <span class="vip-badge up">环比+2.1%</span>
                     </div>
                     <div class="data-vip-card">
-                      <div class="vip-label">重复需求合并率</div>
-                      <div class="vip-value">78.3%</div>
-                      <div class="vip-sub">自动合并重复采购需求</div>
-                      <span class="vip-badge purple">节省 34 次操作</span>
-                    </div>
-                    <div class="data-vip-card">
-                      <div class="vip-label">品类节资总额（累计）</div>
-                      <div class="vip-value" style="color:#7c3aed;">¥386万</div>
-                      <div class="vip-sub">VIP价格保护累计节省</div>
-                      <span class="vip-badge up">同比+18.4%</span>
+                      <div class="vip-label" style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+                        <span>品类节资总额</span>
+                        <select id="vipCategorySavingSelect" onchange="switchVipCategorySaving(this.value)" onclick="event.stopPropagation()" style="font-size:10px;font-weight:600;color:#7c3aed;background:#fff;border:1px solid #e9d5ff;border-radius:6px;padding:2px 4px;max-width:96px;cursor:pointer;">
+                          <option value="all">全部品类</option>
+                          <option value="paper">办公用纸</option>
+                          <option value="consumable">办公耗材</option>
+                          <option value="pc">电脑及配件</option>
+                        </select>
+                      </div>
+                      <div class="vip-value" id="vipCategorySavingValue" style="color:#7c3aed;">¥386万</div>
+                      <div class="vip-sub" id="vipCategorySavingSub">VIP价格保护累计节省</div>
+                      <span class="vip-badge up" id="vipCategorySavingBadge">同比+18.4%</span>
                     </div>
                   </div>
                 </div>
@@ -5849,59 +6029,76 @@
                 <!-- 第二组：供应链风险洞察 -->
                 <div class="vip-group">
                   <div class="vip-group-label"><i class="fa-solid fa-shield-halved" style="color:#db2777;"></i> 供应链风险洞察</div>
-                  <div class="data-vip-grid">
+                  <div class="data-vip-grid cols3">
                     <div class="data-vip-card risk-card">
-                      <div class="vip-label">供应商健康综合评分</div>
-                      <div class="vip-value">A级 · 92分</div>
-                      <div class="vip-sub">合作供应商群体综合评级</div>
-                      <span class="vip-badge up">低风险</span>
+                      <div class="vip-label" style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+                        <span>供应商健康综合评分</span>
+                        <select class="vip-supplier-select" data-metric="health" onchange="switchVipSupplierRisk(this)" onclick="event.stopPropagation()" title="选择已合作供应商">
+                          <option value="all">全部合作供应商</option>
+                          <option value="jd">京东工业</option>
+                          <option value="lenovo">联想企业购</option>
+                          <option value="sinopec">中石化易派客</option>
+                          <option value="cscec">中建物资</option>
+                        </select>
+                      </div>
+                      <div class="vip-value" id="vipRiskHealthValue">A级 · 92分</div>
+                      <div class="vip-sub" id="vipRiskHealthSub">合作供应商群体综合评级</div>
+                      <span class="vip-badge up" id="vipRiskHealthBadge">低风险</span>
                     </div>
                     <div class="data-vip-card risk-card">
-                      <div class="vip-label">到货准时率</div>
-                      <div class="vip-value">97.1%</div>
-                      <div class="vip-sub">近90天统计</div>
-                      <span class="vip-badge up">环比+1.2%</span>
+                      <div class="vip-label" style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+                        <span>到货准时率</span>
+                        <select class="vip-supplier-select" data-metric="ontime" onchange="switchVipSupplierRisk(this)" onclick="event.stopPropagation()" title="选择已合作供应商">
+                          <option value="all">全部合作供应商</option>
+                          <option value="jd">京东工业</option>
+                          <option value="lenovo">联想企业购</option>
+                          <option value="sinopec">中石化易派客</option>
+                          <option value="cscec">中建物资</option>
+                        </select>
+                      </div>
+                      <div class="vip-value" id="vipRiskOntimeValue">97.1%</div>
+                      <div class="vip-sub" id="vipRiskOntimeSub">近90天统计</div>
+                      <span class="vip-badge up" id="vipRiskOntimeBadge">环比+1.2%</span>
                     </div>
                     <div class="data-vip-card risk-card">
-                      <div class="vip-label">供应商集中度预警</div>
-                      <div class="vip-value">TOP3 占 62%</div>
-                      <div class="vip-sub">超过60%阈值，建议分散</div>
-                      <span class="vip-badge warn"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px;"></i> 关注</span>
-                    </div>
-                    <div class="data-vip-card risk-card">
-                      <div class="vip-label">合同到期预警</div>
-                      <div class="vip-value" style="color:#dc2626;">3 份</div>
-                      <div class="vip-sub">近30天内到期，需处理</div>
-                      <span class="vip-badge danger"><i class="fa-solid fa-bell" style="font-size:9px;"></i> 待处理</span>
+                      <div class="vip-label" style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+                        <span>供应商集中度预警</span>
+                        <select class="vip-supplier-select" data-metric="focus" onchange="switchVipSupplierRisk(this)" onclick="event.stopPropagation()" title="选择已合作供应商">
+                          <option value="all">全部合作供应商</option>
+                          <option value="jd">京东工业</option>
+                          <option value="lenovo">联想企业购</option>
+                          <option value="sinopec">中石化易派客</option>
+                          <option value="cscec">中建物资</option>
+                        </select>
+                      </div>
+                      <div class="vip-value" id="vipRiskFocusValue">TOP3 占 62%</div>
+                      <div class="vip-sub" id="vipRiskFocusSub">超过60%阈值，建议分散</div>
+                      <span class="vip-badge warn" id="vipRiskFocusBadge"><i class="fa-solid fa-triangle-exclamation" style="font-size:9px;"></i> 关注</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- 第三组：VIP服务权益使用 -->
+                <!-- 第三组：采购猫助手交互评估 -->
                 <div class="vip-group" style="margin-bottom:0;">
-                  <div class="vip-group-label"><i class="fa-solid fa-headset" style="color:#0369a1;"></i> VIP 服务权益使用</div>
+                  <div class="vip-group-label"><i class="fa-solid fa-robot" style="color:#0369a1;"></i> 采购猫助手交互评估</div>
                   <div class="data-vip-grid cols3">
                     <div class="data-vip-card service-card">
-                      <div class="vip-label">专属顾问平均响应</div>
-                      <div class="vip-value">1.8h</div>
-                      <div class="vip-sub">vs 标准客户 5h，快2.8倍</div>
-                      <span class="vip-badge purple">VIP 加速</span>
+                      <div class="vip-label">采购猫活跃使用率</div>
+                      <div class="vip-value">42.6%</div>
+                      <div class="vip-sub">近30天打开采购猫频次÷登录次数</div>
+                      <span class="vip-badge purple">环比+3.2%</span>
                     </div>
                     <div class="data-vip-card service-card">
-                      <div class="vip-label">本月服务工单</div>
-                      <div class="vip-value">24 <span style="font-size:13px;font-weight:600;color:#0369a1;">/ 50条</span></div>
-                      <div class="vip-prog-wrap">
-                        <div class="vip-prog-bar" style="background:#bae6fd;">
-                          <div class="vip-prog-fill" style="width:48%;background:linear-gradient(90deg,#0369a1,#0ea5e9);"></div>
-                        </div>
-                      </div>
-                      <div class="vip-sub" style="margin-top:4px;">月额度已用 48%</div>
+                      <div class="vip-label">采购猫方案采纳数</div>
+                      <div class="vip-value">186 次</div>
+                      <div class="vip-sub">近30天采纳次数</div>
+                      <span class="vip-badge purple">环比+12次</span>
                     </div>
                     <div class="data-vip-card service-card">
-                      <div class="vip-label">VIP 定制分析报告</div>
-                      <div class="vip-value">3 份</div>
-                      <div class="vip-sub">本月已生成，含采购优化报告</div>
-                      <span class="vip-badge purple">剩余 2 次额度</span>
+                      <div class="vip-label">采购猫交互满意度</div>
+                      <div class="vip-value">94.2%</div>
+                      <div class="vip-sub">正向评价占比</div>
+                      <span class="vip-badge up">优质体验</span>
                     </div>
                   </div>
                 </div>
@@ -8137,6 +8334,64 @@
       var layer = document.getElementById('vipDataLayer');
       if (mask) mask.style.display = 'none';
       if (layer) layer.classList.remove('vip-blurred');
+    }
+    function switchVipCategorySaving(key) {
+      var map = {
+        all: { value: '¥386万', sub: '全部品类累计节资', badge: '同比+18.4%' },
+        paper: { value: '¥86万', sub: '办公用纸累计节资', badge: '同比+12.1%' },
+        consumable: { value: '¥124万', sub: '办公耗材累计节资', badge: '同比+15.6%' },
+        pc: { value: '¥176万', sub: '电脑及配件累计节资', badge: '同比+22.3%' }
+      };
+      var data = map[key] || map.all;
+      var v = document.getElementById('vipCategorySavingValue');
+      var s = document.getElementById('vipCategorySavingSub');
+      var b = document.getElementById('vipCategorySavingBadge');
+      if (v) v.textContent = data.value;
+      if (s) s.textContent = data.sub;
+      if (b) b.textContent = data.badge;
+    }
+
+    var VIP_SUPPLIER_RISK = {
+      health: {
+        all: { value: 'A级 · 92分', sub: '合作供应商群体综合评级', badge: '低风险', badgeClass: 'up' },
+        jd: { value: 'A级 · 95分', sub: '京东工业 · 近90天履约评级', badge: '低风险', badgeClass: 'up' },
+        lenovo: { value: 'A级 · 91分', sub: '联想企业购 · 近90天履约评级', badge: '低风险', badgeClass: 'up' },
+        sinopec: { value: 'B级 · 84分', sub: '中石化易派客 · 近90天履约评级', badge: '中风险', badgeClass: 'warn' },
+        cscec: { value: 'A级 · 89分', sub: '中建物资 · 近90天履约评级', badge: '低风险', badgeClass: 'up' }
+      },
+      ontime: {
+        all: { value: '97.1%', sub: '近90天 · 全部合作供应商', badge: '环比+1.2%', badgeClass: 'up' },
+        jd: { value: '98.6%', sub: '近90天 · 京东工业', badge: '环比+0.8%', badgeClass: 'up' },
+        lenovo: { value: '96.4%', sub: '近90天 · 联想企业购', badge: '环比+1.5%', badgeClass: 'up' },
+        sinopec: { value: '94.2%', sub: '近90天 · 中石化易派客', badge: '环比-0.6%', badgeClass: 'warn' },
+        cscec: { value: '95.8%', sub: '近90天 · 中建物资', badge: '环比+0.4%', badgeClass: 'up' }
+      },
+      focus: {
+        all: { value: 'TOP3 占 62%', sub: '超过60%阈值，建议分散', badgeHtml: '<i class="fa-solid fa-triangle-exclamation" style="font-size:9px;"></i> 关注', badgeClass: 'warn' },
+        jd: { value: '占成交 28%', sub: '京东工业占本单位成交份额', badgeHtml: '可控', badgeClass: 'up' },
+        lenovo: { value: '占成交 19%', sub: '联想企业购占本单位成交份额', badgeHtml: '可控', badgeClass: 'up' },
+        sinopec: { value: '占成交 15%', sub: '中石化易派客占本单位成交份额', badgeHtml: '可控', badgeClass: 'up' },
+        cscec: { value: '占成交 12%', sub: '中建物资占本单位成交份额', badgeHtml: '可控', badgeClass: 'up' }
+      }
+    };
+    function switchVipSupplierRisk(selectEl) {
+      if (!selectEl) return;
+      var metric = selectEl.getAttribute('data-metric');
+      var key = selectEl.value || 'all';
+      var bucket = VIP_SUPPLIER_RISK[metric];
+      if (!bucket) return;
+      var data = bucket[key] || bucket.all;
+      var prefix = metric === 'health' ? 'vipRiskHealth' : (metric === 'ontime' ? 'vipRiskOntime' : 'vipRiskFocus');
+      var v = document.getElementById(prefix + 'Value');
+      var s = document.getElementById(prefix + 'Sub');
+      var b = document.getElementById(prefix + 'Badge');
+      if (v) v.textContent = data.value;
+      if (s) s.textContent = data.sub;
+      if (b) {
+        b.className = 'vip-badge ' + (data.badgeClass || 'up');
+        if (data.badgeHtml) b.innerHTML = data.badgeHtml;
+        else b.textContent = data.badge || '';
+      }
     }
 
     /* =====================================================================
@@ -11550,12 +11805,8 @@
     }
 
     function openAiCompareFullPage() {
-      if (_aiCompareCurrentPayload) {
-        try {
-          sessionStorage.setItem(AI_COMPARE_STORAGE_KEY, JSON.stringify(_aiCompareCurrentPayload));
-        } catch (eSave) {}
-      }
-      window.open('../pages-new/compare_analysis.html?from=ai', '_blank', 'noopener,noreferrer');
+      if (!_aiCompareCurrentPayload) return;
+      ComparePayloadBridge.open('../pages-new/compare_analysis.html', _aiCompareCurrentPayload, 'from=ai');
     }
 
     function getAiFinderMatchDegree(state, products) {
@@ -12922,6 +13173,7 @@
       }
     }
   </script>
+  <script src="../assets/compare_payload_bridge.js"></script>
   <script>
     if (!window.__GC_AI_WINDOW__) {
       var topbar = document.createElement('script');

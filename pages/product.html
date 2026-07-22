@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../assets/custom.css">
   <script src="../assets/mock.js"></script>
+  <script src="../assets/compare_payload_bridge.js"></script>
   <style>
     :root {
       --brand: #2f6bff;
@@ -5618,6 +5619,20 @@
       return '风险提示：当前未发现明显高风险项，建议结合采购预算与历史成交情况综合判断。';
     }
 
+    function buildCandidatePriceRange(price, base, index, type) {
+      const refSpan = Math.max(Number(base.ceiling) - Number(base.floor), Number(base.price) * 0.08, 1);
+      const spanScale = type === 'similar' ? 1.05 + index * 0.035 : 0.95 + index * 0.025;
+      const span = refSpan * spanScale;
+      const shift = (index - 1.5) * refSpan * 0.05;
+      let floor = +(price - span * 0.48 + shift).toFixed(2);
+      let ceiling = +(price + span * 0.52 - shift).toFixed(2);
+      floor = Math.max(0.01, floor);
+      if (ceiling <= floor) ceiling = +(floor + span * 0.6).toFixed(2);
+      if (price < floor) floor = +(price * 0.94).toFixed(2);
+      if (price > ceiling) ceiling = +(price * 1.06).toFixed(2);
+      return { floor, ceiling };
+    }
+
     function buildCompareRows(base, type) {
       const offsets = type === 'same' ? [-8, 0, 5, 11] : [-12, -4, 7, 15];
       const supplierNames = ['晨光政采店', '得力企业采购店', '华采办公旗舰店', '京采优选供应站'];
@@ -5635,6 +5650,10 @@
         const afterSalesScore = Math.max(69, 90 - index * 3 - (type === 'similar' ? 4 : 0));
         const fulfillmentScore = Math.max(70, 91 - index * 3 - (type === 'similar' ? 5 : 0));
         const totalScore = Math.round(avg([priceScore, riskScore, qualityScore, afterSalesScore, fulfillmentScore]));
+        const isReference = price === base.price;
+        const priceRange = isReference
+          ? { floor: base.floor, ceiling: base.ceiling }
+          : buildCandidatePriceRange(price, base, index, type);
         return {
           id: `${type}_${index}`,
           type,
@@ -5642,8 +5661,8 @@
           supplier: supplierNames[index],
           tag: supplierTags[index],
           price,
-          floor: base.floor,
-          ceiling: base.ceiling,
+          floor: priceRange.floor,
+          ceiling: priceRange.ceiling,
           delta,
           ratio,
           delivery: index % 2 === 0 ? '24小时内发货' : '48小时内发货',
@@ -6798,9 +6817,8 @@
       }
 
       const payload = buildComparePagePayload(currentProduct, compareType, selectedRows);
-      sessionStorage.setItem('aiComparePayload', JSON.stringify(payload));
       closeComparePicker();
-      window.location.href = '../pages-new/compare_analysis.html';
+      ComparePayloadBridge.open('../pages-new/compare_analysis.html', payload);
     }
 
     function renderParams() {

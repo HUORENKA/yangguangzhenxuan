@@ -40,7 +40,8 @@
           { id: 'op_po', label: '采购单管理' },
           { id: 'op_orders', label: '订单管理' },
           { id: 'op_settlement', label: '结算管理' },
-          { id: 'op_cockpit', label: '数据驾驶舱' }
+          { id: 'op_cockpit', label: '运营监控驾驶舱' },
+          { id: 'op_cockpit_value', label: '客户价值驾驶舱' }
         ]},
         { id: 'op_sys', label: '系统管理', children: [
           { id: 'op_sys_user', label: '用户管理' },

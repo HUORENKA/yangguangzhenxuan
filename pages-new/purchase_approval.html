@@ -912,6 +912,40 @@
       opacity: 0.92;
     }
 
+    .logistics-pager-mobile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin: 8px 0 4px;
+    }
+
+    .logistics-pager-mobile .logistics-pager-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .logistics-pager-mobile .logistics-pager-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .logistics-pager-mobile .logistics-pager-text {
+      font-size: 12px;
+      color: rgba(255,255,255,0.92);
+      font-weight: 700;
+      min-width: 68px;
+      text-align: center;
+    }
+
+    .logistics-event-footer {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
     .logistics-map-wrap {
       position: relative;
       height: 300px;
@@ -1287,7 +1321,7 @@
               </div>
             </div>
             <div class="mobile-modal-actions is-single">
-              <button class="mobile-modal-btn is-primary" type="button" onclick="openLogisticsView()">查看物流</button>
+              <button class="mobile-modal-btn is-primary" type="button" onclick="openLogisticsView()">查看物流(2)</button>
             </div>
           </div>
         </div>
@@ -1298,8 +1332,9 @@
               <button class="logistics-back" type="button" onclick="closeLogisticsView()" aria-label="返回">
                 <i class="fa-solid fa-chevron-left"></i>
               </button>
-              <div class="logistics-title">物流跟踪</div>
+              <div class="logistics-title">查看物流</div>
             </div>
+            <div class="logistics-pager-mobile" id="logisticsPager"></div>
             <div class="logistics-summary" id="logisticsSummary">顺丰速运 · SF14388295601 · 运输中</div>
           </div>
 
@@ -1347,6 +1382,7 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../assets/logistics-view.js"></script>
   <script>
     const APPROVAL_STORAGE_KEY = 'gcPurchaseApprovalPayload';
     let complianceChecks = [];
@@ -1356,7 +1392,28 @@
     let logisticsMapInstance = null;
     let logisticsTruckMarker = null;
     let logisticsRouteGcj = [];
+    let mobileLogisticsIndex = 0;
 
+    const LOGISTICS_SHIPMENTS = [
+      {
+        carrier: '圆通速递',
+        waybill: 'YT7629335544357',
+        orderId: 'DD003202607070009',
+        eta: '2026/7/9 18:00 前',
+        status: '签收',
+        liveText: '快件已签收',
+        shipTimeApi: '2026-06-26 19:20:40'
+      },
+      {
+        carrier: '顺丰速运',
+        waybill: 'SF14388295601',
+        orderId: 'DD003202607070009',
+        eta: '2026/7/9 18:00 前',
+        status: '运输中',
+        liveText: '快件正前往上海浦东',
+        shipTimeApi: '2026-07-07 12:05:00'
+      }
+    ];
     const LOGISTICS_ROUTE_WGS = [
       [31.3012, 120.5956],
       [31.3158, 120.6680],
@@ -1415,20 +1472,6 @@
     }
 
     logisticsRouteGcj = LOGISTICS_ROUTE_WGS.map(toGcjLatLng);
-
-    const LOGISTICS_DATA = {
-      carrier: '顺丰速运',
-      waybill: 'SF14388295601',
-      eta: '2026/7/9 18:00 前',
-      status: '运输中',
-      liveText: '快件正前往上海浦东',
-      events: [
-        { time: '2026-07-07 21:15', text: '快件到达【上海浦东转运中心】，准备发往收货地址', active: true },
-        { time: '2026-07-07 18:20', text: '快件离开【苏州转运中心】，已发往【上海浦东转运中心】', active: false },
-        { time: '2026-07-07 14:32', text: '快件到达【苏州转运中心】', active: false },
-        { time: '2026-07-07 12:05', text: '快件已从【办公设备专营店苏州仓】发出，揽收成功', active: false }
-      ]
-    };
 
     function formatCurrency(value) {
       return `￥${Number(value || 0).toFixed(2)}`;
@@ -1810,20 +1853,43 @@
 
       const deliveryArea = (data.delivery && data.delivery.area) || '上海市浦东新区创业大厦17楼';
       document.getElementById('logisticsAddress').textContent = deliveryArea;
-      document.getElementById('logisticsCarrier').textContent = LOGISTICS_DATA.carrier;
-      document.getElementById('logisticsWaybill').textContent = LOGISTICS_DATA.waybill;
-      document.getElementById('logisticsStatus').textContent = LOGISTICS_DATA.status;
-      document.getElementById('logisticsSummary').textContent = `${LOGISTICS_DATA.carrier} · ${LOGISTICS_DATA.waybill} · ${LOGISTICS_DATA.status}`;
-      document.getElementById('shippingCarrier').textContent = LOGISTICS_DATA.carrier;
-      document.getElementById('shippingWaybill').textContent = LOGISTICS_DATA.waybill;
-      document.getElementById('shippingEta').textContent = LOGISTICS_DATA.eta;
-      document.getElementById('logisticsLiveText').textContent = LOGISTICS_DATA.liveText;
-      document.getElementById('logisticsTimeline').innerHTML = LOGISTICS_DATA.events.map(item => `
-        <div class="logistics-event ${item.active ? 'is-active' : ''}">
+      renderMobileLogisticsView();
+    }
+
+    function renderMobileLogisticsView() {
+      const total = LOGISTICS_SHIPMENTS.length;
+      const idx = Math.max(0, Math.min(mobileLogisticsIndex, total - 1));
+      mobileLogisticsIndex = idx;
+      const current = LOGISTICS_SHIPMENTS[idx];
+      const nodes = LogisticsView.buildTimelineNodes(current.waybill, current.carrier, current.shipTimeApi);
+      const latestStatus = nodes[0].status || current.status;
+
+      document.getElementById('logisticsPager').innerHTML = total > 1
+        ? `<button type="button" class="logistics-pager-btn" data-mobile-logistics-prev ${idx <= 0 ? 'disabled' : ''}><i class="fa-solid fa-chevron-left"></i></button>` +
+          `<span class="logistics-pager-text">运单 ${idx + 1}/${total}</span>` +
+          `<button type="button" class="logistics-pager-btn" data-mobile-logistics-next ${idx >= total - 1 ? 'disabled' : ''}><i class="fa-solid fa-chevron-right"></i></button>`
+        : '';
+
+      document.getElementById('logisticsCarrier').textContent = current.carrier;
+      document.getElementById('logisticsWaybill').textContent = current.waybill;
+      document.getElementById('logisticsStatus').textContent = latestStatus;
+      document.getElementById('logisticsSummary').textContent = `${current.carrier} · ${current.waybill} · ${latestStatus}`;
+      document.getElementById('shippingCarrier').textContent = current.carrier;
+      document.getElementById('shippingWaybill').textContent = current.waybill;
+      document.getElementById('shippingEta').textContent = current.eta;
+      document.getElementById('logisticsLiveText').textContent = current.liveText;
+      document.getElementById('logisticsTimeline').innerHTML = nodes.map((item, i) => `
+        <div class="logistics-event ${i === 0 ? 'is-active' : ''}">
           <div class="logistics-event-time">${escapeHtml(item.time)}</div>
-          <div class="logistics-event-text">${escapeHtml(item.text)}</div>
+          <div class="logistics-event-text">${escapeHtml(item.desc)}</div>
+          ${item.statusLoc ? `<div class="logistics-event-footer">${escapeHtml(item.status)} ${escapeHtml(item.statusLoc)}</div>` : ''}
         </div>
       `).join('');
+
+      const prev = document.querySelector('[data-mobile-logistics-prev]');
+      const next = document.querySelector('[data-mobile-logistics-next]');
+      if (prev) prev.onclick = () => { mobileLogisticsIndex -= 1; renderMobileLogisticsView(); };
+      if (next) next.onclick = () => { mobileLogisticsIndex += 1; renderMobileLogisticsView(); };
     }
 
     function dismissEntryModal(goApprove) {
