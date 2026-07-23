@@ -124,14 +124,49 @@ function shelvedDayFromRow(row) {
 }
 
 /** @param {typeof baseAuditMocks[number]} row */
-function formatWarehouseCols(row) {
+function getWarehouseTotal(row) {
   const ws = row.warehouseStocks || {};
-  return WAREHOUSES.map(w => {
+  let sum = 0;
+  WAREHOUSES.forEach(w => {
+    const n = Number(ws[w]);
+    if (Number.isFinite(n)) sum += n;
+  });
+  return sum;
+}
+
+function formatWarehouseCell(row) {
+  const total = getWarehouseTotal(row);
+  const ws = row.warehouseStocks || {};
+  const rowKey = escapeAttr(row.id);
+  const details = WAREHOUSES.map(w => {
     const n = Number(ws[w]);
     const q = Number.isFinite(n) ? n : 0;
-    return `<div class="flex justify-between gap-4 text-xs leading-snug max-w-[15rem] text-gray-700"><span class="text-gray-500">${escapeHtml(w)}</span><span class="tabular-nums font-semibold shrink-0 text-gray-900">${q}</span></div>`;
+    return `<div class="audit-wh-popover-row"><span>${escapeHtml(w)}</span><strong>${q}</strong></div>`;
   }).join('');
+  return `
+    <div class="audit-wh-cell">
+      <button type="button" class="audit-wh-total" data-wh-toggle="${rowKey}" aria-expanded="false" onclick="toggleWarehousePopover(event, '${rowKey}')">
+        <span class="audit-wh-total-num">${total}</span>
+        <span class="audit-wh-total-label">总库存</span>
+        <i class="fas fa-chevron-down audit-wh-chevron"></i>
+      </button>
+      <div class="audit-wh-popover" id="wh-pop-${rowKey}">${details}</div>
+    </div>`;
 }
+
+window.toggleWarehousePopover = function toggleWarehousePopover(event, rowId) {
+  event.stopPropagation();
+  const pop = document.getElementById('wh-pop-' + rowId);
+  const btn = event.currentTarget;
+  if (!pop || !btn) return;
+  const willOpen = !pop.classList.contains('is-open');
+  document.querySelectorAll('.audit-wh-popover.is-open').forEach(el => el.classList.remove('is-open'));
+  document.querySelectorAll('.audit-wh-total[aria-expanded="true"]').forEach(el => el.setAttribute('aria-expanded', 'false'));
+  if (willOpen) {
+    pop.classList.add('is-open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+};
 
 
 
@@ -668,7 +703,7 @@ const baseAuditMocks = [
     aiKind: 'warn',
     aiRiskCount: 2,
     aiCheckedAt: '2026-05-13 14:03',
-    aiCheckSummary: '包装规格变更后简介宣传表述需核对，共 2 项风险。',
+    aiCheckSummary: '包装规格变更后图文一致性需核对，共 2 项风险。',
     shelfSnapshot: 'online',
     beforeSnapshot: {
       name: '【演示·变更】得力风 A4复印纸 70g（8包装）',
@@ -872,21 +907,57 @@ function isAuditExempt(row) {
   return row && row.auditExempt === true;
 }
 
-/** 【上架审核层】校验项（与供应商侧、商品标签体系一致） */
+/** 【上架审核层】校验项（与商品上架审核维度一致，共 5 项 · 是/否） */
 const LISTING_AUDIT_ITEMS = [
-  { code: 'title', name: '商品名称', desc: '标题规范、品名完整、与类目一致' },
-  { code: 'intro', name: '简介充分', desc: '简介与描述有效文字不少于 30 字' },
-  { code: 'mainImg', name: '主图合格', desc: '主图清晰、主体为商品本身' },
-  { code: 'consistency', name: '图文一致', desc: '标题、参数与图片信息一致' },
-  { code: 'noWatermark', name: '无水印导流', desc: '无外链、水印及导流信息' },
-  { code: 'noSensitive', name: '无敏感违规', desc: '无敏感词及违规宣传' },
-  { code: 'completeness', name: '资料完整度', desc: '综合前 6 项自动汇总' }
+  {
+    code: 'title',
+    name: '商品名称',
+    desc: '标题非空、≤80 字，无外链/第三方平台名/敏感词；须含品名及关键规格，与所选类目一致',
+    source: '商品名称'
+  },
+  {
+    code: 'mainImg',
+    name: '主图合格',
+    desc: '主图清晰可访问，AI 判定主体为商品本身，非文字海报、空白占位或严重模糊图',
+    source: '主图'
+  },
+  {
+    code: 'consistency',
+    name: '图文一致',
+    desc: '标题、参数与主图 OCR 的品牌、型号、核心规格前后一致，无矛盾',
+    source: '图文'
+  },
+  {
+    code: 'noWatermark',
+    name: '无水印导流',
+    desc: '图文无外链、联系方式、导流文案及第三方平台水印/二维码',
+    source: '图文'
+  },
+  {
+    code: 'noSensitive',
+    name: '无敏感违规',
+    desc: '无敏感词库命中及广告法绝对化用语，AI 语义安全检测通过',
+    source: '图文'
+  }
 ];
+
+function buildAiComplianceSummary(items, forSupplier) {
+  var fails = items.filter(function (i) { return i.status === 'fail'; });
+  if (!fails.length) {
+    return forSupplier
+      ? '商品上架审核 5 项均通过，合规无风险，可提交平台审核。'
+      : '商品上架审核 5 项均通过，合规无风险。';
+  }
+  var failNames = fails.map(function (i) { return '「' + i.name + '」'; }).join('、');
+  return forSupplier
+    ? '商品上架审核共 ' + fails.length + ' 项未通过（' + failNames + '），请修改后重新校验。'
+    : '共识别 ' + fails.length + ' 项风险（' + failNames + '），请结合明细核对后作出人工审核决定。';
+}
 
 function getAiRiskCount(row) {
   if (typeof row.aiRiskCount === 'number') return row.aiRiskCount;
   if (Array.isArray(row.aiCheckItems) && row.aiCheckItems.length) {
-    return row.aiCheckItems.filter(i => i.status === 'fail' && i.code !== 'completeness').length;
+    return row.aiCheckItems.filter(function (i) { return i.status === 'fail'; }).length;
   }
   if (row.aiKind === 'pass') return 0;
   if (row.aiKind === 'warn') return 2;
@@ -896,57 +967,56 @@ function getAiRiskCount(row) {
 
 function buildAiCheckSnapshot(row) {
   if (Array.isArray(row.aiCheckItems) && row.aiCheckItems.length) {
+    var normalized = row.aiCheckItems.filter(function (i) {
+      return LISTING_AUDIT_ITEMS.some(function (d) { return d.code === i.code; });
+    });
     return {
-      items: row.aiCheckItems,
-      summary: row.aiCheckSummary || '—',
+      items: normalized.length ? normalized : row.aiCheckItems,
+      summary: row.aiCheckSummary || buildAiComplianceSummary(normalized.length ? normalized : row.aiCheckItems, false),
       checkedAt: row.aiCheckedAt || row.submittedAt || '—'
     };
   }
-  const riskN = getAiRiskCount(row);
+  var riskN = getAiRiskCount(row);
   if (riskN === 0) {
-    const items = LISTING_AUDIT_ITEMS.map(def =>
-      def.code === 'completeness'
-        ? { ...def, value: '高', status: 'pass', evidence: '前 6 项均为「是」' }
-        : { ...def, value: '是', status: 'pass', evidence: '' }
-    );
+    var passItems = LISTING_AUDIT_ITEMS.map(function (def) {
+      return { code: def.code, name: def.name, desc: def.desc, source: def.source, value: '是', status: 'pass', evidence: '' };
+    });
     return {
-      items,
-      summary: '商品基本信息合规，资料完整度为高，供应商侧 AI 合规校验通过。',
+      items: passItems,
+      summary: buildAiComplianceSummary(passItems, false),
       checkedAt: row.aiCheckedAt || row.submittedAt || '—'
     };
   }
-  const failCodes =
+  var failCodes =
     row.aiKind === 'fail'
-      ? ['title', 'intro', 'mainImg']
+      ? ['title', 'mainImg', 'consistency']
       : row.aiKind === 'warn'
-        ? ['intro', 'noSensitive']
-        : ['intro'];
-  const items = LISTING_AUDIT_ITEMS.map(def => {
-    if (def.code === 'completeness') {
-      const val = riskN >= 3 ? '低' : '中';
-      return {
-        ...def,
-        value: val,
-        status: 'fail',
-        evidence: `存在 ${riskN} 项未通过审核项`
-      };
-    }
+        ? ['consistency', 'noSensitive']
+        : ['noWatermark'];
+  var evidenceMap = {
+    title: '标题与类目匹配度不足，或缺少可识别品名及关键规格',
+    mainImg: '主图不符合清晰度要求，或 AI 判定主体非有效商品图',
+    consistency: '标题/参数与主图 OCR 存在品牌、型号或核心规格矛盾',
+    noWatermark: '详情图疑似含第三方平台水印，置信度 0.62，建议人工复核',
+    noSensitive: '详情中存在需核对的宣传表述或绝对化用语'
+  };
+  var items = LISTING_AUDIT_ITEMS.map(function (def) {
     if (failCodes.includes(def.code)) {
-      const evidenceMap = {
-        title: '标题与类目匹配度不足或缺少关键规格',
-        intro: '简介有效文字不足或存在模板化文案',
-        mainImg: '主图不符合平台清晰度与主体要求',
-        noSensitive: '详情中存在需核对的宣传表述'
+      return {
+        code: def.code,
+        name: def.name,
+        desc: def.desc,
+        source: def.source,
+        value: '否',
+        status: 'fail',
+        evidence: evidenceMap[def.code] || '未通过校验'
       };
-      return { ...def, value: '否', status: 'fail', evidence: evidenceMap[def.code] || '未通过校验' };
     }
-    return { ...def, value: '是', status: 'pass', evidence: '' };
+    return { code: def.code, name: def.name, desc: def.desc, source: def.source, value: '是', status: 'pass', evidence: '' };
   });
   return {
-    items,
-    summary:
-      row.aiCheckSummary ||
-      `共识别 ${riskN} 项风险，请结合明细核对后作出人工审核决定（供应商侧 AI 快照）。`,
+    items: items,
+    summary: row.aiCheckSummary || buildAiComplianceSummary(items, false),
     checkedAt: row.aiCheckedAt || row.submittedAt || '—'
   };
 }
@@ -976,11 +1046,18 @@ function renderAdminAiCheckItemsHtml(items) {
     .map(item => {
       const cls = item.status === 'pass' ? 'pass' : item.status === 'fail' ? 'fail' : '';
       const valCls = item.status === 'pass' ? 'pass' : item.status === 'fail' ? 'fail' : '';
+      const def = LISTING_AUDIT_ITEMS.find(d => d.code === item.code) || {};
+      const desc = item.desc || def.desc || '';
+      const evidenceHtml =
+        item.status === 'fail' && item.evidence
+          ? `<div class="admin-ai-check-evidence"><i class="fas fa-triangle-exclamation"></i> ${escapeHtml(item.evidence)}</div>`
+          : '';
       return `
         <div class="admin-ai-check-item ${cls}">
-          <div>
+          <div class="admin-ai-check-main">
             <div class="admin-ai-check-name">${escapeHtml(item.name)}</div>
-            ${item.evidence ? `<div class="admin-ai-check-evidence">${escapeHtml(item.evidence)}</div>` : ''}
+            ${desc ? `<div class="admin-ai-check-desc">${escapeHtml(desc)}</div>` : ''}
+            ${evidenceHtml}
           </div>
           <span class="admin-ai-check-val ${valCls}">${escapeHtml(item.value || '—')}</span>
         </div>`;
@@ -1029,7 +1106,7 @@ function aiResultBtnHtml(row) {
   if (isAuditExempt(row)) return '';
   if (row.aiKind == null && !row.aiCheckItems) return '';
   const idEsc = escapeAttr(row.id);
-  return `<button type="button" class="btn-audit btn-audit-primary" onclick="openAdminAiAuditResult('${idEsc}')"><i class="fas fa-shield-halved"></i>AI审核结果</button>`;
+  return `<button type="button" class="btn-audit-sm btn-audit-primary" onclick="openAdminAiAuditResult('${idEsc}')"><i class="fas fa-shield-halved"></i>AI审核结果</button>`;
 }
 
 function getShelfStatusKey(row) {
@@ -1044,30 +1121,32 @@ function getShelfStatusKey(row) {
 
 function shelfStatusCellHtml(row) {
   if (isAuditExempt(row) && (row.listStatus === 'pending' || row.listStatus === 'rejected')) {
-    return '<span class="text-gray-500">—</span>';
+    return '<span class="text-gray-400 text-xs">—</span>';
   }
   const cfg = {
-    online: { label: '已上架', cls: 'text-green-600 font-medium' },
-    offline: { label: '已下架', cls: 'text-slate-600 font-medium' },
-    unshelved: { label: '未上架', cls: 'text-gray-500 font-medium' },
-    none: { label: '—', cls: 'text-gray-500' }
+    online: { label: '已上架', cls: 'status-pill-shelf-online', icon: 'fa-circle-check' },
+    offline: { label: '已下架', cls: 'status-pill-shelf-offline', icon: 'fa-circle-minus' },
+    unshelved: { label: '未上架', cls: 'status-pill-shelf-unshelved', icon: 'fa-circle' },
+    none: { label: '—', cls: 'status-pill-shelf-unshelved', icon: '' }
   };
   const u = cfg[getShelfStatusKey(row)] || cfg.none;
-  return `<span class="${u.cls}">${escapeHtml(u.label)}</span>`;
+  const icon = u.icon ? `<i class="fas ${u.icon}"></i>` : '';
+  return `<span class="status-pill ${u.cls}">${icon}${escapeHtml(u.label)}</span>`;
 }
 
 function auditStatusCellHtml(row) {
   if (isAuditExempt(row)) {
-    return '<span class="text-gray-500">—</span>';
+    return '<span class="text-gray-400 text-xs">—</span>';
   }
   const cfg = {
-    pending: { label: '待审核', cls: 'text-[#1890FF] font-medium' },
-    rejected: { label: '已驳回', cls: 'text-red-600 font-medium' },
-    online: { label: '已通过', cls: 'text-green-700 font-medium' },
-    offline: { label: '已通过', cls: 'text-green-700 font-medium' }
+    pending: { label: '待审核', cls: 'status-pill-audit-pending', icon: 'fa-clock' },
+    rejected: { label: '已驳回', cls: 'status-pill-audit-rejected', icon: 'fa-ban' },
+    online: { label: '已通过', cls: 'status-pill-audit-pass', icon: 'fa-check' },
+    offline: { label: '已通过', cls: 'status-pill-audit-pass', icon: 'fa-check' }
   };
-  const u = cfg[row.listStatus] || { label: '—', cls: 'text-gray-500' };
-  return `<span class="${u.cls}">${escapeHtml(u.label)}</span>`;
+  const u = cfg[row.listStatus] || { label: '—', cls: 'status-pill-shelf-unshelved', icon: '' };
+  const icon = u.icon ? `<i class="fas ${u.icon}"></i>` : '';
+  return `<span class="status-pill ${u.cls}">${icon}${escapeHtml(u.label)}</span>`;
 }
 
 function auditKindCellHtml(row) {
@@ -1086,43 +1165,40 @@ function rowActionsHtml(r) {
   const useChangeDetailPage =
     !isAuditExempt(r) && r.auditKind === 'CHANGE_INFO' && r.beforeSnapshot && r.afterSnapshot;
   const detail = useChangeDetailPage
-    ? `<button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openChangeAuditDetailPage('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`
-    : `<button type="button" class="btn-audit bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openAuditDetailModal('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`;
-  const preview = `<button type="button" class="btn-audit bg-slate-50 text-gray-700 border border-gray-200 hover:bg-slate-100" onclick="openListingPreview('${idEsc}')"><i class="fas fa-camera"></i>预览</button>`;
+    ? `<button type="button" class="btn-audit-sm bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openChangeAuditDetailPage('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`
+    : `<button type="button" class="btn-audit-sm bg-white text-gray-700 border border-gray-200 hover:bg-gray-50" onclick="openAuditDetailModal('${idEsc}')"><i class="fas fa-file-lines"></i>查看详情</button>`;
+  const preview = `<button type="button" class="btn-audit-sm bg-slate-50 text-gray-700 border border-gray-200 hover:bg-slate-100" onclick="openListingPreview('${idEsc}')"><i class="fas fa-camera"></i>预览</button>`;
+
+  const row1Items = [detail];
+  if (aiBtn) row1Items.push(aiBtn);
+
+  const row2Items = [preview];
 
   if (isAuditExempt(r)) {
     if (r.listStatus === 'online') {
-      return `${detail}${preview}<button type="button" class="btn-audit border border-amber-200 bg-amber-50 text-amber-950 hover:bg-amber-100" onclick="auditSetOffline('${idEsc}')"><i class="fas fa-arrow-down"></i>下架</button>`;
+      row2Items.push(`<button type="button" class="btn-audit-sm border border-amber-200 bg-amber-50 text-amber-950 hover:bg-amber-100" onclick="auditSetOffline('${idEsc}')"><i class="fas fa-arrow-down"></i>下架</button>`);
+    } else if (r.listStatus === 'offline') {
+      row2Items.push(`<button type="button" class="btn-audit-sm btn-audit-pass" onclick="auditSetOnline('${idEsc}')"><i class="fas fa-arrow-up"></i>上架</button>`);
     }
-    if (r.listStatus === 'offline') {
-      return `${detail}${preview}<button type="button" class="btn-audit btn-audit-pass" onclick="auditSetOnline('${idEsc}')"><i class="fas fa-arrow-up"></i>上架</button>`;
-    }
-    return `${detail}${preview}`;
+  } else if (r.listStatus === 'pending') {
+    row2Items.push(
+      `<button type="button" class="btn-audit-sm btn-audit-pass" onclick="auditApprove('${idEsc}')"><i class="fas fa-check"></i>通过</button>`,
+      `<button type="button" class="btn-audit-sm btn-audit-reject" onclick="openRejectModal('${idEsc}')"><i class="fas fa-ban"></i>驳回</button>`
+    );
+  } else if (r.listStatus === 'online') {
+    row2Items.push(`<button type="button" class="btn-audit-sm border border-amber-200 bg-amber-50 text-amber-950 hover:bg-amber-100" onclick="auditSetOffline('${idEsc}')"><i class="fas fa-arrow-down"></i>下架</button>`);
+  } else if (r.listStatus === 'offline') {
+    row2Items.push(`<button type="button" class="btn-audit-sm btn-audit-pass" onclick="auditSetOnline('${idEsc}')"><i class="fas fa-arrow-up"></i>上架</button>`);
   }
 
-  if (r.listStatus === 'pending') {
-    return `
-      ${detail}
-      ${aiBtn}
-      ${preview}
-      <button type="button" class="btn-audit btn-audit-pass" onclick="auditApprove('${idEsc}')"><i class="fas fa-check"></i>通过</button>
-      <button type="button" class="btn-audit btn-audit-reject" onclick="openRejectModal('${idEsc}')"><i class="fas fa-ban"></i>驳回</button>`;
-  }
-  if (r.listStatus === 'online') {
-    return `
-      ${detail}
-      ${aiBtn}
-      ${preview}
-      <button type="button" class="btn-audit border border-amber-200 bg-amber-50 text-amber-950 hover:bg-amber-100" onclick="auditSetOffline('${idEsc}')"><i class="fas fa-arrow-down"></i>下架</button>`;
-  }
-  if (r.listStatus === 'offline') {
-    return `
-      ${detail}
-      ${aiBtn}
-      ${preview}
-      <button type="button" class="btn-audit btn-audit-pass" onclick="auditSetOnline('${idEsc}')"><i class="fas fa-arrow-up"></i>上架</button>`;
-  }
-  return `${detail}${aiBtn}${preview}`;
+  const row1Cols = Math.max(row1Items.length, 1);
+  const row2Cols = Math.max(row2Items.length, 1);
+
+  return `
+    <div class="audit-action-cell">
+      <div class="audit-action-row cols-${row1Cols}">${row1Items.join('')}</div>
+      <div class="audit-action-row cols-${row2Cols}">${row2Items.join('')}</div>
+    </div>`;
 }
 
 function renderShelfTabs() {
@@ -1259,23 +1335,21 @@ function renderAuditProductTable() {
 
       return `
         <tr>
-          <td>
-            <div class="font-semibold text-gray-900">${escapeHtml(r.name)}</div>
-            <div class="text-xs text-gray-500 mt-1"><span class="text-gray-400">SKU</span> <span class="font-mono">${escapeHtml(r.sku || '—')}</span></div>
+          <td class="col-product">
+            <div class="audit-product-name">${escapeHtml(r.name)}</div>
+            <div class="audit-product-sku">${escapeHtml(r.sku || '—')}</div>
           </td>
-          <td class="text-gray-800 tabular-nums whitespace-nowrap">${escapeHtml(formatPrice(r.price))}</td>
-          <td class="text-gray-800 whitespace-nowrap">${escapeHtml(r.unit)}</td>
-          <td class="text-xs text-gray-600 leading-relaxed max-w-[200px]">${catPath}</td>
-          <td class="space-y-0.5">${formatWarehouseCols(r)}</td>
-          <td class="text-gray-800 whitespace-nowrap">${escapeHtml(r.supplierName)}</td>
-          <td class="text-gray-600 whitespace-nowrap">${escapeHtml(r.submittedAt)}</td>
-          <td>${auditKindCellHtml(r)}</td>
-          <td>${aiTagCell(r)}</td>
-          <td>${shelfStatusCellHtml(r)}</td>
-          <td>${auditStatusCellHtml(r)}</td>
-          <td class="text-right">
-            <div class="flex flex-wrap justify-end gap-2">${rowActionsHtml(r)}</div>
-          </td>
+          <td class="col-price tabular-nums">${escapeHtml(formatPrice(r.price))}</td>
+          <td class="col-unit">${escapeHtml(r.unit)}</td>
+          <td class="col-cat">${catPath}</td>
+          <td class="col-wh">${formatWarehouseCell(r)}</td>
+          <td class="col-supplier">${escapeHtml(r.supplierName)}</td>
+          <td class="col-time">${escapeHtml(r.submittedAt)}</td>
+          <td class="col-kind">${auditKindCellHtml(r)}</td>
+          <td class="col-ai">${aiTagCell(r)}</td>
+          <td class="col-shelf">${shelfStatusCellHtml(r)}</td>
+          <td class="col-audit">${auditStatusCellHtml(r)}</td>
+          <td class="col-actions">${rowActionsHtml(r)}</td>
         </tr>`;
     })
     .join('');
@@ -1340,6 +1414,11 @@ function bindAuditModals() {
     if (detailModal && !detailModal.hidden) closeAuditDetailModal();
     if (rejectModal && !rejectModal.hidden) closeRejectModal();
     if (aiModal && !aiModal.hidden) closeAdminAiAuditResult();
+  });
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.audit-wh-popover.is-open').forEach(el => el.classList.remove('is-open'));
+    document.querySelectorAll('.audit-wh-total[aria-expanded="true"]').forEach(el => el.setAttribute('aria-expanded', 'false'));
   });
 }
 

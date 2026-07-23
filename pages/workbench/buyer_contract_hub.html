@@ -129,31 +129,59 @@
     .compliance-foot-actions { display:flex; gap:10px; flex-shrink:0; }
     .compliance-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#94a3b8; gap:12px; }
     .compliance-loading .ai-spin { width:32px; height:32px; border-width:3px; border-top-color:#3b82f6; }
+
+    .seal-card { display:flex; align-items:center; gap:14px; padding:14px 16px; border:1px solid #e2e8f0; border-radius:12px; margin-bottom:10px; background:#fff; }
+    .seal-card-icon { width:48px; height:48px; border-radius:50%; background:#fef9f0; border:2px solid #fed7aa; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+    .seal-card-name { font-size:14px; font-weight:800; color:#0f172a; display:flex; align-items:center; gap:8px; }
+    .seal-default-tag { font-size:11px; color:#ea580c; background:#fff7ed; border:1px solid #fed7aa; border-radius:999px; padding:2px 8px; font-weight:700; }
+    .seal-card-desc { font-size:12px; color:#94a3b8; margin-top:4px; }
+
+    .update-contract-modal { max-width:min(92vw,560px); padding:0; overflow:hidden; }
+    .update-contract-head { padding:18px 20px; border-bottom:1px solid #e2e8f0; font-size:16px; font-weight:800; color:#0f172a; }
+    .update-contract-body { padding:12px 16px 16px; }
+    .update-contract-row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 12px; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:10px; background:#f8fafc; }
+    .update-contract-row.upload-row { background:#fff7ed; border-color:#fed7aa; flex-direction:column; align-items:stretch; }
+    .update-contract-row-info { flex:1; min-width:0; }
+    .update-contract-row-title { font-size:14px; font-weight:700; color:#0f172a; }
+    .update-contract-row-meta { font-size:12px; color:#64748b; margin-top:4px; }
+    .update-contract-row .btn { height:34px; flex-shrink:0; }
+
+    .sign-preview-overlay { position:fixed; inset:0; background:rgba(15,23,42,.55); z-index:350; display:none; align-items:center; justify-content:center; padding:8px; }
+    .sign-preview-overlay.show { display:flex; }
+    .sign-preview-modal { width:min(1480px,96vw); height:min(94vh,960px); background:#fff; border-radius:16px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 28px 60px rgba(0,0,0,.25); }
+    .sign-preview-head { padding:16px 24px; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-shrink:0; }
+    .sign-preview-head-title { font-size:18px; font-weight:800; color:#0f172a; }
+    .sign-preview-head-sub { font-size:13px; color:#64748b; margin-top:2px; }
+    .sign-preview-body { flex:1; display:grid; grid-template-columns:1fr 300px; min-height:0; }
+    .sign-preview-doc { background:#e2e8f0; padding:20px; overflow:auto; position:relative; }
+    .sign-preview-page { background:#fff; border-radius:8px; box-shadow:0 4px 16px rgba(15,23,42,.08); padding:36px 40px; min-height:720px; position:relative; font-size:14px; line-height:1.85; color:#334155; cursor:crosshair; user-select:none; }
+    .sign-preview-page h4 { font-size:14px; font-weight:800; color:#0f172a; margin:18px 0 8px; }
+    .sign-preview-page h4:first-child { margin-top:0; }
+    .sign-preview-side { border-left:1px solid #e2e8f0; padding:16px; overflow-y:auto; background:#f8fafc; }
+    .sign-preview-side-title { font-size:13px; font-weight:800; color:#0f172a; margin-bottom:10px; }
+    .sign-preview-hint { font-size:11px; color:#64748b; line-height:1.5; margin-bottom:12px; padding:8px 10px; background:#eff6ff; border-radius:8px; border:1px solid #dbeafe; }
+    .seal-pick-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:8px; cursor:pointer; background:#fff; transition:border-color .15s, box-shadow .15s; }
+    .seal-pick-item.active { border-color:#4f46e5; box-shadow:0 0 0 2px rgba(79,70,229,.15); }
+    .seal-pick-icon { width:36px; height:36px; border-radius:50%; background:#fef9f0; border:1.5px solid #fed7aa; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .seal-pick-name { font-size:13px; font-weight:700; color:#0f172a; }
+    .seal-stamp { position:absolute; width:88px; height:88px; border-radius:50%; border:3px solid #dc2626; color:#dc2626; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; text-align:center; line-height:1.2; background:rgba(254,242,242,.85); cursor:move; z-index:5; transform:translate(-50%,-50%); padding:4px; pointer-events:auto; }
+    .sign-preview-foot { padding:12px 20px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0; background:#fff; }
   </style>
 </head>
 <body>
   <div class="p-5 max-w-[1680px] mx-auto">
     <div class="flex gap-1 mb-0 px-1">
-      <button type="button" class="hub-tab active" data-hub-tab="templates" onclick="switchHubTab('templates')">合同模板管理</button>
-      <button type="button" class="hub-tab" data-hub-tab="signing" onclick="switchHubTab('signing')">合同签署管理</button>
+      <button type="button" class="hub-tab active" data-hub-tab="signing" onclick="switchHubTab('signing')">合同签署管理</button>
+      <button type="button" class="hub-tab" data-hub-tab="seals" onclick="switchHubTab('seals')">电子签章</button>
     </div>
 
     <div class="page-card p-5 border-t-0 rounded-tl-none">
-      <div id="hubPane-templates" class="hub-tab-pane active">
-        <div class="flex flex-wrap gap-3 mb-4 items-center">
-          <button type="button" class="btn btn-primary" onclick="document.getElementById('tplUploadInput').click()"><i class="fas fa-upload mr-1"></i>上传模板</button>
-          <input type="file" id="tplUploadInput" class="hidden" accept=".pdf,.doc,.docx" onchange="handleTplUpload(this)">
-          <button type="button" class="btn-orange text-sm !h-[36px]" onclick="openAiTplModal()"><i class="fas fa-wand-magic-sparkles mr-1"></i>生成合同</button>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead><tr><th>模板名称</th><th>合同来源</th><th>上传/更新日期</th><th>默认模板</th><th>状态</th><th>操作</th></tr></thead>
-            <tbody id="tplTableBody"></tbody>
-          </table>
-        </div>
+      <div id="hubPane-seals" class="hub-tab-pane">
+        <p class="text-sm text-slate-500 mb-4">管理本单位电子签章，签署合同时可选择使用。</p>
+        <div id="sealListContainer"></div>
       </div>
 
-      <div id="hubPane-signing" class="hub-tab-pane">
+      <div id="hubPane-signing" class="hub-tab-pane active">
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-5">
           <div class="stat-card"><div><div class="text-sm text-slate-500">合同总数</div><div class="text-3xl font-bold mt-2" id="statTotal">0</div></div><div class="stat-icon bg-slate-100 text-slate-600"><i class="fas fa-layer-group"></i></div></div>
           <div class="stat-card"><div><div class="text-sm text-slate-500">采购单审批中</div><div class="text-3xl font-bold text-slate-700 mt-2" id="statPo">0</div></div><div class="stat-icon bg-slate-50 text-slate-600"><i class="fas fa-clipboard-list"></i></div></div>
@@ -190,21 +218,43 @@
     </div>
   </div>
 
-  <div id="aiTplModal" class="modal-overlay" onclick="if(event.target===this) closeAiTplModal()">
-    <div class="modal-box ai-gen-modal" onclick="event.stopPropagation()">
-      <div class="flex items-center gap-2 text-base font-bold text-slate-900 mb-4"><i class="fa-solid fa-wand-magic-sparkles text-violet-600"></i> AI 生成合同模板</div>
-      <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-end">
-        <select id="aiTplTypeSelect" class="border border-slate-300 rounded-lg px-3 py-2 text-sm min-w-[160px]">
-          <option value="">选择合同类型</option>
-          <option value="办公用品采购合同">办公用品采购合同</option>
-          <option value="IT设备采购合同">IT设备采购合同</option>
-          <option value="服务类采购合同">服务类采购合同</option>
-          <option value="框架采购协议">框架采购协议</option>
-        </select>
-        <input type="text" id="aiTplDescInput" class="border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]" placeholder="或输入合同描述...">
-        <button type="button" class="btn-orange whitespace-nowrap" onclick="runAiTplGenerate()">生成</button>
+  <!-- 合同预览并签署 -->
+  <div id="signPreviewOverlay" class="sign-preview-overlay" onclick="if(event.target===this) closeSignPreview()">
+    <div class="sign-preview-modal" onclick="event.stopPropagation()">
+      <div class="sign-preview-head">
+        <div>
+          <div class="sign-preview-head-title"><i class="fas fa-file-signature mr-2 text-indigo-600"></i>合同预览并签署</div>
+          <div class="sign-preview-head-sub" id="signPreviewSub">选择电子签章并在预览区点击放置签章位置</div>
+        </div>
+        <button type="button" class="drawer-close" onclick="closeSignPreview()"><i class="fas fa-xmark"></i></button>
       </div>
-      <div id="aiTplLoading" class="ai-gen-loading"><span class="ai-spin"></span> AI 正在生成模板...</div>
+      <div class="sign-preview-body">
+        <div class="sign-preview-doc">
+          <div class="sign-preview-page" id="signPreviewPage" onclick="placeSealOnPreview(event)">
+            <h4 id="signPreviewDocTitle">采购合同</h4>
+            <p>甲方（采购方）与乙方（供应商）就采购事宜达成如下协议：</p>
+            <h4>第1条 合同标的</h4><p>乙方向甲方供应合同清单所列产品，具体规格、数量、单价见附件。</p>
+            <h4>第2条 交付与验收</h4><p>乙方应在合同生效后 30 日内完成交付，验收标准按合同约定执行。</p>
+            <h4>第3条 质量标准</h4><p>产品质量应符合国家标准及行业相关规范。</p>
+            <h4>第5条 付款方式</h4><p>甲方于合同签订后支付预付款，验收合格后支付剩余款项。</p>
+            <h4>第7条 签署</h4>
+            <p>甲方（盖章）：________________　　乙方（盖章）：________________</p>
+            <p>签署日期：________________</p>
+          </div>
+        </div>
+        <div class="sign-preview-side">
+          <div class="sign-preview-side-title">选择电子签章</div>
+          <div class="sign-preview-hint">先选择签章，再在左侧合同预览区点击放置；已放置的签章可拖拽调整位置。每份合同仅可盖一处签章。</div>
+          <div id="signSealPicker"></div>
+        </div>
+      </div>
+      <div class="sign-preview-foot">
+        <span class="text-xs text-slate-500" id="signPlacementHint">尚未放置签章</span>
+        <div class="flex gap-2">
+          <button type="button" class="btn" onclick="closeSignPreview()">取消</button>
+          <button type="button" class="btn btn-primary" id="confirmSignBtn" onclick="confirmSignPreview()" disabled>确认签署</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -239,39 +289,16 @@
     </div>
     <div class="drawer-body" id="drawerBody"></div>
   </aside>
-  <input type="file" id="contractUploadInput" class="hidden" accept=".pdf,.doc,.docx" onchange="handleContractUpload(this)">
-
-  <!-- 合同合规性校验 -->
-  <div id="complianceOverlay" class="compliance-overlay" onclick="if(event.target===this) closeComplianceModal()">
-    <div class="compliance-modal" onclick="event.stopPropagation()">
-      <div class="compliance-head">
-        <div>
-          <div class="compliance-head-title"><i class="fas fa-shield-halved mr-2"></i>合同合规性校验</div>
-          <div class="compliance-head-sub">结构化解析合同，定位风险，生成可执行修改建议</div>
-        </div>
-        <button type="button" class="compliance-close" onclick="closeComplianceModal()"><i class="fas fa-xmark"></i></button>
-      </div>
-      <div class="compliance-body" id="complianceBody">
-        <div class="compliance-loading" style="grid-column:1/-1;background:#1e293b;"><span class="ai-spin"></span><span>正在解析合同并检测合规风险…</span></div>
-      </div>
-      <div class="compliance-foot">
-        <button type="button" class="btn btn-primary" onclick="applyComplianceAndSign()">应用合同并签署</button>
-        <div class="compliance-foot-actions">
-          <button type="button" class="btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#e2e8f0;" onclick="reuploadCompliance()">重新上传</button>
-          <button type="button" class="btn" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#e2e8f0;" onclick="cancelCompliance()">取消</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <script>
-    var tplSeed = 100;
-    var defaultTemplates = [
-      { id:'t1', name:'办公耗材采购合同（默认）', source:'upload', updated:'2026-01-20', isDefault:true, enabled:true },
-      { id:'t2', name:'IT设备采购合同模板', source:'upload', updated:'2026-02-08', isDefault:false, enabled:true },
-      { id:'t3', name:'采购框架协议模板（通用）', source:'ai', updated:'2026-03-12', isDefault:false, enabled:true }
+    var defaultSeals = [
+      { id:'seal1', icon:'🔴', name:'公司公章', desc:'适用于对外正式文件', isDefault:true },
+      { id:'seal2', icon:'🟠', name:'合同专用章', desc:'专用于合同文件签署', isDefault:false },
+      { id:'seal3', icon:'🔵', name:'财务专用章', desc:'专用于财务相关文件', isDefault:false }
     ];
-    var templates = [];
+    var seals = [];
+    var signPreviewPlacements = [];
+    var activeSealId = '';
 
     function makeContractFiles(name, onlyLatest) {
       var base = name || '采购合同';
@@ -287,9 +314,9 @@
 
     var signingContractsDefaults = [
       { id:'HT003202606240005', name:'admin-京东-采购合同-[DD003202606240005]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240005', status:'pending-supplier', label:'待供应商确认', started:'2026-06-24 17:49:51', orderAmt:'¥50.00', currency:'人民币', recipient:'aa', phone:'13055255481', address:'北京市市辖区东城区bbbbb', contractFiles: makeContractFiles('admin-京东-采购合同', true), orderItems: makeOrderItems('DD003202606240005') },
-      { id:'HT003202606240004', name:'admin-京东-采购合同-[DD003202606240004]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240004', status:'contract-updated', label:'合同更新', lastUpdatedBy:'buyer', started:'2026-06-24 17:49:51', orderAmt:'¥150.00', currency:'人民币', contractFiles: makeContractFiles('admin-京东-采购合同-v2', false), orderItems: makeOrderItems('DD003202606240004', 'A4复印纸', '150.00'), history:[{ step:'更新合同', actor:'采购方', created:'2026-06-24 18:20:00', processed:'2026-06-24 18:20:00', opinion:'采购方上传修订版合同' }] },
+      { id:'HT003202606240004', name:'admin-京东-采购合同-[DD003202606240004]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240004', status:'contract-updated', label:'合同更新', lastUpdatedBy:'supplier', started:'2026-06-24 17:49:51', orderAmt:'¥150.00', currency:'人民币', contractFiles: makeContractFiles('admin-京东-采购合同-v2', false), orderItems: makeOrderItems('DD003202606240004', 'A4复印纸', '150.00'), history:[{ step:'更新合同', actor:'供应商', created:'2026-06-24 18:20:00', processed:'2026-06-24 18:20:00', opinion:'供应商上传修订版合同' }] },
       { id:'HT003202606240003', name:'admin-京东-采购合同-[DD003202606240003]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240003', status:'buyer-returned', label:'采购方退回', started:'2026-06-24 17:49:51', orderAmt:'¥6,495', currency:'人民币', contractFiles: makeContractFiles('admin-京东-采购合同', false), orderItems: makeOrderItems('DD003202606240003', '交换机', '6495.00'), history:[{ step:'采购方退回', actor:'采购方', created:'2026-06-25 09:15:00', processed:'2026-06-25 09:15:00', opinion:'付款条款与采购单约定不一致，请修订后重新提交' }] },
-      { id:'HT003202606240002', name:'admin-京东-采购合同-[DD003202606240002]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240002', status:'supplier-returned', label:'供应商退回', started:'2026-06-24 17:49:51', orderAmt:'¥3,200', currency:'人民币', contractFiles: makeContractFiles('admin-京东-采购合同', false), orderItems: makeOrderItems('DD003202606240002', '打印机', '3200.00') },
+      { id:'HT003202606240002', name:'admin-京东-采购合同-[DD003202606240002]', vendor:'京东', buyer:'电信采购', doc:'DD003202606240002', status:'supplier-returned', label:'供应商退回', started:'2026-06-24 17:49:51', orderAmt:'¥3,200', currency:'人民币', contractFiles: makeContractFiles('admin-京东-采购合同-供应商上传版', false), orderItems: makeOrderItems('DD003202606240002', '打印机', '3200.00'), history:[{ step:'供应商退回', actor:'供应商', created:'2026-06-25 16:10:00', processed:'2026-06-25 16:10:00', opinion:'已上传修订版合同，不同意采购方退回理由，请确认签署' },{ step:'采购方退回', actor:'采购方', created:'2026-06-25 11:00:00', processed:'2026-06-25 11:00:00', opinion:'付款条款与订单不一致，请修订' },{ step:'更新合同', actor:'供应商', created:'2026-06-25 10:30:00', processed:'2026-06-25 10:30:00', opinion:'供应商上传新版合同' }] },
       { id:'HT20260427001', name:'商用台式机采购合同', vendor:'北京联想直营科技', buyer:'北京市海淀区政务服务中心', doc:'ORD20260427008', status:'contract-updated', label:'合同更新', lastUpdatedBy:'supplier', started:'2026-04-27 09:30', orderAmt:'¥52,990', currency:'人民币', contractFiles: makeContractFiles('商用台式机采购合同', false), orderItems: makeOrderItems('ORD20260427008', '联想台式机', '52990.00'), history:[{ step:'更新合同', actor:'供应商', created:'2026-04-27 10:05:00', processed:'2026-04-27 10:05:00', opinion:'上传修订版合同并通过合规性校验' }] },
       { id:'HT20260415002', name:'会议室改造工程合同', vendor:'中建装饰工程有限公司', buyer:'北京市财政局采购中心', doc:'PO20260415002', status:'pending-confirm', label:'待确认', started:'2026-04-15 08:45', orderAmt:'¥386,000', currency:'人民币', contractFiles: makeContractFiles('会议室改造工程合同', true), orderItems: makeOrderItems('PO20260415002', '会议室改造', '386000.00') },
       { id:'HT20260421006', name:'办公耗材年度框架合同', vendor:'浙江得力办公用品有限公司', buyer:'北京市海淀区政务服务中心', doc:'PO20260421006', status:'signed', label:'已签署', started:'2026-04-21 16:00', orderAmt:'—', currency:'人民币', contractFiles: makeContractFiles('办公耗材年度框架合同', true), orderItems: makeOrderItems('PO20260421006', '框架协议', '—') },
@@ -300,24 +327,6 @@
     var signingContracts = [];
     var drawerContractId = '';
     var drawerMode = 'view';
-    var pendingUploadFileName = '';
-    var complianceRisks = [
-      { id:'r1', clause:'第3条', title:'条款描述不清晰', level:'中风险', type:'合规风险', status:'待处理', desc:'「按行业标准执行」等模糊表述可能导致履约争议。', suggestion:'补充明确的时间节点、验收标准与执行流程。' },
-      { id:'r2', clause:'第7条', title:'售后服务条款缺失', level:'高风险', type:'履约风险', status:'待处理', desc:'未约定售后响应时限与维修责任划分。', suggestion:'增加 7×24 响应、48 小时到场等可量化指标。' },
-      { id:'r3', clause:'第3条', title:'质量标准引用不当', level:'中风险', type:'合规风险', status:'待处理', desc:'引用已废止的国家标准编号。', suggestion:'更新为现行有效标准 GB/T 相关版本。' },
-      { id:'r4', clause:'第5条', title:'付款节点与订单不一致', level:'中风险', type:'合规风险', status:'待处理', desc:'合同约定预付款比例与采购单约定存在偏差。', suggestion:'调整为与采购单一致的 30% 预付款 + 70% 验收后付款。' },
-      { id:'r5', clause:'第7条', title:'违约责任不对等', level:'中风险', type:'履约风险', status:'待处理', desc:'供应商违约罚金上限明显低于采购方。', suggestion:'建议双方违约责任条款保持对等。' },
-      { id:'r6', clause:'第2条', title:'交付地址描述不完整', level:'中风险', type:'履约风险', status:'待处理', desc:'缺少具体楼层与联系人信息。', suggestion:'补充完整收货地址与签收授权人。' }
-    ];
-    var complianceClauses = [
-      { id:1, title:'第1条 合同标的', risks:0 }, { id:2, title:'第2条 交付与验收', risks:1 },
-      { id:3, title:'第3条 质量标准', risks:2 }, { id:4, title:'第4条 价格与税费', risks:0 },
-      { id:5, title:'第5条 付款方式', risks:1 }, { id:6, title:'第6条 知识产权', risks:0 },
-      { id:7, title:'第7条 售后服务', risks:2 }, { id:8, title:'第8条 违约责任', risks:0 },
-      { id:9, title:'第9条 争议解决', risks:0 }
-    ];
-    var selectedRiskId = 'r1';
-    var selectedClauseId = 3;
 
     function normalizeSigning(row) {
       if (!row.buyer) row.buyer = '北京市海淀区政务服务中心';
@@ -328,17 +337,24 @@
       return row;
     }
 
-    function loadTemplatesFromStorage() {
+    function loadSealsFromStorage() {
       try {
-        var raw = sessionStorage.getItem('buyerContractTplMock');
-        if (raw) return JSON.parse(raw).map(function (r) { if (!r.source) r.source = 'upload'; return r; });
+        var raw = sessionStorage.getItem('buyerContractSealMock');
+        if (raw) return JSON.parse(raw);
       } catch (e) {}
-      return defaultTemplates.map(function (x) { return Object.assign({}, x); });
+      return defaultSeals.map(function (x) { return Object.assign({}, x); });
     }
-    function persistTemplates() { try { sessionStorage.setItem('buyerContractTplMock', JSON.stringify(templates)); } catch (e) {} }
+    function persistSeals() {
+      try { sessionStorage.setItem('buyerContractSealMock', JSON.stringify(seals)); } catch (e) {}
+    }
 
     function loadSigningFromStorage() {
+      var MOCK_VERSION = 'buyer-contract-v7';
       try {
+        if (sessionStorage.getItem('buyerContractSigningMockVersion') !== MOCK_VERSION) {
+          sessionStorage.removeItem('buyerContractSigningMock');
+          sessionStorage.setItem('buyerContractSigningMockVersion', MOCK_VERSION);
+        }
         var saved = sessionStorage.getItem('buyerContractSigningMock');
         if (saved) return JSON.parse(saved).map(normalizeSigning);
       } catch (e) {}
@@ -346,7 +362,7 @@
     }
     function persistSigning() { try { sessionStorage.setItem('buyerContractSigningMock', JSON.stringify(signingContracts)); } catch (e) {} }
 
-    templates = loadTemplatesFromStorage();
+    seals = loadSealsFromStorage();
     signingContracts = loadSigningFromStorage();
 
     function escapeHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -365,12 +381,6 @@
       if (c.status === 'supplier-returned') return true;
       if (c.status === 'contract-updated' && c.lastUpdatedBy === 'supplier') return true;
       return false;
-    }
-
-    function buyerDrawerMode(c) {
-      if (!buyerNeedsProcess(c)) return null;
-      if (c.status === 'supplier-returned') return 'return-only';
-      return 'full';
     }
 
     function buyerFacingLabel(c) {
@@ -396,55 +406,14 @@
       return 'b-muted';
     }
 
-    function sourceBadge(src) {
-      if (src === 'ai') return '<span class="badge b-violet">AI生成</span>';
-      return '<span class="badge b-slate">用户上传</span>';
-    }
-
-    function renderTemplates() {
-      var tbody = document.getElementById('tplTableBody');
-      if (!tbody) return;
-      tbody.innerHTML = templates.map(function (t) {
-        var def = t.isDefault ? '<span class="badge b-green">是</span>' : '<span class="text-slate-400">否</span>';
-        var st = t.enabled ? '<span class="badge b-blue">启用</span>' : '<span class="badge b-muted">停用</span>';
-        return '<tr><td class="font-semibold">' + escapeHtml(t.name) + '</td><td>' + sourceBadge(t.source) + '</td><td>' + escapeHtml(t.updated) + '</td><td>' + def + '</td><td>' + st + '</td><td class="space-x-1 whitespace-nowrap">' +
-          '<button type="button" class="btn" onclick="renameTpl(\'' + t.id + '\')">重命名</button>' +
-          '<button type="button" class="btn" onclick="previewTpl(\'' + t.id + '\')">预览</button>' +
-          '<button type="button" class="btn" onclick="downloadTpl(\'' + t.id + '\')">下载</button>' +
-          (!t.isDefault ? '<button type="button" class="btn btn-primary" onclick="setDefaultTpl(\'' + t.id + '\')">设为默认</button>' : '') +
-          '<button type="button" class="btn btn-danger" onclick="deleteTpl(\'' + t.id + '\')">删除</button></td></tr>';
+    function renderSeals() {
+      var con = document.getElementById('sealListContainer');
+      if (!con) return;
+      con.innerHTML = seals.map(function (s) {
+        return '<div class="seal-card"><div class="seal-card-icon">' + s.icon + '</div><div><div class="seal-card-name">' + escapeHtml(s.name) +
+          (s.isDefault ? '<span class="seal-default-tag">★ 默认</span>' : '') + '</div><div class="seal-card-desc">' + escapeHtml(s.desc) + '</div></div></div>';
       }).join('');
     }
-
-    function handleTplUpload(inp) {
-      var f = inp.files && inp.files[0];
-      if (!f) return;
-      var name = f.name.replace(/\.\w+$/, '');
-      templates.unshift({ id:'t' + (++tplSeed), name:name || '未命名模板', source:'upload', updated:new Date().toISOString().slice(0,10), isDefault:false, enabled:true });
-      inp.value = ''; persistTemplates(); renderTemplates();
-      alert('已添加模板（原型）：' + name);
-    }
-    function openAiTplModal() { document.getElementById('aiTplModal').classList.add('show'); document.getElementById('aiTplLoading').classList.remove('show'); document.getElementById('aiTplDescInput').value = ''; document.getElementById('aiTplTypeSelect').value = ''; }
-    function closeAiTplModal() { document.getElementById('aiTplModal').classList.remove('show'); }
-    function runAiTplGenerate() {
-      var type = document.getElementById('aiTplTypeSelect').value.trim();
-      var txt = document.getElementById('aiTplDescInput').value.trim();
-      if (!type && !txt) { alert('请先选择合同类型或输入描述'); return; }
-      document.getElementById('aiTplLoading').classList.add('show');
-      var base = type || txt.slice(0, 14);
-      setTimeout(function () {
-        document.getElementById('aiTplLoading').classList.remove('show');
-        var name = 'AI生成_' + base.replace(/\s/g,'').slice(0, 18) + '_模板';
-        templates.unshift({ id:'t' + (++tplSeed), name:name, source:'ai', updated:new Date().toISOString().slice(0,10), isDefault:false, enabled:true });
-        persistTemplates(); renderTemplates(); closeAiTplModal();
-        alert('已生成模板（原型）：' + name);
-      }, 1600);
-    }
-    function renameTpl(id) { var t = templates.find(function (x) { return x.id === id; }); if (!t) return; var next = window.prompt('请输入新的模板名称', t.name || ''); if (next === null) return; next = String(next).trim(); if (!next) { alert('模板名称不能为空'); return; } t.name = next; t.updated = new Date().toISOString().slice(0,10); persistTemplates(); renderTemplates(); }
-    function previewTpl(id) { var t = templates.find(function (x) { return x.id === id; }); if (t) alert('预览模板：' + t.name); }
-    function downloadTpl(id) { var t = templates.find(function (x) { return x.id === id; }); if (t) alert('下载模板：' + t.name); }
-    function setDefaultTpl(id) { templates.forEach(function (x) { x.isDefault = (x.id === id); }); persistTemplates(); renderTemplates(); }
-    function deleteTpl(id) { if (!confirm('确认删除该模板？')) return; templates = templates.filter(function (x) { return x.id !== id; }); persistTemplates(); renderTemplates(); }
 
     function updateSigningStats() {
       document.getElementById('statTotal').textContent = String(signingContracts.length);
@@ -549,20 +518,15 @@
     function toggleSection(el, ev) { if (ev.target.closest('.btn-link')) return; el.classList.toggle('open'); }
 
     function renderBuyerDrawerActions(c) {
-      var mode = buyerDrawerMode(c);
       var actionsEl = document.getElementById('drawerActions');
-      if (!mode || drawerMode !== 'process') {
+      if (!buyerNeedsProcess(c) || drawerMode !== 'process') {
         actionsEl.innerHTML = '';
         actionsEl.style.display = 'none';
         return;
       }
-      var html = '';
-      if (mode === 'full') {
-        html += '<button type="button" class="drawer-action-btn confirm" onclick="doConfirmSign()"><i class="fas fa-check"></i>确认签署</button>';
-      }
-      html += '<button type="button" class="drawer-action-btn upload" onclick="triggerContractUpload()"><i class="fas fa-file-contract"></i>更新合同</button>';
-      html += '<button type="button" class="drawer-action-btn return" onclick="openReturnModal()"><i class="fas fa-rotate-left"></i>退回</button>';
-      actionsEl.innerHTML = html;
+      actionsEl.innerHTML =
+        '<button type="button" class="drawer-action-btn confirm" onclick="openSignPreviewForCurrent()"><i class="fas fa-file-signature"></i>预览并签署</button>' +
+        '<button type="button" class="drawer-action-btn return" onclick="openReturnModal()"><i class="fas fa-rotate-left"></i>退回</button>';
       actionsEl.style.display = 'flex';
     }
 
@@ -594,16 +558,139 @@
       drawerContractId = '';
     }
 
-    function doConfirmSign() {
+    function openSignPreviewForCurrent() {
       var c = getContract(drawerContractId);
-      if (!c || buyerDrawerMode(c) !== 'full') return;
-      if (!confirm('确认签署合同「' + c.name + '」？')) return;
+      if (!c || !buyerNeedsProcess(c)) return;
+      openSignPreview(c.name);
+    }
+
+    function openSignPreview(docTitle) {
+      signPreviewPlacements = [];
+      activeSealId = (seals.find(function (s) { return s.isDefault; }) || seals[0] || {}).id || '';
+      var page = document.getElementById('signPreviewPage');
+      page.querySelectorAll('.seal-stamp').forEach(function (el) { el.remove(); });
+      document.getElementById('signPreviewDocTitle').textContent = docTitle || '采购合同';
+      document.getElementById('signPreviewSub').textContent = '选择电子签章并在预览区点击放置签章位置（每份合同仅可盖一处）';
+      renderSignSealPicker();
+      updateSignPlacementHint();
+      document.getElementById('signPreviewOverlay').classList.add('show');
+    }
+
+    function closeSignPreview() {
+      document.getElementById('signPreviewOverlay').classList.remove('show');
+      signPreviewPlacements = [];
+    }
+
+    function renderSignSealPicker() {
+      var con = document.getElementById('signSealPicker');
+      if (!con) return;
+      con.innerHTML = seals.map(function (s) {
+        return '<div class="seal-pick-item' + (s.id === activeSealId ? ' active' : '') + '" onclick="selectActiveSeal(\'' + s.id + '\')">' +
+          '<div class="seal-pick-icon">' + s.icon + '</div><div class="seal-pick-name">' + escapeHtml(s.name) + '</div></div>';
+      }).join('');
+    }
+
+    function clearSealStampsOnPage() {
+      var page = document.getElementById('signPreviewPage');
+      if (page) page.querySelectorAll('.seal-stamp').forEach(function (el) { el.remove(); });
+      signPreviewPlacements = [];
+    }
+
+    function getExistingSealStamp() {
+      return document.querySelector('#signPreviewPage .seal-stamp');
+    }
+
+    function selectActiveSeal(id) {
+      activeSealId = id;
+      renderSignSealPicker();
+      var existing = getExistingSealStamp();
+      if (existing) {
+        var seal = seals.find(function (s) { return s.id === id; });
+        if (seal) {
+          existing.textContent = seal.name;
+          existing.dataset.sealId = seal.id;
+          if (signPreviewPlacements.length) {
+            signPreviewPlacements[0].sealId = seal.id;
+            signPreviewPlacements[0].sealName = seal.name;
+          }
+          updateSignPlacementHint();
+        }
+      }
+    }
+
+    function placeSealOnPreview(ev) {
+      if (!activeSealId) { alert('请先在右侧选择电子签章'); return; }
+      if (ev.target.closest('.seal-stamp')) return;
+      var page = document.getElementById('signPreviewPage');
+      var rect = page.getBoundingClientRect();
+      var x = ev.clientX - rect.left;
+      var y = ev.clientY - rect.top;
+      var seal = seals.find(function (s) { return s.id === activeSealId; });
+      if (!seal) return;
+      clearSealStampsOnPage();
+      var stamp = document.createElement('div');
+      stamp.className = 'seal-stamp';
+      stamp.textContent = seal.name;
+      stamp.style.left = x + 'px';
+      stamp.style.top = y + 'px';
+      stamp.dataset.sealId = seal.id;
+      enableSealDrag(stamp);
+      page.appendChild(stamp);
+      signPreviewPlacements = [{ sealId: seal.id, sealName: seal.name, x: x, y: y, el: stamp }];
+      updateSignPlacementHint();
+    }
+
+    function enableSealDrag(el) {
+      var dragging = false;
+      var offsetX = 0, offsetY = 0;
+      el.addEventListener('mousedown', function (e) {
+        e.stopPropagation();
+        dragging = true;
+        var rect = el.getBoundingClientRect();
+        offsetX = e.clientX - rect.left - rect.width / 2;
+        offsetY = e.clientY - rect.top - rect.height / 2;
+      });
+      document.addEventListener('mousemove', function (e) {
+        if (!dragging) return;
+        var page = document.getElementById('signPreviewPage');
+        var rect = page.getBoundingClientRect();
+        var x = Math.max(44, Math.min(rect.width - 44, e.clientX - rect.left - offsetX));
+        var y = Math.max(44, Math.min(rect.height - 44, e.clientY - rect.top - offsetY));
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+      });
+      document.addEventListener('mouseup', function () {
+        if (dragging) {
+          dragging = false;
+          updateSignPlacementHint();
+        }
+      });
+    }
+
+    function updateSignPlacementHint() {
+      var stamp = getExistingSealStamp();
+      var hint = document.getElementById('signPlacementHint');
+      var btn = document.getElementById('confirmSignBtn');
+      hint.textContent = stamp ? '已放置签章：' + stamp.textContent + '（每份合同仅一处）' : '尚未放置签章，请在预览区点击放置（每份合同仅可盖一处）';
+      btn.disabled = !stamp;
+    }
+
+    function confirmSignPreview() {
+      var c = getContract(drawerContractId);
+      if (!c || !buyerNeedsProcess(c)) return;
+      var stamps = document.querySelectorAll('#signPreviewPage .seal-stamp');
+      if (!stamps.length) { alert('请先在合同预览区放置签章'); return; }
+      var sealNames = Array.prototype.map.call(stamps, function (el) { return el.textContent; }).join('、');
       var now = new Date().toISOString().slice(0,19).replace('T',' ');
-      c.status = 'signed'; c.label = '已签署';
       if (!c.history) c.history = [];
-      c.history.unshift({ step:'采购方确认签署', actor:'采购方', created: now, processed: now, opinion:'确认签署，合同生效' });
-      persistSigning(); closeContractDrawer(); renderSigningTable();
-      alert('已确认签署（原型演示）。');
+      c.status = 'signed';
+      c.label = '已签署';
+      c.history.unshift({ step:'预览并签署', actor:'采购方', created: now, processed: now, opinion:'使用「' + sealNames + '」完成电子签署（原型演示）' });
+      persistSigning();
+      closeSignPreview();
+      closeContractDrawer();
+      renderSigningTable();
+      alert('已完成电子签署（原型演示），合同状态为「已签署」。');
     }
 
     function openReturnModal() {
@@ -629,87 +716,6 @@
       alert('已退回至供应商（原型演示）。');
     }
 
-    function triggerContractUpload() { document.getElementById('contractUploadInput').click(); }
-    function handleContractUpload(inp) {
-      var f = inp.files && inp.files[0];
-      if (!f) return;
-      pendingUploadFileName = f.name; inp.value = '';
-      openComplianceModal();
-    }
-
-    function openComplianceModal() {
-      document.getElementById('complianceBody').innerHTML = '<div class="compliance-loading" style="grid-column:1/-1;background:#1e293b;"><span class="ai-spin"></span><span>正在解析合同并检测合规风险…</span></div>';
-      document.getElementById('complianceOverlay').classList.add('show');
-      setTimeout(function () { renderComplianceContent(); }, 1800);
-    }
-    function closeComplianceModal() { document.getElementById('complianceOverlay').classList.remove('show'); }
-
-    function cancelCompliance() {
-      pendingUploadFileName = '';
-      closeComplianceModal();
-    }
-
-    function reuploadCompliance() {
-      closeComplianceModal();
-      pendingUploadFileName = '';
-      setTimeout(function () { triggerContractUpload(); }, 200);
-    }
-
-    function renderComplianceContent() {
-      var high = complianceRisks.filter(function (r) { return r.level === '高风险'; }).length;
-      var mid = complianceRisks.filter(function (r) { return r.level === '中风险'; }).length;
-      var low = complianceRisks.filter(function (r) { return r.level === '低风险'; }).length;
-      var selected = complianceRisks.find(function (r) { return r.id === selectedRiskId; }) || complianceRisks[0];
-      var clauseHtml = complianceClauses.map(function (cl) {
-        var cnt = complianceRisks.filter(function (r) { return r.clause === '第' + cl.id + '条'; }).length;
-        return '<div class="clause-item' + (cl.id === selectedClauseId ? ' active' : '') + '" onclick="selectComplianceClause(' + cl.id + ')"><span>' + escapeHtml(cl.title) + '</span><span class="clause-risk-count' + (cnt ? '' : ' zero') + '">' + cnt + '</span></div>';
-      }).join('');
-      var riskCards = complianceRisks.map(function (r) {
-        return '<div class="risk-card' + (r.id === selectedRiskId ? ' active' : '') + '" onclick="selectComplianceRisk(\'' + r.id + '\')"><div class="risk-card-title">' + escapeHtml(r.title) + '</div><div class="risk-card-meta">' + escapeHtml(r.level) + ' · ' + escapeHtml(r.type) + '</div></div>';
-      }).join('');
-      document.getElementById('complianceBody').innerHTML =
-        '<div class="compliance-col"><div class="compliance-col-head">合同结构</div><div class="compliance-col-body"><div style="font-size:11px;color:#94a3b8;margin-bottom:10px;">' + escapeHtml(pendingUploadFileName || '上传合同') + '</div>' + clauseHtml + '</div></div>' +
-        '<div class="compliance-col" style="background:#334155;"><div class="compliance-col-head">合同正文</div><div class="contract-text-pane"><h4>采购合同</h4><p>甲方（采购方）与乙方（供应商）就采购事宜达成如下协议：</p><h4>第3条 质量标准</h4><p>产品质量应符合<strong>行业标准</strong>及国家相关规范。</p><h4>第5条 付款方式</h4><p>甲方于合同签订后支付 50% 预付款，验收合格后支付剩余款项。</p><h4>第7条 售后服务</h4><p>乙方提供产品质保服务，具体响应时限双方另行约定。</p></div></div>' +
-        '<div class="compliance-col"><div class="compliance-col-head">风险处理</div><div class="compliance-col-body"><div class="risk-stats"><div class="risk-stat high"><div class="risk-stat-num">' + high + '</div><div class="risk-stat-label">高风险</div></div><div class="risk-stat mid"><div class="risk-stat-num">' + mid + '</div><div class="risk-stat-label">中风险</div></div><div class="risk-stat low"><div class="risk-stat-num">' + low + '</div><div class="risk-stat-label">低风险</div></div></div>' + riskCards +
-        '<div class="risk-detail-box"><h5>' + escapeHtml(selected.title) + '</h5><p><strong>条款：</strong>' + escapeHtml(selected.clause) + '</p><p><strong>风险描述：</strong>' + escapeHtml(selected.desc) + '</p><p><strong>修改建议：</strong>' + escapeHtml(selected.suggestion) + '</p></div></div></div>';
-    }
-    function selectComplianceClause(id) { selectedClauseId = id; var hit = complianceRisks.find(function (r) { return r.clause === '第' + id + '条'; }); if (hit) selectedRiskId = hit.id; renderComplianceContent(); }
-    function selectComplianceRisk(id) { selectedRiskId = id; renderComplianceContent(); }
-
-    function applyComplianceAndSign() {
-      var c = getContract(drawerContractId);
-      if (!c || !pendingUploadFileName) { closeComplianceModal(); return; }
-      var now = new Date().toISOString().slice(0,19).replace('T',' ');
-      var files = c.contractFiles || [];
-      files.forEach(function (f) { if (f.status === 'latest') { f.status = 'voided'; f.tag = '作废'; } });
-      files.unshift({ id:'f' + Date.now(), name: pendingUploadFileName, tag:'最新', status:'latest', uploadedAt: now });
-      c.contractFiles = files;
-      if (!c.history) c.history = [];
-      var canSign = buyerDrawerMode(c) === 'full';
-      if (canSign) {
-        c.status = 'signed';
-        c.label = '已签署';
-        c.history.unshift({ step:'应用合同并签署', actor:'采购方', created: now, processed: now, opinion:'上传新版合同并通过合规性校验（检出 ' + complianceRisks.length + ' 项风险，已阅），确认签署' });
-        persistSigning();
-        closeComplianceModal();
-        pendingUploadFileName = '';
-        closeContractDrawer();
-        renderSigningTable();
-        alert('已应用新版合同并确认签署（原型演示）。');
-      } else {
-        c.status = 'contract-updated';
-        c.label = '合同更新';
-        c.lastUpdatedBy = 'buyer';
-        c.history.unshift({ step:'更新合同', actor:'采购方', created: now, processed: now, opinion:'上传新版合同并通过合规性校验（检出 ' + complianceRisks.length + ' 项风险，已阅）' });
-        persistSigning();
-        closeComplianceModal();
-        pendingUploadFileName = '';
-        if (document.getElementById('contractDrawer').classList.contains('show')) refreshContractDrawer();
-        renderSigningTable();
-        alert('已应用新版合同（原型演示），状态为「合同更新」，待供应商处理。');
-      }
-    }
-
     function deleteSigning(contractId) {
       var c = getContract(contractId);
       if (!c || c.status !== 'voided') return;
@@ -720,8 +726,9 @@
 
     (function init() {
       var tab = sessionStorage.getItem('buyerContractHubTab') || 'signing';
+      if (tab === 'templates') tab = 'signing';
       switchHubTab(tab);
-      renderTemplates();
+      renderSeals();
       renderSigningTable();
       var params = new URLSearchParams(location.search);
       var openId = params.get('id');
@@ -731,19 +738,6 @@
           openContractDrawer(openId, action === 'process' ? 'process' : 'view');
           history.replaceState(null, '', location.pathname);
         }, 120);
-      }
-      if (params.get('open_compliance') === '1') {
-        try {
-          var raw = sessionStorage.getItem('aiContractComplianceDemo');
-          if (raw) {
-            var p = JSON.parse(raw);
-            if (p.fileName) pendingUploadFileName = p.fileName;
-          }
-        } catch (eOpen) {}
-        setTimeout(function () {
-          openComplianceModal();
-          history.replaceState(null, '', location.pathname);
-        }, 220);
       }
     })();
   </script>

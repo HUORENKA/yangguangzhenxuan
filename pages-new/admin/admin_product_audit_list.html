@@ -41,6 +41,95 @@
     .btn-audit-reject { background: #fff1f0; color: var(--c-red); border-color: #ffa39e; }
     .btn-audit-reject:hover { background: #ffccc7; }
     .table-wrap { overflow-x: auto; border: 1px solid #e8e8e8; border-radius: 12px; background: #fff; }
+    .audit-product-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1200px; }
+    .audit-product-table thead th {
+      position: sticky; top: 0; z-index: 5;
+      background: #fafafa; color: #595959; font-size: 13px; font-weight: 700;
+      padding: 12px 14px; text-align: left; white-space: nowrap;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .audit-product-table tbody td {
+      padding: 12px 14px; border-top: 1px solid #f0f0f0;
+      font-size: 13px; vertical-align: middle; color: #262626;
+    }
+    .audit-product-table tbody tr:nth-child(even) td { background: #fafbfc; }
+    .audit-product-table tbody tr:nth-child(odd) td { background: #fff; }
+    .audit-product-table tbody tr:hover td { background: #f0f7ff !important; }
+    .audit-product-table .col-product {
+      position: sticky; left: 0; z-index: 2;
+      min-width: 220px; max-width: 280px;
+      box-shadow: 2px 0 8px rgba(15, 23, 42, 0.05);
+    }
+    .audit-product-table thead .col-product { z-index: 6; background: #fafafa; }
+    .audit-product-table tbody tr:nth-child(even) .col-product { background: #fafbfc; }
+    .audit-product-table tbody tr:nth-child(odd) .col-product { background: #fff; }
+    .audit-product-table .col-price { width: 88px; white-space: nowrap; }
+    .audit-product-table .col-unit { width: 56px; white-space: nowrap; }
+    .audit-product-table .col-cat { min-width: 140px; max-width: 168px; font-size: 12px; color: #64748b; line-height: 1.5; }
+    .audit-product-table .col-wh { width: 96px; white-space: nowrap; }
+    .audit-product-table .col-supplier { min-width: 120px; max-width: 148px; font-size: 12px; }
+    .audit-product-table .col-time { width: 128px; white-space: nowrap; font-size: 12px; color: #64748b; }
+    .audit-product-table .col-kind,
+    .audit-product-table .col-ai,
+    .audit-product-table .col-shelf,
+    .audit-product-table .col-audit { white-space: nowrap; }
+    .audit-product-table .col-actions { min-width: 260px; width: 260px; max-width: 260px; }
+    .audit-product-name { font-weight: 600; color: #111827; line-height: 1.45; font-size: 13px; }
+    .audit-product-sku { font-size: 11px; color: #94a3b8; margin-top: 4px; font-family: ui-monospace, monospace; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap;
+    }
+    .status-pill-shelf-online { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .status-pill-shelf-offline { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+    .status-pill-shelf-unshelved { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    .status-pill-audit-pending { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .status-pill-audit-rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status-pill-audit-pass { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .audit-wh-cell { position: relative; display: inline-block; }
+    .audit-wh-total {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff;
+      font-size: 12px; color: #334155; cursor: pointer; font-family: inherit;
+    }
+    .audit-wh-total:hover { border-color: #93c5fd; background: #f8fafc; }
+    .audit-wh-total-num { font-weight: 800; color: #0f172a; font-variant-numeric: tabular-nums; }
+    .audit-wh-total-label { color: #64748b; font-size: 11px; }
+    .audit-wh-chevron { font-size: 9px; color: #94a3b8; transition: transform 0.15s; }
+    .audit-wh-total[aria-expanded="true"] .audit-wh-chevron { transform: rotate(180deg); }
+    .audit-wh-popover {
+      display: none; position: absolute; left: 0; top: calc(100% + 6px); z-index: 30;
+      min-width: 168px; padding: 8px; border-radius: 10px;
+      background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    }
+    .audit-wh-popover.is-open { display: block; }
+    @media (hover: hover) {
+      .audit-wh-cell:hover .audit-wh-popover { display: block; }
+    }
+    .audit-wh-popover-row {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 5px 6px; font-size: 12px; color: #475569; border-radius: 6px;
+    }
+    .audit-wh-popover-row:hover { background: #f8fafc; }
+    .audit-wh-popover-row strong { font-variant-numeric: tabular-nums; color: #0f172a; }
+    .audit-action-cell { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+    .audit-action-row {
+      display: grid; gap: 6px; width: 100%;
+      grid-template-columns: repeat(var(--action-cols, 2), minmax(0, 1fr));
+    }
+    .audit-action-row.cols-1 { --action-cols: 1; }
+    .audit-action-row.cols-2 { --action-cols: 2; }
+    .audit-action-row.cols-3 { --action-cols: 3; }
+    .audit-action-row .btn-audit-sm {
+      width: 100%; min-width: 0; justify-content: center;
+      padding: 5px 6px; white-space: nowrap;
+    }
+    .audit-action-row.cols-3 .btn-audit-sm { font-size: 11px; padding: 5px 4px; gap: 3px; }
+    .btn-audit-sm {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 10px; border-radius: 7px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent; transition: all 0.15s; white-space: nowrap;
+    }
     th { background: #fafafa; color: #595959; font-size: 13px; font-weight: 700; padding: 14px 16px; text-align: left; white-space: nowrap; border-bottom: 1px solid #f0f0f0; }
     td { padding: 16px; border-top: 1px solid #f0f0f0; font-size: 14px; vertical-align: top; }
     .audit-modal-overlay {
@@ -379,8 +468,11 @@
     }
     .admin-ai-check-item.pass { border-color: #bbf7d0; background: #f0fdf4; }
     .admin-ai-check-item.fail { border-color: #fecaca; background: #fef2f2; }
+    .admin-ai-check-main { flex: 1; min-width: 0; }
     .admin-ai-check-name { font-weight: 700; color: #1e293b; }
-    .admin-ai-check-evidence { font-size: 12px; color: #b45309; margin-top: 4px; line-height: 1.5; }
+    .admin-ai-check-desc { font-size: 12px; color: #64748b; margin-top: 4px; line-height: 1.55; }
+    .admin-ai-check-evidence { font-size: 12px; color: #b45309; margin-top: 6px; line-height: 1.5; display: flex; align-items: flex-start; gap: 5px; }
+    .admin-ai-check-evidence i { margin-top: 2px; flex-shrink: 0; }
     .admin-ai-check-val {
       font-size: 12px;
       font-weight: 800;
@@ -699,21 +791,21 @@
 
     <!-- 表格 -->
     <div class="table-wrap">
-      <table class="w-full min-w-[1380px]">
+      <table class="audit-product-table">
         <thead>
           <tr>
-            <th>商品名称 / SKU</th>
-            <th class="tabular-nums">价格（元）</th>
-            <th>单位</th>
-            <th>类目路径</th>
-            <th>分仓库存（各仓数量）</th>
-            <th>提报供应商</th>
-            <th>上架时间</th>
-            <th>审核类型</th>
-            <th>AI 合规校验</th>
-            <th>上架状态</th>
-            <th>审核状态</th>
-            <th class="text-right min-w-[320px]">操作</th>
+            <th class="col-product">商品名称 / SKU</th>
+            <th class="col-price tabular-nums">价格（元）</th>
+            <th class="col-unit">单位</th>
+            <th class="col-cat">类目路径</th>
+            <th class="col-wh">分仓库存</th>
+            <th class="col-supplier">提报供应商</th>
+            <th class="col-time">上架时间</th>
+            <th class="col-kind">审核类型</th>
+            <th class="col-ai">AI 合规校验</th>
+            <th class="col-shelf">上架状态</th>
+            <th class="col-audit">审核状态</th>
+            <th class="col-actions text-right">操作</th>
           </tr>
         </thead>
         <tbody id="auditTableBody">

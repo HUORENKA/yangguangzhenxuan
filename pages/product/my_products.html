@@ -69,6 +69,28 @@
       font-weight: 600;
     }
 
+    /* 列表状态胶囊（与运营后台商品列表对齐） */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-pill-shelf-online { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .status-pill-shelf-offline { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+    .status-pill-shelf-unshelved { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+    .status-pill-audit-pending { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .status-pill-audit-rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status-pill-audit-pass { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+    .status-pill-ai-pass { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+    .status-pill-ai-warn { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; }
+    .status-pill-ai-fail { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+    .product-table .col-status { white-space: nowrap; }
+
     .status-published { background: #dcfce7; color: #166534; }
     .status-reviewing { background: #dbeafe; color: #1d4ed8; }
     .status-offline { background: #e2e8f0; color: #475569; }
@@ -1155,14 +1177,15 @@
 
       <div class="table-wrap">
         <div class="overflow-x-auto">
-          <table class="min-w-full bg-white">
+          <table class="min-w-full bg-white product-table">
             <thead class="bg-slate-50 text-slate-500 text-sm">
               <tr id="productTableHeadRow">
                 <th class="text-left px-5 py-4 font-semibold">商品信息</th>
                 <th class="text-left px-5 py-4 font-semibold">SKU</th>
                 <th class="text-left px-5 py-4 font-semibold">品类</th>
-                <th class="text-left px-5 py-4 font-semibold">上架状态</th>
-                <th class="text-left px-5 py-4 font-semibold">审核状态</th>
+                <th class="text-left px-5 py-4 font-semibold col-status">AI 合规校验</th>
+                <th class="text-left px-5 py-4 font-semibold col-status">上架状态</th>
+                <th class="text-left px-5 py-4 font-semibold col-status">审核状态</th>
                 <th class="text-left px-5 py-4 font-semibold">提交日期</th>
                 <th class="text-left px-5 py-4 font-semibold">操作</th>
               </tr>
@@ -1478,8 +1501,9 @@
         <th class="text-left px-5 py-4 font-semibold">商品信息</th>
         <th class="text-left px-5 py-4 font-semibold">SKU</th>
         <th class="text-left px-5 py-4 font-semibold">品类</th>
-        <th class="text-left px-5 py-4 font-semibold">上架状态</th>
-        <th class="text-left px-5 py-4 font-semibold">审核状态</th>
+        <th class="text-left px-5 py-4 font-semibold col-status">AI 合规校验</th>
+        <th class="text-left px-5 py-4 font-semibold col-status">上架状态</th>
+        <th class="text-left px-5 py-4 font-semibold col-status">审核状态</th>
         <th class="text-left px-5 py-4 font-semibold">提交日期</th>
         <th class="text-left px-5 py-4 font-semibold">操作</th>
       `;
@@ -1517,16 +1541,21 @@
       window.runAiComplianceOnMyProducts(ids);
     };
 
-    /** 【上架审核层】校验项（与商品标签体系.xlsx 一致） */
+    /** 【上架审核层】校验项（与商品上架审核维度一致，共 5 项 · 是/否） */
     const LISTING_AUDIT_ITEMS = [
-      { code: 'title', name: '商品名称', desc: '标题规范、品名完整、与类目一致', icon: 'fa-tag' },
-      { code: 'intro', name: '简介充分', desc: '简介与描述有效文字不少于 30 字', icon: 'fa-align-left' },
-      { code: 'mainImg', name: '主图合格', desc: '主图清晰、主体为商品本身', icon: 'fa-image' },
-      { code: 'consistency', name: '图文一致', desc: '标题、参数与图片信息一致', icon: 'fa-object-group' },
-      { code: 'noWatermark', name: '无水印导流', desc: '无外链、水印及导流信息', icon: 'fa-ban' },
-      { code: 'noSensitive', name: '无敏感违规', desc: '无敏感词及违规宣传', icon: 'fa-shield-virus' },
-      { code: 'completeness', name: '资料完整度', desc: '综合前 6 项自动汇总', icon: 'fa-chart-pie' }
+      { code: 'title', name: '商品名称', desc: '标题非空、≤80 字，无外链/第三方平台名/敏感词；须含品名及关键规格，与所选类目一致', icon: 'fa-tag', source: '商品名称' },
+      { code: 'mainImg', name: '主图合格', desc: '主图清晰可访问，AI 判定主体为商品本身，非文字海报、空白占位或严重模糊图', icon: 'fa-image', source: '主图' },
+      { code: 'consistency', name: '图文一致', desc: '标题、参数与主图 OCR 的品牌、型号、核心规格前后一致，无矛盾', icon: 'fa-object-group', source: '图文' },
+      { code: 'noWatermark', name: '无水印导流', desc: '图文无外链、联系方式、导流文案及第三方平台水印/二维码', icon: 'fa-ban', source: '图文' },
+      { code: 'noSensitive', name: '无敏感违规', desc: '无敏感词库命中及广告法绝对化用语，AI 语义安全检测通过', icon: 'fa-shield-virus', source: '图文' }
     ];
+
+    function buildAiComplianceSummary(items) {
+      const fails = items.filter(i => i.status === 'fail');
+      if (!fails.length) return '商品上架审核 5 项均通过，合规无风险，可提交平台审核。';
+      const failNames = fails.map(i => `「${i.name}」`).join('、');
+      return `商品上架审核共 ${fails.length} 项未通过（${failNames}），请修改后重新校验。`;
+    }
 
     let aiModalState = { targets: [], activeId: null, running: false, lastIds: [] };
 
@@ -1823,39 +1852,38 @@
         !(typeof extra.price === 'number' && extra.price > 0);
 
       if (!incomplete) {
-        const items = LISTING_AUDIT_ITEMS.map(def => {
-          if (def.code === 'completeness') {
-            return { ...def, value: '高', status: 'pass', evidence: '前 6 项均为「是」' };
-          }
-          return { ...def, value: '是', status: 'pass', evidence: '' };
-        });
+        const items = LISTING_AUDIT_ITEMS.map(def => ({
+          ...def,
+          value: '是',
+          status: 'pass',
+          evidence: ''
+        }));
         return {
           aiCheckStatus: 'pass',
           result: 'pass',
           aiCheckItems: items,
-          aiCheckSummary: '商品基本信息合规，资料完整度为高，可提交平台审核。',
+          aiCheckSummary: buildAiComplianceSummary(items),
           summary: 'AI 合规校验通过，可提交平台审核。',
           issues: []
         };
       }
 
       const items = [
-        { code: 'title', name: '商品名称', desc: '标题规范、品名完整、与类目一致', icon: 'fa-tag', value: '否', status: 'fail', evidence: '标题含「信息待完善」，缺少可识别品名及关键规格' },
-        { code: 'intro', name: '简介充分', desc: '简介与描述有效文字不少于 30 字', icon: 'fa-align-left', value: '否', status: 'fail', evidence: '简介有效文字不足 30 字，且为模板化文案' },
-        { code: 'mainImg', name: '主图合格', desc: '主图清晰、主体为商品本身', icon: 'fa-image', value: '否', status: 'fail', evidence: '未配置有效主图或主图不符合要求' },
-        { code: 'consistency', name: '图文一致', desc: '标题、参数与图片信息一致', icon: 'fa-object-group', value: '是', status: 'pass', evidence: '' },
-        { code: 'noWatermark', name: '无水印导流', desc: '无外链、水印及导流信息', icon: 'fa-ban', value: '是', status: 'pass', evidence: '' },
-        { code: 'noSensitive', name: '无敏感违规', desc: '无敏感词及违规宣传', icon: 'fa-shield-virus', value: '是', status: 'pass', evidence: '' },
-        { code: 'completeness', name: '资料完整度', desc: '综合前 6 项自动汇总', icon: 'fa-chart-pie', value: '低', status: 'fail', evidence: '商品名称=否，简介充分=否，主图合格=否' }
+        { ...LISTING_AUDIT_ITEMS[0], value: '否', status: 'fail', evidence: '标题含「信息待完善」，缺少可识别品名及关键规格' },
+        { ...LISTING_AUDIT_ITEMS[1], value: '否', status: 'fail', evidence: '未配置有效主图或主图不符合要求' },
+        { ...LISTING_AUDIT_ITEMS[2], value: '否', status: 'fail', evidence: '缺少有效图文信息，无法完成一致性比对' },
+        { ...LISTING_AUDIT_ITEMS[3], value: '是', status: 'pass', evidence: '' },
+        { ...LISTING_AUDIT_ITEMS[4], value: '是', status: 'pass', evidence: '' }
       ];
+      const summary = buildAiComplianceSummary(items);
       return {
         aiCheckStatus: 'fail',
         result: 'fail',
         aiCheckItems: items,
-        aiCheckSummary: '商品资料不完整，存在 3 项拦截问题，请完善后重新校验。',
-        summary: 'AI 合规校验未通过：商品名称、简介充分、主图合格未达标，资料完整度为低。',
+        aiCheckSummary: summary,
+        summary: summary,
         issues: items
-          .filter(i => i.status === 'fail' && i.code !== 'completeness')
+          .filter(i => i.status === 'fail')
           .map(i => ({
             level: '红色阻断',
             type: '上架审核层',
@@ -1946,9 +1974,11 @@
                 ? 'pass'
                 : phase === 'fail' || def.status === 'fail'
                   ? 'fail'
-                  : def.code === 'completeness' && def.status
-                    ? 'summary'
-                    : 'pending';
+                  : 'pending';
+          const evidenceHtml =
+            (phase === 'fail' || def.status === 'fail') && def.evidence
+              ? `<div class="ai-subcheck-evidence"><i class="fas fa-triangle-exclamation"></i> ${def.evidence}</div>`
+              : '';
           return `
             <div class="ai-subcheck-item ${itemCls}">
               <div class="ai-subcheck-top">
@@ -1959,7 +1989,7 @@
                 <span class="ai-subcheck-val ${valCls}">${val}</span>
               </div>
               <div class="ai-subcheck-desc">${def.desc}</div>
-              ${def.evidence ? `<div class="ai-subcheck-evidence"><i class="fas fa-triangle-exclamation"></i> ${def.evidence}</div>` : ''}
+              ${evidenceHtml}
             </div>`;
         })
         .join('');
@@ -2292,6 +2322,7 @@
         spec: 'i5 / 16G / 512G SSD',
         status: 'reviewing',
         result: 'warn',
+        aiRiskCount: 2,
         submittedAt: '2026-04-16 10:22',
         summary: '标题和图片一致，但详情中存在“旗舰级体验”表述，且参数表缺少显卡接口信息，建议补充后进入复核。',
         issues: [
@@ -2319,6 +2350,7 @@
         spec: '24口千兆 / 交换容量 56Gbps',
         status: 'rejected',
         result: 'fail',
+        aiRiskCount: 3,
         submittedAt: '2026-04-16 09:18',
         summary: '图片中型号与标题不一致，同时详情缺少质保信息，当前校验不通过。',
         issues: [
@@ -2333,7 +2365,8 @@
         category: '办公家具',
         spec: '黑色 / 网布 / 带扶手',
         status: 'offline',
-        result: 'warn',
+        result: 'pass',
+        aiRiskCount: 0,
         submittedAt: '2026-04-13 14:30',
         summary: '商品已主动下架，最近一次校验通过，但当前库存标签未更新，重新上架前建议同步库存。',
         issues: [
@@ -2348,6 +2381,7 @@
         spec: '黑白激光 / 双面打印 / 网络传真',
         status: 'reviewing',
         result: 'pass',
+        aiRiskCount: 0,
         submittedAt: '2026-04-16 11:10',
         summary: '已完成基础信息与参数校验，正在进行 AI 图片与语义复核，预计 20 分钟内出结论。',
         issues: [
@@ -2362,6 +2396,7 @@
         spec: '蓝牙 / 2.4G / 静音键帽',
         status: 'rejected',
         result: 'warn',
+        aiRiskCount: 2,
         submittedAt: '2026-04-14 15:46',
         summary: '主图和标题一致，但详情缺少接收器规格，且宣传语“全场景零延迟”需整改。',
         issues: [
@@ -2389,7 +2424,10 @@
         category: '办公设备',
         spec: '-',
         status: 'draft',
-        aiCheckStatus: 'none',
+        aiCheckStatus: 'pass',
+        aiRiskCount: 0,
+        aiCheckItems: LISTING_AUDIT_ITEMS.map(def => ({ ...def, value: '是', status: 'pass', evidence: '' })),
+        aiCheckSummary: '商品上架审核 5 项均通过，合规无风险，可提交平台审核。',
         result: 'pass',
         submittedAt: '2026-05-11 17:08',
         summary: '尚未进行 AI 合规校验。',
@@ -2793,45 +2831,67 @@
       return parseSubmittedDay(item.submittedAt);
     }
 
+    function getAiRiskCount(item) {
+      if (Array.isArray(item.aiCheckItems) && item.aiCheckItems.length) {
+        return item.aiCheckItems.filter(i => i.status === 'fail').length;
+      }
+      if (item.aiCheckStatus === 'pass') return 0;
+      if (item.aiCheckStatus === 'fail') return item.aiRiskCount || 3;
+      if (item.result === 'pass') return 0;
+      if (item.result === 'warn') return item.aiRiskCount || 2;
+      if (item.result === 'fail') return item.aiRiskCount || 3;
+      return 0;
+    }
+
+    function getAiComplianceBadge(item) {
+      if (isOperatorListed(item)) {
+        return '<span class="text-sm text-slate-400">—</span>';
+      }
+      if (item.status === 'draft') {
+        const ai = getDraftAiCheckStatus(item);
+        if (!ai || ai === 'none') return '<span class="text-sm text-slate-400">—</span>';
+      }
+      const riskN = getAiRiskCount(item);
+      if (riskN === 0) {
+        return '<span class="status-pill status-pill-ai-pass"><i class="fas fa-check"></i>合规无风险</span>';
+      }
+      const cls = riskN >= 3 ? 'status-pill-ai-fail' : 'status-pill-ai-warn';
+      const icon = riskN >= 3 ? 'fa-times' : 'fa-triangle-exclamation';
+      return `<span class="status-pill ${cls}"><i class="fas ${icon}"></i>${riskN}项风险</span>`;
+    }
+
     function getShelfStatusBadge(item) {
       const shelfMeta = {
-        unshelved: { label: '未上架', className: 'status-badge status-draft', icon: 'fa-box' },
-        published: { label: '已上架', className: 'status-badge status-published', icon: 'fa-circle-check' },
-        offline: { label: '已下架', className: 'status-badge status-offline', icon: 'fa-box-archive' }
+        unshelved: { label: '未上架', cls: 'status-pill-shelf-unshelved', icon: 'fa-circle' },
+        published: { label: '已上架', cls: 'status-pill-shelf-online', icon: 'fa-circle-check' },
+        offline: { label: '已下架', cls: 'status-pill-shelf-offline', icon: 'fa-circle-minus' }
       };
       let key = 'unshelved';
       if (item.status === 'published') key = 'published';
       else if (item.status === 'offline') key = 'offline';
       const meta = shelfMeta[key];
-      return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+      return `<span class="status-pill ${meta.cls}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
     }
 
     function getAuditStatusBadge(item) {
       if (isOperatorChangePending(item.id)) {
-        return `<span class="status-badge status-reviewing"><i class="fas fa-code-branch"></i>变更审核中</span>`;
+        return '<span class="status-pill status-pill-audit-pending"><i class="fas fa-code-branch"></i>变更审核中</span>';
       }
       if (isOperatorListed(item)) {
-        return `<span class="text-sm text-slate-400">—</span>`;
+        return '<span class="text-sm text-slate-400">—</span>';
       }
       if (item.status === 'draft') {
-        const ai = getDraftAiCheckStatus(item);
-        const draftAuditMeta = {
-          none: { label: '待提交', className: 'status-badge status-draft-ai-pending', icon: 'fa-clock' },
-          pass: { label: 'AI已通过', className: 'status-badge status-draft-ai-pass', icon: 'fa-circle-check' },
-          fail: { label: 'AI未通过', className: 'status-badge status-draft-ai-fail', icon: 'fa-circle-xmark' }
-        };
-        const meta = draftAuditMeta[ai] || draftAuditMeta.none;
-        return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+        return '<span class="text-sm text-slate-400">—</span>';
       }
       const auditMeta = {
-        reviewing: { label: '审核中', className: 'status-badge status-reviewing', icon: 'fa-spinner' },
-        rejected: { label: '审核未通过', className: 'status-badge status-rejected', icon: 'fa-triangle-exclamation' },
-        published: { label: '已通过', className: 'status-badge status-published', icon: 'fa-circle-check' },
-        offline: { label: '已通过', className: 'status-badge status-published', icon: 'fa-circle-check' }
+        reviewing: { label: '待审核', cls: 'status-pill-audit-pending', icon: 'fa-clock' },
+        rejected: { label: '已驳回', cls: 'status-pill-audit-rejected', icon: 'fa-ban' },
+        published: { label: '已通过', cls: 'status-pill-audit-pass', icon: 'fa-check' },
+        offline: { label: '已通过', cls: 'status-pill-audit-pass', icon: 'fa-check' }
       };
       const meta = auditMeta[item.status];
-      if (!meta) return `<span class="text-sm text-slate-400">—</span>`;
-      return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
+      if (!meta) return '<span class="text-sm text-slate-400">—</span>';
+      return `<span class="status-pill ${meta.cls}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
     }
 
     function getStatusBadge(item) {
@@ -3173,7 +3233,7 @@
       const rows = getFilteredProducts();
       const tbody = document.getElementById('productTableBody');
       const summary = document.getElementById('tableSummary');
-      const colSpan = isDraftTabActive() ? 8 : 7;
+      const colSpan = isDraftTabActive() ? 9 : 8;
 
       summary.textContent = `${statusMeta[currentStatus].label} · 共 ${rows.length} 条商品记录`;
 
@@ -3209,8 +3269,9 @@
           </td>
           <td class="px-5 py-4 font-mono text-sm text-slate-700">${getSku(item)}</td>
           <td class="px-5 py-4 text-sm text-slate-600">${formatCategoryCell(item)}</td>
-          <td class="px-5 py-4">${getShelfStatusBadge(item)}</td>
-          <td class="px-5 py-4">${getAuditStatusBadge(item)}</td>
+          <td class="px-5 py-4 col-status">${getAiComplianceBadge(item)}</td>
+          <td class="px-5 py-4 col-status">${getShelfStatusBadge(item)}</td>
+          <td class="px-5 py-4 col-status">${getAuditStatusBadge(item)}</td>
           <td class="px-5 py-4 text-slate-500">${getSubmittedDate(item)}</td>
           <td class="px-5 py-4">
             <div class="flex flex-wrap gap-2">
