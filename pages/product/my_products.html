@@ -1627,20 +1627,6 @@
       }
     }
 
-    function specsEqualForAudit(a, b) {
-      const ka = Object.keys(a || {}).sort();
-      const kb = Object.keys(b || {}).sort();
-      if (ka.length !== kb.length) return false;
-      return ka.every(k => String((a || {})[k]) === String((b || {})[k]));
-    }
-
-    function arrEqualForAudit(a, b) {
-      const aa = [...(a || [])].map(String);
-      const bb = [...(b || [])].map(String);
-      if (aa.length !== bb.length) return false;
-      return aa.every((v, i) => v === bb[i]);
-    }
-
     function buildBeforeSnapshotFromProduct(productId) {
       const item = products.find(p => p.id === productId);
       if (!item) return null;
@@ -1679,127 +1665,6 @@
         subImages: Array.isArray(extra.subImages) ? [...extra.subImages] : [],
         detailImages: Array.isArray(extra.detailImages) ? [...extra.detailImages] : []
       };
-    }
-
-    function buildAfterSnapshotFromEditor(product) {
-      const specs = product.specs && typeof product.specs === 'object' ? { ...product.specs } : {};
-      return {
-        name: product.name,
-        price: typeof product.price === 'number' && Number.isFinite(product.price) ? product.price : Number(product.price) || 0,
-        unit: product.unit || '台',
-        cat1: product.cat1,
-        cat2: product.cat2,
-        cat3: product.cat3,
-        specs,
-        specLabels: Object.keys(specs),
-        warehouseStocks: normalizeWarehouseStocks(product.warehouseStocks),
-        mainImage: product.mainImage || '',
-        subImages: Array.isArray(product.subImages) ? [...product.subImages] : [],
-        detailImages: Array.isArray(product.detailImages) ? [...product.detailImages] : []
-      };
-    }
-
-    function snapshotsEqualForAudit(before, after) {
-      return (
-        before.name === after.name &&
-        Math.round(Number(before.price || 0) * 100) === Math.round(Number(after.price || 0) * 100) &&
-        before.unit === after.unit &&
-        before.cat1 === after.cat1 &&
-        before.cat2 === after.cat2 &&
-        before.cat3 === after.cat3 &&
-        specsEqualForAudit(before.specs, after.specs) &&
-        JSON.stringify(before.warehouseStocks) === JSON.stringify(after.warehouseStocks) &&
-        (before.mainImage || '') === (after.mainImage || '') &&
-        arrEqualForAudit(before.subImages, after.subImages) &&
-        arrEqualForAudit(before.detailImages, after.detailImages)
-      );
-    }
-
-    function padAuditNow() {
-      const d = new Date();
-      const p = n => String(n).padStart(2, '0');
-      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
-    }
-
-    function submitOperatorEditChangeAudit(productId, product) {
-      const item = products.find(p => p.id === productId);
-      if (!item || !isOperatorListed(item)) return false;
-      if (item.status !== 'published' && item.status !== 'offline') return false;
-
-      if (isOperatorChangePending(productId)) {
-        if (typeof showDialog === 'function') {
-          showDialog({
-            title: '变更审核处理中',
-            message: '该商品已有变更审核待处理，请等待运营审批后再编辑。',
-            type: 'warn'
-          });
-        } else {
-          alert('该商品已有变更审核待处理，请等待运营审批后再编辑。');
-        }
-        return false;
-      }
-
-      const beforeSnap = buildBeforeSnapshotFromProduct(productId);
-      if (!beforeSnap) return false;
-      const afterSnap = buildAfterSnapshotFromEditor(product);
-
-      if (snapshotsEqualForAudit(beforeSnap, afterSnap)) {
-        if (typeof showDialog === 'function') {
-          showDialog({ title: '提示', message: '请至少修改一项后再提交审核。', type: 'warn' });
-        } else {
-          alert('请至少修改一项后再提交审核。');
-        }
-        return false;
-      }
-
-      const ticketId = `CHG-${Date.now()}`;
-      const row = {
-        id: ticketId,
-        auditKind: 'CHANGE_INFO',
-        linkedProductId: productId,
-        listStatus: 'pending',
-        sku: item.sku || productId,
-        specLabels: afterSnap.specLabels,
-        name: afterSnap.name,
-        price: afterSnap.price,
-        unit: afterSnap.unit,
-        cat1: afterSnap.cat1,
-        cat2: afterSnap.cat2,
-        cat3: afterSnap.cat3,
-        specs: { ...afterSnap.specs },
-        warehouseStocks: { ...afterSnap.warehouseStocks },
-        mainImage: afterSnap.mainImage,
-        subImages: [...afterSnap.subImages],
-        detailImages: [...afterSnap.detailImages],
-        supplierName: item.supplierName || '演示供应商（工作台）',
-        submittedAt: padAuditNow(),
-        aiKind: 'warn',
-        operatorManagedEdit: true,
-        beforeSnapshot: beforeSnap,
-        afterSnapshot: afterSnap,
-        shelfSnapshot: item.status === 'published' ? 'online' : 'offline'
-      };
-
-      let append = [];
-      try {
-        append = JSON.parse(sessionStorage.getItem('PROTOTYPE_AUDIT_QUEUE_APPEND') || '[]');
-        if (!Array.isArray(append)) append = [];
-      } catch {
-        append = [];
-      }
-      append.push(row);
-      sessionStorage.setItem('PROTOTYPE_AUDIT_QUEUE_APPEND', JSON.stringify(append));
-
-      let pend = {};
-      try {
-        pend = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_PENDING_MAP') || '{}');
-        if (!pend || typeof pend !== 'object') pend = {};
-      } catch {
-        pend = {};
-      }
-      pend[productId] = ticketId;
-      sessionStorage.setItem('PRODUCT_CHANGE_PENDING_MAP', JSON.stringify(pend));
-      return true;
     }
 
     function applyApprovedChangeSnapshots() {
@@ -2444,7 +2309,7 @@
         supplierName: '国采平台自营供应链',
         result: 'pass',
         submittedAt: '2026-05-14 09:30',
-        summary: '由平台运营代传上架，供应商可编辑商品信息并进行上下架操作。',
+        summary: '由平台运营代传上架，供应商可通过「更新信息」维护并进行上下架操作。',
         issues: []
       },
       {
@@ -2458,7 +2323,7 @@
         supplierName: '智联网络设备（上海）有限公司',
         result: 'pass',
         submittedAt: '2026-05-13 16:20',
-        summary: '由平台运营代传维护，供应商可编辑商品信息并进行上下架操作。',
+        summary: '由平台运营代传维护，供应商可通过「更新信息」维护并进行上下架操作。',
         issues: []
       }
     ];
@@ -2608,67 +2473,38 @@
 
     function buildInfoChangePayload(productId) {
       const item = products.find(p => p.id === productId);
-      if (!item || (item.status !== 'published' && item.status !== 'offline')) return null;
-      if (isOperatorListed(item)) {
-        alert('运营代传商品由平台维护，供应商侧不可发起信息变更（原型）。');
+      if (!item) return null;
+      const allowed = ['published', 'offline', 'draft', 'rejected'];
+      if (!allowed.includes(item.status)) return null;
+
+      if (isOperatorChangePending(productId)) {
+        alert('该商品已有变更审核待处理，请等待运营审批后再更新（原型）。');
         return null;
       }
 
-      let pend = {};
-      try {
-        pend = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_PENDING_MAP') || '{}');
-      } catch {
-        pend = {};
-      }
-      if (pend && pend[productId]) {
-        alert('该商品已有信息变更审核待处理，请等待运营审批后再发起（原型）。');
-        return null;
-      }
-
-      const extra = PREVIEW_BY_ID[productId] || {};
-      const ws = normalizeWarehouseStocks(
-        item.warehouseStocks !== undefined && item.warehouseStocks !== null
-          ? item.warehouseStocks
-          : extra.warehouseStocks
-      );
-      const catPath =
-        Array.isArray(extra.catPath) && extra.catPath.length >= 3
-          ? extra.catPath
-          : [item.category || '—', '—', '—'];
-
-      let specs =
-        extra.specs && typeof extra.specs === 'object' && Object.keys(extra.specs).length
-          ? { ...extra.specs }
-          : {};
-      if (!Object.keys(specs).length && item.spec && item.spec !== '-') {
-        specs = { 规格摘要: item.spec };
+      if ((item.status === 'published' || item.status === 'offline') && !isOperatorListed(item)) {
+        let pend = {};
+        try {
+          pend = JSON.parse(sessionStorage.getItem('PRODUCT_CHANGE_PENDING_MAP') || '{}');
+        } catch {
+          pend = {};
+        }
+        if (pend && pend[productId]) {
+          alert('该商品已有信息变更审核待处理，请等待运营审批后再发起（原型）。');
+          return null;
+        }
       }
 
-      const specLabels = Object.keys(specs);
-
-      let mainImage = typeof extra.mainImage === 'string' ? extra.mainImage.trim() : '';
-      if (!mainImage) {
-        mainImage = `https://picsum.photos/seed/myprod-ph-${encodeURIComponent(productId).slice(-16)}/480/480`;
-      }
+      const before = buildBeforeSnapshotFromProduct(productId);
+      if (!before) return null;
 
       return {
         productId,
         sku: item.sku || productId,
-        sourceShelf: item.status === 'published' ? 'published' : 'offline',
-        before: {
-          name: item.name,
-          price: typeof extra.price === 'number' && extra.price >= 0 ? extra.price : 0,
-          unit: extra.unit || '台',
-          cat1: catPath[0],
-          cat2: catPath[1],
-          cat3: catPath[2],
-          specs,
-          specLabels,
-          warehouseStocks: { ...ws },
-          mainImage,
-          subImages: Array.isArray(extra.subImages) ? [...extra.subImages] : [],
-          detailImages: Array.isArray(extra.detailImages) ? [...extra.detailImages] : []
-        }
+        sourceShelf: item.status,
+        operatorListed: isOperatorListed(item),
+        supplierName: item.supplierName || '演示供应商（工作台）',
+        before
       };
     }
 
@@ -2913,84 +2749,13 @@
       return `<span class="${meta.className}"><i class="fas ${meta.icon}"></i>${meta.label}</span>`;
     }
 
-    function sanitizePriceLocal(raw) {
-      const n = Number(String(raw).replace(/,/g, '').trim());
-      if (Number.isNaN(n) || n < 0) return NaN;
-      return Math.round(n * 100) / 100;
-    }
-
-    function buildSnapshotForEditor(productId) {
-      const item = products.find(p => p.id === productId);
-      if (!item) return null;
-      const extra = PREVIEW_BY_ID[productId] || {};
-      const ws = normalizeWarehouseStocks(
-        item.warehouseStocks !== undefined && item.warehouseStocks !== null
-          ? item.warehouseStocks
-          : extra.warehouseStocks
-      );
-
-      let specs =
-        extra.specs && typeof extra.specs === 'object' && Object.keys(extra.specs).length
-          ? { ...extra.specs }
-          : {};
-      if (!Object.keys(specs).length && item.spec && item.spec !== '-') {
-        specs = { 规格摘要: item.spec };
-      }
-
-      const catPath =
-        Array.isArray(extra.catPath) && extra.catPath.length >= 3
-          ? extra.catPath
-          : [item.category || '—', '—', '—'];
-
-      let mainImg = typeof extra.mainImage === 'string' ? extra.mainImage.trim() : '';
-      if (!mainImg) {
-        mainImg = `https://picsum.photos/seed/myprod-edit-${encodeURIComponent(productId).slice(-12)}/480/480`;
-      }
-
-      const pn = sanitizePriceLocal(
-        typeof extra.price === 'number' && Number.isFinite(extra.price) ? String(extra.price) : String(extra.price ?? '')
-      );
-
-      return {
-        name: item.name,
-        price: Number.isNaN(pn) ? 0 : pn,
-        unit: extra.unit || '台',
-        cat1: catPath[0],
-        cat2: catPath[1],
-        cat3: catPath[2],
-        specs,
-        warehouseStocks: { ...ws },
-        mainImage: mainImg,
-        subImages: Array.isArray(extra.subImages) ? [...extra.subImages] : [],
-        detailImages: Array.isArray(extra.detailImages) ? [...extra.detailImages] : []
-      };
-    }
-
     function applyEditorResultToMyProducts(productId, product) {
       const item = products.find(p => p.id === productId);
-      if (item && isOperatorListed(item) && (item.status === 'published' || item.status === 'offline')) {
-        const ok = submitOperatorEditChangeAudit(productId, product);
-        if (ok) {
-          const ov = document.getElementById('addProductOverlay');
-          if (ov) ov.classList.remove('show');
-          if (typeof showDialog === 'function') {
-            showDialog({
-              title: '已提交审核',
-              message:
-                '运营代传/待传商品编辑后需经平台审核。\n变更已提交至运营后台「商品管理」，审核通过前前台仍展示原信息。',
-              type: 'success',
-              confirmText: '知道了'
-            });
-          }
-          renderTable();
-        }
-        return;
-      }
-
       if (item) {
         item.name = product.name;
         const vs = Object.values(product.specs || {}).filter(v => String(v).trim());
         item.spec = vs.length ? vs.join(' / ') : item.spec;
+        item.category = product.cat1 || item.category;
         if (item.status === 'published' || item.status === 'offline') {
           item.warehouseStocks = normalizeWarehouseStocks(product.warehouseStocks);
         }
@@ -3023,49 +2788,25 @@
       renderTable();
     }
 
-    function goEdit(productId) {
-      const item = products.find(p => p.id === productId);
-      if (item && isOperatorListed(item) && isOperatorChangePending(productId)) {
-        if (typeof showDialog === 'function') {
-          showDialog({
-            title: '变更审核处理中',
-            message: '该商品已有变更审核待处理，请等待运营审批后再编辑。',
-            type: 'warn'
-          });
-        } else {
-          alert('该商品已有变更审核待处理，请等待运营审批后再编辑。');
-        }
-        return;
+    function applyLocalEditResult() {
+      try {
+        const raw = sessionStorage.getItem('PRODUCT_LOCAL_EDIT_RESULT');
+        if (!raw) return;
+        sessionStorage.removeItem('PRODUCT_LOCAL_EDIT_RESULT');
+        const data = JSON.parse(raw);
+        if (!data || !data.productId || !data.product) return;
+        applyEditorResultToMyProducts(data.productId, data.product);
+      } catch {
+        /* ignore */
       }
-      const snap = buildSnapshotForEditor(productId);
-      if (!snap) return;
-      const ov = document.getElementById('addProductOverlay');
-      if (!ov || typeof window.applyProductSnapshotToApmForm !== 'function') {
-        alert('编辑弹窗脚本未就绪。');
-        return;
-      }
-      window.ADD_PRODUCT_SUBMIT_HANDLER = function handler(product) {
-        applyEditorResultToMyProducts(productId, product);
-      };
-      ov.classList.add('show');
-      window.applyProductSnapshotToApmForm(snap);
-      const bd = document.getElementById('mpEditBadge');
-      const ttl = document.getElementById('mpEditTitle');
-      if (bd) {
-        bd.textContent =
-          item && isOperatorListed(item) && (item.status === 'published' || item.status === 'offline')
-            ? '运营商品 · 编辑'
-            : '单笔录入 · 编辑';
-      }
-      if (ttl) ttl.textContent = '编辑商品';
-      const submitLbl = document.getElementById('mpEditSubmitLabel');
-      if (submitLbl) {
-        if (item && isOperatorListed(item) && (item.status === 'published' || item.status === 'offline')) {
-          submitLbl.textContent = '提交审核';
-        } else {
-          submitLbl.textContent = item && item.status === 'rejected' ? '再次提交' : '保存修改';
-        }
-      }
+    }
+
+    function updateInfoBtnHtml(id) {
+      return `
+              <button class="action-btn action-btn-secondary" type="button" onclick="openProductInfoChange('${id}')">
+                <i class="fas fa-arrows-rotate"></i>
+                <span>更新信息</span>
+              </button>`;
     }
 
     function deleteProduct(productId) {
@@ -3123,15 +2864,11 @@
         if (isOperatorChangePending(item.id)) {
           return previewBtn;
         }
-        const editBtn = `
-              <button class="action-btn action-btn-secondary" type="button" onclick="goEdit('${id}')">
-                <i class="fas fa-pen"></i>
-                <span>编辑</span>
-              </button>`;
+        const infoBtn = updateInfoBtnHtml(id);
         if (item.status === 'published') {
           return (
             previewBtn +
-            editBtn +
+            infoBtn +
             `
               <button class="action-btn action-btn-secondary" type="button" onclick="setProductOffline('${id}')">
                 <i class="fas fa-arrow-down-long"></i>
@@ -3142,7 +2879,7 @@
         if (item.status === 'offline') {
           return (
             previewBtn +
-            editBtn +
+            infoBtn +
             `
               <button class="action-btn action-btn-primary" type="button" onclick="setProductOnline('${id}')">
                 <i class="fas fa-arrow-up-from-bracket"></i>
@@ -3150,7 +2887,7 @@
               </button>`
           );
         }
-        return previewBtn + editBtn;
+        return previewBtn + infoBtn;
       }
 
       if (item.status === 'draft' || item.status === 'rejected') {
@@ -3166,11 +2903,8 @@
         return (
           previewBtn +
           aiResultBtn +
+          updateInfoBtnHtml(id) +
           `
-              <button class="action-btn action-btn-secondary" type="button" onclick="goEdit('${id}')">
-                <i class="fas fa-pen"></i>
-                <span>编辑</span>
-              </button>
               <button class="action-btn action-btn-secondary" type="button" onclick="deleteProduct('${id}')">
                 <i class="fas fa-trash"></i>
                 <span>删除</span>
@@ -3185,11 +2919,8 @@
       if (item.status === 'published') {
         return (
           previewBtn +
+          updateInfoBtnHtml(id) +
           `
-              <button class="action-btn action-btn-secondary" type="button" onclick="openProductInfoChange('${id}')">
-                <i class="fas fa-arrows-rotate"></i>
-                <span>更新信息</span>
-              </button>
               <button class="action-btn action-btn-secondary" type="button" onclick="openStockModal('${id}')">
                 <i class="fas fa-sliders"></i>
                 <span>修改库存</span>
@@ -3204,11 +2935,8 @@
       if (item.status === 'offline') {
         return (
           previewBtn +
+          updateInfoBtnHtml(id) +
           `
-              <button class="action-btn action-btn-secondary" type="button" onclick="openProductInfoChange('${id}')">
-                <i class="fas fa-arrows-rotate"></i>
-                <span>更新信息</span>
-              </button>
               <button class="action-btn action-btn-secondary" type="button" onclick="openStockModal('${id}')">
                 <i class="fas fa-sliders"></i>
                 <span>修改库存</span>
@@ -3501,6 +3229,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       attachInitialWarehouseSnapshots();
       applyApprovedChangeSnapshots();
+      applyLocalEditResult();
       currentStatus = getQueryStatus();
       renderTabs();
       renderTable();

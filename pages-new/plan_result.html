@@ -489,7 +489,7 @@
       border-radius: 18px 18px 0 0;
       border-bottom: none;
     }
-    .scene-tag {
+    .scene-bar .scene-tag {
       height: 36px;
       padding: 0 12px 0 16px;
       border-radius: 999px;
@@ -504,8 +504,8 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .scene-tag:hover { border-color: rgba(22,163,74,0.3); color: var(--primary); }
-    .scene-tag.active {
+    .scene-bar .scene-tag:hover { border-color: rgba(22,163,74,0.3); color: var(--primary); }
+    .scene-bar .scene-tag.active {
       background: var(--primary-light);
       border-color: var(--primary);
       color: var(--primary);
@@ -523,7 +523,7 @@
       flex: none;
       transition: background 0.2s;
     }
-    .scene-tag.active .scene-tag-del { background: rgba(22,163,74,0.18); color: var(--primary); }
+    .scene-bar .scene-tag.active .scene-tag-del { background: rgba(22,163,74,0.18); color: var(--primary); }
     .add-scene-btn {
       height: 36px;
       padding: 0 14px;
@@ -1026,8 +1026,187 @@
       font-size: 13px;
       color: var(--text-sub);
       line-height: 1.65;
-      max-width: 560px;
     }
+    .entry-head-scene {
+      margin-bottom: 0;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .entry-card-scene { padding-bottom: 20px; }
+
+    /* 场景快捷采购 · 入口布局 */
+    .scene-entry-body {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding-top: 18px;
+    }
+    .scene-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .scene-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .scene-panel-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #334155;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .scene-panel-title i { color: var(--primary); font-size: 13px; }
+    .scene-panel-hint {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .scene-entry-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .scene-entry-grid.personal-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+    .scene-entry-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 18px 16px;
+      min-height: 96px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #e8eef5;
+      cursor: pointer;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+    .scene-entry-card:hover {
+      border-color: var(--primary-border);
+      box-shadow: 0 10px 24px rgba(22, 163, 74, 0.1);
+      transform: translateY(-2px);
+    }
+    .scene-entry-card.personal {
+      border-color: #fde68a;
+      background: linear-gradient(180deg, #fffbeb 0%, #fff 100%);
+    }
+    .scene-entry-card.platform {
+      border-color: #dbeafe;
+      background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+    }
+    .scene-entry-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .scene-entry-card.platform .scene-entry-icon {
+      background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+      color: #2563eb;
+    }
+    .scene-entry-card.personal .scene-entry-icon {
+      background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+      color: #b45309;
+    }
+    .scene-entry-body-text { min-width: 0; flex: 1; }
+    .scene-entry-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+    .scene-entry-sub {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .scene-entry-meta {
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .scene-entry-del {
+      margin-left: auto;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(15,23,42,0.06);
+      color: #94a3b8;
+      cursor: pointer;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: all 0.18s;
+    }
+    .scene-entry-del:hover { background: #fee2e2; color: #dc2626; }
+    .scene-empty-panel {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 1px dashed #cbd5e1;
+      background: #f8fafc;
+    }
+    .scene-empty-panel-main {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+    .scene-empty-panel-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      font-size: 16px;
+    }
+    .scene-empty-panel-text {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+    .scene-empty-panel-text strong {
+      display: block;
+      font-size: 14px;
+      color: #334155;
+      margin-bottom: 2px;
+    }
+    .scene-panel-personal {
+      padding-top: 4px;
+      border-top: 1px dashed #e8eef5;
+    }
+    .entry-btn.ghost-sm {
+      height: 34px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+
     .entry-head-actions {
       display: flex;
       align-items: center;
@@ -1076,53 +1255,105 @@
       color: #fff;
     }
 
-    /* 场景标签 */
-    .scene-tag-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
+    .tier-options { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tier-option {
+      flex: 1;
+      min-width: 120px;
+      padding: 14px 12px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.18s;
     }
-    .scene-tag {
+    .tier-option:hover { border-color: rgba(22,163,74,0.35); }
+    .tier-option.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+    }
+    .tier-option-name { font-size: 14px; font-weight: 800; color: var(--text-main); }
+    .tier-option-desc { margin-top: 4px; font-size: 11px; color: var(--text-sub); line-height: 1.4; }
+    .qa-scene-preview {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--primary-light);
+      border: 1px solid var(--primary-border);
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      padding: 14px 16px;
+    }
+    .qa-scene-preview-icon {
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
-      background: #fff;
-      border: 1px solid #e8eef5;
-      cursor: pointer;
-      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    }
-    .scene-tag:hover {
-      border-color: var(--primary-border);
-      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.1);
-      transform: translateY(-2px);
-    }
-    .scene-tag-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      flex: none;
-      background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
-      color: var(--primary);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      flex: none;
     }
-    .scene-tag-body { min-width: 0; }
-    .scene-tag-name {
+    .qa-scene-preview-name { font-size: 15px; font-weight: 800; }
+    .qa-scene-preview-desc { margin-top: 4px; font-size: 12px; color: #166534; line-height: 1.5; }
+    .preset-items-editor { display: flex; flex-direction: column; gap: 8px; }
+    .preset-item-row {
+      display: grid;
+      grid-template-columns: 1fr 100px 36px;
+      gap: 8px;
+      align-items: center;
+    }
+    .preset-item-row input {
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0 10px;
       font-size: 13px;
-      font-weight: 800;
+      outline: none;
+      font-family: inherit;
+    }
+    .preset-item-row input:focus { border-color: var(--primary); }
+    .preset-add-btn {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px dashed #cbd5e1;
+      background: transparent;
+      color: var(--text-sub);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+    }
+    .preset-add-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .scene-result-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .scene-result-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
       color: var(--text-main);
-      line-height: 1.35;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: inherit;
+      transition: all 0.18s;
     }
-    .scene-tag-sub {
-      margin-top: 4px;
-      font-size: 11px;
-      color: #94a3b8;
-      line-height: 1.4;
-    }
+    .scene-result-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .modal-box.modal-wide { width: min(560px, 100%); }
 
     /* ─── 竞价采购助手 · 图二文件列表布局 ─── */
     .bi-assistant-layout {
@@ -1790,10 +2021,14 @@
       .entry-head { flex-direction: column; align-items: stretch; }
       .entry-head-actions { width: 100%; }
       .entry-head-actions .entry-btn { flex: 1; justify-content: center; }
+      .scene-entry-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 720px) {
       .plan-hero-wrap { padding: 20px 16px 28px; }
-      .scene-tag-grid { grid-template-columns: 1fr; }
+      .scene-entry-grid,
+      .scene-entry-grid.personal-grid { grid-template-columns: 1fr; }
+      .scene-empty-panel { flex-direction: column; align-items: stretch; text-align: center; }
+      .scene-empty-panel-main { flex-direction: column; }
       .bi-history-toolbar { width: 100%; justify-content: space-between; }
       .bi-assistant-layout { grid-template-columns: 1fr; }
       .bi-file-row { grid-template-columns: 1fr; gap: 10px; }
@@ -1873,46 +2108,35 @@
 
 <section class="plan-hero-wrap" id="planEmpty">
 
-  <!-- 采购场景 -->
+  <!-- 场景快捷采购 -->
   <div class="entry-card entry-card-scene">
-    <div class="entry-head">
+    <div class="entry-head entry-head-scene">
       <div class="entry-head-left">
-        <div class="entry-icon scene-icon" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="entry-icon scene-icon" aria-hidden="true"><i class="fa-solid fa-bolt"></i></div>
         <div>
-          <h3 class="entry-title">采购场景</h3>
-          <p class="entry-desc">从常用场景配置商品、数量、预算与交付要求，快速生成场景采购推荐；适用周期性批量采购，也支持节日慰问等临时采购。</p>
+          <h3 class="entry-title">场景快捷采购</h3>
+          <p class="entry-desc">选择场景 → 填写预算与规格 → 一键生成推荐清单，可换品改量后直接提交订单</p>
         </div>
       </div>
       <div class="entry-head-actions">
-        <button class="entry-btn primary" type="button" onclick="openSceneModal()"><i class="fa-solid fa-plus"></i> 新增采购场景</button>
-        <button class="entry-btn" type="button" onclick="alert('场景模板管理功能开发中，敬请期待。')"><i class="fa-solid fa-folder-tree"></i> 管理场景模板</button>
+        <button class="entry-btn primary" type="button" onclick="openCreateSceneModal()"><i class="fa-solid fa-plus"></i> 新增我的场景</button>
       </div>
     </div>
-    <div class="scene-tag-grid">
-      <div class="scene-tag" onclick="startPlanWithScene('日常办公用品')">
-        <div class="scene-tag-icon"><i class="fa-solid fa-paperclip"></i></div>
-        <div class="scene-tag-body"><div class="scene-tag-name">日常办公用品</div><div class="scene-tag-sub">周期性采购 · 常用</div></div>
-      </div>
-      <div class="scene-tag" onclick="startPlanWithScene('办公设备更新')">
-        <div class="scene-tag-icon"><i class="fa-solid fa-display"></i></div>
-        <div class="scene-tag-body"><div class="scene-tag-name">办公设备更新</div><div class="scene-tag-sub">固定资产 · 批量</div></div>
-      </div>
-      <div class="scene-tag" onclick="startPlanWithScene('会议物资')">
-        <div class="scene-tag-icon"><i class="fa-solid fa-users"></i></div>
-        <div class="scene-tag-body"><div class="scene-tag-name">会议物资</div><div class="scene-tag-sub">临时采购 · 活动</div></div>
-      </div>
-      <div class="scene-tag" onclick="startPlanWithScene('后勤保障物资')">
-        <div class="scene-tag-icon"><i class="fa-solid fa-truck"></i></div>
-        <div class="scene-tag-body"><div class="scene-tag-name">后勤保障物资</div><div class="scene-tag-sub">后勤补给 · 常备</div></div>
-      </div>
-      <div class="scene-tag" onclick="startPlanWithScene('信息化设备采购')">
-        <div class="scene-tag-icon"><i class="fa-solid fa-server"></i></div>
-        <div class="scene-tag-body"><div class="scene-tag-name">信息化设备采购</div><div class="scene-tag-sub">IT 设备 · 专项</div></div>
-      </div>
-      <div class="scene-tag" onclick="startPlanWithScene('节日慰问物资')">
-        <div class="scene-tag-icon"><i class="fa-solid fa-gift"></i></div>
-        <div class="scene-tag-body"><div class="scene-tag-name">节日慰问物资</div><div class="scene-tag-sub">节日慰问 · 临时</div></div>
-      </div>
+    <div class="scene-entry-body">
+      <section class="scene-panel scene-panel-platform">
+        <div class="scene-panel-head">
+          <span class="scene-panel-title"><i class="fa-solid fa-compass"></i> 平台示例场景</span>
+          <span class="scene-panel-hint">点击即可发起快捷采购</span>
+        </div>
+        <div class="scene-entry-grid" id="platformSceneGrid"></div>
+      </section>
+      <section class="scene-panel scene-panel-personal">
+        <div class="scene-panel-head">
+          <span class="scene-panel-title"><i class="fa-solid fa-star"></i> 我的场景</span>
+          <button class="entry-btn ghost-sm" type="button" onclick="openCreateSceneModal()"><i class="fa-solid fa-plus"></i> 新增</button>
+        </div>
+        <div class="scene-entry-grid personal-grid" id="personalSceneGrid"></div>
+      </section>
     </div>
   </div>
 
@@ -1973,7 +2197,7 @@
     <i class="fa-solid fa-file-waveform"></i> 采购文件分析
   </div>
   <div class="tab-item" id="tabSceneBtn" onclick="switchTab('scene')">
-    <i class="fa-solid fa-layer-group"></i> 采购场景分析
+    <i class="fa-solid fa-bolt"></i> 场景快捷采购
   </div>
   <button class="tab-bar-back" type="button" onclick="backToPlanEntry()" title="返回入口">
     <i class="fa-solid fa-arrow-left"></i> 返回
@@ -2024,26 +2248,69 @@
   </div>
 </div>
 
-<!-- New scene modal -->
-<div class="modal-mask" id="sceneMask" onclick="handleMaskClick(event)">
-  <div class="modal-box" onclick="event.stopPropagation()">
+<!-- 场景轻量问答 -->
+<div class="modal-mask" id="sceneQaMask" onclick="handleQaMaskClick(event)">
+  <div class="modal-box modal-wide" onclick="event.stopPropagation()">
     <div class="modal-head">
-      <h3 class="modal-title">新增采购场景</h3>
-      <button class="drawer-close" onclick="closeSceneModal()"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="modal-title">快捷采购 · 填写采购要求</h3>
+      <button class="drawer-close" onclick="closeSceneQaModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="qa-scene-preview" id="qaScenePreview"></div>
+      <div>
+        <label class="field-label">总预算上限（元）*</label>
+        <input class="field-input" id="qaBudgetInput" type="number" min="100" step="100" placeholder="如：50000">
+      </div>
+      <div>
+        <label class="field-label">规格档次偏好 *</label>
+        <div class="tier-options" id="qaTierOptions">
+          <div class="tier-option active" data-tier="经济型" onclick="selectTier('经济型')">
+            <div class="tier-option-name">经济型</div>
+            <div class="tier-option-desc">性价比优先，满足基本使用</div>
+          </div>
+          <div class="tier-option" data-tier="标准型" onclick="selectTier('标准型')">
+            <div class="tier-option-name">标准型</div>
+            <div class="tier-option-desc">品质均衡，政企常用款</div>
+          </div>
+          <div class="tier-option" data-tier="高端型" onclick="selectTier('高端型')">
+            <div class="tier-option-name">高端型</div>
+            <div class="tier-option-desc">品牌档次高，注重体验</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeSceneQaModal()">取消</button>
+      <button class="btn-confirm" id="qaSubmitBtn" onclick="submitSceneQa()"><i class="fa-solid fa-wand-magic-sparkles"></i> 生成推荐清单</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增我的场景 -->
+<div class="modal-mask" id="createSceneMask" onclick="handleCreateMaskClick(event)">
+  <div class="modal-box modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h3 class="modal-title">新增我的场景</h3>
+      <button class="drawer-close" onclick="closeCreateSceneModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
       <div>
         <label class="field-label">场景名称 *</label>
-        <input class="field-input" id="sceneNameInput" placeholder="如：季度劳保用品采购、信息化设备更新">
+        <input class="field-input" id="createSceneName" placeholder="如：综合部季度办公耗材">
       </div>
       <div>
         <label class="field-label">场景说明（选填）</label>
-        <input class="field-input" id="sceneDescInput" placeholder="简短说明本场景的采购背景或目标">
+        <input class="field-input" id="createSceneDesc" placeholder="简短说明本场景的采购背景">
+      </div>
+      <div>
+        <label class="field-label">预置商品清单 *</label>
+        <div class="preset-items-editor" id="presetItemsEditor"></div>
+        <button type="button" class="preset-add-btn" style="margin-top:10px" onclick="addPresetItemRow()"><i class="fa-solid fa-plus"></i> 添加商品</button>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeSceneModal()">取消</button>
-      <button class="btn-confirm" onclick="confirmAddScene()">确认新增</button>
+      <button class="btn-cancel" onclick="closeCreateSceneModal()">取消</button>
+      <button class="btn-confirm" onclick="confirmCreateScene()">保存场景</button>
     </div>
   </div>
 </div>
@@ -2225,50 +2492,104 @@
       ]},
   ];
 
-  const FREQ_MULT = { '一次性': 1, '每月': 12, '每季度': 4, '每年': 1 };
+  const PERSONAL_SCENES_KEY = 'myProcurementScenes';
+  let qaSelectedTier = '标准型';
+  let qaPendingScene = null;
 
-  let scenes = [
+  /** 平台示例场景（3 个） */
+  const PLATFORM_SCENES = [
     {
-      id: 1, name: '年货采购',
+      id: 'platform-office',
+      name: '日常办公用品',
+      desc: '纸笔、耗材等周期性办公采购，适合部门日常补给。',
+      icon: 'fa-paperclip',
+      category: 'office',
       items: [
-        { id: 1, name: '食用油礼盒',   spec: '5L×4瓶/套',   qty: 200, freq: '一次性', budget: 300, delivery: '7日内',  priority: '重要' },
-        { id: 2, name: '坚果礼盒',     spec: '混合装/1.5kg', qty: 200, freq: '一次性', budget: 150, delivery: '7日内',  priority: '重要' },
-        { id: 3, name: '茶叶礼品套装', spec: '500g/精装盒',  qty: 100, freq: '一次性', budget: 200, delivery: '7日内',  priority: '普通' },
+        { name: 'A4复印纸', spec: '70g/8包/箱', defaultQty: 50 },
+        { name: '中性笔', spec: '0.5mm黑色/20支盒', defaultQty: 100 },
+        { name: '订书机', spec: '24/6标准型', defaultQty: 30 },
+        { name: '档案夹', spec: 'A4/40mm背宽', defaultQty: 200 },
+        { name: '打印机墨盒', spec: '通用型/HP兼容', defaultQty: 10 },
       ],
-      recommendations: [
-        { id: 1, name: '金龙鱼食用油礼盒 5L×4', supplier: '益海嘉里官方店',  spec: '5L×4瓶/套',   price: 289, qty: 200 },
-        { id: 2, name: '三只松鼠坚果大礼包',    supplier: '三只松鼠旗舰店', spec: '混合装/1.5kg', price: 138, qty: 200 },
-        { id: 3, name: '西湖龙井茶礼盒',        supplier: '某茶叶旗舰店',   spec: '500g/精装礼盒', price: 188, qty: 100 },
-      ],
-      generated: true,
     },
     {
-      id: 2, name: '日常办公用品',
+      id: 'platform-meeting',
+      name: '会议活动物资',
+      desc: '会议茶水、文具及布置用品，适合临时活动采购。',
+      icon: 'fa-users',
+      category: 'meeting',
       items: [
-        { id: 1, name: 'A4复印纸',   spec: '70g/8包/箱',       qty: 50,  freq: '每月',   budget: 150, delivery: '3日内',  priority: '普通' },
-        { id: 2, name: '中性笔',     spec: '0.5mm黑色/20支盒', qty: 100, freq: '每季度', budget: 15,  delivery: '3日内',  priority: '普通' },
-        { id: 3, name: '打印机墨盒', spec: '通用型/HP兼容',    qty: 10,  freq: '每月',   budget: 50,  delivery: '3日内',  priority: '重要' },
-        { id: 4, name: '档案夹',     spec: 'A4/40mm背宽',      qty: 200, freq: '每季度', budget: 5,   delivery: '无要求', priority: '普通' },
+        { name: '矿泉水', spec: '550ml×24瓶/箱', defaultQty: 20 },
+        { name: '纸杯', spec: '250ml/100只装', defaultQty: 30 },
+        { name: '会议笔记本', spec: 'A5/80页/皮质封面', defaultQty: 50 },
+        { name: '白板笔', spec: '可擦/混色/12支装', defaultQty: 10 },
+        { name: '茶点礼盒', spec: '混合装/会议接待', defaultQty: 15 },
       ],
-      recommendations: [
-        { id: 1, name: '晨鸣A4复印纸 70g',  supplier: '晨鸣旗舰店',    spec: '70g/8包',      price: 138, qty: 50  },
-        { id: 2, name: '晨光黑色中性笔',    supplier: '晨光文具旗舰',  spec: '0.5mm/20支',   price: 12,  qty: 100 },
-        { id: 3, name: 'HP兼容墨盒套装',   supplier: 'HP旗舰店',      spec: '黑彩套装',     price: 45,  qty: 10  },
-        { id: 4, name: '得力A4档案夹',      supplier: '得力旗舰店',    spec: 'A4/40mm',      price: 4.5, qty: 200 },
-      ],
-      generated: true,
     },
     {
-      id: 3, name: '会议物资',
-      items: [],
-      recommendations: [],
-      generated: false,
+      id: 'platform-festival',
+      name: '节日慰问福利',
+      desc: '年货、礼盒等员工慰问采购，适合节日集中发放。',
+      icon: 'fa-gift',
+      category: 'festival',
+      items: [
+        { name: '食用油礼盒', spec: '5L×4瓶/套', defaultQty: 200 },
+        { name: '坚果礼盒', spec: '混合装/1.5kg', defaultQty: 200 },
+        { name: '茶叶礼品套装', spec: '500g/精装盒', defaultQty: 100 },
+      ],
     },
   ];
 
-  let activeSceneId = 1;
-  let nextSceneId = 4;
-  let nextItemId = { 1: 4, 2: 5, 3: 1 };
+  /** 规格档次 → 商品池（演示） */
+  const TIER_PRODUCTS = {
+    '经济型': {
+      'A4复印纸': { name: '得力A4复印纸 70g 标准装', supplier: '得力旗舰店', price: 135 },
+      '中性笔': { name: '史泰博中性笔 标准款', supplier: '史泰博旗舰', price: 10 },
+      '订书机': { name: '得力标准订书机', supplier: '得力旗舰店', price: 15.8 },
+      '档案夹': { name: '得力A4档案夹', supplier: '得力旗舰店', price: 4.5 },
+      '打印机墨盒': { name: '兼容墨盒套装', supplier: '打印耗材专区', price: 38 },
+      '矿泉水': { name: '怡宝纯净水 550ml×24', supplier: '怡宝官方店', price: 28 },
+      '纸杯': { name: '一次性纸杯 100只装', supplier: '餐饮耗材店', price: 12 },
+      '会议笔记本': { name: '晨光A5会议本', supplier: '晨光旗舰店', price: 8 },
+      '白板笔': { name: '得力白板笔混色12支', supplier: '得力旗舰店', price: 18 },
+      '茶点礼盒': { name: '综合茶点礼盒 经济款', supplier: '食品专营店', price: 68 },
+      '食用油礼盒': { name: '福临门食用油礼盒 5L×4', supplier: '中粮官方店', price: 258 },
+      '坚果礼盒': { name: '百草味坚果大礼包', supplier: '百草味旗舰店', price: 98 },
+      '茶叶礼品套装': { name: '铁观音礼盒 500g', supplier: '茶叶专营店', price: 128 },
+    },
+    '标准型': {
+      'A4复印纸': { name: '晨鸣A4复印纸 70g', supplier: '晨鸣旗舰店', price: 138 },
+      '中性笔': { name: '晨光黑色中性笔', supplier: '晨光文具旗舰', price: 12 },
+      '订书机': { name: '晨光金属订书机 24/6', supplier: '晨光旗舰', price: 18.9 },
+      '档案夹': { name: '得力A4档案夹 加厚款', supplier: '得力旗舰店', price: 5.5 },
+      '打印机墨盒': { name: 'HP兼容墨盒套装', supplier: 'HP旗舰店', price: 45 },
+      '矿泉水': { name: '农夫山泉 550ml×24', supplier: '农夫山泉官方', price: 32 },
+      '纸杯': { name: '妙洁纸杯 250ml/100只', supplier: '妙洁旗舰店', price: 16 },
+      '会议笔记本': { name: '得力A5皮质会议本', supplier: '得力旗舰店', price: 15 },
+      '白板笔': { name: '晨光白板笔可擦混色', supplier: '晨光旗舰', price: 24 },
+      '茶点礼盒': { name: '徐福记会议茶点礼盒', supplier: '徐福记旗舰', price: 98 },
+      '食用油礼盒': { name: '金龙鱼食用油礼盒 5L×4', supplier: '益海嘉里官方店', price: 289 },
+      '坚果礼盒': { name: '三只松鼠坚果大礼包', supplier: '三只松鼠旗舰店', price: 138 },
+      '茶叶礼品套装': { name: '西湖龙井茶礼盒', supplier: '某茶叶旗舰店', price: 188 },
+    },
+    '高端型': {
+      'A4复印纸': { name: '晨鸣A4复印纸 80g 高亮版', supplier: '晨鸣旗舰店', price: 158 },
+      '中性笔': { name: '百乐中性笔 G2', supplier: '百乐旗舰店', price: 18 },
+      '订书机': { name: '美克司订书机 HD-10', supplier: '美克司旗舰', price: 22 },
+      '档案夹': { name: '震旦A4档案夹 商务款', supplier: '震旦旗舰店', price: 8.8 },
+      '打印机墨盒': { name: 'HP 85A 原装硒鼓', supplier: 'HP官方旗舰店', price: 285 },
+      '矿泉水': { name: '依云天然矿泉水 500ml×24', supplier: '依云官方', price: 88 },
+      '纸杯': { name: '乐扣乐扣环保纸杯', supplier: '乐扣乐扣旗舰', price: 28 },
+      '会议笔记本': { name: 'Moleskine A5商务笔记本', supplier: '文具精品店', price: 68 },
+      '白板笔': { name: 'Pilot白板笔专业套装', supplier: '百乐旗舰', price: 45 },
+      '茶点礼盒': { name: '哈根达斯会议茶点尊享礼盒', supplier: '高端食品专营', price: 198 },
+      '食用油礼盒': { name: '欧丽薇兰特级初榨橄榄油礼盒', supplier: '益海嘉里高端', price: 398 },
+      '坚果礼盒': { name: '良品铺子高端坚果礼盒', supplier: '良品铺子旗舰', price: 198 },
+      '茶叶礼品套装': { name: '武夷山大红袍礼盒 500g', supplier: '高端茶叶专营', price: 388 },
+    },
+  };
+
+  let activeSceneSession = null;
 
   const checkedMap = {};  // key → { price, qty }
   let drawerRowKey = null;
@@ -2300,51 +2621,70 @@
     const aiSpring = params.get('ai_demo') === 'scenario_spring_goods';
     const sceneFromUrl = params.get('scene');
     if (!stored && (aiSpring || sceneFromUrl || tabFromUrl === 'scene')) {
-      let sceneName = '年货采购';
+      let sceneId = 'platform-festival';
       if (sceneFromUrl && String(sceneFromUrl).trim()) {
-        try {
-          sceneName = decodeURIComponent(sceneFromUrl.trim());
-        } catch (err) {
-          sceneName = String(sceneFromUrl).trim();
-        }
+        const name = decodeURIComponent(String(sceneFromUrl).trim());
+        const matched = PLATFORM_SCENES.find(s => s.name === name) ||
+          loadPersonalScenes().find(s => s.name === name);
+        if (matched) sceneId = matched.id;
+        else if (name === '年货采购' || name === '节日慰问物资') sceneId = 'platform-festival';
       }
-      stored = { file: null, scene: sceneName };
-      try {
-        sessionStorage.setItem('planDemo', JSON.stringify(stored));
-      } catch (e2) {}
+      const sceneDef = findSceneById(sceneId);
+      if (sceneDef) {
+        const qa = { budget: 80000, specTier: '标准型' };
+        stored = {
+          file: null,
+          scene: sceneDef.name,
+          sceneId: sceneDef.id,
+          sceneSource: sceneDef.source,
+          qa: qa,
+          recommendations: generateSceneRecommendations(sceneDef, qa),
+          generatedAt: new Date().toLocaleString('zh-CN', { hour12: false }).slice(0, 16),
+        };
+        try { sessionStorage.setItem('planDemo', JSON.stringify(stored)); } catch (e2) {}
+      }
     }
 
     if (!stored) {
       showPlanEmpty(true);
+      renderSceneEntry();
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') { closeDrawer(); closeSceneModal(); }
+        if (e.key === 'Escape') { closeDrawer(); closeSceneQaModal(); closeCreateSceneModal(); }
+      });
+      return;
+    }
+
+    /* 兼容旧 session：仅有场景名、无推荐清单 → 回到入口并打开问答 */
+    if (stored.scene && !stored.recommendations && !stored.file) {
+      showPlanEmpty(true);
+      renderSceneEntry();
+      let matched = PLATFORM_SCENES.find(s => s.name === stored.scene) ||
+        loadPersonalScenes().find(s => s.name === stored.scene);
+      if (!matched && (stored.scene === '年货采购' || stored.scene === '节日慰问物资')) {
+        matched = PLATFORM_SCENES.find(s => s.id === 'platform-festival');
+      }
+      if (matched) setTimeout(function () { openSceneQaModal(matched.id); }, 120);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { closeDrawer(); closeSceneQaModal(); closeCreateSceneModal(); }
       });
       return;
     }
     showPlanEmpty(false);
     if (stored) {
       const chip = document.getElementById('sourceChip');
-      if (stored.scene) chip.innerHTML = `<i class="fa-solid fa-layer-group"></i> 场景：${stored.scene}`;
+      if (stored.scene) chip.innerHTML = `<i class="fa-solid fa-bolt"></i> 场景：${stored.scene}`;
       else if (stored.file) chip.innerHTML = `<i class="fa-solid fa-file-excel"></i> ${stored.file}`;
-      if (stored.scene) {
-        const existing = scenes.find(s => s.name === stored.scene);
-        if (!existing && stored.scene) {
-          scenes.push({ id: nextSceneId, name: stored.scene, items: [], recommendations: [], generated: false });
-          nextItemId[nextSceneId] = 1;
-          activeSceneId = nextSceneId;
-          nextSceneId++;
-        } else if (existing) {
-          activeSceneId = existing.id;
-        }
+      if (stored.scene && stored.recommendations) {
+        activeSceneSession = stored;
       }
     }
     renderFileTab();
     renderSceneTab();
-    if (tabFromUrl === 'scene') {
+    if (tabFromUrl === 'scene' || (stored && stored.scene && stored.recommendations)) {
       switchTab('scene');
     }
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { closeDrawer(); closeSceneModal(); }
+      if (e.key === 'Escape') { closeDrawer(); closeSceneQaModal(); closeCreateSceneModal(); }
     });
   })();
 
@@ -2368,9 +2708,242 @@
     window.location.href = './plan_result.html?fresh=1';
   }
 
-  function startPlanWithScene(sceneName) {
-    sessionStorage.setItem('planDemo', JSON.stringify({ file: null, scene: sceneName }));
-    window.location.href = './plan_result.html';
+  /* ═══════════════ SCENE ENTRY & QA ═══════════════ */
+
+  function loadPersonalScenes() {
+    try {
+      const raw = localStorage.getItem(PERSONAL_SCENES_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+
+  function savePersonalScenes(list) {
+    try { localStorage.setItem(PERSONAL_SCENES_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+
+  function findSceneById(id) {
+    const personal = loadPersonalScenes().find(s => s.id === id);
+    if (personal) return Object.assign({ source: 'personal' }, personal);
+    const platform = PLATFORM_SCENES.find(s => s.id === id);
+    if (platform) return Object.assign({ source: 'platform' }, platform);
+    return null;
+  }
+
+  function renderSceneEntry() {
+    const personalGrid = document.getElementById('personalSceneGrid');
+    const platformGrid = document.getElementById('platformSceneGrid');
+    if (!personalGrid || !platformGrid) return;
+
+    const personal = loadPersonalScenes();
+    if (personal.length === 0) {
+      personalGrid.innerHTML = `
+        <div class="scene-empty-panel">
+          <div class="scene-empty-panel-main">
+            <div class="scene-empty-panel-icon"><i class="fa-regular fa-folder-open"></i></div>
+            <div class="scene-empty-panel-text">
+              <strong>暂无个人场景</strong>
+              创建常用场景模板，下次一键发起；也可从上方平台示例采购后保存
+            </div>
+          </div>
+          <button type="button" class="entry-btn primary ghost-sm" onclick="openCreateSceneModal()"><i class="fa-solid fa-plus"></i> 立即创建</button>
+        </div>`;
+    } else {
+      personalGrid.innerHTML = personal.map(function (s) {
+        return `<div class="scene-entry-card personal" onclick="openSceneQaModal('${escAttr(s.id)}')">
+          <div class="scene-entry-icon"><i class="fa-solid fa-star"></i></div>
+          <div class="scene-entry-body-text">
+            <div class="scene-entry-name">${esc(s.name)}</div>
+            <div class="scene-entry-sub">${esc(s.desc || '个人常用场景')}</div>
+            <div class="scene-entry-meta">${(s.items ? s.items.length : 0)} 项预置商品</div>
+          </div>
+          <button type="button" class="scene-entry-del" onclick="event.stopPropagation();deletePersonalScene('${escAttr(s.id)}')" title="删除"><i class="fa-solid fa-trash-can"></i></button>
+        </div>`;
+      }).join('');
+    }
+
+    platformGrid.innerHTML = PLATFORM_SCENES.map(function (s) {
+      return `<div class="scene-entry-card platform" onclick="openSceneQaModal('${escAttr(s.id)}')">
+        <div class="scene-entry-icon"><i class="fa-solid ${s.icon}"></i></div>
+        <div class="scene-entry-body-text">
+          <div class="scene-entry-name">${esc(s.name)}</div>
+          <div class="scene-entry-sub">${esc(s.desc)}</div>
+          <div class="scene-entry-meta">${s.items.length} 项预置商品 · 平台示例</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function openSceneQaModal(sceneId) {
+    const scene = findSceneById(sceneId);
+    if (!scene) return;
+    qaPendingScene = scene;
+    qaSelectedTier = '标准型';
+    document.getElementById('qaBudgetInput').value = '';
+    document.querySelectorAll('.tier-option').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-tier') === '标准型');
+    });
+    document.getElementById('qaScenePreview').innerHTML = `
+      <div class="qa-scene-preview-icon"><i class="fa-solid ${scene.icon || 'fa-layer-group'}"></i></div>
+      <div>
+        <div class="qa-scene-preview-name">${esc(scene.name)}</div>
+        <div class="qa-scene-preview-desc">${esc(scene.desc || '')} · 预置 ${(scene.items || []).length} 项商品</div>
+      </div>`;
+    document.getElementById('sceneQaMask').classList.add('open');
+  }
+
+  function closeSceneQaModal() {
+    document.getElementById('sceneQaMask').classList.remove('open');
+    qaPendingScene = null;
+  }
+
+  function handleQaMaskClick(e) {
+    if (e.target === document.getElementById('sceneQaMask')) closeSceneQaModal();
+  }
+
+  function selectTier(tier) {
+    qaSelectedTier = tier;
+    document.querySelectorAll('.tier-option').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-tier') === tier);
+    });
+  }
+
+  function generateSceneRecommendations(scene, qa) {
+    const tier = qa.specTier || '标准型';
+    const budget = qa.budget || 50000;
+    const pool = TIER_PRODUCTS[tier] || TIER_PRODUCTS['标准型'];
+    const items = scene.items || [];
+    let recommendations = items.map(function (item, idx) {
+      const prod = pool[item.name] || { name: item.name + ' 推荐款', supplier: '平台优选供应商', price: 99 };
+      let qty = item.defaultQty || 1;
+      return {
+        id: idx + 1,
+        reqName: item.name,
+        reqSpec: item.spec || '—',
+        reqQty: qty,
+        name: prod.name,
+        supplier: prod.supplier,
+        spec: item.spec || '—',
+        price: prod.price,
+        qty: qty,
+      };
+    });
+    let total = recommendations.reduce(function (acc, r) { return acc + r.price * r.qty; }, 0);
+    if (total > budget && budget > 0) {
+      const ratio = budget / total * 0.95;
+      recommendations = recommendations.map(function (r) {
+        const newQty = Math.max(1, Math.floor(r.qty * ratio));
+        return Object.assign({}, r, { qty: newQty });
+      });
+    }
+    return recommendations;
+  }
+
+  function submitSceneQa() {
+    if (!qaPendingScene) return;
+    const budget = parseFloat(document.getElementById('qaBudgetInput').value);
+    if (!budget || budget < 100) { alert('请输入有效的总预算（至少 100 元）。'); return; }
+    const btn = document.getElementById('qaSubmitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在生成…';
+
+    setTimeout(function () {
+      const qa = { budget: budget, specTier: qaSelectedTier };
+      const recommendations = generateSceneRecommendations(qaPendingScene, qa);
+      const session = {
+        file: null,
+        scene: qaPendingScene.name,
+        sceneId: qaPendingScene.id,
+        sceneSource: qaPendingScene.source,
+        qa: qa,
+        recommendations: recommendations,
+        generatedAt: new Date().toLocaleString('zh-CN', { hour12: false }).slice(0, 16),
+      };
+      sessionStorage.setItem('planDemo', JSON.stringify(session));
+      window.location.href = './plan_result.html?tab=scene';
+    }, 700);
+  }
+
+  function openCreateSceneModal() {
+    document.getElementById('createSceneName').value = '';
+    document.getElementById('createSceneDesc').value = '';
+    document.getElementById('presetItemsEditor').innerHTML = '';
+    addPresetItemRow();
+    addPresetItemRow();
+    document.getElementById('createSceneMask').classList.add('open');
+  }
+
+  function closeCreateSceneModal() {
+    document.getElementById('createSceneMask').classList.remove('open');
+  }
+
+  function handleCreateMaskClick(e) {
+    if (e.target === document.getElementById('createSceneMask')) closeCreateSceneModal();
+  }
+
+  function addPresetItemRow(name, qty) {
+    const editor = document.getElementById('presetItemsEditor');
+    const row = document.createElement('div');
+    row.className = 'preset-item-row';
+    row.innerHTML = `
+      <input type="text" class="preset-name" placeholder="商品名称，如 A4复印纸" value="${esc(name || '')}">
+      <input type="number" class="preset-qty" min="1" placeholder="数量" value="${qty || 1}">
+      <button type="button" class="scene-tag-del-btn" onclick="this.closest('.preset-item-row').remove()" title="删除"><i class="fa-solid fa-xmark"></i></button>`;
+    editor.appendChild(row);
+  }
+
+  function confirmCreateScene() {
+    const name = document.getElementById('createSceneName').value.trim();
+    if (!name) { alert('请输入场景名称。'); return; }
+    const desc = document.getElementById('createSceneDesc').value.trim();
+    const rows = document.querySelectorAll('#presetItemsEditor .preset-item-row');
+    const items = [];
+    rows.forEach(function (row) {
+      const n = row.querySelector('.preset-name').value.trim();
+      const q = parseInt(row.querySelector('.preset-qty').value) || 1;
+      if (n) items.push({ name: n, spec: '', defaultQty: q });
+    });
+    if (items.length === 0) { alert('请至少添加一项预置商品。'); return; }
+    const list = loadPersonalScenes();
+    list.push({
+      id: 'personal-' + Date.now(),
+      name: name,
+      desc: desc,
+      icon: 'fa-star',
+      items: items,
+    });
+    savePersonalScenes(list);
+    closeCreateSceneModal();
+    renderSceneEntry();
+  }
+
+  function deletePersonalScene(id) {
+    if (!confirm('确定删除该个人场景？')) return;
+    savePersonalScenes(loadPersonalScenes().filter(s => s.id !== id));
+    renderSceneEntry();
+  }
+
+  function saveCurrentAsPersonalScene() {
+    if (!activeSceneSession || !activeSceneSession.recommendations) return;
+    const name = activeSceneSession.scene;
+    if (loadPersonalScenes().some(s => s.name === name)) {
+      alert('已存在同名个人场景「' + name + '」。');
+      return;
+    }
+    const sceneDef = findSceneById(activeSceneSession.sceneId);
+    const items = (sceneDef && sceneDef.items) ? sceneDef.items.slice() :
+      activeSceneSession.recommendations.map(function (r) {
+        return { name: r.reqName, spec: r.reqSpec, defaultQty: r.reqQty };
+      });
+    const list = loadPersonalScenes();
+    list.push({
+      id: 'personal-' + Date.now(),
+      name: name,
+      desc: '从快捷采购保存',
+      icon: 'fa-star',
+      items: items,
+    });
+    savePersonalScenes(list);
+    alert('已保存为个人场景「' + name + '」，下次可在「我的场景」中快速发起。');
   }
 
   /* ═══════════════ TAB ═══════════════ */
@@ -2514,221 +3087,110 @@
   }
 
   function renderSceneTab() {
-    const scene = scenes.find(s => s.id === activeSceneId);
-    const tags = scenes.map(s => `
-      <div class="scene-tag ${s.id === activeSceneId ? 'active' : ''}" onclick="selectScene(${s.id})">
-        <span>${s.name}</span>
-        <span class="scene-tag-del" onclick="event.stopPropagation();deleteScene(${s.id})"><i class="fa-solid fa-xmark"></i></span>
-      </div>`).join('');
+    const session = activeSceneSession || safeGetStorage('planDemo');
+    if (!session || !session.recommendations || session.recommendations.length === 0) {
+      document.getElementById('tab-scene').innerHTML = `
+        <div class="empty-state" style="margin-top:40px">
+          <i class="fa-solid fa-bolt" style="font-size:32px;color:#cbd5e1;display:block;margin-bottom:12px"></i>
+          请从入口选择采购场景，填写预算与规格偏好后生成推荐清单
+        </div>`;
+      return;
+    }
 
-    const configRows = scene.items.map(function (item, idx) {
-      const annualQty = item.qty * (FREQ_MULT[item.freq] || 1);
-      return `<tr>
-        <td style="color:var(--text-sub);font-size:13px;text-align:center">${idx + 1}</td>
-        <td><input class="config-input" value="${esc(item.name)}" placeholder="输入采购商品名称" onchange="updateItem(${scene.id},${item.id},'name',this.value)"></td>
-        <td><input class="config-input" value="${esc(item.spec)}" placeholder="如：A4/70g/8包" onchange="updateItem(${scene.id},${item.id},'spec',this.value)"></td>
-        <td><input class="config-input" type="number" min="1" value="${item.qty}" style="width:72px;text-align:center" onchange="updateItem(${scene.id},${item.id},'qty',+this.value)"></td>
-        <td><select class="config-select" onchange="updateItem(${scene.id},${item.id},'freq',this.value)">
-          ${['一次性','每月','每季度','每年'].map(f => `<option ${item.freq===f?'selected':''}>${f}</option>`).join('')}
-        </select></td>
-        <td><input class="config-input" type="number" min="0" value="${item.budget}" placeholder="元" onchange="updateItem(${scene.id},${item.id},'budget',+this.value)"></td>
-        <td><select class="config-select" onchange="updateItem(${scene.id},${item.id},'delivery',this.value)">
-          ${['无要求','3日内','7日内','15日内'].map(d => `<option ${item.delivery===d?'selected':''}>${d}</option>`).join('')}
-        </select></td>
-        <td><select class="config-select" onchange="updateItem(${scene.id},${item.id},'priority',this.value)">
-          ${['普通','重要','紧急'].map(p => `<option ${item.priority===p?'selected':''}>${p}</option>`).join('')}
-        </select></td>
-        <td style="text-align:center"><span style="font-size:13px;color:var(--text-sub)">${annualQty}</span></td>
-        <td><button class="del-row-btn" onclick="deleteItem(${scene.id},${item.id})" title="删除"><i class="fa-solid fa-trash-can"></i></button></td>
+    const recs = session.recommendations;
+    const totalAmount = recs.reduce(function (acc, r) { return acc + r.price * r.qty; }, 0);
+    const budget = session.qa ? session.qa.budget : 0;
+    const tier = session.qa ? session.qa.specTier : '标准型';
+    const withinBudget = budget <= 0 || totalAmount <= budget;
+
+    const summary = `
+      <div class="card summary-card">
+        <div class="summary-top">
+          <div class="summary-left">
+            <div class="summary-icon"><i class="fa-solid fa-bolt"></i></div>
+            <div>
+              <h2 class="summary-title">场景快捷采购 · 推荐清单</h2>
+              <div class="summary-meta">
+                <span><i class="fa-solid fa-layer-group"></i> ${esc(session.scene)}</span>
+                <span><i class="fa-solid fa-clock"></i> ${esc(session.generatedAt || '刚刚')}</span>
+                <span><i class="fa-solid fa-list-check"></i> 推荐 ${recs.length} 项商品</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="summary-divider">
+        <div class="summary-body">
+          <div class="ai-row">
+            <div class="ai-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="ai-text">基于「<strong>${esc(session.scene)}</strong>」场景，按<strong>${esc(tier)}</strong>档次、总预算 <strong>¥${fmt(budget)}</strong> 为您匹配平台推荐商品。${withinBudget ? '当前推荐方案在预算范围内。' : '当前方案略超预算，已自动调整部分数量，您可进一步换品或改量。'}</div>
+          </div>
+          <div class="req-overview">
+            <div class="req-overview-title"><i class="fa-solid fa-sliders"></i> 本次采购要求</div>
+            <div class="req-overview-row"><span class="req-overview-label">总预算</span><span class="req-overview-value">¥ ${fmt(budget)}</span></div>
+            <div class="req-overview-row"><span class="req-overview-label">规格档次</span><span class="req-overview-value">${esc(tier)}</span></div>
+            <div class="req-overview-row"><span class="req-overview-label">推荐合计</span><span class="req-overview-value" style="color:${withinBudget ? 'var(--primary)' : 'var(--warn)'}">¥ ${fmt(totalAmount)}</span></div>
+          </div>
+        </div>
+        <div class="scene-result-actions">
+          <button type="button" class="scene-result-btn" onclick="backToPlanEntry()"><i class="fa-solid fa-arrow-left"></i> 重新选择场景</button>
+          ${session.sceneSource === 'platform' ? '<button type="button" class="scene-result-btn" onclick="saveCurrentAsPersonalScene()"><i class="fa-solid fa-star"></i> 保存为我的场景</button>' : ''}
+        </div>
+      </div>`;
+
+    const recRows = recs.map(function (r, idx) {
+      const key = 'scene-' + r.id;
+      const chk = checkedMap[key];
+      const currentQty = chk ? chk.qty : r.qty;
+      const img = getSceneProductImage(r, idx);
+      return `<tr data-key="${key}">
+        <td><input type="checkbox" ${chk ? 'checked' : ''} onchange="handleCheck(this,'${key}',${r.price})"></td>
+        <td><div class="req-name">${esc(r.reqName)}</div><div class="req-spec">场景需求：${r.reqQty}</div></td>
+        <td><span style="font-size:13px;color:var(--text-sub)">${esc(r.reqSpec)}</span></td>
+        <td><span class="match-ok"><i class="fa-solid fa-circle-check"></i> 已匹配</span></td>
+        <td>
+          <div class="product-cell">
+            <img class="product-thumb" id="pimg-${key}" src="${img}" alt="${esc(r.name)}" onerror="this.style.display='none'">
+            <div class="product-info">
+              <div class="product-name" id="pname-${key}"><a href="../pages/product.html" target="_blank">${esc(r.name)}</a></div>
+              <div class="product-supplier" id="psup-${key}">${esc(r.supplier)}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="price" id="pprice-${key}">¥${r.price.toFixed(2)}</span></td>
+        <td><input class="qty-input" type="number" min="1" value="${currentQty}" onchange="handleQtyChange('${key}',this.value)"></td>
+        <td><span class="subtotal" id="sub-${key}">¥${fmt(r.price * currentQty)}</span></td>
+        <td><div class="action-group">
+          <button class="action-link" onclick="openDrawer('${key}','${escAttr(r.name)}')"><i class="fa-solid fa-arrows-rotate"></i> 换品</button>
+          <a class="action-link" href="../pages/product.html" target="_blank"><i class="fa-solid fa-eye"></i> 详情</a>
+        </div></td>
       </tr>`;
     }).join('');
 
-    const emptyRow = scene.items.length === 0
-      ? `<tr><td colspan="10" class="empty-state">暂无商品，点击「添加商品」开始配置</td></tr>`
-      : '';
-
-    let recHtml = '';
-    if (scene.generated && scene.recommendations.length > 0) {
-      const recRows = scene.recommendations.map(function (r, idx) {
-        const key = 'scene-' + scene.id + '-' + r.id;
-        const chk = checkedMap[key];
-        const currentQty = chk ? chk.qty : r.qty;
-        const matchedItem = scene.items.find(function(item) {
-          return item.id === r.id || item.name === r.name || r.name.indexOf(item.name) >= 0 || item.name.indexOf(r.name.replace(/^（示例）/, '')) >= 0;
-        }) || scene.items[idx] || {};
-        const reqName = matchedItem.name || r.name.replace(/^（示例）/, '');
-        const reqSpec = matchedItem.spec || r.spec || '—';
-        const reqQty = matchedItem.qty || r.qty || 1;
-        const reqFreq = matchedItem.freq ? ' · ' + matchedItem.freq : '';
-        const img = getSceneProductImage(r, idx);
-        return `<tr data-key="${key}">
-          <td><input type="checkbox" ${chk ? 'checked' : ''} onchange="handleCheck(this,'${key}',${r.price})"></td>
-          <td><div class="req-name">${esc(reqName)}</div><div class="req-spec">场景需求：${reqQty} ${reqFreq}</div></td>
-          <td><span style="font-size:13px;color:var(--text-sub)">${esc(reqSpec)}</span></td>
-          <td><span class="match-ok"><i class="fa-solid fa-circle-check"></i> 已匹配</span></td>
-          <td>
-            <div class="product-cell">
-              <img class="product-thumb" id="pimg-${key}" src="${img}" alt="${esc(r.name)}" onerror="this.style.display='none'">
-              <div class="product-info">
-                <div class="product-name" id="pname-${key}"><a href="../pages/product.html" target="_blank">${r.name}</a></div>
-                <div class="product-supplier" id="psup-${key}">${r.supplier}</div>
-              </div>
-            </div>
-          </td>
-          <td><span class="price" id="pprice-${key}">¥${r.price.toFixed(2)}</span></td>
-          <td><input class="qty-input" type="number" min="1" value="${currentQty}" onchange="handleQtyChange('${key}',this.value)"></td>
-          <td><span class="subtotal" id="sub-${key}">¥${fmt(r.price * currentQty)}</span></td>
-          <td><div class="action-group">
-            <button class="action-link" onclick="openDrawer('${key}','${r.name}')"><i class="fa-solid fa-arrows-rotate"></i> 换品</button>
-            <a class="action-link" href="../pages/product.html" target="_blank"><i class="fa-solid fa-eye"></i> 详情</a>
-          </div></td>
-        </tr>`;
-      }).join('');
-
-      recHtml = `
-        <div class="card section" style="margin-top:18px">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">商品采购推荐表</h2>
-              <div class="section-subtitle">基于「${scene.name}」场景配置逐项匹配平台推荐商品，勾选后可在底部一键提交订单。</div>
-            </div>
+    const table = `
+      <div class="card section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">商品采购推荐表</h2>
+            <div class="section-subtitle">基于场景与采购要求逐项匹配平台推荐商品，勾选后可在底部一键提交订单。</div>
           </div>
-          <div class="table-outer">
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:40px"><input type="checkbox" onchange="toggleAll('scene-${scene.id}',this.checked)"></th>
-                  <th>采购需求</th><th>需求规格</th><th style="width:110px">匹配状态</th>
-                  <th>推荐商品</th><th style="width:100px">单价</th>
-                  <th style="width:88px">采购数量</th><th style="width:100px">小计</th>
-                  <th style="width:150px">操作</th>
-                </tr>
-              </thead>
-              <tbody>${recRows}</tbody>
-            </table>
-          </div>
-        </div>`;
-    }
-
-    document.getElementById('tab-scene').innerHTML = `
-      <div class="scene-wrap">
-        <div class="scene-bar">
-          ${tags}
-          <button class="add-scene-btn" onclick="openSceneModal()"><i class="fa-solid fa-plus"></i> 新增场景</button>
         </div>
-        <div class="scene-body">
-          <div class="scene-body-head">
-            <div>
-              <h3 class="scene-body-title">场景配置：${scene.name}</h3>
-              <div class="scene-body-sub">配置本场景涉及的采购商品及各项指标，完成后点击「生成推荐商品」。</div>
-            </div>
-          </div>
-          <div class="config-outer">
-            <table class="config-table">
-              <thead>
-                <tr>
-                  <th style="width:36px">序</th>
-                  <th style="min-width:130px">采购商品 *</th>
-                  <th style="min-width:120px">规格要求</th>
-                  <th style="width:80px">采购数量 *</th>
-                  <th style="width:100px">采购频次</th>
-                  <th style="width:110px">预算上限（元）</th>
-                  <th style="width:100px">交付要求</th>
-                  <th style="width:80px">优先级</th>
-                  <th style="width:96px">预计年采购量</th>
-                  <th style="width:42px"></th>
-                </tr>
-              </thead>
-              <tbody>${configRows || emptyRow}</tbody>
-            </table>
-          </div>
-          <button class="add-row-btn" onclick="addItem(${scene.id})"><i class="fa-solid fa-plus"></i> 添加商品</button>
-          <br>
-          <button class="gen-rec-btn" id="genBtn" onclick="generateRec(${scene.id})">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-            ${scene.generated ? '重新生成推荐商品' : '生成推荐商品'}
-          </button>
+        <div class="table-outer">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox" onchange="toggleAll('scene-',this.checked)"></th>
+                <th>采购需求</th><th>需求规格</th><th style="width:110px">匹配状态</th>
+                <th>推荐商品</th><th style="width:100px">单价</th>
+                <th style="width:88px">采购数量</th><th style="width:100px">小计</th>
+                <th style="width:150px">操作</th>
+              </tr>
+            </thead>
+            <tbody>${recRows}</tbody>
+          </table>
         </div>
-      </div>
-      ${recHtml}`;
-  }
+      </div>`;
 
-  /* ═══════════════ SCENE ACTIONS ═══════════════ */
-
-  function selectScene(id) {
-    activeSceneId = id;
-    renderSceneTab();
-  }
-
-  function deleteScene(id) {
-    if (scenes.length <= 1) { alert('至少保留一个采购场景。'); return; }
-    if (!confirm('确定删除该场景及其配置？')) return;
-    scenes = scenes.filter(s => s.id !== id);
-    if (activeSceneId === id) activeSceneId = scenes[0].id;
-    renderSceneTab();
-  }
-
-  function openSceneModal() {
-    document.getElementById('sceneNameInput').value = '';
-    document.getElementById('sceneDescInput').value = '';
-    document.getElementById('sceneMask').classList.add('open');
-  }
-  function closeSceneModal() { document.getElementById('sceneMask').classList.remove('open'); }
-  function handleMaskClick(e) { if (e.target === document.getElementById('sceneMask')) closeSceneModal(); }
-
-  function confirmAddScene() {
-    const name = document.getElementById('sceneNameInput').value.trim();
-    if (!name) { alert('请输入场景名称。'); return; }
-    const id = nextSceneId++;
-    scenes.push({ id, name, items: [], recommendations: [], generated: false });
-    nextItemId[id] = 1;
-    activeSceneId = id;
-    closeSceneModal();
-    renderSceneTab();
-  }
-
-  function addItem(sceneId) {
-    const scene = scenes.find(s => s.id === sceneId);
-    if (!scene) return;
-    if (!nextItemId[sceneId]) nextItemId[sceneId] = 1;
-    scene.items.push({ id: nextItemId[sceneId]++, name: '', spec: '', qty: 1, freq: '一次性', budget: 0, delivery: '无要求', priority: '普通' });
-    renderSceneTab();
-  }
-
-  function deleteItem(sceneId, itemId) {
-    const scene = scenes.find(s => s.id === sceneId);
-    if (!scene) return;
-    scene.items = scene.items.filter(i => i.id !== itemId);
-    renderSceneTab();
-  }
-
-  function updateItem(sceneId, itemId, field, value) {
-    const scene = scenes.find(s => s.id === sceneId);
-    if (!scene) return;
-    const item = scene.items.find(i => i.id === itemId);
-    if (!item) return;
-    item[field] = value;
-  }
-
-  function generateRec(sceneId) {
-    const scene = scenes.find(s => s.id === sceneId);
-    if (!scene) return;
-    if (scene.items.length === 0) { alert('请先在配置表中添加至少一项采购商品。'); return; }
-    const btn = document.getElementById('genBtn');
-    if (btn) { btn.classList.add('loading'); btn.innerHTML = '<i class="fa-solid fa-spinner loading-pulse"></i> 正在生成推荐…'; }
-
-    setTimeout(function () {
-      if (!scene.generated || scene.recommendations.length === 0) {
-        scene.recommendations = scene.items
-          .filter(i => i.name.trim())
-          .map(function (item, idx) {
-            return { id: idx + 1, name: '（示例）' + item.name, supplier: '平台优选供应商', spec: item.spec || '—', price: item.budget > 0 ? item.budget * 0.9 : 99, qty: item.qty };
-          });
-      }
-      scene.generated = true;
-      nextItemId[sceneId] = (nextItemId[sceneId] || 1);
-      renderSceneTab();
-    }, 900);
+    document.getElementById('tab-scene').innerHTML = summary + table;
   }
 
   /* ═══════════════ CHECKBOX & QUANTITY ═══════════════ */

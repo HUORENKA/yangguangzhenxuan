@@ -422,6 +422,26 @@
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       color: #ffffff;
     }
+
+    .submit-change-hint {
+      font-size: 12px;
+      font-weight: 600;
+      color: #c2410c;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.4;
+      max-width: 280px;
+      text-align: right;
+    }
+
+    .submit-change-hint[hidden] {
+      display: none;
+    }
   </style>
 </head>
 <body class="text-slate-800 pb-16">
@@ -438,13 +458,19 @@
           表单布局与<strong>上架商品 · 单笔录入</strong>一致；右侧<strong>橙色标签</strong>汇总已修改的业务字段，表格为变更前后明细。提交后生成<strong>信息变更审核单</strong>。
         </p>
       </div>
-      <div class="flex flex-wrap gap-2 shrink-0">
-        <button type="button" class="action-btn action-btn-secondary" onclick="history.back()">
-          <i class="fas fa-arrow-left"></i><span>返回</span>
-        </button>
-        <button type="button" class="action-btn action-btn-primary" onclick="submitChangeAudit()" id="btnSubmitChange">
-          <i class="fas fa-paper-plane"></i><span>提交变更审核</span>
-        </button>
+      <div class="flex flex-col items-end gap-2 shrink-0">
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="action-btn action-btn-secondary" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i><span>返回</span>
+          </button>
+          <button type="button" class="action-btn action-btn-primary" onclick="submitChangeAudit()" id="btnSubmitChange">
+            <i class="fas fa-paper-plane"></i><span>提交变更审核</span>
+          </button>
+        </div>
+        <p id="submitChangeHint" class="submit-change-hint" hidden aria-live="polite">
+          <i class="fas fa-shield-halved"></i>
+          <span>修改信息后需重新 AI 审核</span>
+        </p>
       </div>
     </div>
 
@@ -733,6 +759,11 @@
       return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
     }
 
+    function showSubmitChangeHint() {
+      const el = document.getElementById('submitChangeHint');
+      if (el) el.hidden = false;
+    }
+
     window.submitChangeAudit = async function submitChangeAudit() {
       const after = await window.gatherAddProductPayloadAsync(msg =>
         alert(msg)
@@ -759,11 +790,47 @@
         arrEqual(beforeSnap.detailImages, afterSnapFull.detailImages);
 
       if (unchanged) {
-        alert('请至少修改一项后再提交变更审核。');
+        const hint =
+          ctx.sourceShelf === 'draft' || ctx.sourceShelf === 'rejected'
+            ? '请至少修改一项后再保存。'
+            : '请至少修改一项后再提交变更审核。';
+        alert(hint);
         return;
       }
 
+      if (ctx.sourceShelf === 'draft' || ctx.sourceShelf === 'rejected') {
+        showSubmitChangeHint();
+        sessionStorage.setItem(
+          'PRODUCT_LOCAL_EDIT_RESULT',
+          JSON.stringify({
+            productId: ctx.productId,
+            product: {
+              name: afterSnapFull.name,
+              price: afterSnapFull.price,
+              unit: afterSnapFull.unit,
+              cat1: afterSnapFull.cat1,
+              cat2: afterSnapFull.cat2,
+              cat3: afterSnapFull.cat3,
+              specs: { ...afterSnapFull.specs },
+              warehouseStocks: { ...afterSnapFull.warehouseStocks },
+              mainImage: afterSnapFull.mainImage,
+              subImages: [...afterSnapFull.subImages],
+              detailImages: [...afterSnapFull.detailImages]
+            }
+          })
+        );
+        alert('商品信息已保存。修改信息后需重新 AI 审核，请返回列表重新执行 AI 合规校验后再提交审核（原型）。');
+        window.setTimeout(() => {
+          window.location.href = './my_products.html';
+        }, 1200);
+        return;
+      }
+
+      showSubmitChangeHint();
+
       const ticketId = `CHG-${Date.now()}`;
+      const shelfSnapshot =
+        ctx.sourceShelf === 'offline' ? 'offline' : ctx.sourceShelf === 'published' ? 'online' : 'offline';
       const row = {
         id: ticketId,
         auditKind: 'CHANGE_INFO',
@@ -782,12 +849,13 @@
         mainImage: afterSnapFull.mainImage,
         subImages: [...afterSnapFull.subImages],
         detailImages: [...afterSnapFull.detailImages],
-        supplierName: '演示供应商（工作台）',
+        supplierName: ctx.supplierName || '演示供应商（工作台）',
         submittedAt: padNow(),
         aiKind: 'warn',
+        operatorManagedEdit: !!ctx.operatorListed,
         beforeSnapshot: beforeSnap,
         afterSnapshot: afterSnapFull,
-        shelfSnapshot: ctx.sourceShelf === 'published' ? 'online' : 'offline'
+        shelfSnapshot
       };
 
       let append = [];
@@ -811,9 +879,11 @@
       sessionStorage.setItem(STORAGE_PENDING_MAP, JSON.stringify(pend));
 
       alert(
-        '已提交信息变更审核（原型）。请在运营后台「商品审核列表」中查看并审批。\n审核类型将显示为「信息变更」，并可查看前后对比。'
+        '已提交信息变更审核（原型）。修改信息后需重新 AI 审核。\n请在运营后台「商品管理」中查看并审批。'
       );
-      window.location.href = './my_products.html';
+      window.setTimeout(() => {
+        window.location.href = './my_products.html';
+      }, 1200);
     };
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -825,10 +895,26 @@
 
       document.getElementById('mainEditor').classList.remove('hidden');
 
+      const sourceLabels = {
+        published: '已上架',
+        offline: '已下架',
+        draft: '待提交',
+        rejected: '审核未通过'
+      };
+      const sourceLabel = sourceLabels[ctx.sourceShelf] || ctx.sourceShelf || '—';
+      const needsAudit = ctx.sourceShelf === 'published' || ctx.sourceShelf === 'offline';
+
       document.getElementById('ctxBanner').innerHTML = `
         SKU：<span class="font-mono font-semibold text-slate-900">${escapeHtml(ctx.sku)}</span>
         · ID：<span class="font-mono">${escapeHtml(ctx.productId)}</span>
-        · 来源：<strong>${ctx.sourceShelf === 'published' ? '已上架' : '已下架'}</strong>`;
+        · 来源：<strong>${escapeHtml(sourceLabel)}</strong>${ctx.operatorListed ? ' · <span class="text-blue-700 font-semibold">运营代传</span>' : ''}`;
+
+      const submitBtn = document.getElementById('btnSubmitChange');
+      if (submitBtn) {
+        submitBtn.innerHTML = needsAudit
+          ? '<i class="fas fa-paper-plane"></i><span>提交变更审核</span>'
+          : '<i class="fas fa-floppy-disk"></i><span>保存修改</span>';
+      }
 
       const b = ctx.before;
       const snap = {
