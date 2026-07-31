@@ -1308,7 +1308,6 @@
 <script>
 (function () {
   var STORAGE_KEY = 'bidAssistDemo';
-  var SCENE_LAUNCH_KEY = 'bidAssistSceneLaunch';
   var HISTORY_KEY = 'planBidNewRecords';
   var BID_RECIPIENT_KEY = 'bidAssistRecipientId';
   var BID_NOTICE_PREVIEW_KEY = 'bidNoticePreviewDraft';
@@ -1378,9 +1377,6 @@
     noticeBodyFormat: '',
     noticeHtml: '',
     fromProduct: false,
-    fromScene: false,
-    sceneName: '',
-    sceneDesc: '',
     policyFile: '',
     storedProcurementBasis: null
   };
@@ -1506,51 +1502,16 @@
     }
   }
 
-  function loadSceneLaunch() {
-    try {
-      var raw = sessionStorage.getItem(SCENE_LAUNCH_KEY);
-      if (!raw) return false;
-      var d = JSON.parse(raw);
-      state.fromScene = true;
-      state.fromProduct = false;
-      state.sceneName = d.sceneName || '';
-      state.sceneDesc = d.sceneDesc || '';
-      state.fileName = d.fileName || ((state.sceneName || '场景') + ' · 场景采购');
-      state.uploadedAt = d.uploadedAt || new Date().toLocaleString('zh-CN', { hour12: false });
-      state.budget = d.budget || 90000;
-      state.lines = (d.lines || []).map(function (L) {
-        var copy = Object.assign({}, L);
-        if (L.product) copy.product = Object.assign({}, L.product);
-        return copy;
-      });
-      state.suppliers = [
-        { id: 's1', name: '京采云商贸有限公司', region: '北京', score: 92, cover: 2, source: 'auto', invited: true },
-        { id: 's2', name: '政采优选数码科技', region: '北京', score: 89, cover: 2, source: 'auto', invited: true },
-        { id: 's3', name: '北京华政科技', region: '北京', score: 86, cover: 1, source: 'auto', invited: true }
-      ];
-      try { sessionStorage.removeItem(SCENE_LAUNCH_KEY); } catch (e2) {}
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   function loadDemo() {
     var entrySource = getPageEntrySource();
 
-    if (entrySource === 'scene') {
-      try { sessionStorage.removeItem('bidAssistProductLaunch'); } catch (e0) {}
-      if (loadSceneLaunch()) return;
-      state.fromScene = false;
-    } else if (entrySource === 'product') {
+    if (entrySource === 'product') {
       if (loadProductLaunch()) return;
       state.fromProduct = false;
     } else {
       /* 最价方案 / 采购方案助手入口：忽略并清除商品转入缓存，走原有完整流程 */
       try { sessionStorage.removeItem('bidAssistProductLaunch'); } catch (e) {}
-      try { sessionStorage.removeItem(SCENE_LAUNCH_KEY); } catch (e3) {}
       state.fromProduct = false;
-      state.fromScene = false;
     }
 
     try {
@@ -1644,40 +1605,8 @@
     var matched = state.lines.filter(function (L) { return L.matched; }).length;
     var unmatched = state.lines.length - matched;
     var fIcon = fileIconClass(state.fileName);
-    if (state.fromScene) {
-      document.getElementById('sourceChip').innerHTML = '<i class="fa-solid fa-layer-group"></i> 场景：' + esc(state.sceneName || state.fileName);
-    } else {
-      document.getElementById('sourceChip').innerHTML = '<i class="fa-solid ' + fIcon + '"></i> ' + esc(state.fileName);
-    }
+    document.getElementById('sourceChip').innerHTML = '<i class="fa-solid ' + fIcon + '"></i> ' + esc(state.fileName);
     document.getElementById('budgetInput').value = state.budget || '';
-
-    if (state.fromScene) {
-      document.getElementById('summaryCard').innerHTML = ''
-        + '<div class="summary-top">'
-        + '<div class="summary-left">'
-        + '<div class="summary-icon"><i class="fa-solid fa-layer-group"></i></div>'
-        + '<div>'
-        + '<h2 class="summary-title">场景采购 · 竞价/询价分析</h2>'
-        + '<div class="summary-meta">'
-        + '<span><i class="fa-solid fa-tag"></i> ' + esc(state.sceneName) + '</span>'
-        + '<span><i class="fa-solid fa-clock"></i> ' + esc(state.uploadedAt) + '</span>'
-        + '<span><i class="fa-solid fa-list-check"></i> 需采购商品 ' + state.lines.length + ' 项</span>'
-        + '</div></div></div></div>'
-        + '<hr class="summary-divider">'
-        + '<div class="summary-body">'
-        + '<div class="ai-row">'
-        + '<div class="ai-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>'
-        + '<div class="ai-text">' + (state.sceneDesc ? esc(state.sceneDesc) + '。' : '')
-        + '已根据场景配置识别 <strong>' + state.lines.length + '</strong> 项采购需求，其中 <strong style="color:var(--primary)">' + matched + '</strong> 项已匹配平台参考商品，'
-        + '<strong style="color:var(--warn)">' + unmatched + '</strong> 项待补全后可发起竞价/询价。</div>'
-        + '</div>'
-        + '<div class="summary-stats">'
-        + '<div class="summary-stat"><div class="stat-label">采购需求</div><div class="stat-value">' + state.lines.length + '</div></div>'
-        + '<div class="summary-stat"><div class="stat-label">已匹配商品</div><div class="stat-value" style="color:var(--primary)">' + matched + '</div></div>'
-        + '<div class="summary-stat"><div class="stat-label">预算上限（元）</div><div class="stat-value">' + fmtMoney(state.budget) + '</div></div>'
-        + '</div></div>';
-      return;
-    }
 
     if (state.fromProduct) {
       var amt = calcMatchedAmount();
@@ -2312,20 +2241,6 @@
     return '返回最价方案';
   }
 
-  function applySceneLaunchChrome() {
-    if (!state.fromScene) return;
-    var brand = document.querySelector('.brand span');
-    if (brand) brand.textContent = '场景采购 · 竞价/询价';
-    var subTitle = document.querySelector('.sub-bar-title');
-    if (subTitle) {
-      subTitle.innerHTML = '<i class="fa-solid fa-layer-group" style="color:#16a34a;margin-right:8px;"></i>场景「' + esc(state.sceneName) + '」· 确认商品与采购方式后发起';
-    }
-    var sectionSub = document.querySelector('.section-head .section-subtitle');
-    if (sectionSub) {
-      sectionSub.textContent = '基于场景配置确认采购商品、数量与邀请供应商后发起竞价 / 询价。';
-    }
-  }
-
   function applyProductLaunchChrome() {
     if (!state.fromProduct) return;
     var brand = document.querySelector('.brand span');
@@ -2549,7 +2464,6 @@
 
   initBidAssistReturnLink();
   loadDemo();
-  applySceneLaunchChrome();
   applyProductLaunchChrome();
   initBidAssistRecipient();
   renderDemandTableHead();
