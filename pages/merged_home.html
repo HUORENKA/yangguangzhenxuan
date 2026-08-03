@@ -350,15 +350,32 @@
       font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.98);
       text-align: center; z-index: 1;
     }
-    .reco-panel-more {
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 6px 12px; font-size: 12px; font-weight: 500; color: #fff;
-      background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.28);
-      border-radius: 8px; transition: all 0.2s;
+    .reco-products-wrap {
+      flex: 1; min-width: 0; padding: 14px 8px;
+      display: flex; align-items: stretch; gap: 6px;
     }
-    .reco-panel-more:hover { background: rgba(255,255,255,0.22); }
-    .reco-products-wrap { flex: 1; padding: 14px; }
-    .reco-products-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; height: 100%; }
+    .reco-products-viewport { flex: 1; min-width: 0; display: flex; align-items: stretch; }
+    .reco-products-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; height: 100%; width: 100%; }
+    .reco-page-arrow {
+      flex-shrink: 0; align-self: stretch; width: 30px; min-height: 100%;
+      border: 1px solid #cbd5e1; border-radius: 6px;
+      background: linear-gradient(180deg, #fff 0%, #f1f5f9 100%);
+      color: var(--brand);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 15px; font-weight: 700; padding: 0;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+      transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .reco-page-arrow:hover:not(:disabled) {
+      border-color: var(--brand);
+      background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+      color: var(--brand-dark);
+      box-shadow: 0 4px 12px rgba(47, 107, 255, 0.2);
+    }
+    .reco-page-arrow:disabled {
+      color: #9ca3af; border-color: #e5e7eb;
+      cursor: not-allowed; background: #f3f4f6; box-shadow: none;
+    }
 
     /* 商品卡片 */
     .product-card {
@@ -6211,10 +6228,13 @@
               <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=300&fit=crop" alt="" loading="lazy">
               <span>计划匹配推荐引擎</span>
             </div>
-            <a class="reco-panel-more" href="#" onclick="return false;">查看更多 <i class="fas fa-arrow-right"></i></a>
           </div>
-          <div class="reco-products-wrap">
-            <div class="reco-products-grid" id="recoProducts0"></div>
+          <div class="reco-products-wrap" data-reco-index="0">
+            <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
+            <div class="reco-products-viewport">
+              <div class="reco-products-grid" id="recoProducts0"></div>
+            </div>
+            <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
       </section>
@@ -6232,10 +6252,13 @@
               <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=300&fit=crop" alt="" loading="lazy">
               <span>历史方案补采分析</span>
             </div>
-            <a class="reco-panel-more" href="#" onclick="return false;">查看更多 <i class="fas fa-arrow-right"></i></a>
           </div>
-          <div class="reco-products-wrap">
-            <div class="reco-products-grid" id="recoProducts1"></div>
+          <div class="reco-products-wrap" data-reco-index="1">
+            <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
+            <div class="reco-products-viewport">
+              <div class="reco-products-grid" id="recoProducts1"></div>
+            </div>
+            <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
       </section>
@@ -6253,10 +6276,13 @@
               <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=600&h=300&fit=crop" alt="" loading="lazy">
               <span>新品同类发现模型</span>
             </div>
-            <a class="reco-panel-more" href="#" onclick="return false;">查看更多 <i class="fas fa-arrow-right"></i></a>
           </div>
-          <div class="reco-products-wrap">
-            <div class="reco-products-grid" id="recoProducts2"></div>
+          <div class="reco-products-wrap" data-reco-index="2">
+            <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
+            <div class="reco-products-viewport">
+              <div class="reco-products-grid" id="recoProducts2"></div>
+            </div>
+            <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
       </section>
@@ -7268,6 +7294,7 @@
       renderAllRecoBlocks();
       renderSuppliers();
       bindCarouselEvents();
+      bindRecoPagination();
     }
 
     /* 分类列表 */
@@ -7419,13 +7446,55 @@
         +'<div class="product-card-range">参考区间：￥'+low.toFixed(2)+' – ￥'+high.toFixed(2)+'</div>'
         +'</div></a>';
     }
-    function renderAllRecoBlocks(){
-      [0,1,2].forEach(function(i){
-        var el = document.getElementById('recoProducts'+i);
-        if(!el) return;
-        /* 每个推荐区块只展示一行（5 件） */
-        el.innerHTML = (recoMock[i]||[]).slice(0,5).map(renderProductCard).join('');
+    var RECO_PAGE_SIZE = 5;
+    var recoPageIndex = { 0: 0, 1: 0, 2: 0 };
+
+    function getRecoPageCount(sectionIndex) {
+      var list = recoMock[sectionIndex] || [];
+      return Math.max(1, Math.ceil(list.length / RECO_PAGE_SIZE));
+    }
+
+    function updateRecoArrows(sectionIndex) {
+      var wrap = document.querySelector('.reco-products-wrap[data-reco-index="' + sectionIndex + '"]');
+      if (!wrap) return;
+      var page = recoPageIndex[sectionIndex] || 0;
+      var pageCount = getRecoPageCount(sectionIndex);
+      var prev = wrap.querySelector('.reco-page-arrow--prev');
+      var next = wrap.querySelector('.reco-page-arrow--next');
+      if (prev) prev.disabled = page <= 0;
+      if (next) next.disabled = page >= pageCount - 1;
+    }
+
+    function renderRecoBlock(sectionIndex) {
+      var el = document.getElementById('recoProducts' + sectionIndex);
+      if (!el) return;
+      var list = recoMock[sectionIndex] || [];
+      var page = recoPageIndex[sectionIndex] || 0;
+      var start = page * RECO_PAGE_SIZE;
+      el.innerHTML = list.slice(start, start + RECO_PAGE_SIZE).map(renderProductCard).join('');
+      updateRecoArrows(sectionIndex);
+    }
+
+    function changeRecoPage(sectionIndex, delta) {
+      var pageCount = getRecoPageCount(sectionIndex);
+      var nextPage = (recoPageIndex[sectionIndex] || 0) + delta;
+      if (nextPage < 0 || nextPage >= pageCount) return;
+      recoPageIndex[sectionIndex] = nextPage;
+      renderRecoBlock(sectionIndex);
+    }
+
+    function bindRecoPagination() {
+      document.querySelectorAll('.reco-products-wrap[data-reco-index]').forEach(function(wrap) {
+        var idx = Number(wrap.getAttribute('data-reco-index'));
+        var prev = wrap.querySelector('.reco-page-arrow--prev');
+        var next = wrap.querySelector('.reco-page-arrow--next');
+        if (prev) prev.addEventListener('click', function() { changeRecoPage(idx, -1); });
+        if (next) next.addEventListener('click', function() { changeRecoPage(idx, 1); });
       });
+    }
+
+    function renderAllRecoBlocks(){
+      [0, 1, 2].forEach(renderRecoBlock);
     }
 
     /* 入驻供应商 */
