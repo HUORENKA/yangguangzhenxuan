@@ -375,7 +375,7 @@ function renderPendingTable() {
     return;
   }
 
-  if (summary) summary.textContent = `已载入 ${pendingProducts.length} 个待提交商品。可直接「提交审核」；亦可先执行「AI合规校验」（演示，不要求）。`;
+  if (summary) summary.textContent = `已载入 ${pendingProducts.length} 个待提交商品，勾选后点击「提交审核」将自动进行 AI 合规校验。`;
 
   tbody.innerHTML = pendingProducts
     .map(p => {
@@ -400,6 +400,49 @@ function renderPendingTable() {
     })
     .join('');
   updatePendingSectionVisibility();
+}
+
+/** @returns {PendingProduct|null} */
+function buildProductFromImportRowLenient(rowObj, idx) {
+  const rowTag = `(第 ${idx + 1} 行)`;
+  try {
+    const row = buildProductFromImportRow(rowObj, idx);
+    return { ...row, missingInfo: false };
+  } catch {
+    const name = (rowObj['商品名称'] || '').trim() || `模板导入商品 ${idx + 1}`;
+    const priceRaw = sanitizePrice(rowObj['价格(元)']);
+    const price = Number.isNaN(priceRaw) ? 0 : priceRaw;
+    const unit = (rowObj['单位'] || '').trim() || '台';
+    const c1 = (rowObj['一级类目'] || '').trim() || '未分类';
+    const c2 = (rowObj['二级类目'] || '').trim() || '—';
+    const c3 = (rowObj['三级类目'] || '').trim() || '—';
+    let specs = {};
+    try {
+      specs = parseSpecJson(rowObj['规格JSON'] || '{}');
+    } catch {
+      specs = { 规格摘要: '缺失信息' };
+    }
+    const mainUrl = (rowObj['商品主图URL'] || '').trim();
+    return {
+      id: makeId(),
+      name,
+      price,
+      unit,
+      cat1: c1,
+      cat2: c2,
+      cat3: c3,
+      specLabels: Object.keys(specs),
+      specs,
+      warehouses: [],
+      warehouseStocks: {},
+      mainImage: mainUrl,
+      subImages: splitImageRefs(rowObj['商品副图URL']),
+      detailImages: splitImageRefs(rowObj['详情图URL']),
+      stage: '待提交',
+      missingInfo: true,
+      importNote: `${rowTag} 存在缺失或不合规字段，已标记为「缺失信息」`
+    };
+  }
 }
 
 /** @returns {PendingProduct|null} */
@@ -716,32 +759,36 @@ async function handleBulkFiles(fileList) {
       return;
     }
 
-    const errs = [];
     const ok = [];
+    const marked = [];
 
     objs.forEach((row, idx) => {
-      try {
-        ok.push(buildProductFromImportRow(row, idx));
-      } catch (e) {
-        errs.push(e.message);
-      }
+      const built = buildProductFromImportRowLenient(row, idx);
+      ok.push(built);
+      if (built.missingInfo) marked.push(built.name);
     });
 
     if (!ok.length) {
-      showDialog({
-        title: '导入失败',
-        message: errs.slice(0, 8).join('\n') + (errs.length > 8 ? '\n……' : ''),
-        type: 'error'
-      });
+      showDialog({ title: '导入失败', message: '未能解析有效商品行。', type: 'error' });
+      return;
+    }
+
+    if (isMyProductsPage() && typeof window.mergePendingIntoProductList === 'function') {
+      window.mergePendingIntoProductList(ok, 'draft');
+      const msgLines = [`成功导入 ${ok.length} 条至「待提交」。`];
+      if (marked.length) {
+        msgLines.push(`其中 ${marked.length} 条标记为「缺失信息」，仍可勾选提交（将自动 AI 校验）。`);
+      }
+      showDialog({ title: '导入完成', message: msgLines.join('\n'), type: marked.length ? 'warn' : 'success' });
       return;
     }
 
     pendingProducts = pendingProducts.concat(ok);
     renderPendingTable();
 
-    const msgLines = [`成功导入 ${ok.length} 条。`];
-    if (errs.length) msgLines.push(`跳过 ${errs.length} 条：`, errs.slice(0, 5).join('\n'));
-    showDialog({ title: '导入完成', message: msgLines.join('\n'), type: errs.length ? 'warn' : 'success' });
+    const msgLines = [`成功导入 ${ok.length} 条至待提交列表。`];
+    if (marked.length) msgLines.push(`其中 ${marked.length} 条标记为「缺失信息」。`);
+    showDialog({ title: '导入完成', message: msgLines.join('\n'), type: marked.length ? 'warn' : 'success' });
 
     hideResultSection();
   } catch (e2) {
@@ -752,6 +799,8 @@ async function handleBulkFiles(fileList) {
     });
   }
 }
+
+window.handleTemplateImportFiles = handleBulkFiles;
 
 /* ---------- AI 演示：不耦合提交 ---------- */
 window.runAiComplianceDemo = function runAiComplianceDemo() {
@@ -1530,6 +1579,10 @@ async function readMulti(files) {
 }
 
 window.confirmAddProduct = async function confirmAddProduct() {
+  return window.saveAddProductAsDraft();
+};
+
+window.saveAddProductAsDraft = async function saveAddProductAsDraft() {
   try {
     const product = await window.gatherAddProductPayloadAsync();
     if (!product) return;
@@ -1547,8 +1600,8 @@ window.confirmAddProduct = async function confirmAddProduct() {
       closeAddProductModal();
       hideResultSection();
       showDialog({
-        title: '已添加',
-        message: '商品已加入待提交列表，可勾选后提交审核。',
+        title: '已存为待提交',
+        message: '商品已加入待提交列表，可勾选后提交审核（将自动 AI 校验）。',
         confirmText: '好的'
       });
       return;
@@ -1564,10 +1617,44 @@ window.confirmAddProduct = async function confirmAddProduct() {
       renderPendingTable();
     }
     closeAddProductModal();
-
     hideResultSection();
 
-    showDialog({ title: '已添加', message: '商品已进入待提交列表，可预览或批量提交审核。', confirmText: '好的' });
+    showDialog({ title: '已存为待提交', message: '商品已进入待提交列表，可勾选后提交审核。', confirmText: '好的' });
+  } catch (e) {
+    showDialog({ title: '保存失败', message: e.message || String(e), type: 'error' });
+  }
+};
+
+window.confirmAddProductWithAudit = async function confirmAddProductWithAudit() {
+  try {
+    const product = await window.gatherAddProductPayloadAsync();
+    if (!product) return;
+
+    if (isMyProductsPage() && typeof window.mergePendingIntoProductList === 'function' && typeof window.submitSingleDraftWithAutoAi === 'function') {
+      const ids = window.mergePendingIntoProductList([{ ...product }], 'draft');
+      closeAddProductModal();
+      hideResultSection();
+      if (ids && ids[0]) {
+        await window.submitSingleDraftWithAutoAi(ids[0]);
+      }
+      return;
+    }
+
+    pendingProducts.push({
+      id: makeId(),
+      ...product,
+      stage: '待提交'
+    });
+    if (typeof renderPendingTable === 'function' && document.getElementById('pendingTableBody')) {
+      renderPendingTable();
+    }
+    closeAddProductModal();
+    hideResultSection();
+    showDialog({
+      title: '已添加',
+      message: '商品已进入待提交列表。请在「我的商品」页勾选后提交审核（将自动 AI 校验）。',
+      confirmText: '好的'
+    });
   } catch (e) {
     showDialog({ title: '添加失败', message: e.message || String(e), type: 'error' });
   }

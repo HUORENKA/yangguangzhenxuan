@@ -376,6 +376,19 @@
       color: #9ca3af; border-color: #e5e7eb;
       cursor: not-allowed; background: #f3f4f6; box-shadow: none;
     }
+    .reco-content-area { flex: 1; min-width: 0; display: flex; align-items: stretch; }
+    .reco-guest-panel {
+      flex: 1; min-width: 0; margin: 14px;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; padding: 28px 20px; text-align: center;
+      border: 1px dashed #dbeafe; border-radius: 12px;
+      background: linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+    }
+    .reco-guest-panel.show { display: flex; }
+    .reco-guest-icon { font-size: 28px; color: #94a3b8; margin-bottom: 4px; }
+    .reco-guest-title { margin: 0; font-size: 16px; font-weight: 800; color: #0f172a; }
+    .reco-guest-desc { margin: 0 0 8px; font-size: 13px; line-height: 1.65; color: #64748b; max-width: 360px; }
+    .reco-guest-btn { margin: 0; padding: 8px 18px; font-size: 13px; }
 
     /* 商品卡片 */
     .product-card {
@@ -6002,7 +6015,7 @@
                   <div class="vip-locked-title">开通 VIP 后解锁深度分析数据</div>
                   <div class="vip-locked-desc">智能效能分析 · 供应链风险洞察 · 采购猫交互评估<br>9 项深度指标，助力采购决策升级</div>
                   <button class="vip-unlock-btn" onclick="unlockVip()">
-                    <i class="fa-solid fa-crown"></i> 升级 VIP 服务
+                    <i class="fa-solid fa-crown"></i> 免费升级VIP服务
                   </button>
                 </div>
               </div>
@@ -6215,7 +6228,33 @@
         </div>
       </div>
 
-      <!-- 为您推荐 section 1 -->
+      <!-- 为您推荐：新上优品（无需登录） -->
+      <section class="reco-section">
+        <div class="reco-layout">
+          <div class="reco-panel sec3">
+            <div>
+              <span class="reco-panel-tag"><i class="fas fa-star"></i> 新品推荐</span>
+              <h3 class="reco-panel-title">新上优品</h3>
+              <p class="reco-panel-subtitle">展示平台近期新上架的优选商品，便于及时关注新品动态与扩充采购选择。</p>
+            </div>
+            <div class="reco-panel-visual">
+              <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=600&h=300&fit=crop" alt="" loading="lazy">
+              <span>平台新上商品精选</span>
+            </div>
+          </div>
+          <div class="reco-content-area">
+            <div class="reco-products-wrap" data-reco-index="2">
+              <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
+              <div class="reco-products-viewport">
+                <div class="reco-products-grid" id="recoProducts2"></div>
+              </div>
+              <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 为您推荐：采购计划推荐（需登录） -->
       <section class="reco-section">
         <div class="reco-layout">
           <div class="reco-panel sec1">
@@ -6229,18 +6268,26 @@
               <span>计划匹配推荐引擎</span>
             </div>
           </div>
-          <div class="reco-products-wrap" data-reco-index="0">
-            <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
-            <div class="reco-products-viewport">
-              <div class="reco-products-grid" id="recoProducts0"></div>
+          <div class="reco-content-area">
+            <div class="reco-guest-panel" id="recoGuest0">
+              <div class="reco-guest-icon"><i class="fa-solid fa-lock"></i></div>
+              <h4 class="reco-guest-title">登录后查看计划推荐</h4>
+              <p class="reco-guest-desc">根据您的采购计划进行专项推荐，登录后即可查看与本期计划匹配度高的商品。</p>
+              <button type="button" class="feature-button blue reco-guest-btn" onclick="unlockDataBoard()"><i class="fa-solid fa-right-to-bracket"></i> 立即登录</button>
             </div>
-            <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
+            <div class="reco-products-wrap" id="recoProductsWrap0" data-reco-index="0" data-reco-auth="required">
+              <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
+              <div class="reco-products-viewport">
+                <div class="reco-products-grid" id="recoProducts0"></div>
+              </div>
+              <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- 为您推荐 section 2 -->
-      <section class="reco-section">
+      <!-- 为您推荐：专项补采（需登录） -->
+      <section class="reco-section" style="margin-bottom:0;">
         <div class="reco-layout">
           <div class="reco-panel sec2">
             <div>
@@ -6253,36 +6300,20 @@
               <span>历史方案补采分析</span>
             </div>
           </div>
-          <div class="reco-products-wrap" data-reco-index="1">
-            <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
-            <div class="reco-products-viewport">
-              <div class="reco-products-grid" id="recoProducts1"></div>
+          <div class="reco-content-area">
+            <div class="reco-guest-panel" id="recoGuest1">
+              <div class="reco-guest-icon"><i class="fa-solid fa-lock"></i></div>
+              <h4 class="reco-guest-title">登录后查看补采推荐</h4>
+              <p class="reco-guest-desc">根据您历史提交过的采购方案，登录后即可查看仍需补充采购的重点品类与紧缺商品。</p>
+              <button type="button" class="feature-button blue reco-guest-btn" onclick="unlockDataBoard()"><i class="fa-solid fa-right-to-bracket"></i> 立即登录</button>
             </div>
-            <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
-          </div>
-        </div>
-      </section>
-
-      <!-- 为您推荐 section 3 -->
-      <section class="reco-section" style="margin-bottom:0;">
-        <div class="reco-layout">
-          <div class="reco-panel sec3">
-            <div>
-              <span class="reco-panel-tag"><i class="fas fa-star"></i> 新品推荐</span>
-              <h3 class="reco-panel-title">新上优品</h3>
-              <p class="reco-panel-subtitle">展示平台近期新上架的优选商品，便于及时关注新品动态与扩充采购选择。</p>
+            <div class="reco-products-wrap" id="recoProductsWrap1" data-reco-index="1" data-reco-auth="required">
+              <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
+              <div class="reco-products-viewport">
+                <div class="reco-products-grid" id="recoProducts1"></div>
+              </div>
+              <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <div class="reco-panel-visual">
-              <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=600&h=300&fit=crop" alt="" loading="lazy">
-              <span>平台新上商品精选</span>
-            </div>
-          </div>
-          <div class="reco-products-wrap" data-reco-index="2">
-            <button type="button" class="reco-page-arrow reco-page-arrow--prev" disabled aria-label="上一页"><i class="fas fa-chevron-left"></i></button>
-            <div class="reco-products-viewport">
-              <div class="reco-products-grid" id="recoProducts2"></div>
-            </div>
-            <button type="button" class="reco-page-arrow reco-page-arrow--next" aria-label="下一页"><i class="fas fa-chevron-right"></i></button>
           </div>
         </div>
       </section>
@@ -7295,6 +7326,7 @@
       renderSuppliers();
       bindCarouselEvents();
       bindRecoPagination();
+      syncRecoAuthState();
     }
 
     /* 分类列表 */
@@ -8346,6 +8378,18 @@
     /* =====================================================================
        运营数据板：登录解锁
     ===================================================================== */
+    function syncRecoAuthState(isLogin) {
+      if (typeof isLogin !== 'boolean') {
+        isLogin = localStorage.getItem('gc_auth') === '1';
+      }
+      [0, 1].forEach(function(sectionIndex) {
+        var guest = document.getElementById('recoGuest' + sectionIndex);
+        var wrap = document.getElementById('recoProductsWrap' + sectionIndex);
+        if (guest) guest.classList.toggle('show', !isLogin);
+        if (wrap) wrap.style.display = isLogin ? 'flex' : 'none';
+      });
+    }
+
     function syncDataBoardAuthState() {
       var locked = document.getElementById('dataBoardLocked');
       var unlocked = document.getElementById('dataBoardUnlocked');
@@ -8353,6 +8397,7 @@
       if (locked) locked.style.display = isLogin ? 'none' : 'block';
       if (unlocked) unlocked.style.display = isLogin ? 'block' : 'none';
       syncCompliancePassAuthState(isLogin);
+      syncRecoAuthState(isLogin);
     }
     /** 采购合规通：未登录不展示计划/预算/合同的统计数字 */
     function syncCompliancePassAuthState(isLogin) {

@@ -1515,11 +1515,7 @@
           </div>
           <button type="button" class="action-btn action-btn-secondary" onclick="triggerBulkUpload()">
             <i class="fas fa-file-arrow-up"></i>
-            <span>批量上传</span>
-          </button>
-          <button type="button" class="action-btn action-btn-secondary" id="aiCheckBtn">
-            <i class="fas fa-shield-halved"></i>
-            <span>AI合规校验</span>
+            <span>模板上传</span>
           </button>
           <button type="button" class="action-btn action-btn-secondary" onclick="saveAsDraft()" id="saveDraftBtn">
             <i class="fas fa-floppy-disk"></i>
@@ -1532,7 +1528,7 @@
         </div>
       </div>
 
-      <div class="text-sm text-slate-500 mb-4" id="pendingSummary">当前暂无待提交商品，可先添加单笔或点击「批量上传」载入演示数据。</div>
+      <div class="text-sm text-slate-500 mb-4" id="pendingSummary">当前暂无待提交商品，可先添加单笔或「模板上传」导入数据。</div>
 
       <div class="table-shell">
         <div class="overflow-x-auto">
@@ -1818,7 +1814,8 @@
 
       <div class="flex flex-wrap justify-end gap-3 mt-8 pt-4 border-t border-slate-200">
         <button type="button" class="action-btn action-btn-secondary" onclick="closeAddProductModal()">取消</button>
-        <button type="button" class="action-btn action-btn-primary" onclick="confirmAddProduct()">添加到待提交列表</button>
+        <button type="button" class="action-btn action-btn-secondary" onclick="saveAddProductAsDraft()">存为待提交</button>
+        <button type="button" class="action-btn action-btn-primary" onclick="confirmAddProductWithAudit()">确认添加</button>
       </div>
     </div>
   </div>

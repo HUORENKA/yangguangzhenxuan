@@ -422,26 +422,6 @@
       background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       color: #ffffff;
     }
-
-    .submit-change-hint {
-      font-size: 12px;
-      font-weight: 600;
-      color: #c2410c;
-      background: #fff7ed;
-      border: 1px solid #fed7aa;
-      border-radius: 8px;
-      padding: 6px 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      line-height: 1.4;
-      max-width: 280px;
-      text-align: right;
-    }
-
-    .submit-change-hint[hidden] {
-      display: none;
-    }
   </style>
 </head>
 <body class="text-slate-800 pb-16">
@@ -463,14 +443,13 @@
           <button type="button" class="action-btn action-btn-secondary" onclick="history.back()">
             <i class="fas fa-arrow-left"></i><span>返回</span>
           </button>
-          <button type="button" class="action-btn action-btn-primary" onclick="submitChangeAudit()" id="btnSubmitChange">
+          <button type="button" class="action-btn action-btn-secondary" onclick="saveChangeAsDraft()" id="btnSaveDraft" hidden>
+            <i class="fas fa-inbox"></i><span>存为待提交</span>
+          </button>
+          <button type="button" class="action-btn action-btn-primary" onclick="submitChangeWithAi()" id="btnSubmitChange">
             <i class="fas fa-paper-plane"></i><span>提交变更审核</span>
           </button>
         </div>
-        <p id="submitChangeHint" class="submit-change-hint" hidden aria-live="polite">
-          <i class="fas fa-shield-halved"></i>
-          <span>修改信息后需重新 AI 审核</span>
-        </p>
       </div>
     </div>
 
@@ -640,7 +619,7 @@
     const STORAGE_APPEND = 'PROTOTYPE_AUDIT_QUEUE_APPEND';
     const STORAGE_PENDING_MAP = 'PRODUCT_CHANGE_PENDING_MAP';
 
-    /** @type {{ productId:string, sku:string, sourceShelf:string, before:any }} */
+    /** @type {{ productId:string, sku:string, sourceShelf:string, canSaveAsDraft?:boolean, before:any }} */
     let ctx = null;
 
     function escapeHtml(s) {
@@ -759,16 +738,9 @@
       return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
     }
 
-    function showSubmitChangeHint() {
-      const el = document.getElementById('submitChangeHint');
-      if (el) el.hidden = false;
-    }
-
-    window.submitChangeAudit = async function submitChangeAudit() {
-      const after = await window.gatherAddProductPayloadAsync(msg =>
-        alert(msg)
-      );
-      if (!after) return;
+    async function gatherValidatedChangePayload() {
+      const after = await window.gatherAddProductPayloadAsync(msg => alert(msg));
+      if (!after) return null;
 
       const afterSnapFull = deepClone(after);
       afterSnapFull.warehouseStocks = normalizeWarehouseStocks(afterSnapFull.warehouseStocks || {});
@@ -790,101 +762,68 @@
         arrEqual(beforeSnap.detailImages, afterSnapFull.detailImages);
 
       if (unchanged) {
-        const hint =
-          ctx.sourceShelf === 'draft' || ctx.sourceShelf === 'rejected'
-            ? '请至少修改一项后再保存。'
-            : '请至少修改一项后再提交变更审核。';
-        alert(hint);
-        return;
+        const isDraftLike = ctx.sourceShelf === 'draft' || ctx.sourceShelf === 'rejected';
+        alert(isDraftLike ? '请至少修改一项后再保存或提交。' : '请至少修改一项后再提交变更审核。');
+        return null;
       }
 
-      if (ctx.sourceShelf === 'draft' || ctx.sourceShelf === 'rejected') {
-        showSubmitChangeHint();
-        sessionStorage.setItem(
-          'PRODUCT_LOCAL_EDIT_RESULT',
-          JSON.stringify({
-            productId: ctx.productId,
-            product: {
-              name: afterSnapFull.name,
-              price: afterSnapFull.price,
-              unit: afterSnapFull.unit,
-              cat1: afterSnapFull.cat1,
-              cat2: afterSnapFull.cat2,
-              cat3: afterSnapFull.cat3,
-              specs: { ...afterSnapFull.specs },
-              warehouseStocks: { ...afterSnapFull.warehouseStocks },
-              mainImage: afterSnapFull.mainImage,
-              subImages: [...afterSnapFull.subImages],
-              detailImages: [...afterSnapFull.detailImages]
-            }
-          })
-        );
-        alert('商品信息已保存。修改信息后需重新 AI 审核，请返回列表重新执行 AI 合规校验后再提交审核（原型）。');
-        window.setTimeout(() => {
-          window.location.href = './my_products.html';
-        }, 1200);
-        return;
-      }
+      return { afterSnapFull, beforeSnap };
+    }
 
-      showSubmitChangeHint();
+    function canSaveAsDraft(ctx) {
+      if (!ctx) return false;
+      if (ctx.sourceShelf === 'published' || ctx.sourceShelf === 'offline') return false;
+      if (ctx.canSaveAsDraft === false) return false;
+      return ctx.sourceShelf === 'draft' || ctx.sourceShelf === 'rejected';
+    }
 
-      const ticketId = `CHG-${Date.now()}`;
-      const shelfSnapshot =
-        ctx.sourceShelf === 'offline' ? 'offline' : ctx.sourceShelf === 'published' ? 'online' : 'offline';
-      const row = {
-        id: ticketId,
-        auditKind: 'CHANGE_INFO',
-        linkedProductId: ctx.productId,
-        listStatus: 'pending',
-        sku: ctx.sku,
-        specLabels: afterSnapFull.specLabels,
-        name: afterSnapFull.name,
-        price: afterSnapFull.price,
-        unit: afterSnapFull.unit,
-        cat1: afterSnapFull.cat1,
-        cat2: afterSnapFull.cat2,
-        cat3: afterSnapFull.cat3,
-        specs: { ...afterSnapFull.specs },
-        warehouseStocks: { ...afterSnapFull.warehouseStocks },
-        mainImage: afterSnapFull.mainImage,
-        subImages: [...afterSnapFull.subImages],
-        detailImages: [...afterSnapFull.detailImages],
-        supplierName: ctx.supplierName || '演示供应商（工作台）',
-        submittedAt: padNow(),
-        aiKind: 'warn',
-        operatorManagedEdit: !!ctx.operatorListed,
-        beforeSnapshot: beforeSnap,
-        afterSnapshot: afterSnapFull,
-        shelfSnapshot
-      };
+    window.saveChangeAsDraft = async function saveChangeAsDraft() {
+      if (!canSaveAsDraft(ctx)) return;
+      const payload = await gatherValidatedChangePayload();
+      if (!payload) return;
 
-      let append = [];
-      try {
-        append = JSON.parse(sessionStorage.getItem(STORAGE_APPEND) || '[]');
-        if (!Array.isArray(append)) append = [];
-      } catch {
-        append = [];
-      }
-      append.push(row);
-      sessionStorage.setItem(STORAGE_APPEND, JSON.stringify(append));
-
-      let pend = {};
-      try {
-        pend = JSON.parse(sessionStorage.getItem(STORAGE_PENDING_MAP) || '{}');
-        if (!pend || typeof pend !== 'object') pend = {};
-      } catch {
-        pend = {};
-      }
-      pend[ctx.productId] = ticketId;
-      sessionStorage.setItem(STORAGE_PENDING_MAP, JSON.stringify(pend));
-
-      alert(
-        '已提交信息变更审核（原型）。修改信息后需重新 AI 审核。\n请在运营后台「商品管理」中查看并审批。'
+      sessionStorage.setItem(
+        'PRODUCT_LOCAL_EDIT_RESULT',
+        JSON.stringify({
+          productId: ctx.productId,
+          product: {
+            name: payload.afterSnapFull.name,
+            price: payload.afterSnapFull.price,
+            unit: payload.afterSnapFull.unit,
+            cat1: payload.afterSnapFull.cat1,
+            cat2: payload.afterSnapFull.cat2,
+            cat3: payload.afterSnapFull.cat3,
+            specs: { ...payload.afterSnapFull.specs },
+            warehouseStocks: { ...payload.afterSnapFull.warehouseStocks },
+            mainImage: payload.afterSnapFull.mainImage,
+            subImages: [...payload.afterSnapFull.subImages],
+            detailImages: [...payload.afterSnapFull.detailImages]
+          }
+        })
       );
-      window.setTimeout(() => {
-        window.location.href = './my_products.html';
-      }, 1200);
+      window.location.href = './my_products.html';
     };
+
+    window.submitChangeWithAi = async function submitChangeWithAi() {
+      const payload = await gatherValidatedChangePayload();
+      if (!payload) return;
+
+      const isDraftLike = ctx.sourceShelf === 'draft' || ctx.sourceShelf === 'rejected';
+      const action = isDraftLike ? 'draftAiSubmit' : 'changeAiSubmit';
+
+      sessionStorage.setItem(
+        'PRODUCT_INFO_CHANGE_AI_BRIDGE',
+        JSON.stringify({
+          ctx: deepClone(ctx),
+          afterSnapFull: payload.afterSnapFull,
+          beforeSnap: payload.beforeSnap,
+          submittedAt: padNow()
+        })
+      );
+      window.location.href = `./my_products.html?action=${action}`;
+    };
+
+    window.submitChangeAudit = window.submitChangeWithAi;
 
     document.addEventListener('DOMContentLoaded', () => {
       ctx = readPayload();
@@ -903,17 +842,24 @@
       };
       const sourceLabel = sourceLabels[ctx.sourceShelf] || ctx.sourceShelf || '—';
       const needsAudit = ctx.sourceShelf === 'published' || ctx.sourceShelf === 'offline';
+      const showSaveDraft = canSaveAsDraft(ctx);
 
       document.getElementById('ctxBanner').innerHTML = `
         SKU：<span class="font-mono font-semibold text-slate-900">${escapeHtml(ctx.sku)}</span>
         · ID：<span class="font-mono">${escapeHtml(ctx.productId)}</span>
         · 来源：<strong>${escapeHtml(sourceLabel)}</strong>${ctx.operatorListed ? ' · <span class="text-blue-700 font-semibold">运营代传</span>' : ''}`;
 
+      const saveDraftBtn = document.getElementById('btnSaveDraft');
+      if (saveDraftBtn) {
+        saveDraftBtn.hidden = !showSaveDraft;
+        saveDraftBtn.style.display = showSaveDraft ? '' : 'none';
+      }
+
       const submitBtn = document.getElementById('btnSubmitChange');
       if (submitBtn) {
         submitBtn.innerHTML = needsAudit
           ? '<i class="fas fa-paper-plane"></i><span>提交变更审核</span>'
-          : '<i class="fas fa-floppy-disk"></i><span>保存修改</span>';
+          : '<i class="fas fa-paper-plane"></i><span>提交审核</span>';
       }
 
       const b = ctx.before;

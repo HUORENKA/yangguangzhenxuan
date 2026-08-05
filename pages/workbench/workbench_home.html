@@ -312,6 +312,57 @@
       font-size: 12px;
     }
     
+    /* 供应商 VIP 专属数据 */
+    .sp-vip-wrap { position: relative; }
+    .sp-vip-blurred { filter: blur(5px); pointer-events: none; user-select: none; opacity: 0.55; }
+    .sp-vip-locked-mask {
+      position: absolute; inset: 0; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    }
+    .sp-vip-locked-box {
+      background: rgba(255,255,255,0.96); border: 1.5px solid #e9d5ff; border-radius: 18px;
+      padding: 22px 32px; text-align: center; box-shadow: 0 8px 32px rgba(124,58,237,0.13);
+      max-width: 420px;
+    }
+    .sp-vip-locked-icon { font-size: 32px; margin-bottom: 8px; }
+    .sp-vip-locked-title { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .sp-vip-locked-desc { font-size: 12px; color: #64748b; margin-bottom: 14px; line-height: 1.7; }
+    .sp-vip-unlock-btn {
+      display: inline-flex; align-items: center; gap: 7px; padding: 10px 24px; border-radius: 999px; border: none;
+      background: linear-gradient(135deg,#7c3aed,#4f46e5); color: #fff; font-size: 13px; font-weight: 800;
+      cursor: pointer; box-shadow: 0 4px 14px rgba(124,58,237,0.3); transition: all 0.2s;
+    }
+    .sp-vip-unlock-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(124,58,237,0.4); }
+    .sp-vip-group { margin-bottom: 14px; }
+    .sp-vip-group-label {
+      font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase;
+      margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
+    }
+    .sp-vip-group-label::after { content:''; flex:1; height:1px; background:#f1f5f9; }
+    .sp-vip-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+    @media (max-width: 900px) { .sp-vip-grid { grid-template-columns: 1fr; } }
+    .sp-vip-card {
+      background: linear-gradient(135deg,#faf5ff,#f3e8ff); border-radius: 12px; padding: 14px 16px; border: 1px solid #e9d5ff;
+    }
+    .sp-vip-card.risk { background: linear-gradient(135deg,#fdf2f8,#fce7f3); border-color: #fbcfe8; }
+    .sp-vip-card.service { background: linear-gradient(135deg,#f0f9ff,#e0f2fe); border-color: #bae6fd; }
+    .sp-vip-label { font-size: 11px; color: #7c3aed; font-weight: 600; margin-bottom: 5px; }
+    .sp-vip-card.risk .sp-vip-label { color: #9d174d; }
+    .sp-vip-card.service .sp-vip-label { color: #0369a1; }
+    .sp-vip-label-row {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 5px;
+    }
+    .sp-vip-label-row .sp-vip-label { margin-bottom: 0; flex-shrink: 0; }
+    .sp-vip-calc {
+      font-size: 10px; font-weight: 500; color: #94a3b8; line-height: 1.35; text-align: right;
+    }
+    .sp-vip-value { font-size: 20px; font-weight: 800; color: #4c1d95; line-height: 1.2; }
+    .sp-vip-card.risk .sp-vip-value { color: #831843; }
+    .sp-vip-card.service .sp-vip-value { color: #0c4a6e; }
+    .sp-vip-sub { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+    .sp-vip-prog { margin-top: 8px; height: 5px; background: #bae6fd; border-radius: 999px; overflow: hidden; }
+    .sp-vip-prog-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg,#0369a1,#0ea5e9); }
+
     /* 重要待办卡片样式 */
     .todo-card {
       background: white;
@@ -1336,6 +1387,113 @@
       
     </div>
     
+    <!-- ==================== VIP 专属数据（仅供应商） ==================== -->
+    <div class="module-card rounded-xl shadow-sm p-5 mb-5" data-role="supplier" id="supplierVipBoard" style="display: none;">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="module-icon bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-sm">
+            <i class="fas fa-crown"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">VIP 专属数据</h2>
+            <p class="text-sm text-gray-500 mt-0.5">经营提效 · 履约风险，解锁后查看深度指标</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sp-vip-wrap" id="supplierVipWrap">
+        <div class="sp-vip-locked-mask" id="supplierVipLockedMask">
+          <div class="sp-vip-locked-box">
+            <div class="sp-vip-locked-icon">🔒</div>
+            <div class="sp-vip-locked-title">开通 VIP 后解锁深度经营数据</div>
+            <div class="sp-vip-locked-desc">经营智能洞察 · 履约与供给风险<br>9 项深度指标，助力店铺经营升级</div>
+            <button type="button" class="sp-vip-unlock-btn" onclick="unlockSupplierVip()">
+              <i class="fas fa-crown"></i> 免费升级VIP服务
+            </button>
+          </div>
+        </div>
+
+        <div id="supplierVipDataLayer" class="sp-vip-blurred">
+          <!-- 模块一：经营智能洞察 -->
+          <div class="sp-vip-group">
+            <div class="sp-vip-group-label"><i class="fas fa-chart-line" style="color:#7c3aed;"></i> 经营智能洞察</div>
+            <div class="sp-vip-grid">
+              <div class="sp-vip-card">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">浏览→加购转化率</div>
+                  <div class="sp-vip-calc">看过商品后加入购物车的比例</div>
+                </div>
+                <div class="sp-vip-value">18.6%</div>
+              </div>
+              <div class="sp-vip-card">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">爆款贡献占比</div>
+                  <div class="sp-vip-calc">销量最好的10个商品贡献了多少销售额</div>
+                </div>
+                <div class="sp-vip-value" style="color:#7c3aed;">42.3%</div>
+              </div>
+              <div class="sp-vip-card">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">近期复购采购单位占比</div>
+                  <div class="sp-vip-calc">近90天买过两次及以上的采购单位占比</div>
+                </div>
+                <div class="sp-vip-value">36.8%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 模块二：履约与供给风险 -->
+          <div class="sp-vip-group" style="margin-bottom:0;">
+            <div class="sp-vip-group-label"><i class="fas fa-shield-halved" style="color:#db2777;"></i> 履约与供给风险</div>
+            <div class="sp-vip-grid">
+              <div class="sp-vip-card risk">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">平均发货时长</div>
+                  <div class="sp-vip-calc">从接单到发出货平均用了多久</div>
+                </div>
+                <div class="sp-vip-value">18.6小时</div>
+              </div>
+              <div class="sp-vip-card risk">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">采购方集中度</div>
+                  <div class="sp-vip-calc">成交最多的前3家采购方占总成交的比例</div>
+                </div>
+                <div class="sp-vip-value">TOP3 占 58%</div>
+              </div>
+              <div class="sp-vip-card risk">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">超时未发货订单数</div>
+                  <div class="sp-vip-calc">已超过承诺发货时间仍未发出的订单</div>
+                </div>
+                <div class="sp-vip-value" style="color:#dc2626;">7</div>
+              </div>
+              <div class="sp-vip-card risk">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">售后平均处理时长</div>
+                  <div class="sp-vip-calc">从申请售后到处理完成平均用了多久</div>
+                </div>
+                <div class="sp-vip-value">32.4小时</div>
+              </div>
+              <div class="sp-vip-card risk">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">订单取消率</div>
+                  <div class="sp-vip-calc">近30天取消订单占接单的比例</div>
+                </div>
+                <div class="sp-vip-value">2.8%</div>
+              </div>
+              <div class="sp-vip-card risk">
+                <div class="sp-vip-label-row">
+                  <div class="sp-vip-label">平均物流时长</div>
+                  <div class="sp-vip-calc">从发出货到买家签收平均用了多久</div>
+                </div>
+                <div class="sp-vip-value">52.8小时</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== 重要待办行 ==================== -->
     <div class="module-card rounded-xl shadow-sm p-5 mb-5">
       <div class="flex items-center justify-between mb-4">
@@ -2425,6 +2583,14 @@
       localStorage.setItem('workbenchSidebarCollapsed', sidebar.classList.contains('collapsed'));
     }
     
+    // ========== 供应商 VIP 解锁 ==========
+    function unlockSupplierVip() {
+      var mask = document.getElementById('supplierVipLockedMask');
+      var layer = document.getElementById('supplierVipDataLayer');
+      if (mask) mask.style.display = 'none';
+      if (layer) layer.classList.remove('sp-vip-blurred');
+    }
+
     // ========== 同步重要待办数据 ==========
     function updateTodosData(role) {
       if (role === 'supplier') {
